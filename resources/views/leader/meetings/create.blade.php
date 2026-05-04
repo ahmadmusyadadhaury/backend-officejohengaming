@@ -5,9 +5,10 @@
 @section('content')
 <div class="pt-2 max-w-3xl">
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <form method="POST" action="{{ route('leader.meetings.store') }}" class="space-y-5">
+        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="space-y-5">
             @csrf
 
+            {{-- Info Dasar --}}
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Judul Meeting <span class="text-red-500">*</span></label>
@@ -19,16 +20,9 @@
                     <select name="room_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
                         <option value="">Pilih Ruangan</option>
                         @foreach($rooms as $room)
-                            <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>{{ $room->name }} (Kapasitas: {{ $room->capacity }})</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Tim Kedua (Opsional)</label>
-                    <select name="second_team_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                        <option value="">Tidak ada</option>
-                        @foreach($teams->where('id', '!=', auth()->user()->team_id) as $team)
-                            <option value="{{ $team->id }}" {{ old('second_team_id') == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
+                            <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>
+                                {{ $room->name }} (Kapasitas: {{ $room->capacity }})
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -37,23 +31,49 @@
                     <input type="date" name="meeting_date" value="{{ old('meeting_date') }}" required min="{{ date('Y-m-d') }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Mulai <span class="text-red-500">*</span></label>
-                        <input type="time" name="start_time" value="{{ old('start_time') }}" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Selesai <span class="text-red-500">*</span></label>
-                        <input type="time" name="end_time" value="{{ old('end_time') }}" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jam Mulai <span class="text-red-500">*</span></label>
+                    <input type="time" name="start_time" value="{{ old('start_time') }}" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jam Selesai <span class="text-red-500">*</span></label>
+                    <input type="time" name="end_time" value="{{ old('end_time') }}" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                </div>
+            </div>
+
+            {{-- Tambah Tim --}}
+            <div class="border-t pt-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-primary text-sm">Tambah Tim <span class="text-gray-400 font-normal text-xs">(Opsional — tim kamu otomatis ter-undang)</span></h3>
+                    <button type="button" onclick="addTeamRow()"
+                        class="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs hover:bg-primary hover:text-white transition">
+                        + Tambah Tim
+                    </button>
+                </div>
+                <div id="extra-teams" class="space-y-2">
+                    @if(old('extra_teams'))
+                        @foreach(old('extra_teams') as $i => $tid)
+                        <div class="flex items-center gap-2 team-row">
+                            <select name="extra_teams[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                                <option value="">Pilih Tim</option>
+                                @foreach($teams as $team)
+                                    <option value="{{ $team->id }}" {{ $tid == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" onclick="this.closest('.team-row').remove()"
+                                class="px-2 py-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition text-xs">✕</button>
+                        </div>
+                        @endforeach
+                    @endif
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Semua anggota tim yang dipilih akan otomatis ter-undang saat meeting disetujui.</p>
             </div>
 
             {{-- 5W1H --}}
             <div class="border-t pt-4">
-                <h3 class="font-semibold text-primary mb-3 text-sm">Detail Meeting (5W1H)</h3>
+                <h3 class="font-semibold text-primary mb-3 text-sm">Detail Meeting</h3>
                 <div class="space-y-3">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">WHY — Kenapa meeting ini diadakan? <span class="text-red-500">*</span></label>
@@ -66,47 +86,25 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">{{ old('what') }}</textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">WHERE — Lokasi detail</label>
-                        <input type="text" name="where_detail" value="{{ old('where_detail') }}" placeholder="Contoh: Meeting Room Lantai 1"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">WHO — Ringkasan peserta</label>
-                        <input type="text" name="who_summary" value="{{ old('who_summary') }}" placeholder="Contoh: Tim Konten + Tim Marketing"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                    </div>
-                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">HOW — Hasil yang diharapkan <span class="text-red-500">*</span></label>
-                        <textarea name="how_expected" rows="2" required placeholder="Keputusan atau output yang diharapkan dari meeting..."
+                        <textarea name="how_expected" rows="2" required placeholder="Keputusan atau output yang diharapkan..."
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">{{ old('how_expected') }}</textarea>
                     </div>
                 </div>
             </div>
 
-            {{-- Peserta --}}
-            @if($users->count())
+            {{-- Upload File --}}
             <div class="border-t pt-4">
-                <h3 class="font-semibold text-primary mb-3 text-sm">Undang Peserta dari Tim Kamu</h3>
-                <div class="flex flex-wrap gap-2 mb-2">
-                    <button type="button" onclick="selectAllParticipants()" class="px-3 py-1 bg-primary/10 text-primary rounded text-xs hover:bg-primary hover:text-white transition">Undang Semua Tim</button>
-                    <button type="button" onclick="clearParticipants()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200 transition">Kosongkan</button>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    @foreach($users as $u)
-                    <label class="flex items-center gap-2 text-sm text-gray-700 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                        <input type="checkbox" name="participants[]" value="{{ $u->id }}" class="participant-cb w-4 h-4 text-accent rounded border-gray-300"
-                            {{ in_array($u->id, old('participants', [])) ? 'checked' : '' }}>
-                        {{ $u->name }}
-                    </label>
-                    @endforeach
-                </div>
+                <h3 class="font-semibold text-primary mb-3 text-sm">Lampiran File <span class="text-gray-400 font-normal">(Opsional)</span></h3>
+                <input type="file" name="file" accept=".pdf,.doc,.docx"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                <p class="text-xs text-gray-400 mt-1">Format: PDF, DOC, DOCX. Maks 10MB. File bisa dilihat oleh semua anggota tim yang diundang.</p>
             </div>
-            @endif
 
             {{-- Aset --}}
             @if($assets->count())
             <div class="border-t pt-4">
-                <h3 class="font-semibold text-primary mb-3 text-sm">Kebutuhan Aset (Opsional)</h3>
+                <h3 class="font-semibold text-primary mb-3 text-sm">Kebutuhan Aset <span class="text-gray-400 font-normal">(Opsional)</span></h3>
                 <div class="grid grid-cols-2 gap-2">
                     @foreach($assets as $asset)
                     <div class="flex items-center gap-2 p-2 border border-gray-200 rounded-lg">
@@ -121,7 +119,7 @@
 
             <div class="flex gap-3 pt-2 border-t">
                 <button type="submit" class="px-5 py-2 bg-accent text-white rounded-lg text-sm hover:bg-accent/90 transition">Kirim Request</button>
-                <a href="{{ route('leader.meetings.index') }}" class="px-5 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">Batal</a>
+                <a href="{{ route('koordinator.meetings.index') }}" class="px-5 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">Batal</a>
             </div>
         </form>
     </div>
@@ -130,11 +128,35 @@
 
 @push('scripts')
 <script>
-    function selectAllParticipants() {
-        document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = true);
-    }
-    function clearParticipants() {
-        document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = false);
+    const teamsData = @json($teams);
+
+    function addTeamRow() {
+        const container = document.getElementById('extra-teams');
+
+        // Cek tim yang sudah dipilih
+        const selected = [...container.querySelectorAll('select')].map(s => s.value);
+
+        const options = teamsData
+            .filter(t => !selected.includes(String(t.id)))
+            .map(t => `<option value="${t.id}">${t.name}</option>`)
+            .join('');
+
+        if (!options) {
+            alert('Semua tim sudah ditambahkan.');
+            return;
+        }
+
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-2 team-row';
+        row.innerHTML = `
+            <select name="extra_teams[]" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                <option value="">Pilih Tim</option>
+                ${options}
+            </select>
+            <button type="button" onclick="this.closest('.team-row').remove()"
+                class="px-2 py-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition text-xs">✕</button>
+        `;
+        container.appendChild(row);
     }
 </script>
 @endpush

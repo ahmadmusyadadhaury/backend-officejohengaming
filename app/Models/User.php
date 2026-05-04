@@ -10,18 +10,20 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['nik', 'name', 'email', 'password', 'role', 'team_id', 'is_leader', 'is_active'];
+    protected $fillable = ['name', 'username', 'password', 'role', 'team_id', 'is_active'];
 
     protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {
         return [
-            'password'   => 'hashed',
-            'is_leader'  => 'boolean',
-            'is_active'  => 'boolean',
+            'password'  => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
+
+    // Roles yang punya akses penuh (setara admin)
+    const FULL_ACCESS_ROLES = ['admin', 'head_of_store', 'gm', 'hr'];
 
     public function team()
     {
@@ -44,7 +46,41 @@ class User extends Authenticatable
         return $this->hasMany(Mom::class, 'created_by');
     }
 
-    public function isAdmin(): bool { return $this->role === 'admin'; }
-    public function isLeader(): bool { return $this->role === 'leader' || $this->is_leader; }
-    public function isUser(): bool { return $this->role === 'user'; }
+    public function invitations()
+    {
+        return $this->hasMany(MeetingInvitation::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array($this->role, self::FULL_ACCESS_ROLES);
+    }
+
+    public function isKoordinator(): bool
+    {
+        return $this->role === 'koordinator';
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
+    }
+
+    public function hasFullAccess(): bool
+    {
+        return in_array($this->role, self::FULL_ACCESS_ROLES);
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return match($this->role) {
+            'admin'         => 'Admin Master',
+            'head_of_store' => 'Head of Store',
+            'gm'            => 'General Manager',
+            'hr'            => 'HR',
+            'koordinator'   => 'Koordinator',
+            'user'          => 'Karyawan',
+            default         => ucfirst($this->role),
+        };
+    }
 }

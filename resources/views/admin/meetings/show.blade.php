@@ -11,7 +11,9 @@
             <div>
                 <h2 class="text-xl font-bold text-primary">{{ $meeting->title }}</h2>
                 <p class="text-sm text-gray-500 mt-1">Oleh: {{ $meeting->requester->name }} · {{ $meeting->team->name }}
-                    @if($meeting->secondTeam) + {{ $meeting->secondTeam->name }} @endif
+                    @if($meeting->teams->count())
+                        @foreach($meeting->teams as $t) + {{ $t->name }} @endforeach
+                    @endif
                 </p>
             </div>
             @php

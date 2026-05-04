@@ -42,7 +42,7 @@
         <div class="bg-white rounded-xl shadow-sm">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <h3 class="font-semibold text-primary text-sm">Meeting Mendatang</h3>
-                <a href="{{ route('leader.meetings.index') }}" class="text-xs text-accent hover:underline">Lihat semua</a>
+                <a href="{{ route('koordinator.meetings.index') }}" class="text-xs text-accent hover:underline">Lihat semua</a>
             </div>
             <div class="divide-y divide-gray-50">
                 @forelse($upcomingMeetings as $meeting)
@@ -104,7 +104,7 @@
             <p class="text-white font-semibold">Buat Request Meeting Baru</p>
             <p class="text-blue-200 text-sm mt-1">Ajukan permintaan ruang meeting ke Admin HR</p>
         </div>
-        <a href="{{ route('leader.meetings.create') }}"
+        <a href="{{ route('koordinator.meetings.create') }}"
             class="px-5 py-2.5 bg-white text-primary font-semibold rounded-lg text-sm hover:bg-blue-50 transition flex-shrink-0">
             + Request Meeting
         </a>

@@ -37,7 +37,7 @@ class MomController extends Controller
             'status'      => 'draft',
         ]);
 
-        return redirect()->route('leader.meetings.show', $meeting)->with('success', 'MOM berhasil disimpan sebagai draft.');
+        return redirect()->route('koordinator.meetings.show', $meeting)->with('success', 'MOM berhasil disimpan sebagai draft.');
     }
 
     public function show(Mom $mom) {
@@ -53,7 +53,7 @@ class MomController extends Controller
         if ($mom->status === 'sent') abort(403);
         $request->validate(['summary' => 'required', 'decisions' => 'required', 'action_plan' => 'required', 'pic' => 'required']);
         $mom->update($request->only('summary', 'decisions', 'action_plan', 'pic'));
-        return redirect()->route('leader.meetings.show', $mom->meeting_id)->with('success', 'MOM diperbarui.');
+        return redirect()->route('koordinator.meetings.show', $mom->meeting_id)->with('success', 'MOM diperbarui.');
     }
 
     public function send(Mom $mom) {

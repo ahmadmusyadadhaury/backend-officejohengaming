@@ -26,14 +26,9 @@
     <aside id="sidebar" class="w-64 min-h-screen bg-primary-dark flex flex-col fixed top-0 left-0 z-30 transition-transform duration-300">
         {{-- Logo --}}
         <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-            <div class="w-9 h-9 rounded-xl bg-accent flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-            </div>
+            <img src="{{ asset('images/logo/logo_web.png') }}" alt="Johen Gaming" class="w-9 h-9 rounded-xl object-contain flex-shrink-0">
             <div>
-                <p class="text-white font-bold text-sm leading-tight">Johen Gaming</p>
+                <p class="text-white font-bold text-sm leading-tight">JOHEN GAMING</p>
                 <p class="text-blue-300 text-xs">Meeting Room</p>
             </div>
         </div>
@@ -45,7 +40,7 @@
                 @if(auth()->user()->role === 'admin') bg-accent/30 text-accent-light
                 @elseif(auth()->user()->role === 'leader') bg-secondary/30 text-secondary-light
                 @else bg-green-500/20 text-green-300 @endif">
-                {{ ucfirst(auth()->user()->role) }}
+                {{ auth()->user()->role_label }}
                 @if(auth()->user()->team) — {{ auth()->user()->team->name }} @endif
             </span>
         </div>
@@ -80,6 +75,53 @@
                 <p class="text-xs text-gray-400">@yield('page-subtitle', '')</p>
             </div>
             <div class="flex items-center gap-3">
+                {{-- Notifikasi Undangan --}}
+                @php
+                    $pendingInvitations = \App\Models\MeetingInvitation::where('user_id', auth()->id())
+                        ->where('is_read', false)
+                        ->whereHas('meeting', fn($q) => $q->whereIn('status', ['approved','confirmed','in_progress']))
+                        ->with('meeting')
+                        ->get();
+
+                    $activeInvitations = \App\Models\MeetingInvitation::where('user_id', auth()->id())
+                        ->whereHas('meeting', fn($q) => $q->whereIn('status', ['approved','confirmed','in_progress']))
+                        ->with('meeting')
+                        ->get();
+                @endphp
+
+                @if($activeInvitations->count() > 0)
+                    <div class="relative" onclick="this.querySelector('[data-dropdown]').classList.toggle('hidden')">
+                        <button class="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent text-sm transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Undangan
+                            @if($pendingInvitations->count() > 0)
+                                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                                    {{ $pendingInvitations->count() }}
+                                </span>
+                            @endif
+                        </button>
+                        <div data-dropdown class="hidden absolute right-0 top-10 w-72 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+                            <p class="px-4 py-2 text-xs font-semibold text-gray-400 border-b">Undangan Meeting Aktif</p>
+                            @foreach($activeInvitations as $inv)
+                            <a href="{{ route('invitation.show', $inv) }}"
+                                class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-50 transition">
+                                <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 {{ !$inv->is_read ? 'bg-accent' : 'bg-gray-300' }}"></div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">{{ $inv->meeting->title }}</p>
+                                    <p class="text-xs text-gray-400">{{ $inv->meeting->meeting_date->format('d M Y') }} · {{ substr($inv->meeting->start_time,0,5) }}</p>
+                                    @php
+                                        $sc = ['approved'=>'text-blue-600','confirmed'=>'text-indigo-600','in_progress'=>'text-purple-600','cancelled'=>'text-red-500','rejected'=>'text-red-500'];
+                                    @endphp
+                                    <p class="text-xs {{ $sc[$inv->meeting->status] ?? 'text-gray-400' }}">{{ ucfirst($inv->meeting->status) }}</p>
+                                </div>
+                            </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <a href="{{ route('calendar') }}"
                     class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 hover:bg-primary/10 text-primary text-sm transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

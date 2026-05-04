@@ -17,7 +17,7 @@ class Team extends Model
 
     public function leader()
     {
-        return $this->hasOne(User::class)->where('is_leader', true);
+        return $this->hasOne(User::class)->where('role', 'koordinator');
     }
 
     public function meetings()

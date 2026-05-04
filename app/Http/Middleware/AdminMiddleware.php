@@ -9,7 +9,7 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->check() || auth()->user()->role !== 'admin') {
+        if (!auth()->check() || !auth()->user()->hasFullAccess()) {
             abort(403, 'Akses ditolak.');
         }
         return $next($request);

@@ -22,19 +22,14 @@
 <body class="min-h-screen bg-gradient-to-br from-primary-dark via-primary to-accent flex items-center justify-center p-4">
 
     <div class="w-full max-w-md">
-        {{-- Logo & Title --}}
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur mb-4">
-                <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
+                <img src="{{ asset('images/logo/logo_web.png') }}" alt="Johen Gaming" class="w-12 h-12 object-contain rounded-xl">
             </div>
-            <h1 class="text-2xl font-bold text-white">Johen Gaming</h1>
+            <h1 class="text-2xl font-bold text-white">JOHEN GAMING</h1>
             <p class="text-blue-200 text-sm mt-1">Meeting Room Management System</p>
         </div>
 
-        {{-- Card --}}
         <div class="bg-white rounded-2xl shadow-2xl p-8">
             <h2 class="text-xl font-semibold text-primary mb-6">Masuk ke Sistem</h2>
 
@@ -48,9 +43,9 @@
                 @csrf
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">NIK</label>
-                    <input type="text" name="nik" value="{{ old('nik') }}" required autofocus
-                        placeholder="Masukkan NIK kamu"
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
+                    <input type="text" name="username" value="{{ old('username') }}" required autofocus
+                        placeholder="Masukkan username kamu"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition">
                 </div>
 
@@ -73,7 +68,7 @@
             </form>
 
             <p class="text-center text-xs text-gray-400 mt-6">
-                Belum punya akun? Hubungi Admin HR
+                Belum punya akun? Hubungi Admin
             </p>
         </div>
 

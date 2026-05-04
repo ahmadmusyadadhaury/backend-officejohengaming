@@ -5,7 +5,7 @@
 @section('content')
 <div class="pt-2 max-w-2xl">
     <div class="bg-white rounded-xl shadow-sm p-6">
-        <form method="POST" action="{{ route('leader.mom.update', $mom) }}" class="space-y-4">
+        <form method="POST" action="{{ route('koordinator.mom.update', $mom) }}" class="space-y-4">
             @csrf @method('PUT')
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Ringkasan Pembahasan <span class="text-red-500">*</span></label>
@@ -25,7 +25,7 @@
             </div>
             <div class="flex gap-3 pt-2">
                 <button type="submit" class="px-5 py-2 bg-accent text-white rounded-lg text-sm hover:bg-accent/90 transition">Simpan</button>
-                <a href="{{ route('leader.meetings.show', $mom->meeting_id) }}" class="px-5 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">Batal</a>
+                <a href="{{ route('koordinator.meetings.show', $mom->meeting_id) }}" class="px-5 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">Batal</a>
             </div>
         </form>
     </div>

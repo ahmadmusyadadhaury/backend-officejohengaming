@@ -40,14 +40,14 @@
 
         @if($mom->status === 'draft')
         <div class="flex gap-3 mt-6 pt-4 border-t">
-            <a href="{{ route('leader.mom.edit', $mom) }}" class="px-4 py-2 bg-secondary/10 text-secondary rounded-lg text-sm hover:bg-secondary hover:text-white transition">Edit MOM</a>
-            <form method="POST" action="{{ route('leader.mom.send', $mom) }}">
+            <a href="{{ route('koordinator.mom.edit', $mom) }}" class="px-4 py-2 bg-secondary/10 text-secondary rounded-lg text-sm hover:bg-secondary hover:text-white transition">Edit MOM</a>
+            <form method="POST" action="{{ route('koordinator.mom.send', $mom) }}">
                 @csrf @method('PATCH')
                 <button class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition">Kirim MOM</button>
             </form>
         </div>
         @endif
     </div>
-    <a href="{{ route('leader.meetings.show', $mom->meeting_id) }}" class="inline-block text-sm text-gray-500 hover:text-primary">← Kembali ke Meeting</a>
+    <a href="{{ route('koordinator.meetings.show', $mom->meeting_id) }}" class="inline-block text-sm text-gray-500 hover:text-primary">← Kembali ke Meeting</a>
 </div>
 @endsection

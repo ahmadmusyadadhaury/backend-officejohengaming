@@ -8,22 +8,24 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', function (Request $request) {
         $request->validate([
-            'nik'      => 'required|string',
+            'username' => 'required|string',
             'password' => 'required',
         ]);
 
-        $credentials = [
-            'nik'      => $request->nik,
-            'password' => $request->password,
-        ];
-
-        if (auth()->attempt($credentials, $request->boolean('remember'))) {
+        if (auth()->attempt(['username' => $request->username, 'password' => $request->password], $request->boolean('remember'))) {
             $request->session()->regenerate();
+
             $role = auth()->user()->role;
+
+            // Semua role full access masuk ke admin dashboard
+            if (in_array($role, \App\Models\User::FULL_ACCESS_ROLES)) {
+                return redirect()->route('admin.dashboard');
+            }
+
             return redirect()->route($role . '.dashboard');
         }
 
-        return back()->withErrors(['nik' => 'NIK atau password salah.'])->withInput();
+        return back()->withErrors(['username' => 'Username atau password salah.'])->withInput();
     });
 });
 

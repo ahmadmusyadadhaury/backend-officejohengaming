@@ -15,58 +15,27 @@ class DatabaseSeeder extends Seeder
     {
         // Teams
         $teams = [
-            ['name' => 'Tim Konten', 'description' => 'Tim yang mengelola konten'],
-            ['name' => 'Tim Host Live', 'description' => 'Tim yang mengelola live streaming'],
-            ['name' => 'Tim Marketing', 'description' => 'Tim yang mengelola pemasaran'],
+            ['name' => 'Tim Konten',      'description' => 'Tim yang mengelola konten'],
+            ['name' => 'Tim Host Live',   'description' => 'Tim yang mengelola live streaming'],
+            ['name' => 'Tim Marketing',   'description' => 'Tim yang mengelola pemasaran'],
             ['name' => 'Tim Operasional', 'description' => 'Tim yang mengelola operasional'],
         ];
-
         foreach ($teams as $team) {
             Team::create($team);
         }
 
-        // Admin HR
-        User::create([
-            'nik'       => 'JG-ADMIN-001',
-            'name'      => 'Admin HR',
-            'email'     => 'admin@johengaming.com',
-            'password'  => Hash::make('password'),
-            'role'      => 'admin',
-            'is_active' => true,
-        ]);
-
-        // Admin GM
-        User::create([
-            'nik'       => 'JG-ADMIN-002',
-            'name'      => 'Admin GM',
-            'email'     => 'gm@johengaming.com',
-            'password'  => Hash::make('password'),
-            'role'      => 'admin',
-            'is_active' => true,
-        ]);
-
-        // Leader Tim Konten
-        User::create([
-            'nik'       => 'JG-001',
-            'name'      => 'Kepala Tim Konten',
-            'email'     => 'leader.konten@johengaming.com',
-            'password'  => Hash::make('password'),
-            'role'      => 'leader',
-            'team_id'   => 1,
-            'is_leader' => true,
-            'is_active' => true,
-        ]);
-
-        // User Tim Konten
-        User::create([
-            'nik'       => 'JG-002',
-            'name'      => 'Karyawan Konten 1',
-            'email'     => 'user1@johengaming.com',
-            'password'  => Hash::make('password'),
-            'role'      => 'user',
-            'team_id'   => 1,
-            'is_active' => true,
-        ]);
+        // Admin Master
+        User::create(['name' => 'Admin Master',    'username' => 'admin',    'password' => Hash::make('password'), 'role' => 'admin']);
+        // Head of Store
+        User::create(['name' => 'Head of Store',   'username' => 'headstore','password' => Hash::make('password'), 'role' => 'head_of_store']);
+        // GM
+        User::create(['name' => 'General Manager', 'username' => 'gm',       'password' => Hash::make('password'), 'role' => 'gm']);
+        // HR
+        User::create(['name' => 'HR Manager',      'username' => 'hr',       'password' => Hash::make('password'), 'role' => 'hr']);
+        // Koordinator
+        User::create(['name' => 'Koordinator Konten', 'username' => 'koordinator1', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 1]);
+        // User
+        User::create(['name' => 'Karyawan Konten',    'username' => 'user1',        'password' => Hash::make('password'), 'role' => 'user', 'team_id' => 1]);
 
         // Room
         Room::create([
@@ -79,8 +48,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Assets
-        $assets = ['TV', 'Speaker', 'Proyektor', 'Whiteboard', 'Laptop', 'Kamera'];
-        foreach ($assets as $asset) {
+        foreach (['TV', 'Speaker', 'Proyektor', 'Whiteboard', 'Laptop', 'Kamera'] as $asset) {
             Asset::create(['name' => $asset, 'quantity' => 2, 'is_active' => true]);
         }
     }
