@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
 use App\Models\User;
+use App\Services\MeetingQueueService;
 use Illuminate\Http\Request;
 
 class MeetingController extends Controller
@@ -23,13 +24,19 @@ class MeetingController extends Controller
         return view('admin.meetings.show', compact('meeting'));
     }
 
-    public function approve(Meeting $meeting)
+    public function approve(Meeting $meeting, MeetingQueueService $queue)
     {
-        $meeting->update(['status' => 'approved', 'approved_by' => auth()->id(), 'approved_at' => now()]);
+        $meeting->update([
+            'status'      => 'approved',
+            'approved_by' => auth()->id(),
+            'approved_at' => now(),
+        ]);
 
-        // Undang semua anggota dari semua tim yang terlibat
+        // Tentukan posisi antrian
+        $queue->assignQueue($meeting);
+
+        // Undang semua anggota tim
         $members = User::whereIn('team_id', $meeting->allTeamIds())->get();
-
         foreach ($members as $member) {
             MeetingInvitation::firstOrCreate(
                 ['meeting_id' => $meeting->id, 'user_id' => $member->id],
@@ -37,7 +44,8 @@ class MeetingController extends Controller
             );
         }
 
-        return back()->with('success', 'Meeting disetujui dan undangan dikirim ke semua anggota tim.');
+        $queueLabel = MeetingQueueService::queueLabel($meeting->fresh()->queue_position);
+        return back()->with('success', "Meeting disetujui. Status: {$queueLabel}.");
     }
 
     public function reject(Request $request, Meeting $meeting)

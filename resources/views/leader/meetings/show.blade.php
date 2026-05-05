@@ -26,9 +26,16 @@
                     @foreach($meeting->teams as $t) + {{ $t->name }} @endforeach
                 </p>
             </div>
-            <span class="px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$meeting->status] ?? '' }}">
-                {{ ucfirst($meeting->status) }}
-            </span>
+            <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$meeting->status] ?? '' }}">
+                    {{ ucfirst($meeting->status) }}
+                </span>
+                @if($meeting->queue_position !== null)
+                    <span class="px-3 py-1 rounded-full text-sm font-medium {{ \App\Services\MeetingQueueService::queueColor($meeting->queue_position) }}">
+                        {{ \App\Services\MeetingQueueService::queueLabel($meeting->queue_position) }}
+                    </span>
+                @endif
+            </div>
         </div>
         <div class="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-100">
             <div><p class="text-xs text-gray-400">Tanggal</p><p class="text-sm font-medium">{{ $meeting->meeting_date->format('d M Y') }}</p></div>

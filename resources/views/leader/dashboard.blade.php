@@ -12,7 +12,7 @@
 <div class="space-y-6 pt-2">
 
     {{-- Stats --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         @php
             $cards = [
                 ['label' => 'Menunggu',   'value' => $stats['pending'],   'color' => 'bg-yellow-500', 'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],

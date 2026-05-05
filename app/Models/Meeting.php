@@ -10,7 +10,7 @@ class Meeting extends Model
         'title', 'room_id', 'requested_by', 'team_id',
         'why', 'what', 'meeting_date', 'start_time', 'end_time', 'actual_end_time',
         'how_expected', 'file_path',
-        'status', 'reject_reason', 'is_weekly', 'weekly_day', 'weekly_time',
+        'status', 'reject_reason', 'queue_position', 'is_weekly', 'weekly_day', 'weekly_time',
         'approved_by', 'approved_at',
     ];
 

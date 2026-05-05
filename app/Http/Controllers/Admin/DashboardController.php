@@ -37,6 +37,12 @@ class DashboardController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings'));
+        // Undangan aktif untuk gm, head_of_store, hr
+        $myInvitations = \App\Models\MeetingInvitation::where('user_id', auth()->id())
+            ->whereHas('meeting', fn($q) => $q->whereIn('status', ['approved','confirmed','in_progress']))
+            ->with('meeting.room', 'meeting.team')
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'myInvitations'));
     }
 }

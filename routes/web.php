@@ -14,6 +14,8 @@ use App\Http\Controllers\Leader\MomController;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\WeeklySessionController;
+use App\Http\Controllers\RealtimeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,8 +32,6 @@ Route::get('/', function () {
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
-    Route::resource('users', UserController::class);
-    Route::resource('admins', AdminAccountController::class);
     Route::resource('teams', TeamController::class);
     Route::resource('rooms', AdminRoomController::class);
     Route::resource('assets', AssetController::class);
@@ -40,6 +40,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('meetings/{meeting}/approve', [AdminMeetingController::class, 'approve'])->name('meetings.approve');
     Route::patch('meetings/{meeting}/reject', [AdminMeetingController::class, 'reject'])->name('meetings.reject');
     Route::resource('weekly-meetings', WeeklyMeetingController::class);
+});
+
+// Kelola Akun — hanya Admin Master dan HR
+Route::middleware(['auth', 'manage_accounts'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', UserController::class);
+    Route::resource('admins', AdminAccountController::class);
 });
 
 // Koordinator Routes
@@ -62,6 +68,15 @@ Route::middleware(['auth', 'role:user,koordinator,admin,head_of_store,gm,hr'])->
 Route::middleware('auth')->group(function () {
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
+    Route::get('/realtime/meetings', [RealtimeController::class, 'meetings'])->name('realtime.meetings');
+    Route::get('/realtime/weekly', [RealtimeController::class, 'weeklySessions'])->name('realtime.weekly');
     Route::get('/undangan/{invitation}', [InvitationController::class, 'show'])->name('invitation.show');
     Route::get('/undangan', [InvitationController::class, 'index'])->name('invitation.index');
+
+    // Weekly Meeting Sessions
+    Route::get('/weekly-undangan', [WeeklySessionController::class, 'index'])->name('weekly.index');
+    Route::get('/weekly-undangan/{invitation}', [WeeklySessionController::class, 'show'])->name('weekly.show');
+    Route::post('/weekly-session/{session}/contribute', [WeeklySessionController::class, 'contribute'])->name('weekly.contribute');
+    Route::post('/weekly-session/{session}/extend', [WeeklySessionController::class, 'extend'])->name('weekly.extend');
+    Route::post('/weekly-session/{session}/complete', [WeeklySessionController::class, 'complete'])->name('weekly.complete');
 });

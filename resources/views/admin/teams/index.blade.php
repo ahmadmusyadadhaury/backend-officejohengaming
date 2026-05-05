@@ -8,7 +8,8 @@
         <a href="{{ route('admin.teams.create') }}" class="px-4 py-2 bg-accent text-white rounded-lg text-sm hover:bg-accent/90 transition">+ Tambah Tim</a>
     </div>
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
+        <div class="overflow-x-auto">
+        <table class="w-full text-sm min-w-[600px]">
             <thead class="bg-primary text-white">
                 <tr>
                     <th class="px-4 py-3 text-left">Nama Tim</th>
@@ -44,6 +45,8 @@
                 @endforelse
             </tbody>
         </table>
+        </table>
+        </div>
         <div class="px-4 py-3 border-t">{{ $teams->links() }}</div>
     </div>
 </div>

@@ -43,6 +43,20 @@
                 </div>
             </div>
 
+            {{-- Tim Utama: hanya untuk head_of_store dan gm --}}
+            @if(in_array(auth()->user()->role, ['head_of_store', 'gm']))
+            <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tim Utama <span class="text-red-500">*</span></label>
+                <select name="main_team_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                    <option value="">Pilih Tim Utama</option>
+                    @foreach($teams as $team)
+                        <option value="{{ $team->id }}" {{ old('main_team_id') == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
+                    @endforeach
+                </select>
+                <p class="text-xs text-gray-400 mt-1">Tim utama yang akan menjadi penyelenggara meeting.</p>
+            </div>
+            @endif
+
             {{-- Tambah Tim --}}
             <div class="border-t pt-4">
                 <div class="flex items-center justify-between mb-3">
