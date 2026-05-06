@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>@yield('title', 'Johen Gaming') — Meeting Room</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,6 +18,24 @@
             }
         }
     </script>
+    <style>
+        /* iPhone Safe Area */
+        .sidebar-safe {
+            padding-bottom: env(safe-area-inset-bottom, 16px);
+        }
+        .topbar-safe {
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+        /* Fix Safari 100vh bug */
+        .min-h-screen-safe {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+        /* Fix Safari flexbox */
+        body {
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
     @stack('styles')
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -60,7 +78,7 @@
         </nav>
 
         {{-- Logout --}}
-        <div class="px-4 py-4 border-t border-white/10">
+        <div class="px-4 py-4 border-t border-white/10 sidebar-safe">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-red-300 hover:bg-red-500/10 transition text-sm">
@@ -74,9 +92,9 @@
     </aside>
 
     {{-- Main Content --}}
-    <div class="lg:ml-64 flex flex-col min-h-screen">
+    <div class="lg:ml-64 flex flex-col min-h-screen-safe">
         {{-- Topbar --}}
-        <header class="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 flex items-center justify-between sticky top-0 z-20">
+        <header class="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 flex items-center justify-between sticky top-0 z-20 topbar-safe">
             <div class="flex items-center gap-3">
                 {{-- Hamburger mobile --}}
                 <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
