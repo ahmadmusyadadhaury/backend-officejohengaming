@@ -3,28 +3,25 @@
 @section('page-title', 'Tambah Aset Baru')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
-<div class="pt-2 max-w-lg">
-    <div class="bg-white rounded-xl shadow-sm p-6">
+<div class="pt-2 max-w-lg animate-fade-in">
+    <div class="gaming-card p-6">
         <form method="POST" action="{{ route('admin.assets.store') }}" class="space-y-4">
             @csrf
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Aset <span class="text-red-500">*</span></label>
-                <input type="text" name="name" value="{{ old('name') }}" required placeholder="Contoh: Proyektor"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                <label class="gaming-label">Nama Aset <span style="color:#f87171;">*</span></label>
+                <input type="text" name="name" value="{{ old('name') }}" required placeholder="Contoh: Proyektor" class="gaming-input">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                <textarea name="description" rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">{{ old('description') }}</textarea>
+                <label class="gaming-label">Deskripsi</label>
+                <textarea name="description" rows="2" class="gaming-input" style="resize:vertical;">{{ old('description') }}</textarea>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah <span class="text-red-500">*</span></label>
-                <input type="number" name="quantity" value="{{ old('quantity', 1) }}" required min="1"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                <label class="gaming-label">Jumlah <span style="color:#f87171;">*</span></label>
+                <input type="number" name="quantity" value="{{ old('quantity', 1) }}" required min="1" class="gaming-input">
             </div>
-            <div class="flex gap-3 pt-2">
-                <button type="submit" class="px-5 py-2 bg-accent text-white rounded-lg text-sm hover:bg-accent/90 transition">Simpan</button>
-                <a href="{{ route('admin.assets.index') }}" class="px-5 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">Batal</a>
+            <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <a href="{{ route('admin.assets.index') }}" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>

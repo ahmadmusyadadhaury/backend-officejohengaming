@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meeting;
+use App\Models\MeetingInvitation;
+use App\Models\WeeklyMeetingInvitation;
 use App\Models\WeeklyMeetingSession;
 use App\Services\MeetingQueueService;
 use App\Services\WeeklyMeetingService;
@@ -87,5 +89,73 @@ class RealtimeController extends Controller
             });
 
         return response()->json($sessions);
+    }
+
+    public function notifCount()
+    {
+        $activeInvitations = MeetingInvitation::where('user_id', auth()->id())
+            ->whereHas('meeting', function($q) {
+                $q->whereIn('status', ['approved','confirmed','in_progress'])
+                  ->where(function($q2) {
+                      $q2->where('meeting_date', '>', today())
+                         ->orWhere(function($q3) {
+                             $q3->where('meeting_date', today())
+                                ->where('end_time', '>', Carbon::now()->format('H:i:s'));
+                         });
+                  });
+            })->count();
+
+        $activeWeeklyInvitations = WeeklyMeetingInvitation::where('user_id', auth()->id())
+            ->whereHas('session', fn($q) => $q->whereIn('status', ['active','extended']))
+            ->count();
+
+        $pendingInvitations = MeetingInvitation::where('user_id', auth()->id())
+            ->where('is_read', false)
+            ->whereHas('meeting', function($q) {
+                $q->whereIn('status', ['approved','confirmed','in_progress'])
+                  ->where(function($q2) {
+                      $q2->where('meeting_date', '>', today())
+                         ->orWhere(function($q3) {
+                             $q3->where('meeting_date', today())
+                                ->where('end_time', '>', Carbon::now()->format('H:i:s'));
+                         });
+                  });
+            })->count();
+
+        $pendingWeeklyInvitations = WeeklyMeetingInvitation::where('user_id', auth()->id())
+            ->where('is_read', false)
+            ->whereHas('session', fn($q) => $q->whereIn('status', ['active','extended']))
+            ->count();
+
+        return response()->json([
+            'total_active'  => $activeInvitations + $activeWeeklyInvitations,
+            'total_pending' => $pendingInvitations + $pendingWeeklyInvitations,
+        ]);
+    }
+
+    public function dashboardStats()
+    {
+        $role = auth()->user()->role;
+
+        if (in_array($role, \App\Models\User::FULL_ACCESS_ROLES)) {
+            // Admin stats
+            return response()->json([
+                'pending'        => Meeting::where('status', 'pending')->count(),
+                'today_meetings' => Meeting::whereDate('meeting_date', today())
+                                        ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
+                                        ->count(),
+            ]);
+        }
+
+        if ($role === 'koordinator' || in_array($role, ['head_of_store', 'gm', 'hr'])) {
+            // Leader stats
+            return response()->json([
+                'pending'   => Meeting::where('requested_by', auth()->id())->where('status', 'pending')->count(),
+                'approved'  => Meeting::where('requested_by', auth()->id())->where('status', 'approved')->count(),
+                'completed' => Meeting::where('requested_by', auth()->id())->where('status', 'completed')->count(),
+            ]);
+        }
+
+        return response()->json([]);
     }
 }

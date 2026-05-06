@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
     Route::get('/realtime/meetings', [RealtimeController::class, 'meetings'])->name('realtime.meetings');
     Route::get('/realtime/weekly', [RealtimeController::class, 'weeklySessions'])->name('realtime.weekly');
+    Route::get('/realtime/notif', [RealtimeController::class, 'notifCount'])->name('realtime.notif');
+    Route::get('/realtime/dashboard', [RealtimeController::class, 'dashboardStats'])->name('realtime.dashboard');
     Route::get('/undangan/{invitation}', [InvitationController::class, 'show'])->name('invitation.show');
     Route::get('/undangan', [InvitationController::class, 'index'])->name('invitation.index');
 

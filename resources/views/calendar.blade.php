@@ -45,14 +45,24 @@
             border-radius: 1rem 1rem 0 0;
             max-height: 90vh;
             overflow-y: auto;
+            background: var(--bg-surface);
         }
 
-        /* FullCalendar mobile tweaks */
+        /* FullCalendar gaming theme */
+        .fc { color: var(--text-primary); }
         .fc .fc-toolbar { flex-wrap: wrap; gap: 0.5rem; }
-        .fc .fc-toolbar-title { font-size: 1rem !important; }
-        .fc .fc-button { padding: 0.25rem 0.5rem !important; font-size: 0.75rem !important; }
+        .fc .fc-toolbar-title { font-size: 1rem !important; font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--text-primary); }
+        .fc .fc-button { padding: 0.25rem 0.5rem !important; font-size: 0.75rem !important; background: var(--color-accent) !important; border-color: var(--color-accent) !important; }
+        .fc .fc-button:hover { opacity: 0.85 !important; }
+        .fc .fc-button-active { background: var(--color-primary) !important; border-color: var(--color-primary) !important; }
         .fc .fc-event-title { font-size: 0.7rem; }
         .fc .fc-timegrid-slot { height: 2rem !important; }
+        .fc .fc-col-header-cell { background: var(--bg-surface-2); color: var(--text-secondary); }
+        .fc td, .fc th { border-color: var(--border-color) !important; }
+        .fc .fc-list-day-cushion { background: var(--bg-surface-2) !important; }
+        .fc .fc-list-event:hover td { background: rgba(124,58,237,0.05) !important; }
+        .fc .fc-daygrid-day-number, .fc .fc-list-day-text, .fc .fc-list-day-side-text { color: var(--text-secondary); }
+        .fc .fc-day-today { background: rgba(124,58,237,0.05) !important; }
 
         @media (min-width: 640px) {
             .fc .fc-toolbar-title { font-size: 1.25rem !important; }
@@ -67,89 +77,71 @@
 <div class="pt-2 space-y-3">
 
     {{-- Filter & Legenda --}}
-    <div class="bg-white rounded-xl shadow-sm p-3 lg:p-4">
-        {{-- Filter --}}
+    <div class="gaming-card p-3 lg:p-4">
         <div class="flex flex-wrap gap-2 mb-3">
-            <input type="date" id="filter-date"
-                class="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-            <button onclick="filterByDate()"
-                class="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:bg-primary-light transition whitespace-nowrap">
-                Cari
-            </button>
-            <button onclick="resetFilter()"
-                class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition whitespace-nowrap">
-                Reset
-            </button>
+            <input type="date" id="filter-date" class="gaming-input flex-1 min-w-0">
+            <button onclick="filterByDate()" class="btn btn-primary btn-sm whitespace-nowrap">Cari</button>
+            <button onclick="resetFilter()" class="btn btn-secondary btn-sm whitespace-nowrap">Reset</button>
         </div>
-
-        {{-- Legenda --}}
-        <div class="flex flex-wrap gap-x-3 gap-y-1.5 text-xs text-gray-500">
-            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Di Booking</span>
-            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block"></span> Berlangsung</span>
-            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span> Antrian</span>
-            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-400 inline-block"></span> Selesai</span>
-            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-600 inline-block"></span> Mingguan</span>
-            @if($lastUpdate ?? false)
-            <span id="last-update" class="ml-auto text-gray-400"></span>
-            @else
-            <span id="last-update" class="ml-auto text-gray-400 hidden sm:block"></span>
-            @endif
+        <div class="flex flex-wrap gap-x-4 gap-y-1.5" style="font-size:0.75rem;color:var(--text-muted);">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#3b82f6;"></span> Di Booking</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#7c3aed;"></span> Berlangsung</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#f97316;"></span> Antrian</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#6b7280;"></span> Selesai</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:#0891b2;"></span> Mingguan</span>
+            <span id="last-update" class="ml-auto hidden sm:block" style="color:var(--text-muted);"></span>
         </div>
     </div>
 
     {{-- Kalender --}}
-    <div class="bg-white rounded-xl shadow-sm p-2 sm:p-4">
+    <div class="gaming-card p-2 sm:p-4">
         <div id="calendar"></div>
     </div>
 </div>
 
 {{-- Event Detail Modal (bottom sheet di mobile, center di desktop) --}}
 <div id="event-modal">
-    <div id="modal-card" class="bg-white shadow-2xl w-full sm:max-w-md overflow-hidden">
-        {{-- Handle bar mobile --}}
+    <div id="modal-card" class="shadow-2xl w-full sm:max-w-md overflow-hidden" style="background:var(--bg-surface);">
         <div class="flex justify-center pt-3 pb-1 sm:hidden">
-            <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+            <div class="w-10 h-1 rounded-full" style="background:var(--border-color);"></div>
         </div>
 
         <div id="modal-header" class="p-4 sm:p-5 text-white">
-            <p class="text-xs font-medium opacity-80 mb-1">Detail Meeting</p>
-            <h3 id="modal-title" class="font-bold text-base sm:text-lg leading-tight"></h3>
+            <p class="text-xs font-medium mb-1" style="opacity:0.7;">Detail Meeting</p>
+            <h3 id="modal-title" class="font-gaming font-bold text-base sm:text-lg leading-tight"></h3>
         </div>
 
         <div class="p-4 sm:p-5 space-y-3">
             <div class="grid grid-cols-2 gap-2 sm:gap-3">
-                <div class="bg-gray-50 rounded-lg p-2.5 sm:p-3">
-                    <p class="text-xs text-gray-400 mb-0.5">Ruangan</p>
-                    <p id="modal-room" class="text-sm font-semibold text-primary"></p>
+                <div class="gaming-card-flat p-2.5 sm:p-3">
+                    <p class="text-xs mb-0.5" style="color:var(--text-muted);">Ruangan</p>
+                    <p id="modal-room" class="text-sm font-semibold" style="color:var(--text-primary);"></p>
                 </div>
-                <div class="bg-gray-50 rounded-lg p-2.5 sm:p-3">
-                    <p class="text-xs text-gray-400 mb-0.5">Tim</p>
-                    <p id="modal-team" class="text-sm font-semibold text-primary"></p>
+                <div class="gaming-card-flat p-2.5 sm:p-3">
+                    <p class="text-xs mb-0.5" style="color:var(--text-muted);">Tim</p>
+                    <p id="modal-team" class="text-sm font-semibold" style="color:var(--text-primary);"></p>
                 </div>
-                <div class="bg-gray-50 rounded-lg p-2.5 sm:p-3">
-                    <p class="text-xs text-gray-400 mb-0.5">Jam Mulai</p>
-                    <p id="modal-start" class="text-sm font-semibold text-primary"></p>
+                <div class="gaming-card-flat p-2.5 sm:p-3">
+                    <p class="text-xs mb-0.5" style="color:var(--text-muted);">Jam Mulai</p>
+                    <p id="modal-start" class="text-sm font-semibold" style="color:var(--text-primary);"></p>
                 </div>
-                <div class="bg-gray-50 rounded-lg p-2.5 sm:p-3">
-                    <p class="text-xs text-gray-400 mb-0.5" id="modal-end-label">Jam Selesai</p>
-                    <p id="modal-end" class="text-sm font-semibold text-primary"></p>
+                <div class="gaming-card-flat p-2.5 sm:p-3">
+                    <p class="text-xs mb-0.5" id="modal-end-label" style="color:var(--text-muted);">Jam Selesai</p>
+                    <p id="modal-end" class="text-sm font-semibold" style="color:var(--text-primary);"></p>
                 </div>
             </div>
 
-            <div id="modal-actual-wrap" class="hidden bg-green-50 border border-green-200 rounded-lg p-2.5 sm:p-3">
-                <p class="text-xs text-green-600 mb-0.5">Jam Selesai Aktual</p>
-                <p id="modal-actual" class="text-sm font-bold text-green-700"></p>
+            <div id="modal-actual-wrap" class="hidden p-2.5 sm:p-3 rounded-lg" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);">
+                <p class="text-xs mb-0.5" style="color:#34d399;">Jam Selesai Aktual</p>
+                <p id="modal-actual" class="text-sm font-bold" style="color:#34d399;"></p>
             </div>
 
-            <div class="bg-gray-50 rounded-lg p-2.5 sm:p-3">
-                <p class="text-xs text-gray-400 mb-1">Status</p>
-                <span id="modal-rt-status" class="px-3 py-1 rounded-full text-xs font-semibold"></span>
+            <div class="gaming-card-flat p-2.5 sm:p-3">
+                <p class="text-xs mb-1" style="color:var(--text-muted);">Status</p>
+                <span id="modal-rt-status" class="badge"></span>
             </div>
 
-            <button onclick="closeModal()"
-                class="w-full py-2.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition font-medium">
-                Tutup
-            </button>
+            <button onclick="closeModal()" class="btn btn-secondary w-full">Tutup</button>
         </div>
     </div>
 </div>
@@ -230,12 +222,12 @@
 
     function getRtStyle(label) {
         if (!label) return '';
-        if (label.includes('Berlangsung')) return 'background:#f3e8ff;color:#7c3aed';
-        if (label.includes('Antrian'))     return 'background:#ffedd5;color:#c2410c';
-        if (label.includes('Di Booking'))  return 'background:#dbeafe;color:#1d4ed8';
-        if (label.includes('Selesai'))     return 'background:#f3f4f6;color:#374151';
-        if (label.includes('Mingguan'))    return 'background:#cffafe;color:#0e7490';
-        return 'background:#f3f4f6;color:#374151';
+        if (label.includes('Berlangsung')) return 'background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);';
+        if (label.includes('Antrian'))     return 'background:rgba(249,115,22,0.15);color:#fb923c;border:1px solid rgba(249,115,22,0.3);';
+        if (label.includes('Di Booking'))  return 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);';
+        if (label.includes('Selesai'))     return 'background:rgba(148,163,184,0.15);color:#94a3b8;border:1px solid rgba(148,163,184,0.3);';
+        if (label.includes('Mingguan'))    return 'background:rgba(0,212,255,0.15);color:#00d4ff;border:1px solid rgba(0,212,255,0.3);';
+        return 'background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);';
     }
 
     function refreshRealtimeStatus() {

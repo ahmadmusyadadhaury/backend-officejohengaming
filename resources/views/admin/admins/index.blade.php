@@ -3,67 +3,71 @@
 @section('page-title', 'Kelola Admin')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
-<div class="pt-2">
-    <div class="flex justify-between items-center mb-4">
-        <p class="text-sm text-gray-500">Total: {{ $admins->total() }} akun admin</p>
-        <a href="{{ route('admin.admins.create') }}" class="px-4 py-2 bg-accent text-white rounded-lg text-sm hover:bg-accent/90 transition">+ Tambah Admin</a>
+<div class="pt-2 space-y-4 animate-fade-in">
+    <div class="flex justify-between items-center">
+        <p class="text-sm" style="color:var(--text-muted);">Total: <span style="color:var(--text-primary);font-weight:600;">{{ $admins->total() }}</span> akun admin</p>
+        <a href="{{ route('admin.admins.create') }}" class="btn btn-primary btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Tambah Admin
+        </a>
     </div>
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="gaming-card overflow-hidden">
         <div class="overflow-x-auto">
-        <table class="w-full text-sm min-w-[500px]">
-            <thead class="bg-primary text-white">
-                <tr>
-                    <th class="px-4 py-3 text-left">Nama</th>
-                    <th class="px-4 py-3 text-left">Username</th>
-                    <th class="px-4 py-3 text-left">Role</th>
-                    <th class="px-4 py-3 text-left">Status</th>
-                    <th class="px-4 py-3 text-left">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($admins as $admin)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 font-medium">{{ $admin->name }}</td>
-                    <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ $admin->username }}</td>
-                    <td class="px-4 py-3">
-                        @php
-                            $roleColor = match($admin->role) {
-                                'admin'         => 'bg-purple-100 text-purple-700',
-                                'head_of_store' => 'bg-blue-100 text-blue-700',
-                                'gm'            => 'bg-indigo-100 text-indigo-700',
-                                'hr'            => 'bg-green-100 text-green-700',
-                                default         => 'bg-gray-100 text-gray-600',
-                            };
-                        @endphp
-                        <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $roleColor }}">
-                            {{ $admin->role_label }}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3">
-                        <span class="px-2 py-0.5 rounded-full text-xs {{ $admin->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                            {{ $admin->is_active ? 'Aktif' : 'Nonaktif' }}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 flex gap-2">
-                        @if($admin->id !== auth()->id())
-                            <a href="{{ route('admin.admins.edit', $admin) }}" class="px-3 py-1 bg-secondary/10 text-secondary rounded text-xs hover:bg-secondary hover:text-white transition">Edit</a>
-                            <form method="POST" action="{{ route('admin.admins.destroy', $admin) }}" onsubmit="return confirm('Hapus akun admin ini?')">
-                                @csrf @method('DELETE')
-                                <button class="px-3 py-1 bg-red-50 text-red-600 rounded text-xs hover:bg-red-600 hover:text-white transition">Hapus</button>
-                            </form>
-                        @else
-                            <span class="text-xs text-gray-400 italic">Akun kamu</span>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">Belum ada akun admin.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-        </table>
+            <table class="gaming-table min-w-[500px]">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($admins as $admin)
+                    <tr>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $admin->name }}</td>
+                        <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;">{{ $admin->username }}</code></td>
+                        <td>
+                            @php
+                                $roleClass = match($admin->role) {
+                                    'admin'         => 'badge-primary',
+                                    'head_of_store' => 'badge-blue',
+                                    'gm'            => 'badge-cyan',
+                                    'hr'            => 'badge-green',
+                                    default         => 'badge-gray',
+                                };
+                            @endphp
+                            <span class="badge {{ $roleClass }}">{{ $admin->role_label }}</span>
+                        </td>
+                        <td>
+                            <span class="badge {{ $admin->is_active ? 'badge-green' : 'badge-red' }}">
+                                {{ $admin->is_active ? 'Aktif' : 'Nonaktif' }}
+                            </span>
+                        </td>
+                        <td>
+                            @if($admin->id !== auth()->id())
+                                <div class="flex gap-2">
+                                    <a href="{{ route('admin.admins.edit', $admin) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                    <form method="POST" action="{{ route('admin.admins.destroy', $admin) }}" onsubmit="return confirm('Hapus akun admin ini?')">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                </div>
+                            @else
+                                <span class="badge badge-gray">Akun kamu</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada akun admin.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-        <div class="px-4 py-3 border-t">{{ $admins->links() }}</div>
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $admins->links() }}</div>
     </div>
 </div>
 @endsection

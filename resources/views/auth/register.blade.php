@@ -1,51 +1,88 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Register — Johen Gaming Meeting Room</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ asset('css/gaming.css') }}">
+</head>
+<body class="login-bg grid-pattern flex items-center justify-center min-h-screen p-4">
 
-@section('content')
-    <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-6 text-center">Register</h2>
+    <div style="width:6px;height:6px;background:rgba(124,58,237,0.4);top:15%;left:10%;position:absolute;border-radius:50%;animation:float 6s ease-in-out infinite;"></div>
+    <div style="width:4px;height:4px;background:rgba(0,212,255,0.4);top:70%;left:5%;position:absolute;border-radius:50%;animation:float 6s ease-in-out infinite;animation-delay:1s;"></div>
+    <div style="width:8px;height:8px;background:rgba(124,58,237,0.2);top:30%;right:8%;position:absolute;border-radius:50%;animation:float 6s ease-in-out infinite;animation-delay:2s;"></div>
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
-
-            <div class="mb-4">
-                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                @error('name')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+    <div class="w-full max-w-sm relative z-10">
+        <div class="text-center mb-8 animate-fade-in">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 relative animate-float"
+                style="background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(0,212,255,0.1));border:1px solid rgba(124,58,237,0.3);">
+                <img src="{{ asset('images/logo/logo_web.png') }}" alt="Johen Gaming" class="w-12 h-12 object-contain">
+                <div class="absolute inset-0 rounded-2xl animate-glow-pulse" style="box-shadow:0 0 20px rgba(124,58,237,0.4);"></div>
             </div>
+            <h1 class="font-gaming text-3xl font-bold tracking-wider"
+                style="background:linear-gradient(135deg,#e2e8f0,#a78bfa,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+                JOHEN GAMING
+            </h1>
+            <p style="color:var(--text-muted);font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px;">
+                Meeting Room System
+            </p>
+        </div>
 
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                @error('email')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+        <div class="login-card p-8">
+            <h2 class="font-gaming text-xl font-semibold mb-1" style="color:var(--text-primary);">Buat Akun</h2>
+            <p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:1.5rem;">Daftarkan akun baru kamu</p>
+
+            @if($errors->any())
+            <div class="mb-4 p-3 rounded-lg flex items-start gap-2"
+                style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;font-size:0.8rem;">
+                <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <ul class="space-y-0.5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
+            @endif
 
-            <div class="mb-4">
-                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                <input type="password" name="password" id="password" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                @error('password')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-4">
-                <label for="password_confirmation" class="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" required
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-
-            <div class="flex items-center justify-between">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Register
+            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="gaming-label">Nama <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="name" value="{{ old('name') }}" required autofocus class="gaming-input" placeholder="Nama lengkap">
+                </div>
+                <div>
+                    <label class="gaming-label">Email <span style="color:#f87171;">*</span></label>
+                    <input type="email" name="email" value="{{ old('email') }}" required class="gaming-input" placeholder="email@example.com">
+                </div>
+                <div>
+                    <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
+                    <input type="password" name="password" required class="gaming-input" placeholder="Minimal 8 karakter">
+                </div>
+                <div>
+                    <label class="gaming-label">Konfirmasi Password <span style="color:#f87171;">*</span></label>
+                    <input type="password" name="password_confirmation" required class="gaming-input" placeholder="Ulangi password">
+                </div>
+                <button type="submit" class="btn btn-primary w-full" style="padding:0.75rem;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                    DAFTAR
                 </button>
-                <a href="{{ route('login') }}" class="text-blue-500 hover:text-blue-700 text-sm">Already have an account?</a>
-            </div>
-        </form>
+            </form>
+
+            <div class="gaming-divider" style="margin-top:1.5rem;"></div>
+            <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);">
+                Sudah punya akun?
+                <a href="{{ route('login') }}" style="color:var(--color-accent-light);font-weight:600;">Masuk di sini</a>
+            </p>
+        </div>
+
+        <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-top:1.5rem;opacity:0.6;">
+            &copy; {{ date('Y') }} Johen Gaming. All rights reserved.
+        </p>
     </div>
-@endsection
+</body>
+</html>

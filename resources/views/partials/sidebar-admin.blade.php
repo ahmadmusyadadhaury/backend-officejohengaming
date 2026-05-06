@@ -19,14 +19,14 @@
                             ->where('end_time', '>', \Carbon\Carbon::now()->format('H:i:s'));
                      });
               });
-        })
-        ->exists();
+        })->exists();
 @endphp
+
+<p class="sidebar-section-label">Menu Utama</p>
 
 @foreach($adminMenus as $menu)
     <a href="{{ route($menu['route']) }}"
-        class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition
-            {{ request()->routeIs($menu['route'] . '*') ? 'bg-accent text-white font-medium' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+        class="sidebar-item {{ request()->routeIs($menu['route'] . '*') ? 'active' : '' }}">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $menu['icon'] }}"/>
         </svg>
@@ -34,19 +34,18 @@
     </a>
 @endforeach
 
-{{-- Request Meeting: untuk head_of_store dan gm --}}
-@if(in_array(auth()->user()->role, ['head_of_store', 'gm']))
+{{-- Request Meeting: untuk head_of_store, gm, dan hr --}}
+@if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr']))
+    <p class="sidebar-section-label">Meeting</p>
     <a href="{{ route('koordinator.meetings.index') }}"
-        class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition
-            {{ request()->routeIs('koordinator.meetings.*') ? 'bg-accent text-white font-medium' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+        class="sidebar-item {{ request()->routeIs('koordinator.meetings.index') ? 'active' : '' }}">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
         Meeting Saya
     </a>
     <a href="{{ route('koordinator.meetings.create') }}"
-        class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition
-            {{ request()->routeIs('koordinator.meetings.create') ? 'bg-accent text-white font-medium' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+        class="sidebar-item {{ request()->routeIs('koordinator.meetings.create') ? 'active' : '' }}">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
@@ -54,8 +53,7 @@
     </a>
     @if($hasInvitations)
         <a href="{{ route('invitation.index') }}"
-            class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition
-                {{ request()->routeIs('invitation.*') ? 'bg-accent text-white font-medium' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+            class="sidebar-item {{ request()->routeIs('invitation.*') ? 'active' : '' }}">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
@@ -64,11 +62,11 @@
     @endif
 @endif
 
-{{-- Kelola Akun & Admin: hanya admin dan hr --}}
+{{-- Kelola Akun & Admin --}}
 @if(in_array(auth()->user()->role, ['admin', 'hr']))
+    <p class="sidebar-section-label">Manajemen</p>
     <a href="{{ route('admin.users.index') }}"
-        class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition
-            {{ request()->routeIs('admin.users.*') ? 'bg-accent text-white font-medium' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+        class="sidebar-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
         </svg>
@@ -76,11 +74,9 @@
     </a>
 @endif
 
-{{-- Kelola Admin: hanya admin master --}}
 @if(auth()->user()->role === 'admin')
     <a href="{{ route('admin.admins.index') }}"
-        class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition
-            {{ request()->routeIs('admin.admins.*') ? 'bg-accent text-white font-medium' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+        class="sidebar-item {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
         </svg>

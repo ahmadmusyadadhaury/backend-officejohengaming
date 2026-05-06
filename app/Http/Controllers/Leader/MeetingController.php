@@ -51,12 +51,34 @@ class MeetingController extends Controller
 
         $room = Room::findOrFail($request->room_id);
 
-        // Tidak ada validasi konflik — sistem antrian yang mengatur
-        $activeMeeting = Meeting::where('requested_by', auth()->id())
-            ->whereIn('status', ['pending', 'approved', 'confirmed', 'in_progress'])
+        // Cek apakah ruangan sudah dibooking orang lain di waktu yang sama
+        $roomConflict = Meeting::where('room_id', $request->room_id)
+            ->where('meeting_date', $request->meeting_date)
+            ->where('requested_by', '!=', auth()->id())
+            ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
+            ->where('queue_position', 0)
+            ->where(function ($q) use ($request) {
+                $q->where('start_time', '<', $request->end_time)
+                  ->where('end_time', '>', $request->start_time);
+            })
             ->exists();
-        if ($activeMeeting) {
-            return back()->withErrors(['title' => 'Kamu masih memiliki meeting aktif.'])->withInput();
+
+        if ($roomConflict) {
+            return back()->withErrors(['room_id' => 'Tidak dapat memperpanjang waktu dikarenakan sudah ada yang booking di waktu tersebut.'])->withInput();
+        }
+
+        // Cek konflik waktu milik sendiri di hari yang sama
+        $conflictSameTime = Meeting::where('requested_by', auth()->id())
+            ->where('meeting_date', $request->meeting_date)
+            ->whereIn('status', ['pending', 'approved', 'confirmed', 'in_progress'])
+            ->where(function ($q) use ($request) {
+                $q->where('start_time', '<', $request->end_time)
+                  ->where('end_time', '>', $request->start_time);
+            })
+            ->exists();
+
+        if ($conflictSameTime) {
+            return back()->withErrors(['title' => 'Kamu sudah memiliki meeting di waktu yang sama.'])->withInput();
         }
 
         $filePath = null;

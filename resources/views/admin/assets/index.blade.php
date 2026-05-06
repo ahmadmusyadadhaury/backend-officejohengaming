@@ -3,46 +3,57 @@
 @section('page-title', 'Kelola Aset')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
-<div class="pt-2">
-    <div class="flex justify-end mb-4">
-        <a href="{{ route('admin.assets.create') }}" class="px-4 py-2 bg-accent text-white rounded-lg text-sm hover:bg-accent/90 transition">+ Tambah Aset</a>
+<div class="pt-2 space-y-4 animate-fade-in">
+    <div class="flex justify-end">
+        <a href="{{ route('admin.assets.create') }}" class="btn btn-primary btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Tambah Aset
+        </a>
     </div>
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
-            <thead class="bg-primary text-white">
-                <tr>
-                    <th class="px-4 py-3 text-left">Nama Aset</th>
-                    <th class="px-4 py-3 text-left">Deskripsi</th>
-                    <th class="px-4 py-3 text-left">Jumlah</th>
-                    <th class="px-4 py-3 text-left">Status</th>
-                    <th class="px-4 py-3 text-left">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($assets as $asset)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 font-medium">{{ $asset->name }}</td>
-                    <td class="px-4 py-3 text-gray-500">{{ $asset->description ?? '-' }}</td>
-                    <td class="px-4 py-3 text-gray-600">{{ $asset->quantity }}</td>
-                    <td class="px-4 py-3">
-                        <span class="px-2 py-0.5 rounded-full text-xs {{ $asset->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                            {{ $asset->is_active ? 'Aktif' : 'Nonaktif' }}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 flex gap-2">
-                        <a href="{{ route('admin.assets.edit', $asset) }}" class="px-3 py-1 bg-secondary/10 text-secondary rounded text-xs hover:bg-secondary hover:text-white transition">Edit</a>
-                        <form method="POST" action="{{ route('admin.assets.destroy', $asset) }}" onsubmit="return confirm('Hapus aset ini?')">
-                            @csrf @method('DELETE')
-                            <button class="px-3 py-1 bg-red-50 text-red-600 rounded text-xs hover:bg-red-600 hover:text-white transition">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">Belum ada aset.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-        <div class="px-4 py-3 border-t">{{ $assets->links() }}</div>
+    <div class="gaming-card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="gaming-table min-w-[500px]">
+                <thead>
+                    <tr>
+                        <th>Nama Aset</th>
+                        <th>Deskripsi</th>
+                        <th>Jumlah</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($assets as $asset)
+                    <tr>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $asset->name }}</td>
+                        <td style="color:var(--text-muted);">{{ $asset->description ?? '—' }}</td>
+                        <td>
+                            <span class="badge badge-cyan">{{ $asset->quantity }}</span>
+                        </td>
+                        <td>
+                            <span class="badge {{ $asset->is_active ? 'badge-green' : 'badge-red' }}">
+                                {{ $asset->is_active ? 'Aktif' : 'Nonaktif' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <a href="{{ route('admin.assets.edit', $asset) }}" class="btn btn-secondary btn-sm">Edit</a>
+                                <form method="POST" action="{{ route('admin.assets.destroy', $asset) }}" onsubmit="return confirm('Hapus aset ini?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada aset.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $assets->links() }}</div>
     </div>
 </div>
 @endsection

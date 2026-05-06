@@ -3,51 +3,64 @@
 @section('page-title', 'Minutes of Meeting')
 @section('sidebar-menu') @include('partials.sidebar-leader') @endsection
 @section('content')
-<div class="pt-2 max-w-2xl space-y-4">
-    <div class="bg-white rounded-xl shadow-sm p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold text-primary text-lg">{{ $mom->meeting->title }}</h2>
-            <span class="px-3 py-1 rounded-full text-sm font-medium {{ $mom->status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
-                {{ $mom->status === 'sent' ? 'Terkirim' : 'Draft' }}
-            </span>
+<div class="pt-2 max-w-2xl space-y-4 animate-fade-in">
+    <div class="gaming-card overflow-hidden">
+        {{-- Header --}}
+        <div class="p-5" style="background:linear-gradient(135deg,var(--color-primary-dark),var(--color-accent));position:relative;">
+            <div class="absolute inset-0 grid-pattern opacity-20"></div>
+            <div class="relative flex items-start justify-between gap-3">
+                <div>
+                    <h2 class="font-gaming font-bold text-lg text-white">{{ $mom->meeting->title }}</h2>
+                    <p class="text-sm mt-1" style="color:rgba(255,255,255,0.7);">{{ $mom->meeting->meeting_date->format('d M Y') }} · {{ $mom->meeting->room->name }}</p>
+                </div>
+                <span class="badge {{ $mom->status === 'sent' ? 'badge-green' : 'badge-yellow' }} flex-shrink-0">
+                    {{ $mom->status === 'sent' ? 'Terkirim' : 'Draft' }}
+                </span>
+            </div>
         </div>
-        <p class="text-xs text-gray-400 mb-4">{{ $mom->meeting->meeting_date->format('d M Y') }} · {{ $mom->meeting->room->name }}</p>
 
-        <div class="space-y-4">
+        {{-- Content --}}
+        <div class="p-6 space-y-4">
             @foreach(['summary'=>'Ringkasan Pembahasan','decisions'=>'Keputusan','action_plan'=>'Action Plan'] as $field => $label)
             <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ $label }}</p>
-                <p class="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">{{ $mom->$field }}</p>
+                <p class="gaming-label">{{ $label }}</p>
+                <p class="text-sm p-3 rounded-lg" style="color:var(--text-secondary);background:var(--bg-surface-2);border:1px solid var(--border-color);">{{ $mom->$field }}</p>
             </div>
             @endforeach
             <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Penanggung Jawab (PIC)</p>
-                <p class="text-sm text-gray-700">{{ $mom->pic }}</p>
+                <p class="gaming-label">Penanggung Jawab (PIC)</p>
+                <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ $mom->pic }}</p>
             </div>
             @if($mom->file_path)
             <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">File Lampiran</p>
-                <a href="{{ Storage::url($mom->file_path) }}" target="_blank" class="text-sm text-accent hover:underline">Download File</a>
+                <p class="gaming-label">File Lampiran</p>
+                <a href="{{ Storage::url($mom->file_path) }}" target="_blank" class="btn btn-secondary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download File
+                </a>
             </div>
             @endif
             @if($mom->sent_at)
-            <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Dikirim Pada</p>
-                <p class="text-sm text-gray-700">{{ $mom->sent_at->format('d M Y H:i') }}</p>
-            </div>
+            <p class="text-xs" style="color:var(--text-muted);">Dikirim pada {{ $mom->sent_at->format('d M Y H:i') }}</p>
             @endif
         </div>
 
         @if($mom->status === 'draft')
-        <div class="flex gap-3 mt-6 pt-4 border-t">
-            <a href="{{ route('koordinator.mom.edit', $mom) }}" class="px-4 py-2 bg-secondary/10 text-secondary rounded-lg text-sm hover:bg-secondary hover:text-white transition">Edit MOM</a>
+        <div class="flex gap-3 px-6 pb-6 pt-2" style="border-top:1px solid var(--border-color);">
+            <a href="{{ route('koordinator.mom.edit', $mom) }}" class="btn btn-secondary btn-sm">Edit MOM</a>
             <form method="POST" action="{{ route('koordinator.mom.send', $mom) }}">
                 @csrf @method('PATCH')
-                <button class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition">Kirim MOM</button>
+                <button class="btn btn-success btn-sm">Kirim MOM</button>
             </form>
         </div>
         @endif
     </div>
-    <a href="{{ route('koordinator.meetings.show', $mom->meeting_id) }}" class="inline-block text-sm text-gray-500 hover:text-primary">← Kembali ke Meeting</a>
+
+    <a href="{{ route('koordinator.meetings.show', $mom->meeting_id) }}" class="inline-flex items-center gap-1.5 text-sm" style="color:var(--text-muted);">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Kembali ke Meeting
+    </a>
 </div>
 @endsection

@@ -11,35 +11,40 @@
     @endif
 @endsection
 @section('content')
-<div class="pt-2">
-    <div class="space-y-3">
-        @forelse($invitations as $inv)
-        @php
-            $statusColors = ['approved'=>'bg-blue-100 text-blue-700','confirmed'=>'bg-indigo-100 text-indigo-700','in_progress'=>'bg-purple-100 text-purple-700','cancelled'=>'bg-red-100 text-red-700','rejected'=>'bg-red-100 text-red-700'];
-        @endphp
-        <a href="{{ route('invitation.show', $inv) }}"
-            class="block bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition border-l-4 {{ !$inv->is_read ? 'border-accent' : 'border-gray-200' }}">
-            <div class="flex items-start justify-between">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        @if(!$inv->is_read)
-                            <span class="w-2 h-2 rounded-full bg-accent flex-shrink-0"></span>
-                        @endif
-                        <p class="font-semibold text-primary">{{ $inv->meeting->title }}</p>
-                    </div>
-                    <p class="text-sm text-gray-500">{{ $inv->meeting->team->name }} · {{ $inv->meeting->room->name }}</p>
-                    <p class="text-sm text-gray-500">{{ $inv->meeting->meeting_date->isoFormat('dddd, D MMMM Y') }} · {{ substr($inv->meeting->start_time,0,5) }} – {{ substr($inv->meeting->end_time,0,5) }}</p>
-                </div>
-                <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $statusColors[$inv->meeting->status] ?? 'bg-gray-100 text-gray-600' }}">
-                    {{ ucfirst($inv->meeting->status) }}
-                </span>
+<div class="pt-2 space-y-3 animate-fade-in stagger-children">
+    @forelse($invitations as $inv)
+    @php
+        $sb = match($inv->meeting->status) {
+            'approved'    => 'badge-blue',
+            'confirmed'   => 'badge-primary',
+            'in_progress' => 'badge-primary',
+            'cancelled'   => 'badge-red',
+            'rejected'    => 'badge-red',
+            default       => 'badge-gray',
+        };
+    @endphp
+    <a href="{{ route('invitation.show', $inv) }}"
+        class="gaming-card p-5 flex items-start justify-between gap-3 animate-fade-in"
+        style="display:flex;border-left:3px solid {{ !$inv->is_read ? 'var(--color-accent)' : 'transparent' }};">
+        <div class="min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+                @if(!$inv->is_read)
+                    <span class="w-2 h-2 rounded-full flex-shrink-0 animate-glow-pulse" style="background:var(--color-accent);"></span>
+                @endif
+                <p class="font-gaming font-semibold truncate" style="color:var(--text-primary);">{{ $inv->meeting->title }}</p>
             </div>
-        </a>
-        @empty
-        <div class="bg-white rounded-xl shadow-sm p-8 text-center text-gray-400">
-            Tidak ada undangan meeting aktif.
+            <p class="text-sm" style="color:var(--text-muted);">{{ $inv->meeting->team->name }} · {{ $inv->meeting->room->name }}</p>
+            <p class="text-sm" style="color:var(--text-muted);">{{ $inv->meeting->meeting_date->isoFormat('ddd, D MMM Y') }} · {{ substr($inv->meeting->start_time,0,5) }} – {{ substr($inv->meeting->end_time,0,5) }}</p>
         </div>
-        @endforelse
+        <span class="badge {{ $sb }} flex-shrink-0">{{ ucfirst($inv->meeting->status) }}</span>
+    </a>
+    @empty
+    <div class="gaming-card p-10 text-center">
+        <svg class="w-12 h-12 mx-auto mb-3" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+        <p style="color:var(--text-muted);">Tidak ada undangan meeting aktif.</p>
     </div>
+    @endforelse
 </div>
 @endsection

@@ -12,84 +12,80 @@
 @endsection
 
 @section('content')
-<div class="pt-2 max-w-2xl">
+<div class="pt-2 max-w-2xl animate-fade-in">
 
     {{-- Status Banner --}}
     @if(in_array($meeting->status, ['cancelled', 'rejected']))
-        <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4 flex items-center gap-3">
-            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <div>
-                <p class="text-sm font-semibold text-red-700">
-                    Meeting ini telah {{ $meeting->status === 'cancelled' ? 'dibatalkan' : 'ditolak' }}
-                </p>
-                @if($meeting->reject_reason)
-                    <p class="text-xs text-red-600 mt-0.5">Alasan: {{ $meeting->reject_reason }}</p>
-                @endif
-            </div>
+    <div class="mb-4 p-4 rounded-xl flex items-center gap-3" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);">
+        <svg class="w-5 h-5 flex-shrink-0" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+            <p class="text-sm font-semibold" style="color:#f87171;">
+                Meeting ini telah {{ $meeting->status === 'cancelled' ? 'dibatalkan' : 'ditolak' }}
+            </p>
+            @if($meeting->reject_reason)
+                <p class="text-xs mt-0.5" style="color:#fca5a5;">Alasan: {{ $meeting->reject_reason }}</p>
+            @endif
         </div>
+    </div>
     @endif
 
     {{-- Card Undangan --}}
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="gaming-card overflow-hidden">
         {{-- Header --}}
-        <div class="bg-gradient-to-r from-primary to-accent p-6">
-            <div class="flex items-center gap-2 mb-2">
-                <svg class="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-                <span class="text-white/70 text-sm">Undangan Meeting</span>
+        <div class="p-6 relative" style="background:linear-gradient(135deg,var(--color-primary-dark),var(--color-accent));">
+            <div class="absolute inset-0 grid-pattern opacity-20"></div>
+            <div class="relative">
+                <div class="flex items-center gap-2 mb-2">
+                    <svg class="w-4 h-4" style="color:rgba(255,255,255,0.6);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span style="color:rgba(255,255,255,0.6);font-size:0.8rem;">Undangan Meeting</span>
+                </div>
+                <h2 class="font-gaming font-bold text-xl text-white">{{ $meeting->title }}</h2>
+                <p class="text-sm mt-1" style="color:rgba(255,255,255,0.7);">
+                    Dari: {{ $meeting->requester->name }} · <span style="color:var(--color-neon-blue);">{{ $meeting->team->name }}</span>
+                    @if($meeting->teams->count())
+                        @foreach($meeting->teams as $t) + {{ $t->name }} @endforeach
+                    @endif
+                </p>
             </div>
-            <h2 class="text-xl font-bold text-white">{{ $meeting->title }}</h2>
-            <p class="text-blue-200 text-sm mt-1">
-                Dari: {{ $meeting->requester->name }} · {{ $meeting->team->name }}
-                @if($meeting->teams->count())
-                    @foreach($meeting->teams as $t) + {{ $t->name }} @endforeach
-                @endif
-            </p>
         </div>
 
         {{-- Info Waktu & Tempat --}}
-        <div class="grid grid-cols-3 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-100">
-            <div>
-                <p class="text-xs text-gray-400 mb-0.5">Tanggal</p>
-                <p class="text-sm font-semibold text-primary">{{ $meeting->meeting_date->isoFormat('dddd, D MMMM Y') }}</p>
+        <div class="grid grid-cols-3 gap-3 p-4" style="background:var(--bg-surface-2);border-bottom:1px solid var(--border-color);">
+            <div class="gaming-card-flat p-3">
+                <p class="text-xs mb-1" style="color:var(--text-muted);">Tanggal</p>
+                <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ $meeting->meeting_date->isoFormat('ddd, D MMM Y') }}</p>
             </div>
-            <div>
-                <p class="text-xs text-gray-400 mb-0.5">Waktu</p>
-                <p class="text-sm font-semibold text-primary">{{ substr($meeting->start_time,0,5) }} – {{ substr($meeting->end_time,0,5) }} WIB</p>
+            <div class="gaming-card-flat p-3">
+                <p class="text-xs mb-1" style="color:var(--text-muted);">Waktu</p>
+                <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ substr($meeting->start_time,0,5) }} – {{ substr($meeting->end_time,0,5) }}</p>
             </div>
-            <div>
-                <p class="text-xs text-gray-400 mb-0.5">Ruangan</p>
-                <p class="text-sm font-semibold text-primary">{{ $meeting->room->name }}</p>
+            <div class="gaming-card-flat p-3">
+                <p class="text-xs mb-1" style="color:var(--text-muted);">Ruangan</p>
+                <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ $meeting->room->name }}</p>
             </div>
         </div>
 
         {{-- Detail 5W1H --}}
-        <div class="px-6 py-5 space-y-4">
+        <div class="p-6 space-y-4">
+            @foreach(['why'=>'WHY — Kenapa meeting ini diadakan?','what'=>'WHAT — Apa yang akan dibahas?','how_expected'=>'HOW — Hasil yang diharapkan'] as $field => $label)
+            @if($meeting->$field)
             <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">WHY — Kenapa meeting ini diadakan?</p>
-                <p class="text-sm text-gray-700 bg-blue-50 rounded-lg p-3">{{ $meeting->why }}</p>
-            </div>
-            <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">WHAT — Apa yang akan dibahas?</p>
-                <p class="text-sm text-gray-700 bg-blue-50 rounded-lg p-3">{{ $meeting->what }}</p>
-            </div>
-            @if($meeting->how_expected)
-            <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">HOW — Hasil yang diharapkan</p>
-                <p class="text-sm text-gray-700 bg-blue-50 rounded-lg p-3">{{ $meeting->how_expected }}</p>
+                <p class="gaming-label">{{ $label }}</p>
+                <p class="text-sm p-3 rounded-lg" style="color:var(--text-secondary);background:var(--bg-surface-2);border:1px solid var(--border-color);">{{ $meeting->$field }}</p>
             </div>
             @endif
+            @endforeach
         </div>
 
         {{-- File Lampiran --}}
         @if($meeting->file_path)
         <div class="px-6 pb-5">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">File Lampiran</p>
-            <a href="{{ Storage::url($meeting->file_path) }}" target="_blank"
-                class="inline-flex items-center gap-2 px-4 py-2.5 bg-primary/5 border border-primary/20 text-primary rounded-lg text-sm hover:bg-primary hover:text-white transition">
+            <p class="gaming-label">File Lampiran</p>
+            <a href="{{ Storage::url($meeting->file_path) }}" target="_blank" class="btn btn-secondary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
@@ -99,18 +95,18 @@
         @endif
 
         {{-- Footer --}}
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-            <p class="text-xs text-gray-400">
-                @if($invitation->read_at)
-                    Dibaca pada {{ $invitation->read_at->format('d M Y H:i') }}
-                @endif
+        <div class="px-6 py-4 flex items-center justify-between" style="border-top:1px solid var(--border-color);background:var(--bg-surface-2);">
+            <p class="text-xs" style="color:var(--text-muted);">
+                @if($invitation->read_at) Dibaca {{ $invitation->read_at->format('d M Y H:i') }} @endif
             </p>
             @php
-                $statusColors = ['approved'=>'bg-blue-100 text-blue-700','confirmed'=>'bg-indigo-100 text-indigo-700','in_progress'=>'bg-purple-100 text-purple-700','completed'=>'bg-green-100 text-green-700','cancelled'=>'bg-red-100 text-red-700','rejected'=>'bg-red-100 text-red-700'];
+                $sb = match($meeting->status) {
+                    'approved'=>'badge-blue','confirmed'=>'badge-primary',
+                    'in_progress'=>'badge-primary','completed'=>'badge-green',
+                    'cancelled'=>'badge-red','rejected'=>'badge-red',default=>'badge-gray'
+                };
             @endphp
-            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $statusColors[$meeting->status] ?? 'bg-gray-100 text-gray-600' }}">
-                {{ ucfirst($meeting->status) }}
-            </span>
+            <span class="badge {{ $sb }}">{{ ucfirst($meeting->status) }}</span>
         </div>
     </div>
 
