@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>@yield('title', 'Johen Gaming') — Meeting Room</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ asset('css/gaming.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/gaming.css') }}?v={{ filemtime(public_path('css/gaming.css')) }}">
     <style>
         .sidebar-safe  { padding-bottom: env(safe-area-inset-bottom, 16px); }
         .topbar-safe   { padding-top: env(safe-area-inset-top, 0px); }
