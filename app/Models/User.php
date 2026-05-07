@@ -10,7 +10,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'username', 'password', 'role', 'team_id', 'is_active'];
+    protected $fillable = ['name', 'username', 'password', 'role', 'team_id', 'is_active', 'avatar'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -20,6 +20,15 @@ class User extends Authenticatable
             'password'  => 'hashed',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar && \Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
+        // Default avatar pakai inisial
+        return '';
     }
 
     // Roles yang punya akses penuh (setara admin)
