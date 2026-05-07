@@ -12,9 +12,13 @@
         style="background:linear-gradient(135deg,var(--color-primary-dark),var(--color-primary));">
         <div class="absolute inset-0 grid-pattern opacity-20"></div>
         <div class="relative flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-gaming font-bold text-xl flex-shrink-0"
+            <div class="w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center font-gaming font-bold text-xl flex-shrink-0"
                 style="background:linear-gradient(135deg,var(--color-accent),var(--color-neon-blue));color:white;box-shadow:0 4px 16px rgba(124,58,237,0.4);">
-                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                @if(auth()->user()->avatar_url)
+                    <img src="{{ auth()->user()->avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
+                @else
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                @endif
             </div>
             <div>
                 <h2 class="font-gaming font-bold text-xl text-white tracking-wide">{{ auth()->user()->name }}</h2>

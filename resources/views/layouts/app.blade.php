@@ -62,9 +62,13 @@
         {{-- User Info --}}
         <div class="flex-shrink-0 px-5 py-4" style="border-bottom:1px solid var(--sidebar-border);">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 font-gaming font-bold text-sm"
+                <div class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 font-gaming font-bold text-sm"
                     style="background:linear-gradient(135deg,var(--color-accent),var(--color-primary-light));color:white;">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    @if(auth()->user()->avatar_url)
+                        <img src="{{ auth()->user()->avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
+                    @else
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    @endif
                 </div>
                 <div class="min-w-0">
                     <p class="text-sm font-medium truncate" style="color:white;">{{ auth()->user()->name }}</p>
