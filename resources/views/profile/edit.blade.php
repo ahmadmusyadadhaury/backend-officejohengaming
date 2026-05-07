@@ -13,6 +13,31 @@
     @endif
 @endsection
 
+@push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<style>
+    #crop-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(0,0,0,0.75);
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    #crop-modal.show { display: flex; }
+    #crop-container {
+        max-height: 60vh;
+        overflow: hidden;
+    }
+    #crop-container img {
+        max-width: 100%;
+        display: block;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="max-w-2xl mx-auto pt-4 space-y-4 animate-fade-in">
 
@@ -22,17 +47,18 @@
             <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">FOTO PROFIL</h3>
         </div>
         <div class="p-6">
-            <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('profile.update') }}" id="avatar-form">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="avatar_cropped" id="avatar_cropped">
+
                 <div class="flex items-center gap-6">
                     {{-- Avatar Preview --}}
                     <div class="relative flex-shrink-0">
-                        <div id="avatar-wrapper" class="w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center"
+                        <div class="w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center"
                             style="background:linear-gradient(135deg,var(--color-accent),var(--color-primary-light));box-shadow:0 4px 16px rgba(124,58,237,0.3);">
                             @if($user->avatar_url)
-                                <img id="avatar-preview" src="{{ $user->avatar_url }}" alt="Avatar"
-                                    class="w-full h-full object-cover">
+                                <img id="avatar-preview" src="{{ $user->avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
                             @else
                                 <span id="avatar-initials" class="font-gaming font-bold text-3xl text-white">
                                     {{ strtoupper(substr($user->name, 0, 1)) }}
@@ -48,17 +74,17 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
                         </label>
-                        <input type="file" id="avatar-input" name="avatar" accept="image/*" class="hidden" onchange="previewAvatar(this)">
+                        <input type="file" id="avatar-input" accept="image/*" class="hidden">
                     </div>
 
-                    {{-- Info & Upload --}}
+                    {{-- Info --}}
                     <div class="flex-1 min-w-0">
                         <p class="font-semibold text-base" style="color:var(--text-primary);">{{ $user->name }}</p>
                         <p class="text-sm" style="color:var(--text-muted);">{{ $user->role_label }}</p>
                         @if($user->team)
                             <p class="text-xs mt-1" style="color:var(--text-muted);">{{ $user->team->name }}</p>
                         @endif
-                        <p class="text-xs mt-3" style="color:var(--text-muted);">JPG, PNG, WEBP. Maks 2MB.</p>
+                        <p class="text-xs mt-3" style="color:var(--text-muted);">Klik ikon kamera untuk ganti foto. JPG, PNG, WEBP.</p>
                         <div id="save-avatar-btn" class="hidden mt-2">
                             <button type="submit" class="btn btn-primary btn-sm">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,9 +93,6 @@
                                 Simpan Foto
                             </button>
                         </div>
-                        @error('avatar')
-                            <p class="text-xs mt-1" style="color:#f87171;">{{ $message }}</p>
-                        @enderror
                     </div>
                 </div>
             </form>
@@ -173,28 +196,112 @@
     </div>
 
 </div>
+
+{{-- Modal Crop --}}
+<div id="crop-modal">
+    <div class="w-full max-w-md rounded-2xl overflow-hidden" style="background:var(--bg-surface);box-shadow:var(--shadow-lg);">
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:linear-gradient(135deg,var(--color-primary-dark),var(--color-accent));">
+            <p class="font-gaming font-bold text-white tracking-wide">CROP FOTO</p>
+            <button onclick="closeCropModal()" style="color:rgba(255,255,255,0.6);background:none;border:none;cursor:pointer;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Crop Area --}}
+        <div class="p-4">
+            <div id="crop-container" class="rounded-xl overflow-hidden" style="background:#000;max-height:55vh;">
+                <img id="crop-image" src="" alt="Crop">
+            </div>
+        </div>
+
+        {{-- Actions --}}
+        <div class="flex gap-3 px-4 pb-4">
+            <button onclick="closeCropModal()" class="btn btn-secondary flex-1">Batal</button>
+            <button onclick="applyCrop()" class="btn btn-primary flex-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Gunakan Foto
+            </button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script>
+    let cropper = null;
+
+    // Saat file dipilih → buka modal crop
+    document.getElementById('avatar-input').addEventListener('change', function () {
+        if (!this.files || !this.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const cropImg = document.getElementById('crop-image');
+            cropImg.src = e.target.result;
+
+            // Destroy cropper lama jika ada
+            if (cropper) { cropper.destroy(); cropper = null; }
+
+            document.getElementById('crop-modal').classList.add('show');
+
+            // Init cropper setelah modal tampil
+            setTimeout(() => {
+                cropper = new Cropper(cropImg, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.9,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            }, 100);
+        };
+        reader.readAsDataURL(this.files[0]);
+        // Reset input agar bisa pilih file yang sama lagi
+        this.value = '';
+    });
+
+    function applyCrop() {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+        const base64 = canvas.toDataURL('image/jpeg', 0.85);
+
+        // Set ke hidden input & preview
+        document.getElementById('avatar_cropped').value = base64;
+        const preview = document.getElementById('avatar-preview');
+        const initials = document.getElementById('avatar-initials');
+        preview.src = base64;
+        preview.classList.remove('hidden');
+        if (initials) initials.classList.add('hidden');
+        document.getElementById('save-avatar-btn').classList.remove('hidden');
+
+        closeCropModal();
+    }
+
+    function closeCropModal() {
+        document.getElementById('crop-modal').classList.remove('show');
+        if (cropper) { cropper.destroy(); cropper = null; }
+    }
+
+    // Tutup modal klik overlay
+    document.getElementById('crop-modal').addEventListener('click', function (e) {
+        if (e.target === this) closeCropModal();
+    });
+
     function togglePass(id) {
         const input = document.getElementById(id);
         input.type = input.type === 'password' ? 'text' : 'password';
-    }
-
-    function previewAvatar(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const preview = document.getElementById('avatar-preview');
-                const initials = document.getElementById('avatar-initials');
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
-                if (initials) initials.classList.add('hidden');
-                document.getElementById('save-avatar-btn').classList.remove('hidden');
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
     }
 </script>
 @endpush

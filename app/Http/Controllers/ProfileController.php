@@ -18,21 +18,27 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ], [
-            'avatar.image' => 'File harus berupa gambar.',
-            'avatar.mimes' => 'Format gambar harus jpg, jpeg, png, atau webp.',
-            'avatar.max'   => 'Ukuran gambar maksimal 2MB.',
+            'avatar_cropped' => 'required|string',
         ]);
 
-        if ($request->hasFile('avatar')) {
-            // Hapus avatar lama
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->update(['avatar' => $path]);
+        // Decode base64 dari hasil crop
+        $data = $request->avatar_cropped;
+        if (!preg_match('/^data:image\/(\w+);base64,/', $data, $matches)) {
+            return back()->withErrors(['avatar' => 'Format gambar tidak valid.']);
         }
+
+        $ext      = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
+        $imgData  = substr($data, strpos($data, ',') + 1);
+        $imgData  = base64_decode($imgData);
+        $filename = 'avatars/' . auth()->id() . '_' . time() . '.' . $ext;
+
+        // Hapus avatar lama
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        Storage::disk('public')->put($filename, $imgData);
+        $user->update(['avatar' => $filename]);
 
         return back()->with('success', 'Foto profil berhasil diperbarui.');
     }
