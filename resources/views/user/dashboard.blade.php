@@ -70,7 +70,7 @@
                     onmouseover="this.style.background='rgba(124,58,237,0.04)'"
                     onmouseout="this.style.background='transparent'">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="w-2 h-2 rounded-full flex-shrink-0"
+                        <span class="w-2 h-2 rounded-full flex-shrink-0 today-dot" data-id="{{ $meeting->id }}"
                             style="background:{{ $meeting->status === 'in_progress' ? 'var(--color-accent)' : 'var(--color-secondary)' }};
                                    box-shadow:0 0 6px {{ $meeting->status === 'in_progress' ? 'rgba(124,58,237,0.8)' : 'rgba(59,130,246,0.6)' }};
                                    {{ $meeting->status === 'in_progress' ? 'animation:glowPulse 2s ease-in-out infinite;' : '' }}"></span>
@@ -90,3 +90,25 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function refreshTodayMeetings() {
+        fetch('{{ route("realtime.meetings") }}')
+            .then(r => r.json())
+            .then(data => {
+                const today = new Date().toISOString().slice(0,10);
+                data.filter(m => m.date === today).forEach(m => {
+                    const dot = document.querySelector(`.today-dot[data-id="${m.id}"]`);
+                    if (!dot) return;
+                    const isActive = m.rt_label.includes('Berlangsung');
+                    dot.style.background = isActive ? 'var(--color-accent)' : 'var(--color-secondary)';
+                    dot.style.boxShadow  = isActive ? '0 0 6px rgba(124,58,237,0.8)' : '0 0 6px rgba(59,130,246,0.6)';
+                });
+            }).catch(() => {});
+    }
+
+    setInterval(refreshTodayMeetings, 30000);
+    refreshTodayMeetings();
+</script>
+@endpush

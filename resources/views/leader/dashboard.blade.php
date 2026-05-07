@@ -69,7 +69,7 @@
                     onmouseout="this.style.background='transparent'">
                     <div class="flex items-center justify-between gap-2">
                         <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
-                        <span class="badge flex-shrink-0" style="{{ str_contains($rt['label'],'Berlangsung') ? 'background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);' : 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);' }}">
+                        <span class="badge upcoming-badge flex-shrink-0" data-id="{{ $meeting->id }}" style="{{ str_contains($rt['label'],'Berlangsung') ? 'background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);' : 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);' }}">
                             {{ $rt['label'] }}
                         </span>
                     </div>
@@ -126,15 +126,42 @@
 
 @push('scripts')
 <script>
+    function getRtStyle(label) {
+        if (!label) return '';
+        if (label.includes('Berlangsung')) return 'background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);';
+        if (label.includes('Antrian'))     return 'background:rgba(249,115,22,0.15);color:#fb923c;border:1px solid rgba(249,115,22,0.3);';
+        if (label.includes('Di Booking'))  return 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);';
+        if (label.includes('Selesai'))     return 'background:rgba(148,163,184,0.15);color:#94a3b8;border:1px solid rgba(148,163,184,0.3);';
+        return 'background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);';
+    }
+
     function refreshLeaderStats() {
         fetch('{{ route("realtime.dashboard") }}')
             .then(r => r.json())
             .then(data => {
-                if (data.pending !== undefined)   document.getElementById('stat-pending')?.textContent   !== undefined && (document.getElementById('stat-pending').textContent   = data.pending);
-                if (data.approved !== undefined)  document.getElementById('stat-approved')?.textContent  !== undefined && (document.getElementById('stat-approved').textContent  = data.approved);
-                if (data.completed !== undefined) document.getElementById('stat-completed')?.textContent !== undefined && (document.getElementById('stat-completed').textContent = data.completed);
+                ['pending','approved','completed'].forEach(key => {
+                    const el = document.getElementById('stat-' + key);
+                    if (el && data[key] !== undefined) el.textContent = data[key];
+                });
             }).catch(() => {});
     }
+
+    function refreshUpcoming() {
+        fetch('{{ route("realtime.meetings") }}')
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(m => {
+                    const badge = document.querySelector(`.upcoming-badge[data-id="${m.id}"]`);
+                    if (badge) {
+                        badge.textContent = m.rt_label;
+                        badge.style.cssText = getRtStyle(m.rt_label);
+                    }
+                });
+            }).catch(() => {});
+    }
+
     setInterval(refreshLeaderStats, 60000);
+    setInterval(refreshUpcoming, 30000);
+    refreshUpcoming();
 </script>
 @endpush

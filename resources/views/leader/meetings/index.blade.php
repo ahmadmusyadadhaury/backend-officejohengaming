@@ -27,14 +27,22 @@
                 </thead>
                 <tbody>
                     @forelse($meetings as $meeting)
-                    @php $rt = \App\Services\MeetingQueueService::realtimeStatus($meeting); @endphp
+                    @php 
+                        $rt = \App\Services\MeetingQueueService::realtimeStatus($meeting);
+                        $rtStyle = '';
+                        if (str_contains($rt['label'], 'Berlangsung')) $rtStyle = 'background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);';
+                        elseif (str_contains($rt['label'], 'Antrian')) $rtStyle = 'background:rgba(249,115,22,0.15);color:#fb923c;border:1px solid rgba(249,115,22,0.3);';
+                        elseif (str_contains($rt['label'], 'Di Booking')) $rtStyle = 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);';
+                        elseif (str_contains($rt['label'], 'Selesai')) $rtStyle = 'background:rgba(148,163,184,0.15);color:#94a3b8;border:1px solid rgba(148,163,184,0.3);';
+                        else $rtStyle = 'background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);';
+                    @endphp
                     <tr data-meeting-id="{{ $meeting->id }}">
                         <td style="color:var(--text-primary);font-weight:500;">{{ $meeting->title }}</td>
                         <td style="color:var(--text-muted);">{{ $meeting->meeting_date->format('d M Y') }}</td>
                         <td style="color:var(--text-muted);">{{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }}</td>
                         <td style="color:var(--text-muted);">{{ $meeting->room->name }}</td>
                         <td>
-                            <span class="rt-badge badge" style="{{ getRtStyleInline($rt['label']) }}">
+                            <span class="rt-badge badge" style="{{ $rtStyle }}">
                                 {{ $rt['label'] }}
                             </span>
                         </td>
@@ -80,10 +88,11 @@
                     badge.style.cssText = getRtStyleInline(m.rt_label);
                 });
                 const el = document.getElementById('rt-update');
-                if (el) el.textContent = 'Update: ' + new Date().toLocaleTimeString('id-ID');
+                if (el) el.textContent = '⟳ ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
             }).catch(() => {});
     }
 
     setInterval(refreshStatus, 30000);
+    refreshStatus();
 </script>
 @endpush

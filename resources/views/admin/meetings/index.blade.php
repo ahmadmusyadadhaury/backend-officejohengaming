@@ -32,6 +32,15 @@
                             'completed'   => 'badge-green',
                             default       => 'badge-gray',
                         };
+                        $rt = \App\Services\MeetingQueueService::realtimeStatus($meeting);
+                        $queueBadge = match(true) {
+                            str_contains($rt['label'], 'Berlangsung') => 'badge-primary',
+                            str_contains($rt['label'], 'Antrian')     => 'badge-orange',
+                            str_contains($rt['label'], 'Di Booking')  => 'badge-blue',
+                            str_contains($rt['label'], 'Selesai')     => 'badge-green',
+                            str_contains($rt['label'], 'Menunggu')    => 'badge-yellow',
+                            default                                   => 'badge-gray',
+                        };
                     @endphp
                     <tr>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $meeting->title }}</td>
@@ -41,9 +50,9 @@
                         <td style="color:var(--text-muted);">{{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }}</td>
                         <td><span class="badge {{ $statusStyle }}">{{ ucfirst($meeting->status) }}</span></td>
                         <td>
-                            @if($meeting->queue_position !== null)
-                                <span class="badge {{ $meeting->queue_position === 0 ? 'badge-primary' : 'badge-orange' }}">
-                                    {{ \App\Services\MeetingQueueService::queueLabel($meeting->queue_position) }}
+                            @if($meeting->queue_position !== null && !in_array($meeting->status, ['pending','rejected','cancelled']))
+                                <span class="badge {{ $queueBadge }}">
+                                    {{ $rt['label'] }}
                                 </span>
                             @else
                                 <span style="color:var(--text-muted);">—</span>

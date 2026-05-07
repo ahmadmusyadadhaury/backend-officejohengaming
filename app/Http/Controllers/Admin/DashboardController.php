@@ -13,16 +13,20 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'total_users'    => User::where('role', '!=', 'admin')->count(),
-            'total_teams'    => Team::count(),
-            'total_rooms'    => Room::count(),
-            'pending'        => Meeting::where('status', 'pending')->count(),
-            'today_meetings' => Meeting::whereDate('meeting_date', today())
-                                    ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
-                                    ->count(),
-            'this_month'     => Meeting::whereMonth('meeting_date', now()->month)
-                                    ->whereYear('meeting_date', now()->year)
-                                    ->count(),
+            'total_karyawan'    => User::where('role', 'user')->where('is_active', true)->count(),
+            'total_koordinator' => User::where('role', 'koordinator')->where('is_active', true)->count(),
+            'total_head_store'  => User::where('role', 'head_of_store')->where('is_active', true)->count(),
+            'total_gm'          => User::where('role', 'gm')->where('is_active', true)->count(),
+            'total_hr'          => User::where('role', 'hr')->where('is_active', true)->count(),
+            'total_teams'       => Team::count(),
+            'total_rooms'       => Room::count(),
+            'pending'           => Meeting::where('status', 'pending')->count(),
+            'today_meetings'    => Meeting::whereDate('meeting_date', today())
+                                        ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
+                                        ->count(),
+            'this_month'        => Meeting::whereMonth('meeting_date', now()->month)
+                                        ->whereYear('meeting_date', now()->year)
+                                        ->count(),
         ];
 
         $pendingMeetings = Meeting::with(['requester', 'team', 'room'])

@@ -9,8 +9,19 @@ class InvitationController extends Controller
 {
     public function index()
     {
+        $now = Carbon::now();
+
         $invitations = MeetingInvitation::where('user_id', auth()->id())
-            ->whereHas('meeting', fn($q) => $q->whereIn('status', ['approved', 'confirmed', 'in_progress']))
+            ->whereHas('meeting', function($q) use ($now) {
+                $q->whereIn('status', ['approved', 'confirmed', 'in_progress'])
+                  ->where(function($q2) use ($now) {
+                      $q2->where('meeting_date', '>', $now->toDateString())
+                         ->orWhere(function($q3) use ($now) {
+                             $q3->where('meeting_date', $now->toDateString())
+                                ->where('end_time', '>', $now->format('H:i:s'));
+                         });
+                  });
+            })
             ->with('meeting.room', 'meeting.team')
             ->latest()
             ->get();

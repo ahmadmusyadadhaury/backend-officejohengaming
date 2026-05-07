@@ -212,6 +212,22 @@
         .fc .fc-scrollgrid { border-color: var(--border-color) !important; }
         .fc td, .fc th { border-color: var(--border-color) !important; }
 
+        /* Light mode — perkuat garis & redam background agar tidak terlalu terang */
+        @media (prefers-color-scheme: light) {
+            .fc td, .fc th { border-color: #c8d0dc !important; }
+            .fc .fc-scrollgrid { border-color: #c8d0dc !important; }
+            .fc .fc-timegrid-slot-lane { background: #f0f3f8 !important; }
+            .fc .fc-timegrid-slot-lane:nth-child(even) { background: #e8ecf3 !important; }
+            .fc .fc-day-today { background: rgba(124,58,237,0.07) !important; }
+            .fc .fc-timegrid-col.fc-day-today { background: rgba(124,58,237,0.06) !important; }
+            .fc .fc-daygrid-day { background: #f0f3f8 !important; }
+            .fc .fc-daygrid-day:nth-child(even) { background: #e8ecf3 !important; }
+            .fc .fc-list-table td { border-color: #c8d0dc !important; }
+            .fc .fc-list-event:hover td { background: rgba(124,58,237,0.08) !important; }
+            .calendar-wrapper { background: #e8ecf3 !important; border-color: #c8d0dc !important; }
+            .fc .fc-timegrid-axis { border-color: #c8d0dc !important; }
+        }
+
         /* List view */
         .fc .fc-list-event:hover td { background: rgba(124,58,237,0.06) !important; }
         .fc .fc-list-day-cushion {

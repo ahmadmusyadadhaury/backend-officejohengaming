@@ -130,33 +130,36 @@ class MeetingQueueService
         }
 
         // Sudah approved/confirmed — cek waktu
-        if ($date->isToday()) {
-            if ($now->gte($startDt) && $now->lte($endDt)) {
-                // Jam sudah mulai
-                if ($position === 0) {
-                    return ['label' => 'Sedang Berlangsung', 'color' => 'bg-purple-100 text-purple-700', 'dot' => '#7c3aed'];
-                }
-                return ['label' => 'Menunggu Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
-            }
+        $dateOnly  = $date->format('Y-m-d');
+        $todayOnly = $now->format('Y-m-d');
 
-            if ($now->lt($startDt)) {
-                $diffMinutes = $now->diffInMinutes($startDt);
-
-                if ($position !== null && $position > 0) {
-                    // Berdekatan < 10 menit
-                    if ($diffMinutes <= self::QUEUE_GAP_MINUTES) {
-                        return ['label' => 'Menunggu Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
-                    }
-                    return ['label' => 'Dalam Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
-                }
-
-                return ['label' => 'Di Booking', 'color' => 'bg-blue-100 text-blue-700', 'dot' => '#3b82f6'];
-            }
+        // Hari sudah lewat
+        if ($dateOnly < $todayOnly) {
+            return ['label' => 'Selesai', 'color' => 'bg-gray-100 text-gray-600', 'dot' => '#6b7280'];
         }
 
-        // Hari lain
-        if ($date->isFuture()) {
+        // Hari mendatang
+        if ($dateOnly > $todayOnly) {
             if ($position !== null && $position > 0) {
+                return ['label' => 'Dalam Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
+            }
+            return ['label' => 'Di Booking', 'color' => 'bg-blue-100 text-blue-700', 'dot' => '#3b82f6'];
+        }
+
+        // Hari ini
+        if ($now->gte($startDt) && $now->lte($endDt)) {
+            if ($position === 0) {
+                return ['label' => 'Sedang Berlangsung', 'color' => 'bg-purple-100 text-purple-700', 'dot' => '#7c3aed'];
+            }
+            return ['label' => 'Menunggu Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
+        }
+
+        if ($now->lt($startDt)) {
+            $diffMinutes = $now->diffInMinutes($startDt);
+            if ($position !== null && $position > 0) {
+                if ($diffMinutes <= self::QUEUE_GAP_MINUTES) {
+                    return ['label' => 'Menunggu Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
+                }
                 return ['label' => 'Dalam Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
             }
             return ['label' => 'Di Booking', 'color' => 'bg-blue-100 text-blue-700', 'dot' => '#3b82f6'];
