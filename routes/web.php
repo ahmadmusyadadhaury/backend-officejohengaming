@@ -16,6 +16,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\WeeklySessionController;
 use App\Http\Controllers\RealtimeController;
+use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -66,6 +67,9 @@ Route::middleware(['auth', 'role:user,koordinator,admin,head_of_store,gm,hr'])->
 
 // Calendar & Invitation (semua role)
 Route::middleware('auth')->group(function () {
+    Route::get('/password', [PasswordController::class, 'edit'])->name('password.edit');
+    Route::put('/password', [PasswordController::class, 'update'])->name('password.update');
+
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
     Route::get('/realtime/meetings', [RealtimeController::class, 'meetings'])->name('realtime.meetings');
