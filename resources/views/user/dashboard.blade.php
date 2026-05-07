@@ -23,7 +23,7 @@
                     @if(auth()->user()->team)
                         <span class="badge badge-blue">{{ auth()->user()->team->name }}</span>
                     @endif
-                    <span style="color:rgba(255,255,255,0.5);font-size:0.7rem;">NIK: {{ auth()->user()->username }}</span>
+                    <span style="color:rgba(255,255,255,0.5);font-size:0.7rem;">Username: {{ auth()->user()->username }}</span>
                 </div>
             </div>
         </div>
