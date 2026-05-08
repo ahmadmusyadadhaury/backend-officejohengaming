@@ -208,6 +208,13 @@
             opacity: 0.85;
         }
 
+        /* Sembunyikan all-day row */
+        .fc .fc-timegrid-allday { display: none !important; }
+        .fc .fc-daygrid-body { display: none !important; }
+        .fc-timegrid-axis-chunk { display: none !important; }
+        .fc .fc-scrollgrid-section-sticky > * { display: none !important; }
+        .fc .fc-timegrid-divider { display: none !important; }
+
         /* Grid lines */
         .fc .fc-scrollgrid { border-color: var(--border-color) !important; }
         .fc td, .fc th { border-color: var(--border-color) !important; }
