@@ -208,15 +208,6 @@
             opacity: 0.85;
         }
 
-        /* Sembunyikan all-day row */
-        .fc .fc-timegrid-allday,
-        .fc .fc-timegrid-allday-cushion,
-        .fc-direction-ltr .fc-timegrid-slot-label-frame,
-        .fc .fc-scrollgrid-section-sticky,
-        .fc .fc-scrollgrid-section-sticky td,
-        .fc .fc-timegrid-divider { display: none !important; }
-        .fc .fc-scrollgrid-section-liquid > td { border-top: none !important; }
-
         /* Grid lines */
         .fc .fc-scrollgrid { border-color: var(--border-color) !important; }
         .fc td, .fc th { border-color: var(--border-color) !important; }
@@ -227,8 +218,12 @@
             .fc .fc-scrollgrid { border-color: #c8d0dc !important; }
             .fc .fc-timegrid-slot-lane { background: #f0f3f8 !important; }
             .fc .fc-timegrid-slot-lane:nth-child(even) { background: #e8ecf3 !important; }
-            .fc .fc-day-today { background: rgba(124,58,237,0.07) !important; }
-            .fc .fc-timegrid-col.fc-day-today { background: rgba(124,58,237,0.06) !important; }
+            .fc .fc-day-today { background: rgba(124,58,237,0.18) !important; }
+            .fc .fc-timegrid-col.fc-day-today { background: rgba(124,58,237,0.14) !important; }
+            .fc .fc-col-header-cell.fc-day-today {
+                background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+                box-shadow: 0 2px 8px rgba(124,58,237,0.4) !important;
+            }
             .fc .fc-daygrid-day { background: #f0f3f8 !important; }
             .fc .fc-daygrid-day:nth-child(even) { background: #e8ecf3 !important; }
             .fc .fc-list-table td { border-color: #c8d0dc !important; }
@@ -287,6 +282,9 @@
             font-family: 'Rajdhani', sans-serif !important;
             letter-spacing: 0.05em;
         }
+
+        /* Sembunyikan teks all-day */
+        .fc .fc-timegrid-axis-cushion { visibility: hidden !important; }
 
         @media (min-width: 640px) {
             .fc .fc-toolbar-title { font-size: 1.25rem !important; }
