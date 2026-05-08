@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'leader'          => \App\Http\Middleware\LeaderMiddleware::class,
             'role'            => \App\Http\Middleware\RoleMiddleware::class,
             'manage_accounts' => \App\Http\Middleware\CanManageAccountsMiddleware::class,
+            'admin_hr'        => \App\Http\Middleware\AdminHrMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

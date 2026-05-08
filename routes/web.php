@@ -31,12 +31,16 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Admin Routes
+// Admin Routes — semua role full access
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
     Route::resource('teams', TeamController::class);
-    Route::resource('rooms', AdminRoomController::class);
     Route::resource('assets', AssetController::class);
+});
+
+// Hanya Admin & HR
+Route::middleware(['auth', 'admin_hr'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('rooms', AdminRoomController::class);
     Route::get('meetings', [AdminMeetingController::class, 'index'])->name('meetings.index');
     Route::get('meetings/{meeting}', [AdminMeetingController::class, 'show'])->name('meetings.show');
     Route::patch('meetings/{meeting}/approve', [AdminMeetingController::class, 'approve'])->name('meetings.approve');
