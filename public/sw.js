@@ -10,13 +10,14 @@ self.addEventListener('push', function(event) {
         body:    data.body  || 'Ada notifikasi baru',
         icon:    data.icon  || '/images/logo/logo_web.png',
         badge:   '/images/logo/logo_web.png',
-        vibrate: [200, 100, 200],
-        data:    { url: data.url || '/' },
+        vibrate: [300, 150, 300, 150, 300],
+        data:    { url: data.url || '/',
+                  tag: data.tag || 'default' },
         actions: [
             { action: 'open',    title: 'Buka' },
             { action: 'dismiss', title: 'Tutup' },
         ],
-        requireInteraction: false,
+        requireInteraction: true,
         silent: false,
     };
 
