@@ -203,11 +203,14 @@ class RealtimeController extends Controller
                 ->exists();
 
             if (!$already) {
-                Notification::send($userId, 'meeting',
-                    'Meeting Dimulai 🟢',
-                    $m->title . ' di ' . $m->room->name . ' sudah dimulai! [' . $key . ']',
-                    route('invitation.index')
-                );
+                Notification::create([
+                    'user_id' => $userId,
+                    'type'    => 'meeting',
+                    'title'   => 'Meeting Dimulai 🟢',
+                    'message' => $m->title . ' di ' . $m->room->name . ' sudah dimulai! [' . $key . ']',
+                    'url'     => route('invitation.index'),
+                    'is_read' => false,
+                ]);
             }
         }
 
@@ -231,11 +234,14 @@ class RealtimeController extends Controller
                 ->exists();
 
             if (!$already) {
-                Notification::send($userId, 'meeting',
-                    'Meeting Mingguan Dimulai 🔁',
-                    $s->weeklyMeeting->title . ' di ' . $s->weeklyMeeting->room->name . ' sudah dimulai! [' . $key . ']',
-                    route('weekly.index')
-                );
+                Notification::create([
+                    'user_id' => $userId,
+                    'type'    => 'meeting',
+                    'title'   => 'Meeting Mingguan Dimulai 🔁',
+                    'message' => $s->weeklyMeeting->title . ' di ' . $s->weeklyMeeting->room->name . ' sudah dimulai! [' . $key . ']',
+                    'url'     => route('weekly.index'),
+                    'is_read' => false,
+                ]);
             }
         }
     }
