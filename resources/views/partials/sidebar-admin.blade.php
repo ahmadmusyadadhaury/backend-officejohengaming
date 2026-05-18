@@ -41,19 +41,22 @@
 
 @if($isAdminHr)
     @foreach($adminHrMenus as $menu)
+    @php $isMeetingMenu = $menu['route'] === 'admin.meetings.index'; @endphp
         <a href="{{ route($menu['route']) }}"
             class="sidebar-item {{ request()->routeIs($menu['route'] . '*') ? 'active' : '' }}">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $menu['icon'] }}"/>
             </svg>
-            {{ $menu['label'] }}
+            <span class="flex-1">{{ $menu['label'] }}</span>
+            @if($isMeetingMenu)
+                <span class="notif-badge-activity" style="display:none;background:#ef4444;color:white;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;"></span>
+            @endif
         </a>
     @endforeach
 @endif
 
 @if(!$isAdminHr)
-    <a href="{{ route('calendar') }}"
-        class="sidebar-item {{ request()->routeIs('calendar') ? 'active' : '' }}">
+    <a href="{{ route('calendar') }}" class="sidebar-item {{ request()->routeIs('calendar') ? 'active' : '' }}">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
@@ -61,7 +64,6 @@
     </a>
 @endif
 
-{{-- Request Meeting: untuk head_of_store, gm, dan hr --}}
 @if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr']))
     <p class="sidebar-section-label">Meeting</p>
     <a href="{{ route('koordinator.meetings.index') }}"
@@ -69,7 +71,8 @@
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
-        Meeting Saya
+        <span class="flex-1">Meeting Saya</span>
+        <span class="notif-badge-activity" style="display:none;background:#ef4444;color:white;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;"></span>
     </a>
     <a href="{{ route('koordinator.meetings.create') }}"
         class="sidebar-item {{ request()->routeIs('koordinator.meetings.create') ? 'active' : '' }}">
@@ -84,12 +87,12 @@
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
-            Undangan
+            <span class="flex-1">Undangan</span>
+            <span class="notif-badge-meeting" style="display:none;background:#ef4444;color:white;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;"></span>
         </a>
     @endif
 @endif
 
-{{-- Kelola Akun & Admin --}}
 @if(in_array(auth()->user()->role, ['admin', 'hr']))
     <p class="sidebar-section-label">Manajemen</p>
     <a href="{{ route('admin.users.index') }}"

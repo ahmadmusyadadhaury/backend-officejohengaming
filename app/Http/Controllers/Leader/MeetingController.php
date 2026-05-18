@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Leader;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\Meeting;
+use App\Models\Notification;
 use App\Models\Room;
 use App\Models\Team;
+use App\Models\User;
 use App\Services\MeetingQueueService;
 use Illuminate\Http\Request;
 
@@ -14,6 +16,12 @@ class MeetingController extends Controller
 {
     public function index()
     {
+        // Tandai notif activity sebagai sudah dibaca
+        \App\Models\Notification::where('user_id', auth()->id())
+            ->where('type', 'activity')
+            ->where('is_read', false)
+            ->update(['is_read' => true, 'read_at' => now()]);
+
         $meetings = Meeting::with(['room', 'team', 'teams'])
             ->where('requested_by', auth()->id())
             ->latest()->paginate(10);
@@ -115,6 +123,14 @@ class MeetingController extends Controller
             }
         }
 
+        // Notif ke semua admin & HR bahwa ada request meeting baru
+        $adminHrIds = User::whereIn('role', ['admin','hr'])->pluck('id')->toArray();
+        Notification::sendToMany($adminHrIds, 'activity',
+            'Request Meeting Baru',
+            auth()->user()->name . ' mengajukan request meeting: ' . $meeting->title,
+            route('admin.meetings.show', $meeting)
+        );
+
         return redirect()->route('koordinator.meetings.index')->with('success', 'Request meeting berhasil dikirim ke Admin HR.');
     }
 
@@ -128,6 +144,15 @@ class MeetingController extends Controller
     {
         if ($meeting->requested_by !== auth()->id()) abort(403);
         $meeting->update(['status' => 'confirmed']);
+
+        // Notif ke admin/hr bahwa meeting dikonfirmasi
+        $adminHrIds = User::whereIn('role', ['admin','hr'])->pluck('id')->toArray();
+        Notification::sendToMany($adminHrIds, 'activity',
+            'Meeting Dikonfirmasi',
+            auth()->user()->name . ' mengkonfirmasi kehadiran: ' . $meeting->title,
+            route('admin.meetings.show', $meeting)
+        );
+
         return back()->with('success', 'Kehadiran dikonfirmasi.');
     }
 
@@ -135,6 +160,15 @@ class MeetingController extends Controller
     {
         if ($meeting->requested_by !== auth()->id()) abort(403);
         $meeting->update(['status' => 'cancelled']);
+
+        // Notif ke admin/hr bahwa meeting dibatalkan
+        $adminHrIds = User::whereIn('role', ['admin','hr'])->pluck('id')->toArray();
+        Notification::sendToMany($adminHrIds, 'activity',
+            'Meeting Dibatalkan',
+            auth()->user()->name . ' membatalkan meeting: ' . $meeting->title,
+            route('admin.meetings.show', $meeting)
+        );
+
         return back()->with('success', 'Meeting dibatalkan.');
     }
 
@@ -154,6 +188,14 @@ class MeetingController extends Controller
 
         // Tandai semua undangan sudah dibaca
         $meeting->invitations()->update(['is_read' => true, 'read_at' => now()]);
+
+        // Notif ke admin/hr bahwa meeting selesai
+        $adminHrIds = User::whereIn('role', ['admin','hr'])->pluck('id')->toArray();
+        Notification::sendToMany($adminHrIds, 'activity',
+            'Meeting Selesai',
+            $meeting->title . ' telah diselesaikan oleh ' . auth()->user()->name,
+            route('admin.meetings.show', $meeting)
+        );
 
         return back()->with('success', 'Meeting diselesaikan. Antrian berikutnya otomatis dimulai.');
     }

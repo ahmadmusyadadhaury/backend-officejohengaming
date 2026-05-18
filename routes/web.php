@@ -16,6 +16,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\WeeklySessionController;
 use App\Http\Controllers\RealtimeController;
+use App\Http\Controllers\PushController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -78,10 +79,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
+    Route::get('/push/vapid-key', [PushController::class, 'vapidPublicKey'])->name('push.vapid');
+    Route::post('/push/subscribe', [PushController::class, 'subscribe'])->name('push.subscribe');
+    Route::post('/push/unsubscribe', [PushController::class, 'unsubscribe'])->name('push.unsubscribe');
     Route::get('/realtime/meetings', [RealtimeController::class, 'meetings'])->name('realtime.meetings');
     Route::get('/realtime/weekly', [RealtimeController::class, 'weeklySessions'])->name('realtime.weekly');
     Route::get('/realtime/notif', [RealtimeController::class, 'notifCount'])->name('realtime.notif');
     Route::get('/realtime/dashboard', [RealtimeController::class, 'dashboardStats'])->name('realtime.dashboard');
+    Route::get('/realtime/notifications', [RealtimeController::class, 'notifications'])->name('realtime.notifications');
+    Route::post('/realtime/notifications/read', [RealtimeController::class, 'markRead'])->name('realtime.notifications.read');
+    Route::post('/realtime/notifications/{id}/read', [RealtimeController::class, 'markReadSingle'])->name('realtime.notifications.read.single');
     Route::get('/undangan/{invitation}', [InvitationController::class, 'show'])->name('invitation.show');
     Route::get('/undangan', [InvitationController::class, 'index'])->name('invitation.index');
 

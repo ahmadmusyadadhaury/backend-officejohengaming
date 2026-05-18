@@ -254,26 +254,172 @@
             overlay.classList.toggle('hidden', isOpen);
         }
 
-        // Auto-refresh badge notifikasi topbar setiap 60 detik
-        (function() {
-            const badgeEl = document.querySelector('[data-notif-badge]');
-            if (!badgeEl) return;
+        // ── Notifikasi Realtime ──
+        const audioActivity = new Audio('{{ asset("sounds/notif-activity.mp3") }}');
+        const audioMeeting  = new Audio('{{ asset("sounds/notif-meeting.mp3") }}');
 
-            function refreshNotif() {
-                fetch('{{ route("realtime.notif") }}')
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.total_pending > 0) {
-                            badgeEl.textContent = data.total_pending;
-                            badgeEl.classList.remove('hidden');
-                        } else {
-                            badgeEl.classList.add('hidden');
-                        }
-                    }).catch(() => {});
-            }
+        // State awal dari server — hanya dipakai sekali sebagai baseline
+        // Setelah itu JS yang pegang state
+        let lastActivityCount = null;
+        let lastMeetingCount  = null;
+        let soundUnlocked     = false;
 
-            setInterval(refreshNotif, 60000);
-        })();
+        // Unlock audio setelah interaksi user pertama (browser policy)
+        document.addEventListener('click', function unlockAudio() {
+            audioActivity.play().then(() => { audioActivity.pause(); audioActivity.currentTime = 0; }).catch(() => {});
+            audioMeeting.play().then(() => { audioMeeting.pause(); audioMeeting.currentTime = 0; }).catch(() => {});
+            soundUnlocked = true;
+            document.removeEventListener('click', unlockAudio);
+        }, { once: true });
+
+        function playSound(audio) {
+            if (!soundUnlocked) return;
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        }
+
+        function updateNotifBadges(activityCount, meetingCount) {
+            document.querySelectorAll('.notif-badge-activity').forEach(el => {
+                el.textContent    = activityCount;
+                el.style.display  = activityCount > 0 ? 'inline-block' : 'none';
+            });
+            document.querySelectorAll('.notif-badge-meeting').forEach(el => {
+                el.textContent    = meetingCount;
+                el.style.display  = meetingCount > 0 ? 'inline-block' : 'none';
+            });
+        }
+
+        // Fetch notif dari server, update badge, bunyikan suara jika ada baru
+        function pollNotifications() {
+            fetch('{{ route("realtime.notifications") }}')
+                .then(r => r.json())
+                .then(data => {
+                    const activityCount = data.items.filter(n => n.type === 'activity').length;
+                    const meetingCount  = data.items.filter(n => n.type === 'meeting').length;
+
+                    // Pertama kali load — set baseline tanpa bunyi
+                    if (lastActivityCount === null) {
+                        lastActivityCount = activityCount;
+                        lastMeetingCount  = meetingCount;
+                        updateNotifBadges(activityCount, meetingCount);
+                        return;
+                    }
+
+                    // Ada notif baru — bunyikan suara
+                    if (activityCount > lastActivityCount) playSound(audioActivity);
+                    if (meetingCount  > lastMeetingCount)  playSound(audioMeeting);
+
+                    lastActivityCount = activityCount;
+                    lastMeetingCount  = meetingCount;
+                    updateNotifBadges(activityCount, meetingCount);
+                }).catch(() => {});
+        }
+
+        // Tandai notif sudah dibaca — update DB dulu, baru update UI
+        function markNotifRead(type, event) {
+            if (event) event.preventDefault(); // cegah navigasi dulu
+            const href = event ? event.currentTarget.href : null;
+
+            fetch('{{ route("realtime.notifications.read") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ type })
+            }).then(() => {
+                if (type === 'activity') {
+                    lastActivityCount = 0;
+                    document.querySelectorAll('.notif-badge-activity').forEach(el => el.style.display = 'none');
+                } else {
+                    lastMeetingCount = 0;
+                    document.querySelectorAll('.notif-badge-meeting').forEach(el => el.style.display = 'none');
+                }
+                // Navigasi setelah DB update selesai
+                if (href) window.location.href = href;
+            }).catch(() => {
+                if (href) window.location.href = href;
+            });
+        }
+
+        // Topbar undangan badge
+        function refreshTopbarNotif() {
+            fetch('{{ route("realtime.notif") }}')
+                .then(r => r.json())
+                .then(data => {
+                    const badgeEl = document.querySelector('[data-notif-badge]');
+                    if (!badgeEl) return;
+                    if (data.total_pending > 0) {
+                        badgeEl.textContent = data.total_pending;
+                        badgeEl.classList.remove('hidden');
+                    } else {
+                        badgeEl.classList.add('hidden');
+                    }
+                }).catch(() => {});
+        }
+
+        // Jalankan polling segera saat halaman load
+        pollNotifications();
+        setInterval(pollNotifications, 10000);  // setiap 10 detik
+        setInterval(refreshTopbarNotif, 30000); // topbar setiap 30 detik
+
+        // ── Web Push Notification ──
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                // Minta izin notifikasi
+                Notification.requestPermission().then(function(permission) {
+                    if (permission !== 'granted') return;
+
+                    // Ambil VAPID public key
+                    fetch('{{ route("push.vapid") }}')
+                        .then(r => r.json())
+                        .then(data => {
+                            const vapidKey = urlBase64ToUint8Array(data.key);
+
+                            reg.pushManager.getSubscription().then(function(existing) {
+                                if (existing) {
+                                    // Sudah subscribe, kirim ke server
+                                    sendSubscriptionToServer(existing);
+                                    return;
+                                }
+
+                                // Subscribe baru
+                                reg.pushManager.subscribe({
+                                    userVisibleOnly: true,
+                                    applicationServerKey: vapidKey
+                                }).then(function(sub) {
+                                    sendSubscriptionToServer(sub);
+                                }).catch(() => {});
+                            });
+                        }).catch(() => {});
+                });
+            }).catch(() => {});
+        }
+
+        function sendSubscriptionToServer(subscription) {
+            const key  = subscription.getKey('p256dh');
+            const auth = subscription.getKey('auth');
+
+            fetch('{{ route("push.subscribe") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    endpoint: subscription.endpoint,
+                    p256dh:   key  ? btoa(String.fromCharCode(...new Uint8Array(key)))  : null,
+                    auth:     auth ? btoa(String.fromCharCode(...new Uint8Array(auth))) : null,
+                })
+            }).catch(() => {});
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64  = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const raw     = window.atob(base64);
+            return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+        }
     </script>
     @stack('scripts')
 </body>

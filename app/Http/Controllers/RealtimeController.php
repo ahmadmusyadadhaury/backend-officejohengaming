@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
+use App\Models\Notification;
 use App\Models\WeeklyMeetingInvitation;
 use App\Models\WeeklyMeetingSession;
 use App\Services\MeetingQueueService;
 use App\Services\WeeklyMeetingService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class RealtimeController extends Controller
 {
@@ -138,7 +140,6 @@ class RealtimeController extends Controller
         $role = auth()->user()->role;
 
         if (in_array($role, \App\Models\User::FULL_ACCESS_ROLES)) {
-            // Admin stats
             return response()->json([
                 'pending'        => Meeting::where('status', 'pending')->count(),
                 'today_meetings' => Meeting::whereDate('meeting_date', today())
@@ -148,7 +149,6 @@ class RealtimeController extends Controller
         }
 
         if ($role === 'koordinator' || in_array($role, ['head_of_store', 'gm', 'hr'])) {
-            // Leader stats
             return response()->json([
                 'pending'   => Meeting::where('requested_by', auth()->id())->where('status', 'pending')->count(),
                 'approved'  => Meeting::where('requested_by', auth()->id())->where('status', 'approved')->count(),
@@ -157,5 +157,109 @@ class RealtimeController extends Controller
         }
 
         return response()->json([]);
+    }
+
+    public function notifications()
+    {
+        // Cek meeting yang baru mulai & kirim notif jika belum ada
+        $this->checkMeetingStart();
+
+        $notifs = \App\Models\Notification::where('user_id', auth()->id())
+            ->where('is_read', false)
+            ->latest()
+            ->take(20)
+            ->get(['id','type','title','message','url','created_at']);
+
+        return response()->json([
+            'count'  => $notifs->count(),
+            'items'  => $notifs,
+        ]);
+    }
+
+    private function checkMeetingStart(): void
+    {
+        $userId = auth()->id();
+        $now    = Carbon::now();
+        $today  = $now->toDateString();
+
+        // ── 1. Meeting biasa yang baru mulai (dalam 2 menit terakhir) ──
+        $startedMeetings = MeetingInvitation::where('user_id', $userId)
+            ->whereHas('meeting', function($q) use ($now, $today) {
+                $q->whereIn('status', ['approved','confirmed','in_progress'])
+                  ->where('meeting_date', $today)
+                  ->where('start_time', '<=', $now->format('H:i:s'))
+                  ->where('start_time', '>=', $now->copy()->subMinutes(2)->format('H:i:s'));
+            })
+            ->with('meeting.room')
+            ->get();
+
+        foreach ($startedMeetings as $inv) {
+            $m       = $inv->meeting;
+            $key     = 'meeting_start_' . $m->id;
+            // Cek apakah notif ini sudah pernah dikirim (pakai message sebagai key unik)
+            $already = Notification::where('user_id', $userId)
+                ->where('type', 'meeting')
+                ->where('message', 'LIKE', '%' . $key . '%')
+                ->exists();
+
+            if (!$already) {
+                Notification::send($userId, 'meeting',
+                    'Meeting Dimulai 🟢',
+                    $m->title . ' di ' . $m->room->name . ' sudah dimulai! [' . $key . ']',
+                    route('invitation.index')
+                );
+            }
+        }
+
+        // ── 2. Meeting mingguan yang baru mulai (dalam 2 menit terakhir) ──
+        $startedWeekly = WeeklyMeetingInvitation::where('user_id', $userId)
+            ->whereHas('session', function($q) use ($now, $today) {
+                $q->whereIn('status', ['active','extended'])
+                  ->where('session_date', $today)
+                  ->where('start_time', '<=', $now->format('H:i:s'))
+                  ->where('start_time', '>=', $now->copy()->subMinutes(2)->format('H:i:s'));
+            })
+            ->with('session.weeklyMeeting.room')
+            ->get();
+
+        foreach ($startedWeekly as $inv) {
+            $s   = $inv->session;
+            $key = 'weekly_start_' . $s->id;
+            $already = Notification::where('user_id', $userId)
+                ->where('type', 'meeting')
+                ->where('message', 'LIKE', '%' . $key . '%')
+                ->exists();
+
+            if (!$already) {
+                Notification::send($userId, 'meeting',
+                    'Meeting Mingguan Dimulai 🔁',
+                    $s->weeklyMeeting->title . ' di ' . $s->weeklyMeeting->room->name . ' sudah dimulai! [' . $key . ']',
+                    route('weekly.index')
+                );
+            }
+        }
+    }
+
+    public function markRead(Request $request)
+    {
+        $query = \App\Models\Notification::where('user_id', auth()->id())
+            ->where('is_read', false);
+
+        if ($request->input('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
+        $query->update(['is_read' => true, 'read_at' => now()]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function markReadSingle(int $id)
+    {
+        \App\Models\Notification::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->update(['is_read' => true, 'read_at' => now()]);
+
+        return response()->json(['success' => true]);
     }
 }
