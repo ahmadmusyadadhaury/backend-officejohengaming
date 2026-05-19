@@ -59,24 +59,8 @@ class MeetingController extends Controller
 
         $room = Room::findOrFail($request->room_id);
 
-        // Cek apakah ruangan sudah dibooking orang lain di waktu yang sama
-        $roomConflict = Meeting::where('room_id', $request->room_id)
-            ->where('meeting_date', $request->meeting_date)
-            ->where('requested_by', '!=', auth()->id())
-            ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
-            ->where('queue_position', 0)
-            ->where(function ($q) use ($request) {
-                $q->where('start_time', '<', $request->end_time)
-                  ->where('end_time', '>', $request->start_time);
-            })
-            ->exists();
-
-        if ($roomConflict) {
-            return back()->withErrors(['room_id' => 'Tidak dapat memperpanjang waktu dikarenakan sudah ada yang booking di waktu tersebut.'])->withInput();
-        }
-
-        // Cek konflik waktu milik sendiri di hari yang sama
-        $conflictSameTime = Meeting::where('requested_by', auth()->id())
+        // Cek konflik waktu milik sendiri di hari yang sama (prioritas utama)
+        $ownConflict = Meeting::where('requested_by', auth()->id())
             ->where('meeting_date', $request->meeting_date)
             ->whereIn('status', ['pending', 'approved', 'confirmed', 'in_progress'])
             ->where(function ($q) use ($request) {
@@ -85,8 +69,44 @@ class MeetingController extends Controller
             })
             ->exists();
 
-        if ($conflictSameTime) {
+        if ($ownConflict) {
             return back()->withErrors(['title' => 'Kamu sudah memiliki meeting di waktu yang sama.'])->withInput();
+        }
+
+        // Cek apakah ruangan sudah dibooking orang lain di waktu yang sama
+        $conflict = Meeting::where('room_id', $request->room_id)
+            ->where('meeting_date', $request->meeting_date)
+            ->where('requested_by', '!=', auth()->id())
+            ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
+            ->where('queue_position', 0)
+            ->where(function ($q) use ($request) {
+                $q->where('start_time', '<', $request->end_time)
+                  ->where('end_time', '>', $request->start_time);
+            })
+            ->first();
+
+        if ($conflict) {
+            $filePath = null;
+            if ($request->hasFile('file')) {
+                $filePath = $request->file('file')->store('meeting-files', 'public');
+            }
+
+            session()->put('override_meeting_data', [
+                'title'           => $request->title,
+                'team_id'         => $teamId,
+                'why'             => $request->why,
+                'what'            => $request->what,
+                'how_expected'    => $request->how_expected,
+                'meeting_date'    => $request->meeting_date,
+                'start_time'      => $request->start_time,
+                'end_time'        => $request->end_time,
+                'file_path'       => $filePath,
+                'extra_teams'     => $request->extra_teams ?? [],
+                'assets'          => $request->assets ?? [],
+                'conflict_meeting_id' => $conflict->id,
+            ]);
+
+            return redirect()->route('override.create');
         }
 
         $filePath = null;

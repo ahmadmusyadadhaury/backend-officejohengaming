@@ -57,6 +57,18 @@ class Meeting extends Model
         return $this->hasMany(MeetingInvitation::class);
     }
 
+    // Override request where this meeting is the requester
+    public function overrideRequest()
+    {
+        return $this->hasOne(MeetingOverrideRequest::class, 'requester_meeting_id');
+    }
+
+    // Override request where this meeting is the target
+    public function overrideTarget()
+    {
+        return $this->hasOne(MeetingOverrideRequest::class, 'target_meeting_id');
+    }
+
     // Semua tim yang terlibat (tim koordinator + tim tambahan)
     public function allTeamIds(): array
     {

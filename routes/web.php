@@ -18,6 +18,7 @@ use App\Http\Controllers\WeeklySessionController;
 use App\Http\Controllers\RealtimeController;
 use App\Http\Controllers\PushController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\OverrideRequestController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -98,4 +99,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/weekly-session/{session}/contribute', [WeeklySessionController::class, 'contribute'])->name('weekly.contribute');
     Route::post('/weekly-session/{session}/extend', [WeeklySessionController::class, 'extend'])->name('weekly.extend');
     Route::post('/weekly-session/{session}/complete', [WeeklySessionController::class, 'complete'])->name('weekly.complete');
+
+    // Override Routes
+    Route::get('/override/create', [OverrideRequestController::class, 'create'])->name('override.create');
+    Route::post('/override', [OverrideRequestController::class, 'store'])->name('override.store');
+    Route::get('/override/{override}', [OverrideRequestController::class, 'show'])->name('override.show');
+    Route::patch('/override/{override}/accept', [OverrideRequestController::class, 'accept'])->name('override.accept');
+    Route::patch('/override/{override}/reject', [OverrideRequestController::class, 'reject'])->name('override.reject');
 });
