@@ -204,6 +204,12 @@
                 </a>
 
                 <span class="text-xs hidden md:block" style="color:var(--text-muted);">{{ now()->isoFormat('D MMM Y') }}</span>
+
+                {{-- Indikator Push Notification --}}
+                <div id="push-status" title="Push notification tidak aktif" style="cursor:help;" class="relative flex items-center gap-1 text-xs">
+                    <span id="push-dot" class="w-2 h-2 rounded-full inline-block" style="background:#6b7280;"></span>
+                    <span id="push-label" class="hidden sm:inline font-gaming font-semibold" style="color:var(--text-muted);font-size:0.6rem;letter-spacing:0.08em;">PUSH</span>
+                </div>
             </div>
         </header>
 
@@ -278,6 +284,8 @@
             audio.play().catch(() => {});
         }
 
+        let pageBaseTitle = document.title;
+
         function updateNotifBadges(activityCount, meetingCount) {
             document.querySelectorAll('.notif-badge-activity').forEach(el => {
                 el.textContent    = activityCount;
@@ -287,6 +295,18 @@
                 el.textContent    = meetingCount;
                 el.style.display  = meetingCount > 0 ? 'inline-block' : 'none';
             });
+
+            // Update judul tab seperti WhatsApp "(1) New message"
+            const totalBadge = activityCount + meetingCount;
+            if (!pageBaseTitle) pageBaseTitle = document.title.replace(/^\(\d+\)\s*/, '');
+            document.title = totalBadge > 0 ? '(' + totalBadge + ') ' + pageBaseTitle : pageBaseTitle;
+
+            // Badge API untuk icon tab (Chrome/Edge)
+            if (navigator.setAppBadge) {
+                navigator.setAppBadge(totalBadge).catch(() => {});
+            } else if (navigator.clearAppBadge) {
+                navigator.clearAppBadge().catch(() => {});
+            }
         }
 
         // Fetch notif dari server, update badge, bunyikan suara jika ada baru
@@ -328,14 +348,11 @@
                 },
                 body: JSON.stringify({ type })
             }).then(() => {
-                if (type === 'activity') {
-                    lastActivityCount = 0;
-                    document.querySelectorAll('.notif-badge-activity').forEach(el => el.style.display = 'none');
-                } else {
-                    lastMeetingCount = 0;
-                    document.querySelectorAll('.notif-badge-meeting').forEach(el => el.style.display = 'none');
-                }
-                // Navigasi setelah DB update selesai
+                const newActivity = type === 'activity' ? 0 : lastActivityCount;
+                const newMeeting  = type === 'meeting'  ? 0 : lastMeetingCount;
+                lastActivityCount = newActivity;
+                lastMeetingCount  = newMeeting;
+                updateNotifBadges(newActivity, newMeeting);
                 if (href) window.location.href = href;
             }).catch(() => {
                 if (href) window.location.href = href;
@@ -363,12 +380,43 @@
         setInterval(pollNotifications, 10000);  // setiap 10 detik
         setInterval(refreshTopbarNotif, 30000); // topbar setiap 30 detik
 
+        // ── Indikator Push Status ──
+        const pushDot    = document.getElementById('push-dot');
+        const pushLabel  = document.getElementById('push-label');
+        const pushStatus = document.getElementById('push-status');
+
+        function updatePushStatus(active, msg) {
+            pushDot.style.background   = active ? '#22c55e' : '#ef4444';
+            pushStatus.title           = msg;
+            if (pushLabel) pushLabel.textContent = active ? 'PUSH ON' : 'PUSH OFF';
+        }
+
         // ── Web Push Notification ──
         if ('serviceWorker' in navigator && 'PushManager' in window) {
             navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                // Listen message dari Service Worker → trigger sound instan
+                navigator.serviceWorker.addEventListener('message', function(event) {
+                    if (event.data && event.data.type === 'push_notification') {
+                        pollNotifications();
+                    }
+                });
+
+                // Cek subscription yang sudah ada
+                reg.pushManager.getSubscription().then(function(existing) {
+                    if (existing) {
+                        sendSubscriptionToServer(existing);
+                        updatePushStatus(true, 'Push notification aktif');
+                    } else {
+                        updatePushStatus(false, 'Belum subscribe — izinkan notifikasi');
+                    }
+                });
+
                 // Minta izin notifikasi
                 Notification.requestPermission().then(function(permission) {
-                    if (permission !== 'granted') return;
+                    if (permission !== 'granted') {
+                        updatePushStatus(false, 'Izin notifikasi ditolak — ubah di pengaturan browser');
+                        return;
+                    }
 
                     // Ambil VAPID public key
                     fetch('{{ route("push.vapid") }}')
@@ -378,8 +426,8 @@
 
                             reg.pushManager.getSubscription().then(function(existing) {
                                 if (existing) {
-                                    // Sudah subscribe, kirim ke server
                                     sendSubscriptionToServer(existing);
+                                    updatePushStatus(true, 'Push notification aktif');
                                     return;
                                 }
 
@@ -389,11 +437,20 @@
                                     applicationServerKey: vapidKey
                                 }).then(function(sub) {
                                     sendSubscriptionToServer(sub);
-                                }).catch(() => {});
+                                    updatePushStatus(true, 'Push notification aktif');
+                                }).catch(function(err) {
+                                    updatePushStatus(false, 'Gagal subscribe: ' + err.message);
+                                });
                             });
-                        }).catch(() => {});
+                        }).catch(function(err) {
+                            updatePushStatus(false, 'Gagal ambil VAPID key');
+                        });
                 });
-            }).catch(() => {});
+            }).catch(function(err) {
+                updatePushStatus(false, 'Service Worker gagal daftar');
+            });
+        } else {
+            updatePushStatus(false, 'Browser tidak mendukung push notification');
         }
 
         function sendSubscriptionToServer(subscription) {

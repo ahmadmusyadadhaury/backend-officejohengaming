@@ -23,6 +23,19 @@ self.addEventListener('push', function(event) {
 
     event.waitUntil(
         self.registration.showNotification(data.title || 'Johen Gaming Meeting Room', options)
+            .then(() => {
+                // Kirim sinyal ke halaman agar play sound instan
+                return self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+                    .then(function(clientList) {
+                        for (const client of clientList) {
+                            client.postMessage({
+                                type: 'push_notification',
+                                title: data.title,
+                                body: data.body,
+                            });
+                        }
+                    });
+            })
     );
 });
 
