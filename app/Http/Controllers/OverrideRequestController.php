@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Meeting;
 use App\Models\MeetingOverrideRequest;
 use App\Models\Notification;
-use App\Models\User;
 use App\Services\MeetingQueueService;
 use Illuminate\Http\Request;
 
@@ -95,13 +94,6 @@ class OverrideRequestController extends Controller
             route('override.show', $override)
         );
 
-        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
-        Notification::sendToMany($adminHrIds, 'activity',
-            'Request Meeting + Override',
-            auth()->user()->name . ' (Tim ' . $meeting->team->name . ') mengajukan override untuk "' . $conflict->title . '". Meeting: ' . $meeting->title,
-            route('admin.meetings.show', $meeting)
-        );
-
         session()->forget('override_meeting_data');
 
         return redirect()->route('koordinator.meetings.index')
@@ -144,13 +136,6 @@ class OverrideRequestController extends Controller
             'Override Disetujui ✅',
             'Booking "' . $override->requesterMeeting->title . '" telah disetujui dan menggantikan booking sebelumnya.',
             route('koordinator.meetings.show', $override->requesterMeeting)
-        );
-
-        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
-        Notification::sendToMany($adminHrIds, 'activity',
-            'Override Disetujui',
-            auth()->user()->name . ' menyetujui override untuk meeting: ' . $override->requesterMeeting->title,
-            route('admin.meetings.show', $override->requesterMeeting)
         );
 
         return redirect()->route('override.show', $override)
