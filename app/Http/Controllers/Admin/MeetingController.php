@@ -90,8 +90,8 @@ class MeetingController extends Controller
 
     public function destroy(Meeting $meeting)
     {
-        abort_if(in_array($meeting->status, ['approved', 'confirmed', 'in_progress']), 403,
-            'Tidak bisa menghapus meeting yang sedang aktif.');
+        abort_if(!in_array($meeting->status, ['cancelled', 'rejected']), 403,
+            'Hanya meeting dengan status Cancelled atau Rejected yang bisa dihapus.');
 
         $meeting->delete();
 
