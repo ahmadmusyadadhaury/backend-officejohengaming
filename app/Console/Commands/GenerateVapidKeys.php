@@ -73,8 +73,13 @@ class GenerateVapidKeys extends Command
             return null;
         }
 
-        $pubRaw = $details['ec']['x'] . $details['ec']['y'];
-        $privRaw = $details['ec']['d'];
+        // Koordinat EC P-256 harus 32 byte — ambil 32 byte terakhir
+        $x = substr(str_pad($details['ec']['x'], 32, "\0", STR_PAD_LEFT), -32);
+        $y = substr(str_pad($details['ec']['y'], 32, "\0", STR_PAD_LEFT), -32);
+        $d = substr(str_pad($details['ec']['d'], 32, "\0", STR_PAD_LEFT), -32);
+
+        $pubRaw = $x . $y;
+        $privRaw = $d;
 
         return [
             'publicKey'  => $this->base64url($pubRaw),
