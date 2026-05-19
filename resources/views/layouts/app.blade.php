@@ -401,6 +401,7 @@
                 // Listen message dari Service Worker → trigger sound instan
                 navigator.serviceWorker.addEventListener('message', function(event) {
                     if (event.data && event.data.type === 'push_notification') {
+                        playSound(event.data.notifType === 'meeting' ? audioMeeting : audioActivity);
                         pollNotifications();
                     }
                 });

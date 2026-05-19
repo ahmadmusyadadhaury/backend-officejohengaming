@@ -30,6 +30,7 @@ self.addEventListener('push', function(event) {
                         for (const client of clientList) {
                             client.postMessage({
                                 type: 'push_notification',
+                                notifType: data.type || 'activity',
                                 title: data.title,
                                 body: data.body,
                             });

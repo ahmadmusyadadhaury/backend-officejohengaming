@@ -26,7 +26,7 @@ class Notification extends Model
 
         // Kirim Web Push
         try {
-            \App\Http\Controllers\PushController::sendToUser($userId, $title, $message, $url ?? '/');
+            \App\Http\Controllers\PushController::sendToUser($userId, $type, $title, $message, $url ?? '/');
         } catch (\Throwable $e) {}
     }
 
@@ -49,7 +49,7 @@ class Notification extends Model
 
         // Kirim Web Push ke semua
         try {
-            \App\Http\Controllers\PushController::sendToMany($userIds, $title, $message, $url ?? '/');
+            \App\Http\Controllers\PushController::sendToMany($userIds, $type, $title, $message, $url ?? '/');
         } catch (\Throwable $e) {}
     }
 }

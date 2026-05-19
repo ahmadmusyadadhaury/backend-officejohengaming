@@ -44,7 +44,7 @@ class PushController extends Controller
     }
 
     // Kirim push ke user tertentu (dipanggil dari Notification::send)
-    public static function sendToUser(int $userId, string $title, string $body, string $url = '/'): void
+    public static function sendToUser(int $userId, string $type, string $title, string $body, string $url = '/'): void
     {
         $subs = DB::table('push_subscriptions')->where('user_id', $userId)->get();
         if ($subs->isEmpty()) return;
@@ -72,6 +72,7 @@ class PushController extends Controller
                 'title' => $title,
                 'body'  => $body,
                 'url'   => $url,
+                'type'  => $type,
                 'icon'  => '/images/logo/logo_web.png',
             ]);
 
@@ -89,10 +90,10 @@ class PushController extends Controller
     }
 
     // Kirim push ke banyak user
-    public static function sendToMany(array $userIds, string $title, string $body, string $url = '/'): void
+    public static function sendToMany(array $userIds, string $type, string $title, string $body, string $url = '/'): void
     {
         foreach ($userIds as $userId) {
-            static::sendToUser($userId, $title, $body, $url);
+            static::sendToUser($userId, $type, $title, $body, $url);
         }
     }
 
