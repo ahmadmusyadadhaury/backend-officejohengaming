@@ -87,4 +87,15 @@ class MeetingController extends Controller
 
         return back()->with('success', 'Meeting ditolak.');
     }
+
+    public function destroy(Meeting $meeting)
+    {
+        abort_if(in_array($meeting->status, ['approved', 'confirmed', 'in_progress']), 403,
+            'Tidak bisa menghapus meeting yang sedang aktif.');
+
+        $meeting->delete();
+
+        return redirect()->route('admin.meetings.index')
+            ->with('success', 'Meeting berhasil dihapus.');
+    }
 }

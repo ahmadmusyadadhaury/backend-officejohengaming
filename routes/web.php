@@ -47,6 +47,7 @@ Route::middleware(['auth', 'admin_hr'])->prefix('admin')->name('admin.')->group(
     Route::get('meetings/{meeting}', [AdminMeetingController::class, 'show'])->name('meetings.show');
     Route::patch('meetings/{meeting}/approve', [AdminMeetingController::class, 'approve'])->name('meetings.approve');
     Route::patch('meetings/{meeting}/reject', [AdminMeetingController::class, 'reject'])->name('meetings.reject');
+    Route::delete('meetings/{meeting}', [AdminMeetingController::class, 'destroy'])->name('meetings.destroy');
     Route::resource('weekly-meetings', WeeklyMeetingController::class);
 });
 

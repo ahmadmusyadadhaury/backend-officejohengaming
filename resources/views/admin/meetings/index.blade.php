@@ -60,6 +60,12 @@
                         </td>
                         <td>
                             <a href="{{ route('admin.meetings.show', $meeting) }}" class="btn btn-secondary btn-sm">Detail</a>
+                            @if(!in_array($meeting->status, ['approved','confirmed','in_progress']))
+                            <form method="POST" action="{{ route('admin.meetings.destroy', $meeting) }}" class="inline" onsubmit="return confirm('Hapus meeting ini? Data tidak bisa dikembalikan.')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                            @endif
                         </td>
                     </tr>
                     @empty
