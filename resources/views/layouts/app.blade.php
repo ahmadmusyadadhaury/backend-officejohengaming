@@ -264,28 +264,47 @@
             overlay.classList.toggle('hidden', isOpen);
         }
 
-        // ── Notifikasi Realtime ──
-        const audioActivity = new Audio('{{ asset("sounds/notif-activity.mp3") }}');
-        const audioMeeting  = new Audio('{{ asset("sounds/notif-meeting.mp3") }}');
+        // ── Notifikasi Realtime (AudioContext — lebih keras, work di background) ──
+        let audioCtx       = null;
+        let actBuffer      = null;
+        let meetBuffer     = null;
+        let soundUnlocked  = false;
 
-        // State awal dari server — hanya dipakai sekali sebagai baseline
-        // Setelah itu JS yang pegang state
-        let lastActivityCount = null;
-        let lastMeetingCount  = null;
-        let soundUnlocked     = false;
-
-        // Unlock audio setelah interaksi user pertama (browser policy)
+        // Unlock AudioContext setelah interaksi user pertama (browser policy)
         document.addEventListener('click', function unlockAudio() {
-            audioActivity.play().then(() => { audioActivity.pause(); audioActivity.currentTime = 0; }).catch(() => {});
-            audioMeeting.play().then(() => { audioMeeting.pause(); audioMeeting.currentTime = 0; }).catch(() => {});
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Preload & decode kedua sound file
+            Promise.all([
+                fetch('{{ asset("sounds/notif-activity.mp3") }}').then(r => r.arrayBuffer()).then(buf => audioCtx.decodeAudioData(buf)),
+                fetch('{{ asset("sounds/notif-meeting.mp3") }}').then(r => r.arrayBuffer()).then(buf => audioCtx.decodeAudioData(buf)),
+            ]).then(([act, meet]) => {
+                actBuffer  = act;
+                meetBuffer = meet;
+            }).catch(() => {});
+
             soundUnlocked = true;
             document.removeEventListener('click', unlockAudio);
         }, { once: true });
 
         function playSound(audio) {
-            if (!soundUnlocked) return;
-            audio.currentTime = 0;
-            audio.play().catch(() => {});
+            // Fallback ke Audio element jika AudioContext belum siap
+            if (typeof audio === 'object' && audio instanceof Audio) {
+                audio.currentTime = 0;
+                audio.play().catch(() => {});
+                return;
+            }
+        }
+
+        function playBuffer(buffer) {
+            if (!soundUnlocked || !audioCtx || !buffer) return;
+            const source  = audioCtx.createBufferSource();
+            const gain    = audioCtx.createGain();
+            gain.gain.value = 2.0; // 2x lebih keras
+            source.buffer = buffer;
+            source.connect(gain);
+            gain.connect(audioCtx.destination);
+            source.start(0);
         }
 
         let pageBaseTitle = document.title;
@@ -330,8 +349,8 @@
                     }
 
                     // Ada notif baru — bunyikan suara
-                    if (activityCount > lastActivityCount) playSound(audioActivity);
-                    if (meetingCount  > lastMeetingCount)  playSound(audioMeeting);
+                    if (activityCount > lastActivityCount) playBuffer(actBuffer);
+                    if (meetingCount  > lastMeetingCount)  playBuffer(meetBuffer);
 
                     lastActivityCount = activityCount;
                     lastMeetingCount  = meetingCount;
@@ -401,7 +420,7 @@
                 // Listen message dari Service Worker → trigger sound instan
                 navigator.serviceWorker.addEventListener('message', function(event) {
                     if (event.data && event.data.type === 'push_notification') {
-                        playSound(event.data.notifType === 'meeting' ? audioMeeting : audioActivity);
+                        playBuffer(event.data.notifType === 'meeting' ? meetBuffer : actBuffer);
                         pollNotifications();
                     }
                 });
