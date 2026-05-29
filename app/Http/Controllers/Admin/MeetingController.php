@@ -15,26 +15,28 @@ class MeetingController extends Controller
     public function index()
     {
         // Tandai notif activity sebagai sudah dibaca
-        \App\Models\Notification::where('user_id', auth()->id())
+        Notification::where('user_id', auth()->id())
             ->where('type', 'activity')
             ->where('is_read', false)
             ->update(['is_read' => true, 'read_at' => now()]);
 
         $meetings = Meeting::with(['requester', 'team', 'teams', 'room'])
             ->latest()->paginate(15);
+
         return view('admin.meetings.index', compact('meetings'));
     }
 
     public function show(Meeting $meeting)
     {
-        $meeting->load(['requester', 'team', 'teams', 'room', 'participants', 'assets']);
+        $meeting->load(['requester', 'team', 'teams', 'room', 'participants', 'assets', 'mom.creator']);
+
         return view('admin.meetings.show', compact('meeting'));
     }
 
     public function approve(Meeting $meeting, MeetingQueueService $queue)
     {
         $meeting->update([
-            'status'      => 'approved',
+            'status' => 'approved',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
@@ -56,16 +58,16 @@ class MeetingController extends Controller
         // Notif ke pemohon bahwa meeting disetujui
         Notification::send($meeting->requested_by, 'activity',
             'Meeting Disetujui ✅',
-            'Meeting "' . $meeting->title . '" telah disetujui. Status: ' . $queueLabel,
+            'Meeting "'.$meeting->title.'" telah disetujui. Status: '.$queueLabel,
             route('koordinator.meetings.show', $meeting)
         );
 
         // Notif ke semua anggota tim yang diundang
-        $memberIds = $members->pluck('id')->reject(fn($id) => $id === $meeting->requested_by)->toArray();
-        if (!empty($memberIds)) {
+        $memberIds = $members->pluck('id')->reject(fn ($id) => $id === $meeting->requested_by)->toArray();
+        if (! empty($memberIds)) {
             Notification::sendToMany($memberIds, 'meeting',
                 'Undangan Meeting Baru 📅',
-                'Kamu diundang ke meeting: ' . $meeting->title . ' pada ' . $meeting->meeting_date->format('d M Y'),
+                'Kamu diundang ke meeting: '.$meeting->title.' pada '.$meeting->meeting_date->format('d M Y'),
                 route('invitation.index')
             );
         }
@@ -81,7 +83,7 @@ class MeetingController extends Controller
         // Notif ke pemohon bahwa meeting ditolak
         Notification::send($meeting->requested_by, 'activity',
             'Meeting Ditolak ❌',
-            'Meeting "' . $meeting->title . '" ditolak. Alasan: ' . $request->reject_reason,
+            'Meeting "'.$meeting->title.'" ditolak. Alasan: '.$request->reject_reason,
             route('koordinator.meetings.show', $meeting)
         );
 
@@ -90,7 +92,7 @@ class MeetingController extends Controller
 
     public function destroy(Meeting $meeting)
     {
-        abort_if(!in_array($meeting->status, ['cancelled', 'rejected']), 403,
+        abort_if(! in_array($meeting->status, ['cancelled', 'rejected']), 403,
             'Hanya meeting dengan status Cancelled atau Rejected yang bisa dihapus.');
 
         $meeting->delete();

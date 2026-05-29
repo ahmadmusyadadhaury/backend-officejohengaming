@@ -130,16 +130,50 @@
             <div class="space-y-2 text-sm">
                 <div class="flex items-center gap-2">
                     <span style="color:var(--text-muted);">Status:</span>
-                    <span class="badge {{ $meeting->mom->status === 'sent' ? 'badge-green' : 'badge-yellow' }}">{{ ucfirst($meeting->mom->status) }}</span>
+                    <span class="badge {{ $meeting->mom->status === 'sent' ? 'badge-green' : 'badge-yellow' }}">{{ $meeting->mom->status === 'sent' ? 'Terkirim' : 'Draft' }}</span>
                 </div>
-                <p style="color:var(--text-secondary);">PIC: <strong style="color:var(--text-primary);">{{ $meeting->mom->pic }}</strong></p>
-                @if($meeting->mom->status === 'draft')
-                    <div class="flex gap-2 mt-3">
-                        <a href="{{ route('koordinator.mom.edit', $meeting->mom) }}" class="btn btn-secondary btn-sm">Edit MOM</a>
-                        <form method="POST" action="{{ route('koordinator.mom.send', $meeting->mom) }}">
-                            @csrf @method('PATCH')
-                            <button class="btn btn-success btn-sm">Kirim MOM</button>
-                        </form>
+                @if($meeting->mom->status === 'sent')
+                    <div class="space-y-3 mt-3">
+                        @foreach(['summary'=>'Ringkasan Pembahasan','decisions'=>'Keputusan','action_plan'=>'Action Plan'] as $field => $label)
+                        <div>
+                            <p class="text-xs font-semibold mb-1" style="color:var(--color-accent-light);letter-spacing:0.08em;text-transform:uppercase;">{{ $label }}</p>
+                            <p class="text-sm p-3 rounded-lg" style="color:var(--text-secondary);background:var(--bg-surface-2);border:1px solid var(--border-color);">{{ $meeting->mom->$field }}</p>
+                        </div>
+                        @endforeach
+                        <div class="grid grid-cols-2 gap-3 pt-1">
+                            <div>
+                                <p class="text-xs font-semibold mb-1" style="color:var(--color-accent-light);letter-spacing:0.08em;text-transform:uppercase;">PIC</p>
+                                <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ $meeting->mom->pic }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold mb-1" style="color:var(--color-accent-light);letter-spacing:0.08em;text-transform:uppercase;">Dibuat Oleh</p>
+                                <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ $meeting->mom->creator->name ?? '—' }}</p>
+                            </div>
+                        </div>
+                        @if($meeting->mom->file_path)
+                        <div>
+                            <a href="{{ Storage::url($meeting->mom->file_path) }}" target="_blank" class="btn btn-secondary btn-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Download Lampiran
+                            </a>
+                        </div>
+                        @endif
+                        @if($meeting->mom->sent_at)
+                        <p class="text-xs" style="color:var(--text-muted);">Dikirim pada {{ $meeting->mom->sent_at->format('d M Y H:i') }}</p>
+                        @endif
+                    </div>
+                @else
+                    <div class="space-y-2 mt-3">
+                        <p style="color:var(--text-secondary);">PIC: <strong style="color:var(--text-primary);">{{ $meeting->mom->pic }}</strong></p>
+                        <div class="flex gap-2">
+                            <a href="{{ route('koordinator.mom.edit', $meeting->mom) }}" class="btn btn-secondary btn-sm">Edit MOM</a>
+                            <form method="POST" action="{{ route('koordinator.mom.send', $meeting->mom) }}">
+                                @csrf @method('PATCH')
+                                <button class="btn btn-success btn-sm">Kirim MOM</button>
+                            </form>
+                        </div>
                     </div>
                 @endif
             </div>

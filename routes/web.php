@@ -1,35 +1,38 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\AssetController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\MeetingController as AdminMeetingController;
+use App\Http\Controllers\Admin\MomController as AdminMomController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\WeeklyMeetingController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
-use App\Http\Controllers\Admin\MeetingController as AdminMeetingController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\Leader\DashboardController as KoordinatorDashboard;
 use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingController;
 use App\Http\Controllers\Leader\MomController;
-use App\Http\Controllers\User\DashboardController as UserDashboard;
-use App\Http\Controllers\CalendarController;
-use App\Http\Controllers\InvitationController;
-use App\Http\Controllers\WeeklySessionController;
-use App\Http\Controllers\RealtimeController;
-use App\Http\Controllers\PushController;
-use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\OverrideRequestController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PushController;
+use App\Http\Controllers\RealtimeController;
+use App\Http\Controllers\User\DashboardController as UserDashboard;
+use App\Http\Controllers\WeeklySessionController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->role;
-        if (in_array($role, \App\Models\User::FULL_ACCESS_ROLES)) {
+        if (in_array($role, User::FULL_ACCESS_ROLES)) {
             return redirect()->route('admin.dashboard');
         }
-        return redirect()->route($role . '.dashboard');
+
+        return redirect()->route($role.'.dashboard');
     }
+
     return redirect()->route('login');
 });
 
@@ -49,6 +52,7 @@ Route::middleware(['auth', 'admin_hr'])->prefix('admin')->name('admin.')->group(
     Route::patch('meetings/{meeting}/reject', [AdminMeetingController::class, 'reject'])->name('meetings.reject');
     Route::delete('meetings/{meeting}', [AdminMeetingController::class, 'destroy'])->name('meetings.destroy');
     Route::resource('weekly-meetings', WeeklyMeetingController::class);
+    Route::get('moms', [AdminMomController::class, 'index'])->name('moms.index');
 });
 
 // Kelola Akun — hanya Admin Master dan HR

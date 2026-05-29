@@ -17,7 +17,7 @@ class MeetingController extends Controller
     public function index()
     {
         // Tandai notif activity sebagai sudah dibaca
-        \App\Models\Notification::where('user_id', auth()->id())
+        Notification::where('user_id', auth()->id())
             ->where('type', 'activity')
             ->where('is_read', false)
             ->update(['is_read' => true, 'read_at' => now()]);
@@ -25,14 +25,15 @@ class MeetingController extends Controller
         $meetings = Meeting::with(['room', 'team', 'teams'])
             ->where('requested_by', auth()->id())
             ->latest()->paginate(10);
+
         return view('leader.meetings.index', compact('meetings'));
     }
 
     public function create()
     {
         return view('leader.meetings.create', [
-            'rooms'  => Room::where('is_active', true)->get(),
-            'teams'  => Team::where('is_active', true)->get(),
+            'rooms' => Room::where('is_active', true)->get(),
+            'teams' => Team::where('is_active', true)->get(),
             'assets' => Asset::where('is_active', true)->get(),
         ]);
     }
@@ -40,17 +41,17 @@ class MeetingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'        => 'required|string|max:255',
-            'room_id'      => 'required|exists:rooms,id',
+            'title' => 'required|string|max:255',
+            'room_id' => 'required|exists:rooms,id',
             'meeting_date' => 'required|date|after_or_equal:today',
-            'start_time'   => 'required',
-            'end_time'     => 'required|after:start_time',
-            'why'          => 'required|string',
-            'what'         => 'required|string',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
+            'why' => 'required|string',
+            'what' => 'required|string',
             'how_expected' => 'required|string',
-            'file'         => 'nullable|file|mimes:pdf,doc,docx|max:10240',
-            'extra_teams'  => 'nullable|array',
-            'extra_teams.*'=> 'exists:teams,id',
+            'file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+            'extra_teams' => 'nullable|array',
+            'extra_teams.*' => 'exists:teams,id',
             'main_team_id' => 'required_if:team_id,null|nullable|exists:teams,id',
         ]);
 
@@ -65,7 +66,7 @@ class MeetingController extends Controller
             ->whereIn('status', ['pending', 'approved', 'confirmed', 'in_progress'])
             ->where(function ($q) use ($request) {
                 $q->where('start_time', '<', $request->end_time)
-                  ->where('end_time', '>', $request->start_time);
+                    ->where('end_time', '>', $request->start_time);
             })
             ->exists();
 
@@ -81,7 +82,7 @@ class MeetingController extends Controller
             ->where('queue_position', 0)
             ->where(function ($q) use ($request) {
                 $q->where('start_time', '<', $request->end_time)
-                  ->where('end_time', '>', $request->start_time);
+                    ->where('end_time', '>', $request->start_time);
             })
             ->first();
 
@@ -92,17 +93,17 @@ class MeetingController extends Controller
             }
 
             session()->put('override_meeting_data', [
-                'title'           => $request->title,
-                'team_id'         => $teamId,
-                'why'             => $request->why,
-                'what'            => $request->what,
-                'how_expected'    => $request->how_expected,
-                'meeting_date'    => $request->meeting_date,
-                'start_time'      => $request->start_time,
-                'end_time'        => $request->end_time,
-                'file_path'       => $filePath,
-                'extra_teams'     => $request->extra_teams ?? [],
-                'assets'          => $request->assets ?? [],
+                'title' => $request->title,
+                'team_id' => $teamId,
+                'why' => $request->why,
+                'what' => $request->what,
+                'how_expected' => $request->how_expected,
+                'meeting_date' => $request->meeting_date,
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
+                'file_path' => $filePath,
+                'extra_teams' => $request->extra_teams ?? [],
+                'assets' => $request->assets ?? [],
                 'conflict_meeting_id' => $conflict->id,
             ]);
 
@@ -115,18 +116,18 @@ class MeetingController extends Controller
         }
 
         $meeting = Meeting::create([
-            'title'        => $request->title,
-            'room_id'      => $request->room_id,
+            'title' => $request->title,
+            'room_id' => $request->room_id,
             'requested_by' => auth()->id(),
-            'team_id'      => $teamId,
-            'why'          => $request->why,
-            'what'         => $request->what,
+            'team_id' => $teamId,
+            'why' => $request->why,
+            'what' => $request->what,
             'meeting_date' => $request->meeting_date,
-            'start_time'   => $request->start_time,
-            'end_time'     => $request->end_time,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
             'how_expected' => $request->how_expected,
-            'file_path'    => $filePath,
-            'status'       => 'pending',
+            'file_path' => $filePath,
+            'status' => 'pending',
         ]);
 
         // Simpan tim tambahan
@@ -144,10 +145,10 @@ class MeetingController extends Controller
         }
 
         // Notif ke semua admin & HR bahwa ada request meeting baru
-        $adminHrIds = User::whereIn('role', ['admin','hr'])->pluck('id')->toArray();
+        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
         Notification::sendToMany($adminHrIds, 'activity',
             'Request Meeting Baru',
-            auth()->user()->name . ' mengajukan request meeting: ' . $meeting->title,
+            auth()->user()->name.' mengajukan request meeting: '.$meeting->title,
             route('admin.meetings.show', $meeting)
         );
 
@@ -156,20 +157,23 @@ class MeetingController extends Controller
 
     public function show(Meeting $meeting)
     {
-        $meeting->load(['room', 'team', 'teams', 'assets', 'mom']);
+        $meeting->load(['room', 'team', 'teams', 'assets', 'mom.creator']);
+
         return view('leader.meetings.show', compact('meeting'));
     }
 
     public function confirm(Meeting $meeting)
     {
-        if ($meeting->requested_by !== auth()->id()) abort(403);
+        if ($meeting->requested_by !== auth()->id()) {
+            abort(403);
+        }
         $meeting->update(['status' => 'confirmed']);
 
         // Notif ke admin/hr bahwa meeting dikonfirmasi
-        $adminHrIds = User::whereIn('role', ['admin','hr'])->pluck('id')->toArray();
+        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
         Notification::sendToMany($adminHrIds, 'activity',
             'Meeting Dikonfirmasi',
-            auth()->user()->name . ' mengkonfirmasi kehadiran: ' . $meeting->title,
+            auth()->user()->name.' mengkonfirmasi kehadiran: '.$meeting->title,
             route('admin.meetings.show', $meeting)
         );
 
@@ -178,14 +182,16 @@ class MeetingController extends Controller
 
     public function cancel(Meeting $meeting)
     {
-        if ($meeting->requested_by !== auth()->id()) abort(403);
+        if ($meeting->requested_by !== auth()->id()) {
+            abort(403);
+        }
         $meeting->update(['status' => 'cancelled']);
 
         // Notif ke admin/hr bahwa meeting dibatalkan
-        $adminHrIds = User::whereIn('role', ['admin','hr'])->pluck('id')->toArray();
+        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
         Notification::sendToMany($adminHrIds, 'activity',
             'Meeting Dibatalkan',
-            auth()->user()->name . ' membatalkan meeting: ' . $meeting->title,
+            auth()->user()->name.' membatalkan meeting: '.$meeting->title,
             route('admin.meetings.show', $meeting)
         );
 
@@ -194,12 +200,14 @@ class MeetingController extends Controller
 
     public function finish(Request $request, Meeting $meeting)
     {
-        if ($meeting->requested_by !== auth()->id()) abort(403);
+        if ($meeting->requested_by !== auth()->id()) {
+            abort(403);
+        }
 
         $actualEnd = $request->actual_end_time ?? now()->format('H:i:s');
 
         $meeting->update([
-            'status'          => 'completed',
+            'status' => 'completed',
             'actual_end_time' => $actualEnd,
         ]);
 
@@ -210,10 +218,10 @@ class MeetingController extends Controller
         $meeting->invitations()->update(['is_read' => true, 'read_at' => now()]);
 
         // Notif ke admin/hr bahwa meeting selesai
-        $adminHrIds = User::whereIn('role', ['admin','hr'])->pluck('id')->toArray();
+        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
         Notification::sendToMany($adminHrIds, 'activity',
             'Meeting Selesai',
-            $meeting->title . ' telah diselesaikan oleh ' . auth()->user()->name,
+            $meeting->title.' telah diselesaikan oleh '.auth()->user()->name,
             route('admin.meetings.show', $meeting)
         );
 
