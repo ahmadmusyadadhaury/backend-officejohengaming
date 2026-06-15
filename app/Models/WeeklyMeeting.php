@@ -10,6 +10,13 @@ class WeeklyMeeting extends Model
 
     protected $casts = ['is_active' => 'boolean'];
 
-    public function room() { return $this->belongsTo(Room::class); }
-    public function creator() { return $this->belongsTo(User::class, 'created_by'); }
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

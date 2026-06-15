@@ -17,7 +17,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password'  => 'hashed',
+            'password' => 'hashed',
             'is_active' => 'boolean',
         ];
     }
@@ -25,14 +25,15 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar && \Storage::disk('public')->exists($this->avatar)) {
-            return asset('storage/' . $this->avatar);
+            return asset('storage/'.$this->avatar);
         }
+
         // Default avatar pakai inisial
         return '';
     }
 
     // Roles yang punya akses penuh (setara admin)
-    const FULL_ACCESS_ROLES = ['admin', 'head_of_store', 'gm', 'hr'];
+    const FULL_ACCESS_ROLES = ['admin', 'head_of_store', 'gm', 'hr', 'ceo'];
 
     public function team()
     {
@@ -82,14 +83,15 @@ class User extends Authenticatable
 
     public function getRoleLabelAttribute(): string
     {
-        return match($this->role) {
-            'admin'         => 'Admin Master',
+        return match ($this->role) {
+            'admin' => 'Admin Master',
             'head_of_store' => 'Head of Store',
-            'gm'            => 'General Manager',
-            'hr'            => 'HR',
-            'koordinator'   => 'Koordinator',
-            'user'          => 'Karyawan',
-            default         => ucfirst($this->role),
+            'gm' => 'General Manager',
+            'ceo' => 'Chief Executive Officer',
+            'hr' => 'HR',
+            'koordinator' => 'Koordinator',
+            'user' => 'Karyawan',
+            default => ucfirst($this->role),
         };
     }
 }

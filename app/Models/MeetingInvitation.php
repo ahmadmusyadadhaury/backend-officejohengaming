@@ -13,6 +13,13 @@ class MeetingInvitation extends Model
         'read_at' => 'datetime',
     ];
 
-    public function meeting() { return $this->belongsTo(Meeting::class); }
-    public function user() { return $this->belongsTo(User::class); }
+    public function meeting()
+    {
+        return $this->belongsTo(Meeting::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

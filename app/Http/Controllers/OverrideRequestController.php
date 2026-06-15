@@ -12,7 +12,7 @@ class OverrideRequestController extends Controller
 {
     public function create()
     {
-        if (!session()->has('override_meeting_data')) {
+        if (! session()->has('override_meeting_data')) {
             return redirect()->route('koordinator.meetings.create')
                 ->with('error', 'Sesi telah berakhir. Silakan isi form kembali.');
         }
@@ -30,7 +30,7 @@ class OverrideRequestController extends Controller
             'reason' => 'required|string|max:1000',
         ]);
 
-        if (!session()->has('override_meeting_data')) {
+        if (! session()->has('override_meeting_data')) {
             return redirect()->route('koordinator.meetings.create')
                 ->with('error', 'Sesi telah berakhir. Silakan isi form kembali.');
         }
@@ -44,36 +44,37 @@ class OverrideRequestController extends Controller
             ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
             ->where(function ($q) use ($data) {
                 $q->where('start_time', '<', $data['end_time'])
-                  ->where('end_time', '>', $data['start_time']);
+                    ->where('end_time', '>', $data['start_time']);
             })
             ->exists();
 
-        if (!$stillConflicts) {
+        if (! $stillConflicts) {
             session()->forget('override_meeting_data');
+
             return redirect()->route('koordinator.meetings.create')
                 ->with('success', 'Ruangan sudah tersedia. Silakan submit ulang.');
         }
 
         $meeting = Meeting::create([
-            'title'        => $data['title'],
-            'room_id'      => $conflict->room_id,
+            'title' => $data['title'],
+            'room_id' => $conflict->room_id,
             'requested_by' => auth()->id(),
-            'team_id'      => $data['team_id'],
-            'why'          => $data['why'],
-            'what'         => $data['what'],
+            'team_id' => $data['team_id'],
+            'why' => $data['why'],
+            'what' => $data['what'],
             'meeting_date' => $data['meeting_date'],
-            'start_time'   => $data['start_time'],
-            'end_time'     => $data['end_time'],
+            'start_time' => $data['start_time'],
+            'end_time' => $data['end_time'],
             'how_expected' => $data['how_expected'],
-            'file_path'    => $data['file_path'] ?? null,
-            'status'       => 'pending',
+            'file_path' => $data['file_path'] ?? null,
+            'status' => 'pending',
         ]);
 
-        if (!empty($data['extra_teams'])) {
+        if (! empty($data['extra_teams'])) {
             $meeting->teams()->attach($data['extra_teams']);
         }
 
-        if (!empty($data['assets'])) {
+        if (! empty($data['assets'])) {
             foreach ($data['assets'] as $assetId => $qty) {
                 if ($qty > 0) {
                     $meeting->assets()->attach($assetId, ['quantity' => $qty]);
@@ -83,14 +84,14 @@ class OverrideRequestController extends Controller
 
         $override = MeetingOverrideRequest::create([
             'requester_meeting_id' => $meeting->id,
-            'target_meeting_id'    => $conflict->id,
-            'reason'               => $request->reason,
-            'status'               => 'pending',
+            'target_meeting_id' => $conflict->id,
+            'reason' => $request->reason,
+            'status' => 'pending',
         ]);
 
         Notification::send($conflict->requested_by, 'activity',
             'Permintaan Override Booking ⚠️',
-            auth()->user()->name . ' (Tim ' . $meeting->team->name . ') ingin memindahkan booking meeting "' . $conflict->title . '". Alasan: ' . $request->reason,
+            auth()->user()->name.' (Tim '.$meeting->team->name.') ingin memindahkan booking meeting "'.$conflict->title.'". Alasan: '.$request->reason,
             route('override.show', $override)
         );
 
@@ -119,12 +120,12 @@ class OverrideRequestController extends Controller
         abort_if(auth()->id() !== $override->targetMeeting->requested_by, 403);
 
         $override->targetMeeting->update([
-            'status'        => 'cancelled',
-            'reject_reason' => 'Dibatalkan karena override: ' . $override->reason,
+            'status' => 'cancelled',
+            'reject_reason' => 'Dibatalkan karena override: '.$override->reason,
         ]);
 
         $override->requesterMeeting->update([
-            'status'      => 'approved',
+            'status' => 'approved',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
@@ -134,7 +135,7 @@ class OverrideRequestController extends Controller
 
         Notification::send($override->requesterMeeting->requested_by, 'activity',
             'Override Disetujui ✅',
-            'Booking "' . $override->requesterMeeting->title . '" telah disetujui dan menggantikan booking sebelumnya.',
+            'Booking "'.$override->requesterMeeting->title.'" telah disetujui dan menggantikan booking sebelumnya.',
             route('koordinator.meetings.show', $override->requesterMeeting)
         );
 
@@ -148,7 +149,7 @@ class OverrideRequestController extends Controller
         abort_if(auth()->id() !== $override->targetMeeting->requested_by, 403);
 
         $override->requesterMeeting->update([
-            'status'        => 'rejected',
+            'status' => 'rejected',
             'reject_reason' => 'Permintaan override ditolak oleh pemilik booking.',
         ]);
 
@@ -156,7 +157,7 @@ class OverrideRequestController extends Controller
 
         Notification::send($override->requesterMeeting->requested_by, 'activity',
             'Override Ditolak ❌',
-            'Permintaan override untuk "' . $override->requesterMeeting->title . '" ditolak oleh pemilik booking.',
+            'Permintaan override untuk "'.$override->requesterMeeting->title.'" ditolak oleh pemilik booking.',
             route('koordinator.meetings.show', $override->requesterMeeting)
         );
 

@@ -99,7 +99,12 @@
         @foreach($moms as $mom)
         <div class="gaming-card p-6" style="break-inside:avoid;">
             <h3 class="font-gaming font-bold text-lg" style="color:var(--text-primary);">{{ $mom->meeting->title ?? 'Meeting' }}</h3>
-            <p class="text-sm mt-1" style="color:var(--text-muted);">{{ $mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : '' }} · {{ $mom->meeting->room->name ?? '' }}</p>
+            <p class="text-sm mt-1" style="color:var(--text-muted);">
+                {{ $mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : '' }}
+                · {{ $mom->meeting->room->name ?? '' }}
+                · Dibuat oleh: {{ $mom->creator->name ?? '—' }}
+                · Dikirim: {{ $mom->sent_at ? $mom->sent_at->format('d M Y H:i') : '—' }}
+            </p>
             <div class="mt-4 space-y-3">
                 <div><p class="text-xs font-semibold" style="color:var(--color-accent-light);">RINGKASAN PEMBAHASAN</p><p class="text-sm mt-1" style="color:var(--text-secondary);">{{ $mom->summary }}</p></div>
                 <div><p class="text-xs font-semibold" style="color:var(--color-accent-light);">KEPUTUSAN</p><p class="text-sm mt-1" style="color:var(--text-secondary);">{{ $mom->decisions }}</p></div>
@@ -117,18 +122,25 @@
 
 @push('styles')
 <style>
+    .print-only { display: none; }
+
     @media print {
-        .gaming-sidebar, .gaming-topbar, .btn, form, .pagination, .print-only { display: block !important; }
-        .sidebar-item, .sidebar-section-label, [data-dropdown], #push-status, .flash-success, .flash-error { display: none !important; }
+        .gaming-sidebar,
+        .gaming-topbar,
+        nav,
+        header,
+        .btn,
+        form,
+        .pagination,
+        .gaming-table,
+        .space-y-4 > .gaming-card {
+            display: none !important;
+        }
         body { background: white !important; color: black !important; }
         .gaming-card { border: 1px solid #ddd !important; box-shadow: none !important; }
         .lg\\:ml-64 { margin-left: 0 !important; }
-        .page-content { padding: 0 !important; }
-        nav, header, .flex-wrap .btn { display: none !important; }
+        .page-content { padding: 0 !important; margin-top: 0 !important; }
         .print-only { display: block !important; }
-        .gaming-table { display: none !important; }
-        .space-y-4 > .gaming-card:first-child { display: none !important; }
-        .space-y-4 > .gaming-card:nth-child(2) { display: none !important; }
     }
 </style>
 @endpush

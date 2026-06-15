@@ -16,15 +16,15 @@ class PasswordController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'password'         => 'required|min:6|confirmed',
+            'password' => 'required|min:6|confirmed',
         ], [
             'current_password.required' => 'Kata sandi lama wajib diisi.',
-            'password.required'         => 'Kata sandi baru wajib diisi.',
-            'password.min'              => 'Kata sandi baru minimal 6 karakter.',
-            'password.confirmed'        => 'Konfirmasi kata sandi tidak cocok.',
+            'password.required' => 'Kata sandi baru wajib diisi.',
+            'password.min' => 'Kata sandi baru minimal 6 karakter.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
-        if (!Hash::check($request->current_password, auth()->user()->password)) {
+        if (! Hash::check($request->current_password, auth()->user()->password)) {
             return back()->withErrors(['current_password' => 'Kata sandi lama tidak sesuai.']);
         }
 

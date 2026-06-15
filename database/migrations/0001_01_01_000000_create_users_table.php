@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('username')->unique();
             $table->string('password');
-            $table->enum('role', ['admin', 'koordinator', 'head_of_store', 'gm', 'hr', 'user'])->default('user');
+            $table->enum('role', ['admin', 'koordinator', 'head_of_store', 'gm', 'hr', 'user', 'ceo'])->default('user');
             $table->unsignedBigInteger('team_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->rememberToken();

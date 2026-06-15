@@ -12,10 +12,10 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         $stats = [
-            'pending'    => Meeting::where('requested_by', $user->id)->where('status', 'pending')->count(),
-            'approved'   => Meeting::where('requested_by', $user->id)->where('status', 'approved')->count(),
-            'completed'  => Meeting::where('requested_by', $user->id)->where('status', 'completed')->count(),
-            'cancelled'  => Meeting::where('requested_by', $user->id)->where('status', 'cancelled')->count(),
+            'pending' => Meeting::where('requested_by', $user->id)->where('status', 'pending')->count(),
+            'approved' => Meeting::where('requested_by', $user->id)->where('status', 'approved')->count(),
+            'completed' => Meeting::where('requested_by', $user->id)->where('status', 'completed')->count(),
+            'cancelled' => Meeting::where('requested_by', $user->id)->where('status', 'cancelled')->count(),
         ];
 
         $upcomingMeetings = Meeting::with(['room', 'team'])

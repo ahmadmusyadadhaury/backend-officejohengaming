@@ -10,5 +10,8 @@ class MeetingReminder extends Model
 
     protected $casts = ['sent_at' => 'datetime'];
 
-    public function meeting() { return $this->belongsTo(Meeting::class); }
+    public function meeting()
+    {
+        return $this->belongsTo(Meeting::class);
+    }
 }

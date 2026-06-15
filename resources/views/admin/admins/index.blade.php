@@ -36,6 +36,7 @@
                                     'admin'         => 'badge-primary',
                                     'head_of_store' => 'badge-blue',
                                     'gm'            => 'badge-cyan',
+                                    'ceo'           => 'badge-primary',
                                     'hr'            => 'badge-green',
                                     default         => 'badge-gray',
                                 };

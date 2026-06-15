@@ -9,7 +9,7 @@ class CanManageAccountsMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             abort(403);
         }
 
@@ -21,7 +21,7 @@ class CanManageAccountsMiddleware
         }
 
         // Route users (kelola akun) untuk admin master dan HR
-        if ($request->routeIs('admin.users.*') && !in_array($role, ['admin', 'hr'])) {
+        if ($request->routeIs('admin.users.*') && ! in_array($role, ['admin', 'hr'])) {
             abort(403, 'Hanya Admin Master dan HR yang dapat mengelola akun.');
         }
 

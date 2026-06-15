@@ -8,7 +8,6 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -65,23 +64,23 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 400);
         }
 
         $room = Room::findOrFail($request->room_id);
 
         // Check if room is active
-        if (!$room->is_active) {
+        if (! $room->is_active) {
             return response()->json([
-                'error' => 'Room is not available'
+                'error' => 'Room is not available',
             ], 400);
         }
 
         // Check for conflicts
-        if (!$room->isAvailable($request->start_time, $request->end_time)) {
+        if (! $room->isAvailable($request->start_time, $request->end_time)) {
             return response()->json([
-                'error' => 'Room is not available at the selected time'
+                'error' => 'Room is not available at the selected time',
             ], 409);
         }
 
@@ -108,7 +107,7 @@ class BookingController extends Controller
                 'start_time' => $booking->start_time,
                 'end_time' => $booking->end_time,
                 'status' => $booking->status,
-            ]
+            ],
         ], 201);
     }
 
@@ -120,14 +119,14 @@ class BookingController extends Controller
         // Check if user owns the booking or is admin
         if ($booking->user_id !== Auth::id() && Auth::user()->role !== 'ADMIN') {
             return response()->json([
-                'error' => 'Unauthorized'
+                'error' => 'Unauthorized',
             ], 403);
         }
 
         $booking->delete();
 
         return response()->json([
-            'message' => 'Booking deleted successfully'
+            'message' => 'Booking deleted successfully',
         ]);
     }
 }

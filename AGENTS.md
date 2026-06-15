@@ -19,15 +19,17 @@ Four subsystems share one MySQL database:
 
 ## Roles & Middleware
 
-Roles: `user`, `koordinator`, `head_of_store`, `gm`, `hr`, `admin`.
+Roles: `user`, `koordinator`, `head_of_store`, `gm`, `hr`, `admin`, `ceo`.
 
-`FULL_ACCESS_ROLES` = `['admin', 'head_of_store', 'gm', 'hr']` — defined in `app/Models/User.php`.
+`FULL_ACCESS_ROLES` = `['admin', 'head_of_store', 'gm', 'hr', 'ceo']` — defined in `app/Models/User.php`.
+
+**CEO constraint**: Only 1 CEO account allowed — enforced in `AdminAccountController` store/update.
 
 Middleware aliases (from `bootstrap/app.php`):
 - `admin` → `AdminMiddleware` — any full access role
 - `admin_hr` → `AdminHrMiddleware` — `admin` + `hr` only
 - `manage_accounts` → `CanManageAccountsMiddleware` — `admin` for `/admins/*`, `admin`+`hr` for `/users/*`
-- `leader` → `LeaderMiddleware` — `koordinator`, `head_of_store`, `gm`, `hr` (not `admin`)
+- `leader` → `LeaderMiddleware` — `koordinator`, `head_of_store`, `gm`, `hr`, `ceo` (not `admin`)
 - `role:x,y,z` → `RoleMiddleware` — generic check
 
 ## Developer Commands

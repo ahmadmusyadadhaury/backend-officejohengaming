@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Leader;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\Meeting;
+use App\Models\MeetingInvitation;
 use App\Models\Notification;
 use App\Models\Room;
 use App\Models\Team;
@@ -142,6 +143,36 @@ class MeetingController extends Controller
                     $meeting->assets()->attach($assetId, ['quantity' => $qty]);
                 }
             }
+        }
+
+        // Auto-approve jika yang request adalah HR
+        if (auth()->user()->role === 'hr') {
+            $meeting->update([
+                'status' => 'approved',
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
+            ]);
+
+            app(MeetingQueueService::class)->assignQueue($meeting);
+
+            $members = User::whereIn('team_id', $meeting->allTeamIds())->get();
+            foreach ($members as $member) {
+                MeetingInvitation::firstOrCreate(
+                    ['meeting_id' => $meeting->id, 'user_id' => $member->id],
+                    ['is_read' => false]
+                );
+            }
+
+            $memberIds = $members->pluck('id')->reject(fn ($id) => $id === auth()->id())->toArray();
+            if (! empty($memberIds)) {
+                Notification::sendToMany($memberIds, 'meeting',
+                    'Undangan Meeting Baru 📅',
+                    'Kamu diundang ke meeting: '.$meeting->title.' pada '.$meeting->meeting_date->format('d M Y'),
+                    route('invitation.index')
+                );
+            }
+
+            return redirect()->route('koordinator.meetings.index')->with('success', 'Meeting berhasil dibuat dan langsung disetujui.');
         }
 
         // Notif ke semua admin & HR bahwa ada request meeting baru

@@ -14,6 +14,7 @@
             ['label' => 'Koordinator',       'value' => $stats['total_koordinator'], 'id' => 'stat-koordinator', 'color' => 'linear-gradient(135deg,#3b82f6,#60a5fa)', 'glow' => 'rgba(59,130,246,0.4)', 'icon' => null, 'img' => 'images/icon/coordination.png'],
             ['label' => 'Head of Store',     'value' => $stats['total_head_store'],  'id' => 'stat-headstore',   'color' => 'linear-gradient(135deg,#7c3aed,#a78bfa)', 'glow' => 'rgba(124,58,237,0.4)', 'icon' => null, 'img' => 'images/icon/intelligence.png'],
             ['label' => 'General Manager',   'value' => $stats['total_gm'],          'id' => 'stat-gm',          'color' => 'linear-gradient(135deg,#f59e0b,#fbbf24)', 'glow' => 'rgba(245,158,11,0.4)', 'icon' => null, 'img' => 'images/icon/manager.png'],
+            ['label' => 'Chief Executive Officer', 'value' => $stats['total_ceo'], 'id' => 'stat-ceo',        'color' => 'linear-gradient(135deg,#8b5cf6,#a78bfa)', 'glow' => 'rgba(139,92,246,0.4)', 'icon' => null, 'img' => 'images/icon/manager.png'],
             ['label' => 'Human Resources',   'value' => $stats['total_hr'],          'id' => 'stat-hr',          'color' => 'linear-gradient(135deg,#ec4899,#f472b6)', 'glow' => 'rgba(236,72,153,0.4)', 'icon' => null, 'img' => 'images/icon/hr.png'],
             ['label' => 'Total Tim',         'value' => $stats['total_teams'],       'id' => 'stat-teams',       'color' => 'linear-gradient(135deg,#06b6d4,#00d4ff)', 'glow' => 'rgba(6,182,212,0.4)',  'icon' => null, 'img' => 'images/icon/costumer.png'],
             ['label' => 'Menunggu Approval', 'value' => $stats['pending'],           'id' => 'stat-pending',     'color' => 'linear-gradient(135deg,#f97316,#fb923c)', 'glow' => 'rgba(249,115,22,0.4)', 'icon' => null, 'img' => 'images/icon/timestamp.png'],
@@ -139,8 +140,8 @@
         </div>
     </div>
 
-    {{-- Undangan untuk gm, head_of_store, hr --}}
-    @if(in_array(auth()->user()->role, ['gm','head_of_store','hr']) && $myInvitations->count() > 0)
+    {{-- Undangan untuk gm, head_of_store, hr, ceo --}}
+    @if(in_array(auth()->user()->role, ['gm','head_of_store','hr','ceo']) && $myInvitations->count() > 0)
     <div class="gaming-card overflow-hidden">
         <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);">
             <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">UNDANGAN MEETING SAYA</h3>

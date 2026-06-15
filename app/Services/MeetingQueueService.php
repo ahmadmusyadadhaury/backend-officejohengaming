@@ -66,7 +66,7 @@ class MeetingQueueService
             ->whereIn('status', ['approved', 'confirmed'])
             ->where(function ($q) use ($meeting) {
                 $q->where('start_time', '<', $meeting->end_time)
-                  ->where('end_time', '>', $meeting->start_time);
+                    ->where('end_time', '>', $meeting->start_time);
             })
             ->orderBy('queue_position')
             ->get();
@@ -90,13 +90,13 @@ class MeetingQueueService
 
             if ($newPosition === 0) {
                 $actualEnd = $completedMeeting->actual_end_time ?? $completedMeeting->end_time;
-                $duration  = Carbon::parse($m->start_time)->diffInMinutes(Carbon::parse($m->end_time));
-                $newStart  = Carbon::parse($actualEnd);
-                $newEnd    = $newStart->copy()->addMinutes($duration);
+                $duration = Carbon::parse($m->start_time)->diffInMinutes(Carbon::parse($m->end_time));
+                $newStart = Carbon::parse($actualEnd);
+                $newEnd = $newStart->copy()->addMinutes($duration);
 
                 $m->update([
                     'start_time' => $newStart->format('H:i:s'),
-                    'end_time'   => $newEnd->format('H:i:s'),
+                    'end_time' => $newEnd->format('H:i:s'),
                 ]);
             }
         }
@@ -108,11 +108,11 @@ class MeetingQueueService
      */
     public static function realtimeStatus(Meeting $meeting): array
     {
-        $now       = Carbon::now();
-        $date      = $meeting->meeting_date;
-        $startDt   = Carbon::parse($date->format('Y-m-d') . ' ' . $meeting->start_time);
-        $endDt     = Carbon::parse($date->format('Y-m-d') . ' ' . ($meeting->actual_end_time ?? $meeting->end_time));
-        $position  = $meeting->queue_position;
+        $now = Carbon::now();
+        $date = $meeting->meeting_date;
+        $startDt = Carbon::parse($date->format('Y-m-d').' '.$meeting->start_time);
+        $endDt = Carbon::parse($date->format('Y-m-d').' '.($meeting->actual_end_time ?? $meeting->end_time));
+        $position = $meeting->queue_position;
 
         // Sudah selesai
         if ($meeting->status === 'completed') {
@@ -130,7 +130,7 @@ class MeetingQueueService
         }
 
         // Sudah approved/confirmed — cek waktu
-        $dateOnly  = $date->format('Y-m-d');
+        $dateOnly = $date->format('Y-m-d');
         $todayOnly = $now->format('Y-m-d');
 
         // Hari sudah lewat
@@ -141,8 +141,9 @@ class MeetingQueueService
         // Hari mendatang
         if ($dateOnly > $todayOnly) {
             if ($position !== null && $position > 0) {
-                return ['label' => 'Dalam Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
+                return ['label' => 'Dalam Antrian '.$position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
             }
+
             return ['label' => 'Di Booking', 'color' => 'bg-blue-100 text-blue-700', 'dot' => '#3b82f6'];
         }
 
@@ -151,17 +152,20 @@ class MeetingQueueService
             if ($position === 0) {
                 return ['label' => 'Sedang Berlangsung', 'color' => 'bg-purple-100 text-purple-700', 'dot' => '#7c3aed'];
             }
-            return ['label' => 'Menunggu Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
+
+            return ['label' => 'Menunggu Antrian '.$position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
         }
 
         if ($now->lt($startDt)) {
             $diffMinutes = $now->diffInMinutes($startDt);
             if ($position !== null && $position > 0) {
                 if ($diffMinutes <= self::QUEUE_GAP_MINUTES) {
-                    return ['label' => 'Menunggu Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
+                    return ['label' => 'Menunggu Antrian '.$position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
                 }
-                return ['label' => 'Dalam Antrian ' . $position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
+
+                return ['label' => 'Dalam Antrian '.$position, 'color' => 'bg-orange-100 text-orange-700', 'dot' => '#f97316'];
             }
+
             return ['label' => 'Di Booking', 'color' => 'bg-blue-100 text-blue-700', 'dot' => '#3b82f6'];
         }
 
@@ -170,15 +174,25 @@ class MeetingQueueService
 
     public static function queueLabel(?int $position): string
     {
-        if ($position === null) return '';
-        if ($position === 0)    return 'Sedang Berlangsung';
-        return 'Dalam Antrian ' . $position;
+        if ($position === null) {
+            return '';
+        }
+        if ($position === 0) {
+            return 'Sedang Berlangsung';
+        }
+
+        return 'Dalam Antrian '.$position;
     }
 
     public static function queueColor(?int $position): string
     {
-        if ($position === null) return 'bg-gray-100 text-gray-600';
-        if ($position === 0)    return 'bg-purple-100 text-purple-700';
+        if ($position === null) {
+            return 'bg-gray-100 text-gray-600';
+        }
+        if ($position === 0) {
+            return 'bg-purple-100 text-purple-700';
+        }
+
         return 'bg-orange-100 text-orange-700';
     }
 }

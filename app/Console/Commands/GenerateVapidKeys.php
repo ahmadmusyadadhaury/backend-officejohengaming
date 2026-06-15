@@ -3,18 +3,21 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Minishlink\WebPush\VAPID;
 
 class GenerateVapidKeys extends Command
 {
     protected $signature = 'vapid:generate';
+
     protected $description = 'Generate VAPID keys untuk Web Push notification';
 
     public function handle(): void
     {
         $keys = $this->generateKeys();
 
-        if (!$keys) {
+        if (! $keys) {
             $this->error('Gagal generate VAPID keys. Pastikan ekstensi openssl dan gmp/bcmath tersedia.');
+
             return;
         }
 
@@ -28,16 +31,16 @@ class GenerateVapidKeys extends Command
     private function generateKeys(): ?array
     {
         // Coba via minishlink/web-push library (butuh gmp)
-        if (class_exists(\Minishlink\WebPush\VAPID::class)) {
+        if (class_exists(VAPID::class)) {
             try {
-                return \Minishlink\WebPush\VAPID::createVapidKeys();
+                return VAPID::createVapidKeys();
             } catch (\Throwable $e) {
                 $this->warn('Metode library gagal, coba fallback openssl...');
             }
         }
 
         // Fallback: generate via OpenSSL langsung
-        if (!extension_loaded('openssl')) {
+        if (! extension_loaded('openssl')) {
             return null;
         }
 
@@ -45,8 +48,8 @@ class GenerateVapidKeys extends Command
         if (PHP_OS_FAMILY === 'Windows') {
             $phpDir = PHP_CONFIG_FILE_PATH;
             $candidates = [
-                $phpDir . '\\extras\\ssl\\openssl.cnf',
-                PHP_BINARY . '\\..\\extras\\ssl\\openssl.cnf',
+                $phpDir.'\\extras\\ssl\\openssl.cnf',
+                PHP_BINARY.'\\..\\extras\\ssl\\openssl.cnf',
                 'C:\\laragon\\bin\\php\\php-8.4.12-nts-Win32-vs17-x64\\extras\\ssl\\openssl.cnf',
             ];
             foreach ($candidates as $candidate) {
@@ -64,12 +67,12 @@ class GenerateVapidKeys extends Command
             'config' => $configPath,
         ]);
 
-        if (!$key) {
+        if (! $key) {
             return null;
         }
 
         $details = @openssl_pkey_get_details($key);
-        if (!$details || !isset($details['ec']['x'], $details['ec']['y'], $details['ec']['d'])) {
+        if (! $details || ! isset($details['ec']['x'], $details['ec']['y'], $details['ec']['d'])) {
             return null;
         }
 
@@ -78,11 +81,11 @@ class GenerateVapidKeys extends Command
         $y = substr(str_pad($details['ec']['y'], 32, "\0", STR_PAD_LEFT), -32);
         $d = substr(str_pad($details['ec']['d'], 32, "\0", STR_PAD_LEFT), -32);
 
-        $pubRaw = $x . $y;
+        $pubRaw = $x.$y;
         $privRaw = $d;
 
         return [
-            'publicKey'  => $this->base64url($pubRaw),
+            'publicKey' => $this->base64url($pubRaw),
             'privateKey' => $this->base64url($privRaw),
         ];
     }
@@ -95,8 +98,9 @@ class GenerateVapidKeys extends Command
     private function saveToEnv(string $publicKey, string $privateKey): void
     {
         $envPath = base_path('.env');
-        if (!file_exists($envPath)) {
+        if (! file_exists($envPath)) {
             $this->error('.env file tidak ditemukan!');
+
             return;
         }
 
@@ -104,17 +108,17 @@ class GenerateVapidKeys extends Command
         $subject = 'mailto:admin@meetingroom.johengaming.store';
 
         $replacements = [
-            'VAPID_PUBLIC_KEY'  => $publicKey,
+            'VAPID_PUBLIC_KEY' => $publicKey,
             'VAPID_PRIVATE_KEY' => $privateKey,
-            'VAPID_SUBJECT'     => $subject,
+            'VAPID_SUBJECT' => $subject,
         ];
 
         foreach ($replacements as $key => $value) {
-            $pattern = '/^' . preg_quote($key, '/') . '=.*/m';
+            $pattern = '/^'.preg_quote($key, '/').'=.*/m';
             if (preg_match($pattern, $content)) {
-                $content = preg_replace($pattern, $key . '=' . $value, $content);
+                $content = preg_replace($pattern, $key.'='.$value, $content);
             } else {
-                $content .= "\n" . $key . '=' . $value;
+                $content .= "\n".$key.'='.$value;
             }
         }
 

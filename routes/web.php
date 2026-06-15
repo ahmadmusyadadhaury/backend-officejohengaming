@@ -41,6 +41,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
     Route::resource('teams', TeamController::class);
     Route::resource('assets', AssetController::class);
+    Route::get('moms', [AdminMomController::class, 'index'])->name('moms.index');
 });
 
 // Hanya Admin & HR
@@ -52,7 +53,6 @@ Route::middleware(['auth', 'admin_hr'])->prefix('admin')->name('admin.')->group(
     Route::patch('meetings/{meeting}/reject', [AdminMeetingController::class, 'reject'])->name('meetings.reject');
     Route::delete('meetings/{meeting}', [AdminMeetingController::class, 'destroy'])->name('meetings.destroy');
     Route::resource('weekly-meetings', WeeklyMeetingController::class);
-    Route::get('moms', [AdminMomController::class, 'index'])->name('moms.index');
 });
 
 // Kelola Akun — hanya Admin Master dan HR
@@ -73,7 +73,7 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
 });
 
 // User Routes
-Route::middleware(['auth', 'role:user,koordinator,admin,head_of_store,gm,hr'])->prefix('user')->name('user.')->group(function () {
+Route::middleware(['auth', 'role:user,koordinator,admin,head_of_store,gm,hr,ceo'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
 });
 

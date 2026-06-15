@@ -10,6 +10,13 @@ class WeeklyMeetingInvitation extends Model
 
     protected $casts = ['is_read' => 'boolean', 'read_at' => 'datetime'];
 
-    public function session() { return $this->belongsTo(WeeklyMeetingSession::class); }
-    public function user() { return $this->belongsTo(User::class); }
+    public function session()
+    {
+        return $this->belongsTo(WeeklyMeetingSession::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

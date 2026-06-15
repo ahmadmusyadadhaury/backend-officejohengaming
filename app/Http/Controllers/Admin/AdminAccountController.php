@@ -11,8 +11,9 @@ class AdminAccountController extends Controller
 {
     public function index()
     {
-        $admins = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr'])
+        $admins = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo'])
             ->paginate(15);
+
         return view('admin.admins.index', compact('admins'));
     }
 
@@ -24,17 +25,21 @@ class AdminAccountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:6',
-            'role'     => 'required|in:admin,head_of_store,gm,hr',
+            'role' => 'required|in:admin,head_of_store,gm,hr,ceo',
         ]);
 
+        if ($request->role === 'ceo' && User::where('role', 'ceo')->exists()) {
+            return back()->withInput()->with('error', 'Akun CEO sudah ada. Hanya 1 CEO yang diperbolehkan.');
+        }
+
         User::create([
-            'name'      => $request->name,
-            'username'  => $request->username,
-            'password'  => Hash::make($request->password),
-            'role'      => $request->role,
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
             'is_active' => true,
         ]);
 
@@ -49,10 +54,14 @@ class AdminAccountController extends Controller
     public function update(Request $request, User $admin)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'username' => 'required|string|unique:users,username,' . $admin->id,
-            'role'     => 'required|in:admin,head_of_store,gm,hr',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|unique:users,username,'.$admin->id,
+            'role' => 'required|in:admin,head_of_store,gm,hr,ceo',
         ]);
+
+        if ($request->role === 'ceo' && $admin->role !== 'ceo' && User::where('role', 'ceo')->exists()) {
+            return back()->withInput()->with('error', 'Akun CEO sudah ada. Hanya 1 CEO yang diperbolehkan.');
+        }
 
         $data = $request->only('name', 'username', 'role', 'is_active');
         if ($request->filled('password')) {
@@ -60,6 +69,7 @@ class AdminAccountController extends Controller
         }
 
         $admin->update($data);
+
         return redirect()->route('admin.admins.index')->with('success', 'Akun admin berhasil diperbarui.');
     }
 
@@ -69,6 +79,7 @@ class AdminAccountController extends Controller
             return back()->with('error', 'Tidak bisa menghapus akun sendiri.');
         }
         $admin->delete();
+
         return redirect()->route('admin.admins.index')->with('success', 'Akun admin berhasil dihapus.');
     }
 }

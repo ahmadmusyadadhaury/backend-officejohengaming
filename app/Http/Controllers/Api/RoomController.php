@@ -21,6 +21,7 @@ class RoomController extends Controller
         // Parse facilities JSON
         $rooms->transform(function ($room) {
             $room->facilities = $room->facilities ? json_decode($room->facilities) : [];
+
             return $room;
         });
 
@@ -43,7 +44,7 @@ class RoomController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 400);
         }
 
@@ -66,7 +67,7 @@ class RoomController extends Controller
                 'location' => $room->location,
                 'description' => $room->description,
                 'is_active' => $room->is_active,
-            ]
+            ],
         ], 201);
     }
 
@@ -87,7 +88,7 @@ class RoomController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 400);
         }
 
@@ -110,7 +111,7 @@ class RoomController extends Controller
                 'location' => $room->location,
                 'description' => $room->description,
                 'is_active' => $room->is_active,
-            ]
+            ],
         ]);
     }
 
@@ -122,7 +123,7 @@ class RoomController extends Controller
         $room->delete();
 
         return response()->json([
-            'message' => 'Room deleted successfully'
+            'message' => 'Room deleted successfully',
         ]);
     }
 }

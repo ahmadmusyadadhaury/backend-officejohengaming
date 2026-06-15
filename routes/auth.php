@@ -1,10 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('login', fn() => view('auth.login'))->name('login');
+    Route::get('login', fn () => view('auth.login'))->name('login');
 
     Route::post('login', function (Request $request) {
         $request->validate([
@@ -18,11 +19,11 @@ Route::middleware('guest')->group(function () {
             $role = auth()->user()->role;
 
             // Semua role full access masuk ke admin dashboard
-            if (in_array($role, \App\Models\User::FULL_ACCESS_ROLES)) {
+            if (in_array($role, User::FULL_ACCESS_ROLES)) {
                 return redirect()->route('admin.dashboard');
             }
 
-            return redirect()->route($role . '.dashboard');
+            return redirect()->route($role.'.dashboard');
         }
 
         return back()->withErrors(['username' => 'Username atau password salah.'])->withInput();
@@ -34,6 +35,7 @@ Route::middleware('auth')->group(function () {
         auth()->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('login');
     })->name('logout');
 });

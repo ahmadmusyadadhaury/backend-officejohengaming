@@ -9,9 +9,10 @@ class LeaderMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->check() || !in_array(auth()->user()->role, ['koordinator', 'head_of_store', 'gm', 'hr'])) {
+        if (! auth()->check() || ! in_array(auth()->user()->role, ['koordinator', 'head_of_store', 'gm', 'hr', 'ceo'])) {
             abort(403, 'Akses ditolak.');
         }
+
         return $next($request);
     }
 }

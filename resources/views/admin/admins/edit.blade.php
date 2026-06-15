@@ -25,6 +25,7 @@
                     <option value="admin"         {{ $admin->role === 'admin'         ? 'selected' : '' }}>Admin Master</option>
                     <option value="head_of_store" {{ $admin->role === 'head_of_store' ? 'selected' : '' }}>Head of Store</option>
                     <option value="gm"            {{ $admin->role === 'gm'            ? 'selected' : '' }}>General Manager (GM)</option>
+                    <option value="ceo"           {{ $admin->role === 'ceo'           ? 'selected' : '' }}>Chief Executive Officer (CEO)</option>
                     <option value="hr"            {{ $admin->role === 'hr'            ? 'selected' : '' }}>HR (Human Resources)</option>
                 </select>
             </div>

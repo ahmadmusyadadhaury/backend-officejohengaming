@@ -47,7 +47,7 @@
     </div>
 
     {{-- Aksi: Perpanjang & Selesaikan --}}
-    @if($session->isActive() && in_array(auth()->user()->role, ['koordinator','head_of_store','gm','admin','hr']))
+    @if($session->isActive() && in_array(auth()->user()->role, ['koordinator','head_of_store','gm','admin','hr','ceo']))
     <div class="gaming-card p-5">
         <p class="font-gaming font-semibold text-sm mb-3" style="color:var(--text-primary);letter-spacing:0.05em;">KELOLA MEETING</p>
         <div class="flex flex-wrap gap-3">
@@ -72,7 +72,7 @@
     @endif
 
     {{-- Form Kontribusi --}}
-    @if($session->isActive() && in_array(auth()->user()->role, ['koordinator','head_of_store','gm','admin','hr']))
+    @if($session->isActive() && in_array(auth()->user()->role, ['koordinator','head_of_store','gm','admin','hr','ceo']))
     <div class="gaming-card p-6">
         <p class="font-gaming font-semibold text-sm mb-4" style="color:var(--text-primary);letter-spacing:0.05em;">TAMBAH AGENDA / PRESENTASI</p>
         <form method="POST" action="{{ route('weekly.contribute', $session) }}" enctype="multipart/form-data" class="space-y-3">

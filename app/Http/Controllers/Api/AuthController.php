@@ -22,13 +22,13 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 400);
         }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'error' => 'Invalid credentials'
+                'error' => 'Invalid credentials',
             ], 401);
         }
 
@@ -67,7 +67,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 400);
         }
 

@@ -10,7 +10,10 @@ class WeeklyMeetingSession extends Model
 
     protected $casts = ['session_date' => 'date'];
 
-    public function weeklyMeeting() { return $this->belongsTo(WeeklyMeeting::class); }
+    public function weeklyMeeting()
+    {
+        return $this->belongsTo(WeeklyMeeting::class);
+    }
 
     public function contributions()
     {

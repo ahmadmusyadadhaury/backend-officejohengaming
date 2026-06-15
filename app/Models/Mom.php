@@ -10,6 +10,13 @@ class Mom extends Model
 
     protected $casts = ['sent_at' => 'datetime'];
 
-    public function meeting() { return $this->belongsTo(Meeting::class); }
-    public function creator() { return $this->belongsTo(User::class, 'created_by'); }
+    public function meeting()
+    {
+        return $this->belongsTo(Meeting::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

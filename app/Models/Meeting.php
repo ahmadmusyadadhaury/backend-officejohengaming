@@ -16,14 +16,29 @@ class Meeting extends Model
 
     protected $casts = [
         'meeting_date' => 'date',
-        'is_weekly'    => 'boolean',
-        'approved_at'  => 'datetime',
+        'is_weekly' => 'boolean',
+        'approved_at' => 'datetime',
     ];
 
-    public function room() { return $this->belongsTo(Room::class); }
-    public function requester() { return $this->belongsTo(User::class, 'requested_by'); }
-    public function team() { return $this->belongsTo(Team::class); }
-    public function approver() { return $this->belongsTo(User::class, 'approved_by'); }
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
+
+    public function requester()
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 
     // Multi-tim yang diundang
     public function teams()
