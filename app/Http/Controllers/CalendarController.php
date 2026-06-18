@@ -13,7 +13,29 @@ class CalendarController extends Controller
 {
     public function index()
     {
-        return view('calendar');
+        // Jadwal meeting terdekat
+        $upcomingMeetings = Meeting::with(['requester', 'team', 'room'])
+            ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
+            ->where('meeting_date', '>=', today())
+            ->orderBy('meeting_date')
+            ->orderBy('start_time')
+            ->take(3)
+            ->get();
+
+        // Pembayaran Mendatang
+        $upcomingPayments = Meeting::with(['requester', 'room'])
+            ->where('status', 'pending')
+            ->orderBy('meeting_date')
+            ->take(3)
+            ->get();
+
+        // Peringatan Kadaluarsa (Aset dengan stock rendah)
+        $upcomingAlerts = \App\Models\Asset::where('quantity', '<=', 2)
+            ->orderBy('quantity')
+            ->take(3)
+            ->get();
+
+        return view('calendar', compact('upcomingMeetings', 'upcomingPayments', 'upcomingAlerts'));
     }
 
     public function events(Request $request)

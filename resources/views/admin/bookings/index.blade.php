@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Kelola Booking')
-@section('page-title', 'Kelola Booking')
+@section('page-title', 'Overview > Kelola Booking')
+@section('page-subtitle', 'Kelola pemesanan ruangan dan fasilitas')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
 <div class="pt-2 animate-fade-in">

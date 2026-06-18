@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Kelola Akun')
-@section('page-title', 'Kelola Akun')
+@section('page-title', 'Overview > Kelola Akun')
+@section('page-subtitle', 'Kelola akun pengguna sistem')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">

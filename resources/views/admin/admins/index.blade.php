@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Kelola Admin')
-@section('page-title', 'Kelola Admin')
+@section('page-title', 'Overview > Kelola Admin')
+@section('page-subtitle', 'Kelola akun administrator sistem')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">

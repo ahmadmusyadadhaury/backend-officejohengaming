@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Permintaan Meeting')
-@section('page-title', 'Permintaan Meeting')
+@section('page-title', 'Overview > Permintaan Meeting')
+@section('page-subtitle', 'Kelola semua permintaan meeting perusahaan')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
 <div class="pt-2 animate-fade-in">

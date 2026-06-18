@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Rekap MOM')
-@section('page-title', 'Rekap Minutes of Meeting')
+@section('page-title', 'Overview > Rekap Minutes of Meeting')
+@section('page-subtitle', 'Lihat rekap hasil meeting dan keputusan')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">

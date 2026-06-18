@@ -525,8 +525,6 @@
 
 @section('content')
 <div class="pt-2 animate-fade-in">
-
-    {{-- Mobile: filter bar --}}
     <div class="lg:hidden gaming-card-flat p-3 mb-3">
         <div class="flex gap-2">
             <div class="relative flex-1">

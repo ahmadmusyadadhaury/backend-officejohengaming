@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Login — Johen Gaming Meeting Room</title>
+    <title>Login — JOHEN OFFICE MANAGEMENT SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ asset('css/gaming.css') }}">
     <style>
@@ -55,17 +55,17 @@
         <div class="text-center mb-8 animate-fade-in">
             <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 relative animate-float"
                 style="background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(0,212,255,0.1));border:1px solid rgba(124,58,237,0.3);">
-                <img src="{{ asset('images/logo/logo_web.png') }}" alt="Johen Gaming"
+                <img src="{{ asset('images/logo/logo_web.png') }}" alt="JOHEN OFFICE"
                     class="w-12 h-12 object-contain">
                 {{-- Glow ring --}}
                 <div class="absolute inset-0 rounded-2xl animate-glow-pulse" style="box-shadow:0 0 20px rgba(124,58,237,0.4);"></div>
             </div>
             <h1 class="font-gaming text-3xl font-bold tracking-wider"
                 style="background:linear-gradient(135deg,#e2e8f0,#a78bfa,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
-                JOHEN GAMING
+                JOHEN OFFICE
             </h1>
             <p style="color:var(--text-muted);font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px;">
-                Meeting Room System
+                MANAGEMENT SYSTEM
             </p>
         </div>
 
@@ -151,7 +151,7 @@
         </div>
 
         <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-top:1.5rem;opacity:0.6;">
-            &copy; {{ date('Y') }} Johen Gaming. All rights reserved.
+            &copy; {{ date('Y') }} JOHEN OFFICE. All rights reserved.
         </p>
     </div>
 

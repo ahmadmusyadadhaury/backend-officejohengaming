@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Asset;
+use App\Models\Meeting;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,5 +31,34 @@ class AppServiceProvider extends ServiceProvider
                 @copy($src, $dest);
             }
         }
+
+        // Share notification data dengan semua views
+        View::composer('*', function ($view) {
+            if (auth()->check()) {
+                // Jadwal meeting terdekat
+                $upcomingMeetings = Meeting::with(['requester', 'team', 'room'])
+                    ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
+                    ->where('meeting_date', '>=', today())
+                    ->orderBy('meeting_date')
+                    ->orderBy('start_time')
+                    ->take(3)
+                    ->get();
+
+                // Pembayaran Mendatang
+                $upcomingPayments = Meeting::with(['requester', 'room'])
+                    ->where('status', 'pending')
+                    ->orderBy('meeting_date')
+                    ->take(3)
+                    ->get();
+
+                // Peringatan Kadaluarsa (Aset dengan stock rendah)
+                $upcomingAlerts = Asset::where('quantity', '<=', 2)
+                    ->orderBy('quantity')
+                    ->take(3)
+                    ->get();
+
+                $view->with(compact('upcomingMeetings', 'upcomingPayments', 'upcomingAlerts'));
+            }
+        });
     }
 }

@@ -1,11 +1,11 @@
 /* ============================================
    JOHEN GAMING - Design System
-   Font: Rajdhani (heading) + Inter (body)
+   Font: Poppins (all)
    Theme: Modern Gaming / Game Store
    Mode: Auto dark/light
 ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 /* ============================================
    CSS VARIABLES - LIGHT MODE
@@ -76,9 +76,9 @@
         --bg-surface-2:        #243450;
         --bg-overlay:          rgba(30,45,66,0.92);
 
-        --text-primary:        #e8edf5;
-        --text-secondary:      #a0aec0;
-        --text-muted:          #64748b;
+        --text-primary:        #ffffff;
+        --text-secondary:      #f0f0f0;
+        --text-muted:          #e0e0e0;
 
         --border-color:        rgba(255,255,255,0.10);
         --border-glow:         rgba(124,58,237,0.45);
@@ -94,6 +94,62 @@
     }
 }
 
+body.light {
+    --bg-base:             #dde3ec;
+    --bg-surface:          #edf0f5;
+    --bg-surface-2:        #e4e9f2;
+    --bg-overlay:          rgba(237,240,245,0.85);
+
+    --text-primary:        #0f172a;
+    --text-secondary:      #475569;
+    --text-muted:          #94a3b8;
+
+    --border-color:        #e2e8f0;
+    --border-glow:         rgba(124, 58, 237, 0.3);
+
+    --shadow-sm:           0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md:           0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg:           0 8px 32px rgba(0,0,0,0.12);
+    --shadow-glow:         0 0 20px rgba(124,58,237,0.25);
+    --shadow-glow-blue:    0 0 20px rgba(0,212,255,0.2);
+
+    --sidebar-bg:          #ffffff;
+    --sidebar-border:      rgba(226,232,240,0.7);
+    --sidebar-text:        #475569;
+    --sidebar-text-active: #0f172a;
+    --sidebar-active-bg:   rgba(124,58,237,0.08);
+    --sidebar-hover-bg:    rgba(15,23,42,0.04);
+}
+
+/* Sidebar hover backgrounds that follow theme */
+:root {
+    --sidebar-hover-bg: rgba(255,255,255,0.06);
+}
+
+body.dark {
+    --bg-base:             #161f2e;
+    --bg-surface:          #1e2d42;
+    --bg-surface-2:        #243450;
+    --bg-overlay:          rgba(30,45,66,0.92);
+
+    --text-primary:        #ffffff;
+    --text-secondary:      #f0f0f0;
+    --text-muted:          #e0e0e0;
+
+    --border-color:        rgba(255,255,255,0.10);
+    --border-glow:         rgba(124,58,237,0.45);
+
+    --shadow-sm:           0 1px 3px rgba(0,0,0,0.25);
+    --shadow-md:           0 4px 16px rgba(0,0,0,0.35);
+    --shadow-lg:           0 8px 32px rgba(0,0,0,0.45);
+    --shadow-glow:         0 0 30px rgba(124,58,237,0.3);
+    --shadow-glow-blue:    0 0 30px rgba(0,212,255,0.2);
+
+    --sidebar-bg:          #111827;
+    --sidebar-border:      rgba(255,255,255,0.07);
+    --sidebar-hover-bg: rgba(255,255,255,0.03);
+}
+
 /* ============================================
    BASE STYLES
 ============================================ */
@@ -102,7 +158,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Poppins', system-ui, sans-serif;
     background-color: var(--bg-base);
     color: var(--text-primary);
     transition: background-color var(--transition-slow), color var(--transition-slow);
@@ -111,7 +167,7 @@ body {
 
 h1, h2, h3, h4, h5, h6,
 .font-gaming {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Poppins', sans-serif;
     letter-spacing: 0.02em;
 }
 
@@ -237,8 +293,17 @@ h1, h2, h3, h4, h5, h6,
     transition: opacity var(--transition-base);
 }
 
-.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-glow); }
-.stat-card:hover::before { opacity: 1; }
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: var(--border-glow);
+}
+.stat-card:hover::before {
+    opacity: 1;
+}
+.stat-card:hover .stat-icon::after {
+    opacity: 0.25;
+}
 
 .stat-icon {
     width: 48px; height: 48px;
@@ -260,7 +325,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .stat-value {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 1.75rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -283,7 +348,7 @@ h1, h2, h3, h4, h5, h6,
     gap: 0.5rem;
     padding: 0.5rem 1.25rem;
     border-radius: var(--radius-md);
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 0.875rem;
     letter-spacing: 0.03em;
@@ -348,7 +413,7 @@ h1, h2, h3, h4, h5, h6,
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 0.875rem;
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     outline: none;
@@ -380,7 +445,7 @@ h1, h2, h3, h4, h5, h6,
     border-radius: 999px;
     font-size: 0.7rem;
     font-weight: 600;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Poppins', sans-serif;
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
@@ -415,7 +480,7 @@ h1, h2, h3, h4, h5, h6,
 .gaming-table thead th {
     padding: 0.875rem 1rem;
     text-align: left;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -484,7 +549,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .sidebar-item:hover {
-    background: rgba(255,255,255,0.06);
+    background: var(--sidebar-hover-bg);
     color: var(--sidebar-text-active);
 }
 
@@ -498,8 +563,67 @@ h1, h2, h3, h4, h5, h6,
 
 .sidebar-item.active::before { height: 70%; }
 
+.sidebar-submenu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+    padding-left: 1.5rem;
+}
+
+.sidebar-submenu-item::before {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 0;
+    background: linear-gradient(180deg, var(--color-accent), var(--color-neon-blue));
+    border-radius: 0 2px 2px 0;
+    transition: height var(--transition-fast);
+}
+
+.sidebar-submenu-item:hover {
+    background: var(--sidebar-hover-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-submenu-item:hover::before { height: 55%; }
+
+.sidebar-submenu-item.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-submenu-item.active::before { height: 65%; }
+
+.sidebar-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-left: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.sidebar-submenu-item:hover {
+    background: var(--sidebar-hover-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-submenu-item.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-text-active);
+}
+
 .sidebar-section-label {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -508,6 +632,33 @@ h1, h2, h3, h4, h5, h6,
     padding: 0.5rem 1rem 0.25rem;
     margin-top: 0.5rem;
 }
+
+.sidebar-section {
+    padding: 0.25rem 1rem;
+}
+
+.sidebar-section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--sidebar-text);
+    padding: 0.5rem 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.sidebar-section-toggle .caret {
+    transition: transform var(--transition-fast);
+}
+
+.sidebar-section-toggle .caret.rotated {
+    transform: rotate(180deg);
+}
+
+.sidebar-submenu.hidden { display: none; }
 
 /* ============================================
    TOPBAR
@@ -526,6 +677,92 @@ h1, h2, h3, h4, h5, h6,
     .gaming-topbar {
         background: rgba(30,45,66,0.88);
         border-bottom-color: rgba(255,255,255,0.08);
+    }
+}
+
+.topbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.topbar-btn:hover,
+.topbar-profile-btn:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-1px);
+}
+
+.topbar-badge {
+    position: absolute;
+    top: 0.1rem;
+    right: 0.1rem;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.2rem;
+    border-radius: 9999px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ef4444;
+    color: white;
+    box-shadow: 0 0 0 2px var(--bg-surface);
+}
+
+.topbar-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.topbar-profile-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 100px;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.topbar-dropdown {
+    min-width: 18rem;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.topbar-dropdown a:hover {
+    background: rgba(124,58,237,0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    .topbar-btn,
+    .topbar-profile-btn {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.12);
+        color: var(--text-primary);
+    }
+    .topbar-badge {
+        box-shadow: 0 0 0 3px var(--bg-surface);
     }
 }
 
@@ -640,7 +877,7 @@ h1, h2, h3, h4, h5, h6,
     display: block;
     font-size: 0.72rem;
     font-weight: 600;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Poppins', sans-serif;
     letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--text-secondary);
