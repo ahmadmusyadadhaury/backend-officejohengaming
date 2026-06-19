@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Http\Controllers\Leader;
+
+use App\Http\Controllers\Controller;
+use App\Models\Meeting;
+use App\Models\Mom;
+use App\Models\Notification;
+use App\Models\User;
+use Illuminate\Http\Request;
+
+class MomController extends Controller
+{
+    public function create(Meeting $meeting)
+    {
+        return view('leader.mom.create', compact('meeting'));
+    }
+
+    public function store(Request $request, Meeting $meeting)
+    {
+        $request->validate([
+            'summary' => 'required|string',
+            'decisions' => 'required|string',
+            'action_plan' => 'required|string',
+            'pic' => 'required|string|max:255',
+        ]);
+
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('mom-files', 'public');
+        }
+
+        Mom::create([
+            'meeting_id' => $meeting->id,
+            'created_by' => auth()->id(),
+            'summary' => $request->summary,
+            'decisions' => $request->decisions,
+            'action_plan' => $request->action_plan,
+            'pic' => $request->pic,
+            'file_path' => $filePath,
+            'status' => 'draft',
+        ]);
+
+        return redirect()->route('koordinator.meetings.show', $meeting)->with('success', 'MOM berhasil disimpan sebagai draft.');
+    }
+
+    public function show(Mom $mom)
+    {
+        return view('leader.mom.show', compact('mom'));
+    }
+
+    public function edit(Mom $mom)
+    {
+        if ($mom->status === 'sent') {
+            abort(403, 'MOM sudah dikirim, tidak bisa diedit.');
+        }
+
+        return view('leader.mom.edit', compact('mom'));
+    }
+
+    public function update(Request $request, Mom $mom)
+    {
+        if ($mom->status === 'sent') {
+            abort(403);
+        }
+        $request->validate(['summary' => 'required', 'decisions' => 'required', 'action_plan' => 'required', 'pic' => 'required']);
+        $mom->update($request->only('summary', 'decisions', 'action_plan', 'pic'));
+
+        return redirect()->route('koordinator.meetings.show', $mom->meeting_id)->with('success', 'MOM diperbarui.');
+    }
+
+    public function send(Mom $mom)
+    {
+        if ($mom->status === 'sent') {
+            return back()->with('error', 'MOM sudah dikirim.');
+        }
+        $mom->update(['status' => 'sent', 'sent_at' => now()]);
+
+        $meeting = $mom->meeting;
+        $url = route('admin.meetings.show', $meeting);
+
+        // 1. Semua anggota tim (tim koordinator + tim tambahan)
+        $teamMemberIds = User::whereIn('team_id', $meeting->allTeamIds())
+            ->where('is_active', true)
+            ->pluck('id')
+            ->toArray();
+
+        // 2. Peserta individu (meeting_participants)
+        $participantIds = $meeting->participants()->pluck('users.id')->toArray();
+
+        // 3. Semua admin (FULL_ACCESS_ROLES)
+        $adminIds = User::whereIn('role', User::FULL_ACCESS_ROLES)
+            ->where('is_active', true)
+            ->pluck('id')
+            ->toArray();
+
+        // Gabung & unique, termasuk pembuat sendiri
+        $allIds = array_unique(array_merge(
+            $teamMemberIds,
+            $participantIds,
+            $adminIds,
+            [$mom->created_by]
+        ));
+
+        Notification::sendToMany($allIds, 'activity',
+            'MOM Terkirim 📄',
+            'Minutes of Meeting untuk "'.$meeting->title.'" telah dikirim.',
+            $url
+        );
+
+        return back()->with('success', 'MOM berhasil dikirim.');
+    }
+
+    public function destroy(Mom $mom)
+    {
+        return back()->with('error', 'MOM tidak bisa dihapus.');
+    }
+}

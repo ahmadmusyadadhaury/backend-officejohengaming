@@ -1,0 +1,916 @@
+/* ============================================
+   JOHEN GAMING - Design System
+   Font: Poppins (all)
+   Theme: Modern Gaming / Game Store
+   Mode: Auto dark/light
+============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ============================================
+   CSS VARIABLES - LIGHT MODE
+============================================ */
+:root {
+    /* Brand Colors */
+    --color-primary:       #1e3a5f;
+    --color-primary-light: #2d5a8e;
+    --color-primary-dark:  #152a45;
+    --color-secondary:     #3b82f6;
+    --color-accent:        #7c3aed;
+    --color-accent-light:  #a78bfa;
+
+    /* Gaming Accent */
+    --color-neon-blue:     #00d4ff;
+    --color-neon-purple:   #bf5fff;
+    --color-neon-green:    #00ff88;
+
+    /* Background */
+    --bg-base:             #dde3ec;
+    --bg-surface:          #edf0f5;
+    --bg-surface-2:        #e4e9f2;
+    --bg-overlay:          rgba(237,240,245,0.85);
+
+    /* Text */
+    --text-primary:        #0f172a;
+    --text-secondary:      #475569;
+    --text-muted:          #94a3b8;
+    --text-inverse:        #ffffff;
+
+    /* Border */
+    --border-color:        #e2e8f0;
+    --border-glow:         rgba(124, 58, 237, 0.3);
+
+    /* Shadow */
+    --shadow-sm:           0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md:           0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg:           0 8px 32px rgba(0,0,0,0.12);
+    --shadow-glow:         0 0 20px rgba(124,58,237,0.25);
+    --shadow-glow-blue:    0 0 20px rgba(0,212,255,0.2);
+
+    /* Sidebar */
+    --sidebar-bg:          #0f1923;
+    --sidebar-border:      rgba(255,255,255,0.06);
+    --sidebar-text:        #94a3b8;
+    --sidebar-text-active: #ffffff;
+    --sidebar-active-bg:   rgba(124,58,237,0.2);
+
+    /* Transitions */
+    --transition-fast:     0.15s ease;
+    --transition-base:     0.25s ease;
+    --transition-slow:     0.4s ease;
+
+    /* Border Radius */
+    --radius-sm:           6px;
+    --radius-md:           10px;
+    --radius-lg:           16px;
+    --radius-xl:           24px;
+}
+
+/* ============================================
+   CSS VARIABLES - DARK MODE
+============================================ */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-base:             #161f2e;
+        --bg-surface:          #1e2d42;
+        --bg-surface-2:        #243450;
+        --bg-overlay:          rgba(30,45,66,0.92);
+
+        --text-primary:        #ffffff;
+        --text-secondary:      #f0f0f0;
+        --text-muted:          #e0e0e0;
+
+        --border-color:        rgba(255,255,255,0.10);
+        --border-glow:         rgba(124,58,237,0.45);
+
+        --shadow-sm:           0 1px 3px rgba(0,0,0,0.25);
+        --shadow-md:           0 4px 16px rgba(0,0,0,0.35);
+        --shadow-lg:           0 8px 32px rgba(0,0,0,0.45);
+        --shadow-glow:         0 0 30px rgba(124,58,237,0.3);
+        --shadow-glow-blue:    0 0 30px rgba(0,212,255,0.2);
+
+        --sidebar-bg:          #111827;
+        --sidebar-border:      rgba(255,255,255,0.07);
+    }
+}
+
+body.light {
+    --bg-base:             #dde3ec;
+    --bg-surface:          #edf0f5;
+    --bg-surface-2:        #e4e9f2;
+    --bg-overlay:          rgba(237,240,245,0.85);
+
+    --text-primary:        #334155;
+    --text-secondary:      #64748b;
+    --text-muted:          #94a3b8;
+
+    --border-color:        #e2e8f0;
+    --border-glow:         rgba(124, 58, 237, 0.3);
+
+    --shadow-sm:           0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md:           0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg:           0 8px 32px rgba(0,0,0,0.12);
+    --shadow-glow:         0 0 20px rgba(124,58,237,0.25);
+    --shadow-glow-blue:    0 0 20px rgba(0,212,255,0.2);
+
+    --sidebar-bg:          #ffffff;
+    --sidebar-border:      rgba(226,232,240,0.7);
+    --sidebar-text:        #475569;
+    --sidebar-text-active: #0f172a;
+    --sidebar-active-bg:   rgba(124,58,237,0.08);
+    --sidebar-hover-bg:    rgba(15,23,42,0.04);
+}
+
+/* Sidebar hover backgrounds that follow theme */
+:root {
+    --sidebar-hover-bg: rgba(255,255,255,0.06);
+}
+
+body.dark {
+    --bg-base:             #161f2e;
+    --bg-surface:          #1e2d42;
+    --bg-surface-2:        #243450;
+    --bg-overlay:          rgba(30,45,66,0.92);
+
+    --text-primary:        #cbd5e1;
+    --text-secondary:      #94a3b8;
+    --text-muted:          #64748b;
+
+    --border-color:        rgba(255,255,255,0.10);
+    --border-glow:         rgba(124,58,237,0.45);
+
+    --shadow-sm:           0 1px 3px rgba(0,0,0,0.25);
+    --shadow-md:           0 4px 16px rgba(0,0,0,0.35);
+    --shadow-lg:           0 8px 32px rgba(0,0,0,0.45);
+    --shadow-glow:         0 0 30px rgba(124,58,237,0.3);
+    --shadow-glow-blue:    0 0 30px rgba(0,212,255,0.2);
+
+    --sidebar-bg:          #111827;
+    --sidebar-border:      rgba(255,255,255,0.07);
+    --sidebar-hover-bg: rgba(255,255,255,0.03);
+}
+
+/* ============================================
+   BASE STYLES
+============================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Poppins', system-ui, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    transition: background-color var(--transition-slow), color var(--transition-slow);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6,
+.font-gaming {
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.02em;
+}
+
+/* ============================================
+   ANIMATIONS
+============================================ */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(124,58,237,0.3); }
+    50%       { box-shadow: 0 0 20px rgba(124,58,237,0.6); }
+}
+
+@keyframes neonFlicker {
+    0%, 100% { opacity: 1; }
+    92%       { opacity: 1; }
+    93%       { opacity: 0.8; }
+    94%       { opacity: 1; }
+}
+
+@keyframes scanline {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+}
+
+@keyframes borderGlow {
+    0%, 100% { border-color: rgba(124,58,237,0.3); }
+    50%       { border-color: rgba(124,58,237,0.8); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-6px); }
+}
+
+@keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+/* ============================================
+   UTILITY ANIMATION CLASSES
+============================================ */
+.animate-fade-in    { animation: fadeIn 0.4s ease forwards; }
+.animate-slide-left { animation: slideInLeft 0.4s ease forwards; }
+.animate-slide-right{ animation: slideInRight 0.4s ease forwards; }
+.animate-glow-pulse { animation: glowPulse 2s ease-in-out infinite; }
+.animate-float      { animation: float 3s ease-in-out infinite; }
+.animate-neon       { animation: neonFlicker 4s ease-in-out infinite; }
+
+/* Stagger children */
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.10s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.20s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.30s; }
+
+/* ============================================
+   GAMING CARD
+============================================ */
+.gaming-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-base),
+                box-shadow var(--transition-base),
+                border-color var(--transition-base);
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.gaming-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: var(--border-glow);
+}
+
+.gaming-card-flat {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   STAT CARD
+============================================ */
+.stat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    animation: fadeIn 0.4s ease forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-neon-blue));
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: var(--border-glow);
+}
+.stat-card:hover::before {
+    opacity: 1;
+}
+.stat-card:hover .stat-icon::after {
+    opacity: 0.25;
+}
+
+.stat-icon {
+    width: 48px; height: 48px;
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.stat-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    opacity: 0.15;
+    background: inherit;
+    filter: blur(8px);
+    transform: scale(1.2);
+}
+
+.stat-value {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ============================================
+   BUTTONS
+============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.btn:hover::after { opacity: 1; }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-accent), var(--color-primary-light));
+    color: white;
+    box-shadow: 0 4px 12px rgba(124,58,237,0.3);
+}
+.btn-primary:hover { box-shadow: 0 6px 20px rgba(124,58,237,0.5); transform: translateY(-1px); }
+
+.btn-secondary {
+    background: var(--bg-surface-2);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+.btn-secondary:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+}
+.btn-danger:hover { box-shadow: 0 6px 20px rgba(239,68,68,0.5); transform: translateY(-1px); }
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+}
+.btn-success:hover { box-shadow: 0 6px 20px rgba(16,185,129,0.5); transform: translateY(-1px); }
+
+.btn-sm { padding: 0.35rem 0.875rem; font-size: 0.8rem; }
+.btn-lg { padding: 0.75rem 1.75rem; font-size: 1rem; }
+
+/* ============================================
+   INPUTS
+============================================ */
+.gaming-input {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.875rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+}
+
+.gaming-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+}
+
+.gaming-input::placeholder { color: var(--text-muted); }
+
+.gaming-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+}
+
+/* ============================================
+   BADGES
+============================================ */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.badge-primary   { background: rgba(124,58,237,0.15); color: var(--color-accent-light); border: 1px solid rgba(124,58,237,0.3); }
+.badge-blue      { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+.badge-green     { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+.badge-yellow    { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.badge-red       { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.badge-gray      { background: rgba(148,163,184,0.15);color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+.badge-cyan      { background: rgba(0,212,255,0.15);  color: #00d4ff; border: 1px solid rgba(0,212,255,0.3); }
+.badge-orange    { background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+
+.badge-glow {
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   TABLE
+============================================ */
+.gaming-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.gaming-table thead tr {
+    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+    color: white;
+}
+
+.gaming-table thead th {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.gaming-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background var(--transition-fast);
+}
+
+.gaming-table tbody tr:hover {
+    background: rgba(124,58,237,0.05);
+}
+
+.gaming-table tbody td {
+    padding: 0.875rem 1rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   SIDEBAR
+============================================ */
+.gaming-sidebar {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    position: relative;
+}
+
+.gaming-sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 1px; height: 100%;
+    background: linear-gradient(180deg,
+        transparent,
+        rgba(124,58,237,0.5) 30%,
+        rgba(0,212,255,0.3) 70%,
+        transparent
+    );
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 0;
+    background: linear-gradient(180deg, var(--color-accent), var(--color-neon-blue));
+    border-radius: 0 2px 2px 0;
+    transition: height var(--transition-fast);
+}
+
+.sidebar-item:hover {
+    background: var(--sidebar-hover-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-item:hover::before { height: 60%; }
+
+.sidebar-item.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-text-active);
+    border: 1px solid rgba(124,58,237,0.2);
+}
+
+.sidebar-item.active::before { height: 70%; }
+
+.sidebar-submenu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+    padding-left: 1.5rem;
+}
+
+.sidebar-submenu-item::before {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 0;
+    background: linear-gradient(180deg, var(--color-accent), var(--color-neon-blue));
+    border-radius: 0 2px 2px 0;
+    transition: height var(--transition-fast);
+}
+
+.sidebar-submenu-item:hover {
+    background: var(--sidebar-hover-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-submenu-item:hover::before { height: 55%; }
+
+.sidebar-submenu-item.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-submenu-item.active::before { height: 65%; }
+
+.sidebar-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-left: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.sidebar-submenu-item:hover {
+    background: var(--sidebar-hover-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-submenu-item.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-text-active);
+}
+
+.sidebar-section-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(148,163,184,0.5);
+    padding: 0.5rem 1rem 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.sidebar-section {
+    padding: 0.25rem 1rem;
+}
+
+.sidebar-section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--sidebar-text);
+    padding: 0.5rem 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.sidebar-section-toggle .caret {
+    transition: transform var(--transition-fast);
+}
+
+.sidebar-section-toggle .caret.rotated {
+    transform: rotate(180deg);
+}
+
+.sidebar-submenu.hidden { display: none; }
+
+/* ============================================
+   TOPBAR
+============================================ */
+.gaming-topbar {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+@media (prefers-color-scheme: dark) {
+    .gaming-topbar {
+        background: rgba(30,45,66,0.88);
+        border-bottom-color: rgba(255,255,255,0.08);
+    }
+}
+
+body.dark .gaming-topbar {
+    background: rgba(30,45,66,0.88);
+    border-bottom-color: rgba(255,255,255,0.08);
+}
+
+body.light .gaming-topbar {
+    background: #ffffff;
+    border-bottom-color: #e2e8f0;
+}
+
+.topbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.topbar-btn:hover,
+.topbar-profile-btn:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-1px);
+}
+
+.topbar-badge {
+    position: absolute;
+    top: 0.1rem;
+    right: 0.1rem;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.2rem;
+    border-radius: 9999px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ef4444;
+    color: white;
+    box-shadow: 0 0 0 2px var(--bg-surface);
+}
+
+.topbar-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.topbar-profile-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 100px;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.topbar-dropdown {
+    min-width: 18rem;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.topbar-dropdown a:hover {
+    background: rgba(124,58,237,0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    .topbar-btn,
+    .topbar-profile-btn {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.12);
+        color: var(--text-primary);
+    }
+    .topbar-badge {
+        box-shadow: 0 0 0 3px var(--bg-surface);
+    }
+}
+
+/* ============================================
+   LOGIN PAGE
+============================================ */
+.login-bg {
+    background: var(--bg-base);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-bg::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(0,212,255,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, rgba(30,58,95,0.15) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .login-bg::before {
+        background:
+            radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.2) 0%, transparent 60%),
+            radial-gradient(ellipse at 80% 20%, rgba(0,212,255,0.12) 0%, transparent 50%),
+            radial-gradient(ellipse at 60% 80%, rgba(30,58,95,0.25) 0%, transparent 50%);
+    }
+}
+
+.login-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+        var(--color-accent),
+        var(--color-neon-blue),
+        var(--color-accent)
+    );
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+}
+
+/* ============================================
+   GRID PARTICLES (decorative)
+============================================ */
+.grid-pattern {
+    background-image:
+        linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .grid-pattern {
+        background-image:
+            linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px);
+    }
+}
+
+/* ============================================
+   DIVIDER
+============================================ */
+.gaming-divider {
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        var(--border-color) 20%,
+        var(--border-color) 80%,
+        transparent
+    );
+    margin: 1rem 0;
+}
+
+/* ============================================
+   SCROLLBAR
+============================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: rgba(124,58,237,0.3);
+    border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(124,58,237,0.6); }
+
+/* ============================================
+   PAGE TRANSITION
+============================================ */
+.page-content {
+    animation: fadeIn 0.35s ease forwards;
+}
+
+/* ============================================
+   FORM LABEL
+============================================ */
+.gaming-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+/* ============================================
+   MOBILE OPTIMIZATIONS
+============================================ */
+@media (max-width: 640px) {
+    .stat-card { padding: 1rem; }
+    .stat-value { font-size: 1.5rem; }
+    .gaming-card { border-radius: var(--radius-md); }
+    /* Disable heavy animations on mobile */
+    .animate-float { animation: none; }
+    .gaming-sidebar::before { display: none; }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

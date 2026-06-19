@@ -1,0 +1,324 @@
+{
+  "info": {
+    "name": "Meeting Room Booking API",
+    "description": "API untuk sistem booking ruang meeting dengan Laravel Sanctum authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login untuk mendapatkan API token. Gunakan email dan password yang valid."
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register user baru. Password harus dikonfirmasi."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            },
+            "description": "Mendapatkan semua ruangan yang aktif. Membutuhkan authentication."
+          }
+        },
+        {
+          "name": "Create Room (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Meeting Room A\",\n  \"capacity\": 10,\n  \"facilities\": [\"Projector\", \"Whiteboard\", \"Video Conference\"],\n  \"location\": \"Floor 1\",\n  \"description\": \"Large meeting room with modern facilities\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms"
+              ]
+            },
+            "description": "Membuat ruangan baru. Hanya admin yang bisa. Facilities harus berupa array."
+          }
+        },
+        {
+          "name": "Update Room (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Meeting Room A\",\n  \"capacity\": 15,\n  \"facilities\": [\"Projector\", \"Whiteboard\", \"Video Conference\", \"Sound System\"],\n  \"location\": \"Floor 1\",\n  \"description\": \"Updated large meeting room\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rooms/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "1"
+              ]
+            },
+            "description": "Update ruangan berdasarkan ID. Hanya admin yang bisa."
+          }
+        },
+        {
+          "name": "Delete Room (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rooms/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "rooms",
+                "1"
+              ]
+            },
+            "description": "Hapus ruangan berdasarkan ID. Hanya admin yang bisa."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Get All Bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bookings?date=2026-05-02",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "bookings"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-05-02",
+                  "description": "Filter berdasarkan tanggal (YYYY-MM-DD). Opsional."
+                }
+              ]
+            },
+            "description": "Mendapatkan semua booking. User biasa hanya melihat booking sendiri, admin melihat semua. Bisa filter berdasarkan tanggal."
+          }
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": 1,\n  \"title\": \"Team Meeting\",\n  \"description\": \"Weekly team sync meeting\",\n  \"participants\": \"john@example.com, jane@example.com\",\n  \"start_time\": \"2026-05-02T10:00:00\",\n  \"end_time\": \"2026-05-02T11:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "bookings"
+              ]
+            },
+            "description": "Membuat booking baru. Akan dicek konflik waktu secara otomatis."
+          }
+        },
+        {
+          "name": "Delete Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "1"
+              ]
+            },
+            "description": "Hapus booking berdasarkan ID. Hanya pemilik booking atau admin yang bisa."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "API token yang didapat dari login response"
+    }
+  ]
+}
