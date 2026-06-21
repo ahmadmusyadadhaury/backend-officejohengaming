@@ -14,7 +14,6 @@ class MeetingController extends Controller
 {
     public function index()
     {
-        // Tandai notif activity sebagai sudah dibaca
         Notification::where('user_id', auth()->id())
             ->where('type', 'activity')
             ->where('is_read', false)
@@ -23,7 +22,12 @@ class MeetingController extends Controller
         $meetings = Meeting::with(['requester', 'team', 'teams', 'room'])
             ->latest()->paginate(15);
 
-        return view('admin.meetings.index', compact('meetings'));
+        $totalMeeting     = Meeting::count();
+        $menungguMeeting  = Meeting::where('status', 'pending')->count();
+        $disetujuiMeeting = Meeting::whereIn('status', ['approved','confirmed','in_progress','completed'])->count();
+        $ditolakMeeting   = Meeting::where('status', 'rejected')->count();
+
+        return view('admin.meetings.index', compact('meetings', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting'));
     }
 
     public function show(Meeting $meeting)
