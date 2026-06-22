@@ -16,7 +16,17 @@ class UserController extends Controller
             ->whereNotIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo'])
             ->paginate(15);
 
-        return view('admin.users.index', compact('users'));
+        $breakdown = [
+            'total_ceo'         => User::where('role', 'ceo')->where('is_active', true)->count(),
+            'total_gm'          => User::where('role', 'gm')->where('is_active', true)->count(),
+            'total_head_store'  => User::where('role', 'head_of_store')->where('is_active', true)->count(),
+            'total_hr'          => User::where('role', 'hr')->where('is_active', true)->count(),
+            'total_koordinator' => User::where('role', 'koordinator')->where('is_active', true)->count(),
+            'total_karyawan'    => User::where('role', 'user')->where('is_active', true)->count(),
+            'total_team'        => Team::count(),
+        ];
+
+        return view('admin.users.index', compact('users', 'breakdown'));
     }
 
     public function create()

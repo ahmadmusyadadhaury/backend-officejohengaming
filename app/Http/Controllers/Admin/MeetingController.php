@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Services\MeetingQueueService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MeetingController extends Controller
 {
@@ -19,15 +20,50 @@ class MeetingController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true, 'read_at' => now()]);
 
-        $meetings = Meeting::with(['requester', 'team', 'teams', 'room'])
+        $meetings = Meeting::with(['requester', 'team', 'teams', 'room', 'assets', 'mom.creator'])
             ->latest()->paginate(15);
+
+        $meetingsJson = $meetings->map(fn($m) => [
+            'id' => $m->id,
+            'title' => $m->title,
+            'description' => $m->description,
+            'why' => $m->why,
+            'what' => $m->what,
+            'how_expected' => $m->how_expected,
+            'requester' => $m->requester ? ['name' => $m->requester->name] : null,
+            'team' => $m->team ? ['name' => $m->team->name] : null,
+            'room' => $m->room ? ['name' => $m->room->name] : null,
+            'meeting_date' => $m->meeting_date?->format('d M Y'),
+            'meeting_date_raw' => $m->meeting_date?->format('Y-m-d'),
+            'start_time' => $m->start_time,
+            'end_time' => $m->end_time,
+            'status' => $m->status,
+            'queue_position' => $m->queue_position,
+            'rt_label' => MeetingQueueService::realtimeStatus($m)['label'] ?? '-',
+            'reject_reason' => $m->reject_reason,
+            'teams' => $m->teams->map(fn($t) => $t->name),
+            'assets' => $m->assets->map(fn($a) => [
+                'name' => $a->name,
+                'quantity' => $a->pivot->quantity,
+            ]),
+            'mom' => $m->mom ? [
+                'status' => $m->mom->status,
+                'summary' => $m->mom->summary,
+                'decisions' => $m->mom->decisions,
+                'action_plan' => $m->mom->action_plan,
+                'pic' => $m->mom->pic,
+                'creator_name' => $m->mom->creator->name ?? null,
+                'sent_at' => $m->mom->sent_at?->format('d M Y H:i'),
+                'file_url' => $m->mom->file_path ? Storage::url($m->mom->file_path) : null,
+            ] : null,
+        ]);
 
         $totalMeeting     = Meeting::count();
         $menungguMeeting  = Meeting::where('status', 'pending')->count();
         $disetujuiMeeting = Meeting::whereIn('status', ['approved','confirmed','in_progress','completed'])->count();
         $ditolakMeeting   = Meeting::where('status', 'rejected')->count();
 
-        return view('admin.meetings.index', compact('meetings', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting'));
+        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting'));
     }
 
     public function show(Meeting $meeting)

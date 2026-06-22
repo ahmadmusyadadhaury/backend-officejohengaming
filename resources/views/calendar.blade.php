@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Kalender Meeting')
-@section('page-title', 'Kalender Meeting')
+@section('title', 'Jadwal Meeting')
+@section('page-title', 'Jadwal Meeting')
 @section('page-subtitle', 'Lihat jadwal semua meeting')
 
 @section('sidebar-menu')
@@ -536,13 +536,6 @@
             <button onclick="filterByDate(document.getElementById('filter-date-mobile').value)" class="btn btn-primary btn-sm">Cari</button>
             <button onclick="resetFilter()" class="btn btn-secondary btn-sm">Reset</button>
         </div>
-        {{-- Mobile view switcher --}}
-        <div class="view-switcher mt-2">
-            <button class="view-btn active" id="mob-btn-timeGridWeek" onclick="switchView('timeGridWeek')">Minggu</button>
-            <button class="view-btn" id="mob-btn-dayGridMonth" onclick="switchView('dayGridMonth')">Bulan</button>
-            <button class="view-btn" id="mob-btn-timeGridDay" onclick="switchView('timeGridDay')">Hari</button>
-            <button class="view-btn" id="mob-btn-listWeek" onclick="switchView('listWeek')">List</button>
-        </div>
     </div>
 
     {{-- Layout 2 kolom --}}
@@ -550,6 +543,87 @@
 
         {{-- ── SIDEBAR KIRI ── --}}
         <aside class="cal-sidebar hidden lg:flex">
+
+            {{-- Weekly Meeting Info --}}
+            @php $wm = $weeklyMeetings->first(); @endphp
+            <div id="weekly-panel" class="cal-sidebar-panel" style="border-color:rgba(0,212,255,0.25);background:linear-gradient(135deg,rgba(0,212,255,0.05),rgba(124,58,237,0.05));">
+                <div class="cal-sidebar-panel-header flex items-center justify-between" style="border-bottom-color:rgba(0,212,255,0.15);">
+                    <span style="color:var(--text-muted);font-size:0.6rem;letter-spacing:0.12em;">Mingguan Berulang</span>
+                    @if(in_array(auth()->user()->role, ['admin', 'hr']))
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="openWeeklyEdit({{ $wm?->id ?? 0 }})" class="p-1 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.color='var(--color-neon-blue)'" onmouseout="this.style.color='var(--text-muted)'">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </button>
+                        <button type="button" onclick="deleteWeekly({{ $wm?->id ?? 0 }})" class="p-1 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--text-muted)'">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                    @endif
+                </div>
+                <div class="p-3 space-y-2">
+                    @if($wm)
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ $wm->title }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Setiap {{ $days[$wm->day_of_week] ?? 'Hari' }}
+                        </p>
+                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ substr($wm->start_time, 0, 5) }} – {{ substr($wm->end_time, 0, 5) }}
+                        </p>
+                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            {{ $wm->room->name ?? '-' }}
+                        </p>
+                    </div>
+                    @else
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <p class="text-sm font-semibold" style="color:var(--text-primary);">Weekly Meeting</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Setiap Senin
+                        </p>
+                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            13:00 – selesai
+                        </p>
+                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Meeting Room Utama
+                        </p>
+                    </div>
+                    @endif
+                </div>
+            </div>
 
             {{-- Mini Calendar --}}
             <div class="cal-sidebar-panel cal-sidebar-panel-full">
@@ -565,19 +639,6 @@
                         </button>
                     </div>
                     <div class="mini-cal-grid" id="mini-cal-grid"></div>
-                </div>
-            </div>
-
-            {{-- View Switcher --}}
-            <div class="cal-sidebar-panel cal-sidebar-panel-full">
-                <div class="cal-sidebar-panel-header">Tampilan</div>
-                <div class="p-2">
-                    <div class="view-switcher" style="flex-direction:column;">
-                        <button class="view-btn active" id="btn-timeGridWeek" onclick="switchView('timeGridWeek')">📅 Minggu</button>
-                        <button class="view-btn" id="btn-dayGridMonth" onclick="switchView('dayGridMonth')">🗓 Bulan</button>
-                        <button class="view-btn" id="btn-timeGridDay" onclick="switchView('timeGridDay')">📆 Hari</button>
-                        <button class="view-btn" id="btn-listWeek" onclick="switchView('listWeek')">📋 List</button>
-                    </div>
                 </div>
             </div>
 
@@ -608,7 +669,73 @@
 
         </aside>
 
-        {{-- ── MAIN CALENDAR ── --}}
+        {{-- Edit Weekly Modal --}}
+        <div id="weekly-edit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:999;align-items:center;justify-content:center;padding:1rem;">
+            <div style="width:100%;max-width:420px;background:var(--bg-surface);border-radius:1.25rem;border:1px solid var(--border-color);box-shadow:var(--shadow-lg);overflow:hidden;" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);">
+                    <h3 id="weekly-modal-title" class="text-sm font-bold" style="color:var(--text-primary);">Edit Jadwal Mingguan</h3>
+                    <button type="button" onclick="closeWeeklyEdit()" class="p-1 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <form id="weekly-edit-form" method="POST" class="p-5 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="text-xs font-semibold mb-1" style="color:var(--text-muted);">Judul</label>
+                        <input type="text" name="title" id="we-title" required class="w-full px-3 py-2 rounded-xl text-sm" style="border:1px solid var(--border-color);background:var(--bg-surface-2);color:var(--text-primary);outline:none;">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold mb-1" style="color:var(--text-muted);">Ruangan</label>
+                        <div style="position:relative;">
+                            <select name="room_id" id="we-room" required class="w-full px-3 py-2 rounded-xl text-sm" style="appearance:none;-webkit-appearance:none;border:1px solid var(--border-color);background:var(--bg-surface-2);color:var(--text-primary);outline:none;padding-right:2rem;">
+                                @foreach($rooms as $room)
+                                <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                @endforeach
+                            </select>
+                            <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-muted);" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold mb-1" style="color:var(--text-muted);">Hari</label>
+                        <div style="position:relative;">
+                            <select name="day_of_week" id="we-day" required class="w-full px-3 py-2 rounded-xl text-sm" style="appearance:none;-webkit-appearance:none;border:1px solid var(--border-color);background:var(--bg-surface-2);color:var(--text-primary);outline:none;padding-right:2rem;">
+                                @foreach($days as $val => $label)
+                                <option value="{{ $val }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-muted);" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs font-semibold mb-1" style="color:var(--text-muted);">Jam Mulai</label>
+                            <input type="time" name="start_time" id="we-start" required class="w-full px-3 py-2 rounded-xl text-sm" style="border:1px solid var(--border-color);background:var(--bg-surface-2);color:var(--text-primary);outline:none;">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold mb-1" style="color:var(--text-muted);">Jam Selesai</label>
+                            <input type="time" name="end_time" id="we-end" required class="w-full px-3 py-2 rounded-xl text-sm" style="border:1px solid var(--border-color);background:var(--bg-surface-2);color:var(--text-primary);outline:none;">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" name="is_active" id="we-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
+                        <label for="we-active" class="text-xs" style="color:var(--text-secondary);cursor:pointer;">Jadwal Aktif</label>
+                    </div>
+                    <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
+                        <button type="submit" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold text-white transition" style="background:#10b981;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Simpan</button>
+                        <button type="button" onclick="closeWeeklyEdit()" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);">Batal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- MAIN CALENDAR --}}
         <div class="cal-main">
             <div class="calendar-wrapper">
 
@@ -977,6 +1104,80 @@
                         });
                 });
             }).catch(() => {});
+    }
+
+    // ── Weekly Meeting Edit/Delete ──
+    const weeklyData = @json($weeklyData);
+
+    var firstRoomId = {{ $rooms->first()?->id ?? 'null' }};
+    function openWeeklyEdit(id) {
+        const modal = document.getElementById('weekly-edit-modal');
+        const form = document.getElementById('weekly-edit-form');
+        const title = document.getElementById('weekly-modal-title');
+        if (!id) {
+            title.textContent = 'Tambah Jadwal Mingguan';
+            form.action = '/admin/weekly-meetings';
+            document.getElementById('we-title').value = 'Weekly Meeting';
+            if (firstRoomId !== null) document.getElementById('we-room').value = firstRoomId;
+            document.getElementById('we-day').value = '1';
+            document.getElementById('we-start').value = '13:00';
+            document.getElementById('we-end').value = '14:00';
+            document.getElementById('we-active').checked = true;
+            modal.style.display = 'flex';
+            return;
+        }
+        const w = weeklyData.find(i => i.id === id);
+        if (!w) return;
+        title.textContent = 'Edit Jadwal Mingguan';
+        form.action = '/admin/weekly-meetings/' + id;
+        document.getElementById('we-title').value = w.title;
+        document.getElementById('we-room').value = w.room_id;
+        document.getElementById('we-day').value = w.day_of_week;
+        document.getElementById('we-start').value = w.start_time;
+        document.getElementById('we-end').value = w.end_time;
+        document.getElementById('we-active').checked = w.is_active;
+        modal.style.display = 'flex';
+    }
+
+    function closeWeeklyEdit() {
+        document.getElementById('weekly-edit-modal').style.display = 'none';
+    }
+
+    document.getElementById('weekly-edit-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeWeeklyEdit();
+    });
+
+    document.getElementById('weekly-edit-form')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+        const body = new URLSearchParams(new FormData(this));
+        if (this.action.match(/\/admin\/weekly-meetings\/\d+$/)) {
+            body.append('_method', 'PUT');
+        }
+        fetch(this.action, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+            body: body
+        }).then(r => {
+            if (!r.ok) throw new Error('Gagal');
+            return r.json();
+        }).then(() => {
+            location.reload();
+        }).catch(() => {
+            location.reload();
+        });
+    });
+
+    function deleteWeekly(id) {
+        if (!id) return;
+        if (!confirm('Hapus jadwal mingguan ini?')) return;
+        fetch('/admin/weekly-meetings/' + id, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+            body: new URLSearchParams({ _method: 'DELETE' })
+        }).then(() => { location.reload(); }).catch(() => { location.reload(); });
     }
 
     // Tutup modal

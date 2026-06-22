@@ -10,7 +10,16 @@ class AssetController extends Controller
 {
     public function index()
     {
-        return view('admin.assets.index', ['assets' => Asset::paginate(15)]);
+        $assetStats = [
+            'total_assets' => Asset::count(),
+            'pajak_aktif'  => Asset::whereNull('expire_date')->orWhere('expire_date', '>=', now())->count(),
+            'pajak_mati'   => Asset::where('expire_date', '<', now())->count(),
+        ];
+
+        return view('admin.assets.index', [
+            'assets' => Asset::paginate(15),
+            'assetStats' => $assetStats,
+        ]);
     }
 
     public function create()

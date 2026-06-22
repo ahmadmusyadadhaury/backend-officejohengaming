@@ -664,7 +664,7 @@ h1, h2, h3, h4, h5, h6,
    TOPBAR
 ============================================ */
 .gaming-topbar {
-    background: #ffffff;
+    background: var(--bg-base);
     border-bottom: 1px solid var(--border-color);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -687,8 +687,69 @@ body.dark .gaming-topbar {
 }
 
 body.light .gaming-topbar {
-    background: #ffffff;
-    border-bottom-color: #e2e8f0;
+    background: var(--bg-base);
+    border-bottom-color: var(--border-color);
+}
+
+body.light .topbar-btn,
+body.light .topbar-profile-btn {
+    background: rgba(255,255,255,0.5);
+    border-color: #cbd5e1;
+}
+
+body.light .topbar-btn:hover,
+body.light .topbar-profile-btn:hover {
+    background: rgba(255,255,255,0.7);
+    border-color: #94a3b8;
+}
+
+body.light .gaming-table thead tr {
+    background: linear-gradient(135deg, #e4e9f2, #edf0f5);
+    color: #475569;
+}
+
+body.light .gaming-table thead th {
+    font-weight: 600;
+    color: #475569;
+}
+
+body.light .badge {
+    border-width: 0;
+}
+
+body.light .badge-yellow {
+    background: rgba(245,158,11,0.08);
+    color: #b45309;
+}
+
+body.light .badge-blue {
+    background: rgba(59,130,246,0.08);
+    color: #2563eb;
+}
+
+body.light .badge-red {
+    background: rgba(239,68,68,0.08);
+    color: #dc2626;
+}
+
+body.light .badge-green {
+    background: rgba(16,185,129,0.08);
+    color: #059669;
+}
+
+body.light .badge-gray {
+    background: rgba(148,163,184,0.08);
+    color: #64748b;
+}
+
+body.light .badge-primary {
+    background: rgba(124,58,237,0.08);
+    color: #7c3aed;
+}
+
+body.light .badge-orange {
+    background: rgba(249,115,22,0.08);
+    color: #ea580c;
 }
 
 .topbar-btn {

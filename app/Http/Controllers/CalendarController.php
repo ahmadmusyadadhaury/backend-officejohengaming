@@ -35,7 +35,22 @@ class CalendarController extends Controller
             ->take(3)
             ->get();
 
-        return view('calendar', compact('upcomingMeetings', 'upcomingPayments', 'upcomingAlerts'));
+        $weeklyMeetings = WeeklyMeeting::with('room')->get();
+        $rooms = \App\Models\Room::where('is_active', true)->get();
+        $days = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
+
+        $weeklyData = $weeklyMeetings->map(fn($w) => [
+            'id' => $w->id,
+            'title' => $w->title,
+            'room_id' => $w->room_id,
+            'day_of_week' => $w->day_of_week,
+            'start_time' => substr($w->start_time, 0, 5),
+            'end_time' => substr($w->end_time, 0, 5),
+            'is_active' => $w->is_active,
+            'room_name' => $w->room->name ?? '',
+        ])->values();
+
+        return view('calendar', compact('upcomingMeetings', 'upcomingPayments', 'upcomingAlerts', 'weeklyMeetings', 'rooms', 'days', 'weeklyData'));
     }
 
     public function events(Request $request)

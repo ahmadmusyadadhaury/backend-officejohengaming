@@ -5,6 +5,31 @@
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
+
+    {{-- BREAKDOWN AKUN --}}
+    <div>
+        <h3 class="text-xs font-gaming font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted);">Breakdown Akun</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+            @php
+                $items = [
+                    ['label' => 'Chief Executive Officer', 'short' => 'CEO', 'count' => $breakdown['total_ceo'], 'bg' => 'linear-gradient(135deg,#8b5cf6,#a855f7)', 'accent' => '#a855f7'],
+                    ['label' => 'General Manager', 'short' => 'GM', 'count' => $breakdown['total_gm'], 'bg' => 'linear-gradient(135deg,#f59e0b,#fbbf24)', 'accent' => '#fbbf24'],
+                    ['label' => 'Head of Store', 'short' => 'Head Store', 'count' => $breakdown['total_head_store'], 'bg' => 'linear-gradient(135deg,#7c3aed,#a855f7)', 'accent' => '#a855f7'],
+                    ['label' => 'Human Resources', 'short' => 'HR', 'count' => $breakdown['total_hr'], 'bg' => 'linear-gradient(135deg,#ec4899,#f472b6)', 'accent' => '#f472b6'],
+                    ['label' => 'Koordinator', 'short' => 'Koordinator', 'count' => $breakdown['total_koordinator'], 'bg' => 'linear-gradient(135deg,#3b82f6,#60a5fa)', 'accent' => '#60a5fa'],
+                    ['label' => 'Karyawan', 'short' => 'Karyawan', 'count' => $breakdown['total_karyawan'], 'bg' => 'linear-gradient(135deg,#1e40af,#3b82f6)', 'accent' => '#60a5fa'],
+                    ['label' => 'Total Tim', 'short' => 'Total Tim', 'count' => $breakdown['total_team'], 'bg' => 'linear-gradient(135deg,#06b6d4,#22d3ee)', 'accent' => '#22d3ee'],
+                ];
+            @endphp
+            @foreach($items as $item)
+            <div class="gaming-card p-4 flex flex-col items-center text-center gap-2" style="border-top:2px solid {{ $item['accent'] }};">
+                <div class="text-2xl font-gaming font-bold leading-none" style="color:var(--text-primary);">{{ $item['count'] }}</div>
+                <div class="text-xs font-medium leading-tight" style="color:var(--text-muted);">{{ $item['short'] }}</div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
     <div class="flex justify-between items-center">
         <p class="text-sm" style="color:var(--text-muted);">Total: <span style="color:var(--text-primary);font-weight:600;">{{ $users->total() }}</span> akun</p>
         <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">

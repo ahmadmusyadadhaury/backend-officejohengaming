@@ -91,42 +91,7 @@
         </div>
     </div>
 
-    {{-- BREAKDOWN AKUN --}}
-    <div>
-        <h3 class="text-xs font-gaming font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted);">Breakdown Akun</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-            @php
-                $accountBreakdown = [
-                    ['label' => 'Chief Executive Officer', 'short' => 'Chief Execu...', 'count' => $stats['total_ceo'], 'icon' => 'M5 16l2-9 5 5 5-5 2 9H5zm2 4h10', 'bg' => 'linear-gradient(135deg,#8b5cf6,#a855f7)', 'accent' => '#a855f7'],
-
-['label' => 'General Manager', 'short' => 'General Ma...', 'count' => $stats['total_gm'], 'icon' => 'M12 3l2 5 5 .5-4 3 1.2 5-4.7-2.6-4.7 2.6 1.2-5-4-3 5-.5 2-5z', 'bg' => 'linear-gradient(135deg,#f59e0b,#fbbf24)', 'accent' => '#fbbf24'],
-
-['label' => 'Head of Store', 'short' => 'Head of Store', 'count' => $stats['total_head_store'], 'icon' => 'M3 9l1-5h16l1 5M5 9v11h14V9M9 20v-6h6v6M8 13h2m4 0h2', 'bg' => 'linear-gradient(135deg,#7c3aed,#a855f7)', 'accent' => '#a855f7'],
-
-['label' => 'Human Resources', 'short' => 'Human Resources', 'count' => $stats['total_hr'], 'icon' => 'M9 11a3 3 0 100-6 3 3 0 000 6zm6 0a3 3 0 100-6 3 3 0 000 6zM4 20v-1a5 5 0 015-5h6a5 5 0 015 5v1M7 15h10', 'bg' => 'linear-gradient(135deg,#ec4899,#f472b6)', 'accent' => '#f472b6'],
-
-['label' => 'Koordinator', 'short' => 'Koordinator', 'count' => $stats['total_koordinator'], 'icon' => 'M12 3a3 3 0 110 6 3 3 0 010-6zm-7 11a3 3 0 110 6 3 3 0 010-6zm14 0a3 3 0 110 6 3 3 0 010-6zM12 9v3M7 15l3-3m7 3l-3-3', 'bg' => 'linear-gradient(135deg,#3b82f6,#60a5fa)', 'accent' => '#60a5fa'],
-
-['label' => 'Karyawan', 'short' => 'Karyawan', 'count' => $stats['total_karyawan'], 'icon' => 'M17 20h5v-2a4 4 0 00-4-4h-1M7 20H2v-2a4 4 0 014-4h1m5-2a4 4 0 100-8 4 4 0 000 8zm0 2c-4 0-7 2-7 5v1h14v-1c0-3-3-5-7-5z', 'bg' => 'linear-gradient(135deg,#1e40af,#3b82f6)', 'accent' => '#60a5fa'],
-
-['label' => 'Total Tim', 'short' => 'Total Tim', 'count' => $stats['total_team'], 'icon' => 'M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3zm-5 11l1 3 4 2 4-2 1-3', 'bg' => 'linear-gradient(135deg,#06b6d4,#22d3ee)', 'accent' => '#22d3ee'],
-                ];
-            @endphp
-            @foreach($accountBreakdown as $item)
-            <div class="gaming-card p-4 flex flex-col items-center text-center gap-2" style="border-top:2px solid {{ $item['accent'] }};">
-                <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:{{ $item['bg'] }};">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
-                    </svg>
-                </div>
-                <div class="text-2xl font-gaming font-bold leading-none" style="color:var(--text-primary);">{{ $item['count'] }}</div>
-                <div class="text-xs font-medium leading-tight" style="color:var(--text-muted);">{{ $item['short'] }}</div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-
-        {{-- STATISTIK MEETING --}}
+    {{-- STATISTIK MEETING --}}
     <div>
         <h3 class="text-xs font-gaming font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted);">Statistik Meeting</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -154,7 +119,7 @@
                             <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
                             <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $meeting->room->name }} • {{ $meeting->meeting_date->format('d M Y') }}</p>
                         </div>
-                        <a href="{{ route('admin.meetings.show', $meeting) }}" class="badge flex-shrink-0" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);font-size:0.7rem;">Review</a>
+                        <a href="{{ route('admin.meetings.index') }}?review={{ $meeting->id }}" class="badge flex-shrink-0" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);font-size:0.7rem;">Review</a>
                     </div>
                     @empty
                     <div class="px-5 py-6 text-center">
@@ -200,54 +165,27 @@
         </div>
     </div>
 
-    {{-- Pembayaran Mendatang & Undangan Aktif --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {{-- Pembayaran Mendatang --}}
-        <div class="gaming-card overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:linear-gradient(135deg,rgba(168,85,247,0.1),rgba(168,85,247,0.05));">
-                <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">PEMBAYARAN MENDATANG</h3>
-            </div>
-            <div class="divide-y" style="border-color:var(--border-color);">
-                @forelse($upcomingPayments->take(5) as $payment)
-                <div class="px-5 py-3 flex items-center justify-between gap-3 transition hover:bg-slate-100/5">
-                    <div class="min-w-0">
-                        <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $payment->room->name }}</p>
-                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $payment->meeting_date->format('d M Y') }} • {{ substr($payment->start_time,0,5) }}</p>
-                    </div>
-                    <span class="badge flex-shrink-0 text-xs" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">
-                        PENDING
-                    </span>
-                </div>
-                @empty
-                <div class="px-5 py-8 text-center">
-                    <p class="text-sm" style="color:var(--text-muted);">Tidak ada pembayaran mendatang</p>
-                </div>
-                @endforelse
-            </div>
+    {{-- Pembayaran Mendatang --}}
+    <div class="gaming-card overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:linear-gradient(135deg,rgba(168,85,247,0.1),rgba(168,85,247,0.05));">
+            <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">PEMBAYARAN MENDATANG</h3>
         </div>
-
-        {{-- Undangan Aktif --}}
-        <div class="gaming-card overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(16,185,129,0.05));">
-                <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">UNDANGAN AKTIF</h3>
-            </div>
-            <div class="divide-y" style="border-color:var(--border-color);">
-                @forelse($myInvitations->take(5) as $inv)
-                <div class="px-5 py-3 flex items-center justify-between gap-3 transition hover:bg-slate-100/5">
-                    <div class="min-w-0">
-                        <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $inv->meeting->title }}</p>
-                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $inv->meeting->team->name }} • {{ substr($inv->meeting->start_time,0,5) }}</p>
-                    </div>
-                    <span class="badge flex-shrink-0 text-xs" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);">
-                        AKTIF
-                    </span>
+        <div class="divide-y" style="border-color:var(--border-color);">
+            @forelse($upcomingPayments->take(5) as $payment)
+            <div class="px-5 py-3 flex items-center justify-between gap-3 transition hover:bg-slate-100/5">
+                <div class="min-w-0">
+                    <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $payment->room->name }}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $payment->meeting_date->format('d M Y') }} • {{ substr($payment->start_time,0,5) }}</p>
                 </div>
-                @empty
-                <div class="px-5 py-8 text-center">
-                    <p class="text-sm" style="color:var(--text-muted);">Tidak ada undangan aktif</p>
-                </div>
-                @endforelse
+                <span class="badge flex-shrink-0 text-xs" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">
+                    PENDING
+                </span>
             </div>
+            @empty
+            <div class="px-5 py-8 text-center">
+                <p class="text-sm" style="color:var(--text-muted);">Tidak ada pembayaran mendatang</p>
+            </div>
+            @endforelse
         </div>
     </div>
 
