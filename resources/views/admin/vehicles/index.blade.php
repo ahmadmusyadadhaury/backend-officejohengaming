@@ -1,0 +1,664 @@
+@extends('layouts.app')
+@section('title', 'Data Kendaraan')
+@section('page-title', 'Data Aset > Kendaraan')
+@section('page-subtitle', 'Seluruh aset kendaraan milik perusahaan')
+@section('sidebar-menu') @include('partials.sidebar-admin') @endsection
+
+@section('content')
+<div class="pt-2 space-y-4 animate-fade-in">
+
+    {{-- 4 Stat Cards --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
+                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                </svg>
+            </div>
+            <div class="min-w-0">
+                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Kendaraan</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh aset kendaraan</div>
+            </div>
+        </div>
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
+                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['pajak_aktif'] }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Aktif</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak masih berlaku</div>
+            </div>
+        </div>
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
+                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['segera_habis'] }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Segera Habis</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak akan habis dalam 30 hari</div>
+            </div>
+        </div>
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
+                <svg class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-3xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['pajak_mati'] }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Mati</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak sudah expired</div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Tabel --}}
+    <div class="gaming-card" style="overflow:visible;">
+        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Data Kendaraan</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Seluruh aset kendaraan milik perusahaan.</div>
+            </div>
+            <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Tambah Kendaraan
+            </button>
+        </div>
+        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-sm">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="search-vehicle" placeholder="Cari plat nomor atau nama kendaraan" oninput="filterVehicles()"
+                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+            </div>
+            <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
+                <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
+                    style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                    <span id="filter-label">{{ $statusFilter === 'all' ? 'Semua Status' : ($statusFilter === 'aktif' ? 'Pajak Aktif' : ($statusFilter === 'segera_habis' ? 'Segera Habis' : 'Pajak Mati')) }}</span>
+                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;bottom:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-bottom:4px;">
+                    <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
+                    <button type="button" data-value="aktif" onclick="setFilter('aktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Pajak Aktif</button>
+                    <button type="button" data-value="segera_habis" onclick="setFilter('segera_habis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Segera Habis</button>
+                    <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Pajak Mati</button>
+                </div>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="gaming-table min-w-[700px]" id="vehicles-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Kendaraan</th>
+                        <th>Nomor Polisi</th>
+                        <th>Jenis</th>
+                        <th>Merk/Tipe</th>
+                        <th>Tahun</th>
+                        <th>Warna</th>
+                        <th>No. Rangka</th>
+                        <th>No. Mesin</th>
+                        <th>Keterangan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="vehicles-tbody">
+                    @forelse($vehicles as $v)
+                    @php
+                        $statusBadge = match($v->status_pajak) {
+                            'aktif'        => 'badge-green',
+                            'segera_habis' => 'badge-yellow',
+                            'mati'         => 'badge-red',
+                            default        => 'badge-gray',
+                        };
+                        $statusLabel = match($v->status_pajak) {
+                            'aktif'        => 'Pajak Aktif',
+                            'segera_habis' => 'Segera Habis',
+                            'mati'         => 'Pajak Mati',
+                            default        => '-',
+                        };
+                    @endphp
+                    <tr data-status="{{ $v->status_pajak }}">
+                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $v->nama_kendaraan }}</td>
+                        <td style="color:var(--text-muted);font-family:monospace;font-weight:600;">{{ $v->plat_nomor }}</td>
+                        <td style="color:var(--text-primary);">{{ $v->jenis_kendaraan }}</td>
+                        <td style="color:var(--text-muted);">{{ $v->merk_tipe ?? '-' }}</td>
+                        <td style="color:var(--text-muted);">{{ $v->tahun }}</td>
+                        <td style="color:var(--text-muted);">{{ $v->warna ?? '-' }}</td>
+                        <td style="color:var(--text-muted);font-family:monospace;font-size:12px;">{{ $v->nomor_rangka ?? '-' }}</td>
+                        <td style="color:var(--text-muted);font-family:monospace;font-size:12px;">{{ $v->nomor_mesin ?? '-' }}</td>
+                        <td style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $v->keperluan }}">{{ $v->keperluan ?? '-' }}</td>
+                        <td>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showDetail({{ $v->id }})" class="btn btn-secondary btn-sm">Detail</button>
+                                <a href="{{ route('admin.export', ['type' => 'vehicles']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                </a>
+                                <div class="relative" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown({{ $v->id }})" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;">⋮</button>
+                                    <div id="dropdown-{{ $v->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;bottom:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-bottom:4px;">
+                                        <button type="button" onclick="showDetail({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.vehicles.destroy', $v) }}" onsubmit="return confirm('Hapus kendaraan ini?')" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr id="empty-row">
+                        <td colspan="11" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data kendaraan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{{-- Detail Modal --}}
+<div id="detail-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow-y:auto;">
+    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Kendaraan</h3>
+            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        </div>
+    </div>
+</div>
+
+{{-- Modal Tambah / Edit Kendaraan --}}
+<div id="vehicle-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow-y:auto;">
+    <div class="vehicle-modal-card" onclick="event.stopPropagation()">
+
+        {{-- Header --}}
+        <div class="vehicle-modal-header">
+            <div>
+                <h3 class="vehicle-modal-title" id="modal-title">Tambah Aset Kendaraan</h3>
+                <p class="vehicle-modal-subtitle">Lengkapi informasi kendaraan dengan benar</p>
+            </div>
+            <button type="button" onclick="closeModal()" class="vehicle-close-btn">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Body --}}
+        <div class="vehicle-modal-body">
+            <form id="vehicle-form" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="_method" id="form-method" value="POST">
+                <input type="hidden" name="id" id="form-id" value="">
+                <input type="file" name="foto" id="f-foto" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" style="display:none;">
+
+                <div class="vehicle-form-grid">
+                    {{-- Left Column --}}
+                    <div class="vehicle-form-col">
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Nama Kendaraan <span class="vehicle-required">*</span></label>
+                            <input type="text" name="nama_kendaraan" id="f-nama_kendaraan" required placeholder="Masukan nama kendaraan" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Nomor Polisi <span class="vehicle-required">*</span></label>
+                            <input type="text" name="plat_nomor" id="f-plat_nomor" required placeholder="Masukan plat nomor" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Jenis Kendaraan <span class="vehicle-required">*</span></label>
+                            <input type="text" name="jenis_kendaraan" id="f-jenis_kendaraan" required placeholder="Masukan jenis kendaraan" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Merk / Tipe</label>
+                            <input type="text" name="merk_tipe" id="f-merk_tipe" placeholder="Masukan merk / tipe" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Tahun Kendaraan <span class="vehicle-required">*</span></label>
+                            <input type="number" name="tahun" id="f-tahun" required placeholder="Masukan tahun kendaraan" class="vehicle-input" min="1900" max="{{ now()->year + 1 }}">
+                        </div>
+                    </div>
+
+                    {{-- Right Column --}}
+                    <div class="vehicle-form-col">
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Warna</label>
+                            <input type="text" name="warna" id="f-warna" placeholder="Masukan warna kendaraan" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Nomor Rangka</label>
+                            <input type="text" name="nomor_rangka" id="f-nomor_rangka" placeholder="Masukan nomor rangka" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Nomor Mesin</label>
+                            <input type="text" name="nomor_mesin" id="f-nomor_mesin" placeholder="Masukan nomor mesin" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Status Kendaraan <span class="vehicle-required">*</span></label>
+                            <select name="kepemilikan_status" id="f-kepemilikan_status" required class="vehicle-input">
+                                <option value="Milik Perusahaan">Milik Perusahaan</option>
+                                <option value="Sewa">Sewa</option>
+                                <option value="Pribadi">Pribadi</option>
+                            </select>
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Foto / Lampiran Kendaraan</label>
+                            <div class="vehicle-upload" onclick="document.getElementById('f-foto').click()">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span id="foto-label" style="font-size:13px;">Klik untuk upload gambar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Hidden: existing required fields for backend compatibility --}}
+                <input type="hidden" name="pajak_tahunan" id="f-pajak_tahunan" value="{{ date('Y-m-d') }}">
+                <input type="hidden" name="pajak_5_tahun" id="f-pajak_5_tahun" value="{{ date('Y-m-d') }}">
+                <input type="hidden" name="biaya_kendaraan" id="f-biaya_kendaraan" value="0">
+                <input type="hidden" name="pic" id="f-pic" value="{{ auth()->user()->name }}">
+                <input type="hidden" name="jabatan" id="f-jabatan" value="{{ auth()->user()->jabatan ?? auth()->user()->role }}">
+
+                {{-- Full Width: Keterangan --}}
+                <div class="vehicle-field" style="margin-top:20px;">
+                    <label class="vehicle-label">Keterangan <span class="vehicle-required">*</span></label>
+                    <textarea name="keperluan" id="f-keperluan" required placeholder="Masukan keterangan" rows="3" class="vehicle-input vehicle-textarea"></textarea>
+                </div>
+
+                {{-- Footer --}}
+                <div class="vehicle-modal-footer">
+                    <button type="button" onclick="closeModal()" class="vehicle-btn vehicle-btn-batal">Batal</button>
+                    <button type="submit" class="vehicle-btn vehicle-btn-simpan" id="form-submit-btn">Simpan</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@push('styles')
+<style>
+.vehicle-modal-card {
+    width: 100%;
+    max-width: 1000px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    animation: vehicleFadeIn 0.3s ease;
+}
+@keyframes vehicleFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.vehicle-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.vehicle-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+.vehicle-modal-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+    font-weight: 400;
+}
+.vehicle-close-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.vehicle-close-btn:hover { background: rgba(128,128,128,0.2); color: var(--text-primary); }
+.vehicle-modal-body {
+    padding: 24px 28px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+.vehicle-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 28px;
+}
+@media (max-width: 768px) {
+    .vehicle-form-grid { grid-template-columns: 1fr; }
+    .vehicle-modal-card { max-width: 95vw; }
+    .vehicle-modal-header { padding: 20px 20px 16px; }
+    .vehicle-modal-body { padding: 20px; }
+}
+.vehicle-form-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.vehicle-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.vehicle-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.vehicle-required { color: #f87171; }
+.vehicle-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+.vehicle-input:focus {
+    border-color: #6c5cff;
+    box-shadow: 0 0 0 3px rgba(108,92,255,0.15);
+}
+.vehicle-input::placeholder { color: var(--text-muted); }
+.vehicle-input option { background: var(--bg-surface); color: var(--text-primary); }
+.vehicle-textarea {
+    height: auto;
+    padding: 12px 16px;
+    resize: vertical;
+    min-height: 80px;
+}
+.vehicle-upload {
+    width: 100%;
+    height: 100px;
+    background: var(--bg-surface-2);
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.vehicle-upload:hover {
+    border-color: rgba(108,92,255,0.4);
+    background: var(--bg-surface-2);
+}
+.vehicle-upload svg { color: var(--text-muted) !important; }
+.vehicle-upload span { color: var(--text-muted) !important; }
+.vehicle-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.vehicle-btn {
+    padding: 10px 28px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
+}
+.vehicle-btn-batal {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+.vehicle-btn-batal:hover {
+    border-color: rgba(128,128,128,0.4);
+    color: var(--text-primary);
+}
+.vehicle-btn-simpan {
+    background: linear-gradient(135deg, #6c5cff, #8b7bff);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(108,92,255,0.3);
+}
+.vehicle-btn-simpan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108,92,255,0.4);
+}
+</style>
+@endpush
+@endsection
+
+@push('scripts')
+<script>
+const vehiclesData = @json($vehiclesJson);
+const csrfToken = '{{ csrf_token() }}';
+
+const statusMap = {
+    aktif:        { label: 'Pajak Aktif',      bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
+    segera_habis: { label: 'Segera Habis',     bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+    mati:         { label: 'Pajak Mati',       bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
+};
+
+function showDetail(id) {
+    const v = vehiclesData.find(i => i.id === id);
+    if (!v) return;
+    document.getElementById('detail-title').textContent = v.nama_kendaraan;
+
+    const st = statusMap[v.status_pajak] || statusMap.mati;
+    const rp = v.biaya_kendaraan ? 'Rp ' + Number(v.biaya_kendaraan).toLocaleString('id-ID') : '-';
+
+    const rows = [
+        { label: 'Plat Nomor', value: v.plat_nomor },
+        { label: 'Jenis Kendaraan', value: v.jenis_kendaraan },
+        { label: 'Merk / Tipe', value: v.merk_tipe || '-' },
+        { label: 'Tahun', value: v.tahun },
+        { label: 'Warna', value: v.warna || '-' },
+        { label: 'Nomor Rangka', value: v.nomor_rangka || '-' },
+        { label: 'Nomor Mesin', value: v.nomor_mesin || '-' },
+        { label: 'PIC', value: v.pic },
+        { label: 'Pajak Tahunan', value: v.pajak_tahunan },
+        { label: 'Pajak 5 Thn', value: v.pajak_5_tahun },
+        { label: 'Kepemilikan', value: v.kepemilikan_status },
+        { label: 'Biaya', value: rp },
+        { label: 'Jabatan', value: v.jabatan },
+        { label: 'Keperluan', value: v.keperluan || '-' },
+    ];
+
+    const fotoHtml = v.foto ? `<div style="margin-top:12px;text-align:center;"><img src="${v.foto}" alt="Foto Kendaraan" style="max-width:100%;max-height:200px;border-radius:8px;object-fit:cover;"></div>` : '';
+    const detailBody = document.getElementById('detail-body');
+    detailBody.innerHTML = `
+        <div class="space-y-1">
+            ${rows.map((r, i) => `
+                <div class="flex items-center justify-between py-2.5" ${i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
+                    <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
+                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.value}</p>
+                </div>
+            `).join('')}
+            <div class="flex items-center justify-between py-2.5">
+                <p class="text-sm" style="color:var(--text-muted);">Status Pajak</p>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${st.bg};color:${st.text};border:1px solid ${st.border};">${st.label}</span>
+            </div>
+            ${fotoHtml}
+        </div>
+        <div class="pt-4 mt-4" style="border-top:1px solid var(--border-color);">
+            <p class="text-xs font-bold mb-3" style="color:var(--text-muted);letter-spacing:0.05em;">UPDATE STATUS PAJAK</p>
+            <div class="flex gap-2">
+                <button onclick="updatePajakStatus(${v.id}, 'aktif')" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold text-white transition" style="background:#10b981;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Hidup</button>
+                <button onclick="updatePajakStatus(${v.id}, 'segera_habis')" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold transition" style="color:#d97706;background:#fef3c7;" onmouseover="this.style.background='#fde68a'" onmouseout="this.style.background='#fef3c7'">Mau Habis</button>
+                <button onclick="updatePajakStatus(${v.id}, 'mati')" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold text-white transition" style="background:#ef4444;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Mati</button>
+            </div>
+        </div>
+    `;
+    document.getElementById('detail-modal').style.display = 'flex';
+}
+
+function closeDetail() {
+    document.getElementById('detail-modal').style.display = 'none';
+}
+
+document.getElementById('detail-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeDetail();
+});
+
+function updatePajakStatus(id, status) {
+    fetch('/admin/vehicles/' + id + '/status', {
+        method: 'PATCH',
+        headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ status })
+    }).then(r => r.json()).then(() => { location.reload(); }).catch(() => { location.reload(); });
+}
+
+function toggleDropdown(id) {
+    const all = document.querySelectorAll('.dropdown-menu');
+    all.forEach(el => { if (el.id !== 'dropdown-' + id) el.style.display = 'none'; });
+    const menu = document.getElementById('dropdown-' + id);
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.relative')) {
+        document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
+    }
+});
+
+function openCreateModal() {
+    document.getElementById('modal-title').textContent = 'Tambah Aset Kendaraan';
+    document.getElementById('form-method').value = 'POST';
+    document.getElementById('form-id').value = '';
+    document.getElementById('vehicle-form').action = '{{ route('admin.vehicles.store') }}';
+    document.getElementById('form-submit-btn').textContent = 'Simpan';
+    document.getElementById('vehicle-form').querySelectorAll('input, textarea, select').forEach(el => {
+        if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method') el.value = '';
+    });
+    document.getElementById('f-kepemilikan_status').value = 'Milik Perusahaan';
+    document.getElementById('f-pajak_tahunan').value = '{{ date('Y-m-d') }}';
+    document.getElementById('f-pajak_5_tahun').value = '{{ date('Y-m-d') }}';
+    document.getElementById('f-biaya_kendaraan').value = '0';
+    document.getElementById('foto-label').textContent = 'Klik untuk upload gambar';
+    showModal();
+}
+
+function openEditModal(id) {
+    const v = vehiclesData.find(i => i.id === id);
+    if (!v) return;
+    closeDetail();
+    document.getElementById('modal-title').textContent = 'Edit Aset Kendaraan';
+    document.getElementById('form-method').value = 'PUT';
+    document.getElementById('form-id').value = v.id;
+    document.getElementById('vehicle-form').action = '{{ url('admin/vehicles') }}/' + v.id;
+    document.getElementById('form-submit-btn').textContent = 'Simpan Perubahan';
+    document.getElementById('f-nama_kendaraan').value = v.nama_kendaraan;
+    document.getElementById('f-jenis_kendaraan').value = v.jenis_kendaraan;
+    document.getElementById('f-plat_nomor').value = v.plat_nomor;
+    document.getElementById('f-tahun').value = v.tahun;
+    document.getElementById('f-pajak_tahunan').value = v.pajak_tahunan ? v.pajak_tahunan.split('/').reverse().join('-') : '';
+    document.getElementById('f-pajak_5_tahun').value = v.pajak_5_tahun ? v.pajak_5_tahun.split('/').reverse().join('-') : '';
+    document.getElementById('f-kepemilikan_status').value = v.kepemilikan_status;
+    document.getElementById('f-biaya_kendaraan').value = v.biaya_kendaraan;
+    document.getElementById('f-pic').value = v.pic;
+    document.getElementById('f-jabatan').value = v.jabatan;
+    document.getElementById('f-keperluan').value = v.keperluan;
+    document.getElementById('f-merk_tipe').value = v.merk_tipe || '';
+    document.getElementById('f-warna').value = v.warna || '';
+    document.getElementById('f-nomor_rangka').value = v.nomor_rangka || '';
+    document.getElementById('f-nomor_mesin').value = v.nomor_mesin || '';
+    document.getElementById('foto-label').textContent = v.foto ? 'Foto sudah diupload' : 'Klik untuk upload gambar';
+    showModal();
+}
+
+function showModal() { document.getElementById('vehicle-modal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+function closeModal() { document.getElementById('vehicle-modal').style.display = 'none'; document.body.style.overflow = ''; }
+document.getElementById('vehicle-modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeDetail(); closeModal(); } });
+
+let currentFilter = '{{ $statusFilter }}';
+
+function toggleFilterMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('filter-menu');
+    document.querySelectorAll('.filter-menu').forEach(m => { if (m.id !== 'filter-menu') m.style.display = 'none'; });
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function setFilter(value) {
+    currentFilter = value;
+    const label = document.querySelector(`.filter-menu button[data-value="${value}"]`).textContent;
+    document.getElementById('filter-label').textContent = label;
+    document.getElementById('filter-menu').style.display = 'none';
+    filterVehicles();
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.getElementById('filter-menu').style.display = 'none';
+    }
+});
+
+function filterVehicles() {
+    const search = (document.getElementById('search-vehicle')?.value || '').toLowerCase();
+    const rows = document.querySelectorAll('#vehicles-tbody tr:not(#empty-row)');
+    rows.forEach(row => {
+        const rowStatus = row.dataset.status;
+        const text = row.textContent.toLowerCase();
+        const matchStatus = currentFilter === 'all' || rowStatus === currentFilter;
+        const matchSearch = !search || text.includes(search);
+        row.style.display = matchStatus && matchSearch ? '' : 'none';
+    });
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const statusParam = urlParams.get('status');
+if (statusParam) { currentFilter = statusParam; filterVehicles(); }
+
+document.getElementById('f-foto')?.addEventListener('change', function() {
+    var label = document.getElementById('foto-label');
+    if (this.files && this.files[0]) {
+        label.textContent = this.files[0].name;
+    } else {
+        label.textContent = 'Klik untuk upload gambar';
+    }
+});
+</script>
+@endpush

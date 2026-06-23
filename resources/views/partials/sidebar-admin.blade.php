@@ -11,14 +11,17 @@
         ['route' => 'admin.teams.index',  'label' => 'Kelola Tim',      'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
     ];
     $paymentMenus = [
-        ['route' => 'admin.meetings.index', 'label' => 'Daftar Pembayaran', 'icon' => 'M12 8c-1.1 0-2 .9-2 2h-1a3 3 0 013-3V7a2 2 0 012 2h-2zm0 8a3 3 0 01-3-3h1a2 2 0 002 2v1zm2-4h4v2h-4v-2zm-8 0H2v2h4v-2z'],
+        ['route' => 'admin.pembayaran.index', 'label' => 'Listrik',      'params' => ['jenis' => 'listrik']],
+        ['route' => 'admin.pembayaran.index', 'label' => 'Internet',     'params' => ['jenis' => 'internet']],
+        ['route' => 'admin.pembayaran.index', 'label' => 'Aset Digital', 'params' => ['jenis' => 'aset_digital']],
+        ['route' => 'admin.pembayaran.index', 'label' => 'IPL Ruko',     'params' => ['jenis' => 'ipl_ruko']],
     ];
     $accountMenus = [
         ['route' => 'admin.users.index', 'label' => 'Kelola Akun', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'],
     ];
     $isMeetingSectionActive = request()->routeIs('admin.meetings.*', 'admin.moms.*', 'calendar');
-    $isAssetSectionActive = request()->routeIs('admin.assets.*', 'admin.rooms.*', 'admin.teams.*');
-    $isPaymentSectionActive = false;
+    $isAssetSectionActive = request()->routeIs('admin.assets.*', 'admin.rooms.*', 'admin.teams.*', 'admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*');
+    $isPaymentSectionActive = request()->routeIs('admin.pembayaran.*');
     $isAccountSectionActive = request()->routeIs('admin.users.*', 'admin.admins.*');
     if (auth()->user()->role === 'admin') {
         $accountMenus[] = ['route' => 'admin.admins.index', 'label' => 'Kelola Admin', 'icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'];
@@ -82,11 +85,11 @@
         </button>
     </div>
     <div class="sidebar-submenu {{ $isAssetSectionActive ? '' : 'hidden' }}">
-        <a href="{{ route('admin.assets.index', ['type' => 'kendaraan']) }}" class="sidebar-item sidebar-submenu-item {{ request()->fullUrlIs(route('admin.assets.index').'*kendaraan*') ? 'active' : ( request()->get('type') == 'kendaraan' ? 'active' : '' ) }}">Kendaraan</a>
-        <a href="{{ route('admin.assets.index', ['type' => 'digital']) }}" class="sidebar-item sidebar-submenu-item {{ request()->get('type') == 'digital' ? 'active' : '' }}">Digital</a>
-        <a href="{{ route('admin.assets.index', ['type' => 'sim-card']) }}" class="sidebar-item sidebar-submenu-item {{ request()->get('type') == 'sim-card' ? 'active' : '' }}">SIM Card</a>
-        <a href="{{ route('admin.assets.index', ['type' => 'peralatan-kantor']) }}" class="sidebar-item sidebar-submenu-item {{ request()->get('type') == 'peralatan-kantor' ? 'active' : '' }}">Peralatan Kantor</a>
-        <a href="{{ route('admin.assets.index', ['type' => 'milik-ruko']) }}" class="sidebar-item sidebar-submenu-item {{ request()->get('type') == 'milik-ruko' ? 'active' : '' }}">Milik Ruko</a>
+        <a href="{{ route('admin.vehicles.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.vehicles.*') ? 'active' : '' }}">Kendaraan</a>
+        <a href="{{ route('admin.digital-assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.digital-assets.*') ? 'active' : '' }}">Digital</a>
+        <a href="{{ route('admin.sim-cards.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.sim-cards.*') ? 'active' : '' }}">SIM Card</a>
+        <a href="{{ route('admin.peralatan-kantor.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.peralatan-kantor.*') ? 'active' : '' }}">Peralatan Kantor</a>
+        <a href="{{ route('admin.ruko.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.ruko.*') ? 'active' : '' }}">Milik Ruko</a>
     </div>
 
     <div class="sidebar-section">
@@ -102,7 +105,7 @@
     </div>
     <div class="sidebar-submenu {{ $isPaymentSectionActive ? '' : 'hidden' }}">
         @foreach($paymentMenus as $menu)
-            <a href="{{ route($menu['route']) }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs($menu['route'] . '*') ? 'active' : '' }}">{{ $menu['label'] }}</a>
+            <a href="{{ route($menu['route'], $menu['params'] ?? []) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === ($menu['params']['jenis'] ?? '') ? 'active' : '' }}">{{ $menu['label'] }}</a>
         @endforeach
     </div>
 

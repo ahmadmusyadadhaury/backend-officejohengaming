@@ -43,6 +43,9 @@
             @endif
             <div class="flex gap-2 pt-3" style="border-top:1px solid var(--border-color);">
                 <a href="{{ route('admin.rooms.edit', $room) }}" class="btn btn-secondary btn-sm flex-1">Edit</a>
+                <a href="{{ route('admin.export', ['type' => 'rooms']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </a>
                 <form method="POST" action="{{ route('admin.rooms.destroy', $room) }}" onsubmit="return confirm('Hapus ruangan ini?')" class="flex-1">
                     @csrf @method('DELETE')
                     <button class="btn btn-danger btn-sm w-full">Hapus</button>

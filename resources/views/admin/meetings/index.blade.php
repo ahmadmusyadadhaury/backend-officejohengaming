@@ -95,11 +95,13 @@
                 <option value="approved">Disetujui</option>
                 <option value="rejected">Ditolak</option>
             </select>
+
         </div>
         <div class="overflow-x-auto">
             <table class="gaming-table min-w-[700px]" id="meetings-table">
                 <thead>
                     <tr>
+                        <th>No</th>
                         <th>Judul</th>
                         <th>Pemohon</th>
                         <th>Tim</th>
@@ -134,6 +136,7 @@
                         };
                     @endphp
                     <tr data-status="{{ $meeting->status }}">
+                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $meeting->title }}</td>
                         <td style="color:var(--text-muted);" class="meeting-pemohon">{{ $meeting->requester->name }}</td>
                         <td style="color:var(--text-muted);">{{ $meeting->team->name }}</td>
@@ -149,6 +152,9 @@
                         </td>
                         <td class="flex items-center gap-2">
                             <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm">Detail</button>
+                            <a href="{{ route('admin.export', ['type' => 'meetings']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </a>
                             @if(in_array($meeting->status, ['cancelled','rejected']))
                             <form method="POST" action="{{ route('admin.meetings.destroy', $meeting) }}" class="inline"
                                 onsubmit="return confirm('Hapus meeting ini?')">
@@ -160,7 +166,7 @@
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada permintaan meeting.</td>
+                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada permintaan meeting.</td>
                     </tr>
                     @endforelse
                 </tbody>

@@ -1,11 +1,18 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAccountController;
+use App\Http\Controllers\Admin\AsetRukoController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\DigitalAssetController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PeralatanKantorController;
+use App\Http\Controllers\Admin\SimCardController;
+use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\MeetingController as AdminMeetingController;
 use App\Http\Controllers\Admin\MomController as AdminMomController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WeeklyMeetingController;
@@ -42,6 +49,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('teams', TeamController::class);
     Route::resource('assets', AssetController::class);
     Route::get('moms', [AdminMomController::class, 'index'])->name('moms.index');
+    Route::resource('vehicles', VehicleController::class)->except(['create', 'show', 'edit']);
+    Route::patch('vehicles/{vehicle}/status', [VehicleController::class, 'updateStatus'])->name('vehicles.status');
+    Route::resource('digital-assets', DigitalAssetController::class)->except(['create', 'show', 'edit']);
+    Route::resource('sim-cards', SimCardController::class)->except(['create', 'show', 'edit']);
+    Route::resource('peralatan-kantor', PeralatanKantorController::class)->except(['create', 'show', 'edit']);
+    Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
+    Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
+    Route::post('pembayaran', [PaymentController::class, 'store'])->name('pembayaran.store');
+    Route::patch('pembayaran/{id}', [PaymentController::class, 'update'])->name('pembayaran.update');
+    Route::delete('pembayaran/{id}', [PaymentController::class, 'destroy'])->name('pembayaran.destroy');
+    Route::post('token-reading', [PaymentController::class, 'storeTokenReading'])->name('pembayaran.token-reading.store');
+    Route::delete('token-reading/{id}', [PaymentController::class, 'destroyTokenReading'])->name('pembayaran.token-reading.destroy');
+    Route::get('export', [ExportController::class, 'export'])->name('export');
 });
 
 // Hanya Admin & HR

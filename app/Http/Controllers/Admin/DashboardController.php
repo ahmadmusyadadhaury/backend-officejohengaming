@@ -4,41 +4,45 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
+use App\Models\ElectricityTokenReading;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
+use App\Models\Payment;
 use App\Models\Room;
 use App\Models\Team;
 use App\Models\User;
+use App\Models\WifiPayment;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $stats = [
-            'total_ceo'         => User::where('role', 'ceo')->where('is_active', true)->count(),
-            'total_gm'          => User::where('role', 'gm')->where('is_active', true)->count(),
-            'total_head_store'  => User::where('role', 'head_of_store')->where('is_active', true)->count(),
-            'total_hr'          => User::where('role', 'hr')->where('is_active', true)->count(),
+            'total_ceo' => User::where('role', 'ceo')->where('is_active', true)->count(),
+            'total_gm' => User::where('role', 'gm')->where('is_active', true)->count(),
+            'total_head_store' => User::where('role', 'head_of_store')->where('is_active', true)->count(),
+            'total_hr' => User::where('role', 'hr')->where('is_active', true)->count(),
             'total_koordinator' => User::where('role', 'koordinator')->where('is_active', true)->count(),
-            'total_karyawan'    => User::where('role', 'user')->where('is_active', true)->count(),
-            'total_team'        => Team::count(),
-            'total_teams'       => Team::count(),
-            'total_rooms'       => Room::count(),
+            'total_karyawan' => User::where('role', 'user')->where('is_active', true)->count(),
+            'total_team' => Team::count(),
+            'total_teams' => Team::count(),
+            'total_rooms' => Room::count(),
             // Asset stats
-            'total_assets'      => Asset::count(),
-            'digital_assets'    => Asset::where('is_active', true)->count(),
-            'assets_near_expire'=> \Illuminate\Support\Facades\Schema::hasColumn('assets','expire_date')
-                ? Asset::whereNotNull('expire_date')->where('expire_date','>=',today())->where('expire_date','<=',today()->addDays(30))->count()
+            'total_assets' => Asset::count(),
+            'digital_assets' => Asset::where('is_active', true)->count(),
+            'assets_near_expire' => Schema::hasColumn('assets', 'expire_date')
+                ? Asset::whereNotNull('expire_date')->where('expire_date', '>=', today())->where('expire_date', '<=', today()->addDays(30))->count()
                 : 0,
             // Meeting stats
-            'total_meetings'        => Meeting::count(),
-            'meetings_this_week'    => Meeting::whereBetween('meeting_date',[now()->startOfWeek(),now()->endOfWeek()])->count(),
-            'pending'               => Meeting::where('status','pending')->count(),
-            'today_meetings'        => Meeting::whereDate('meeting_date',today())->whereIn('status',['approved','confirmed','in_progress'])->count(),
-            'this_month'            => Meeting::whereMonth('meeting_date',now()->month)->whereYear('meeting_date',now()->year)->count(),
-            // Payment stats - based on meetings
-            'total_payments'        => Meeting::whereIn('status',['approved','confirmed','in_progress','completed'])->count(),
-            'pending_payments'      => Meeting::where('status','pending')->count(),
+            'total_meetings' => Meeting::count(),
+            'meetings_this_week' => Meeting::whereBetween('meeting_date', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'pending' => Meeting::where('status', 'pending')->count(),
+            'today_meetings' => Meeting::whereDate('meeting_date', today())->whereIn('status', ['approved', 'confirmed', 'in_progress'])->count(),
+            'this_month' => Meeting::whereMonth('meeting_date', now()->month)->whereYear('meeting_date', now()->year)->count(),
+            // Payment stats
+            'total_payments' => Payment::count() + WifiPayment::count(),
+            'pending_payments' => Payment::where('status', 'jatuh_tempo')->count() + WifiPayment::where('status', 'jatuh_tempo')->count(),
         ];
 
         // Data untuk tampilan
@@ -54,11 +58,48 @@ class DashboardController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        $upcomingPayments = Meeting::with(['requester', 'room', 'team'])
-            ->where('status', 'pending')
-            ->orderBy('meeting_date')
-            ->take(5)
-            ->get();
+        $today = today();
+        $threeDaysFromNow = today()->addDays(3);
+
+        $allPayments = Payment::where('status', 'jatuh_tempo')
+            ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
+                $q->where('jatuh_tempo', '>=', $today)
+                    ->where('jatuh_tempo', '<=', $threeDaysFromNow);
+            })
+            ->orderBy('jatuh_tempo')
+            ->get()
+            ->map(fn ($p) => [
+                'id' => $p->id,
+                'label' => $p->periode,
+                'due_date' => $p->jatuh_tempo,
+                'amount' => $p->nominal,
+                'status' => $p->status,
+                'jenis' => $p->jenis ?? 'Tagihan',
+                'type' => 'payment',
+            ]);
+
+        $allWifi = WifiPayment::where('status', 'jatuh_tempo')
+            ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
+                $q->where('masa_tenggang', '>=', $today)
+                    ->where('masa_tenggang', '<=', $threeDaysFromNow);
+            })
+            ->orderBy('masa_tenggang')
+            ->get()
+            ->map(fn ($w) => [
+                'id' => $w->id,
+                'label' => $w->nama_internet.' ('.$w->provider.')',
+                'due_date' => $w->masa_tenggang,
+                'amount' => $w->biaya,
+                'status' => $w->status,
+                'jenis' => 'Internet',
+                'type' => 'wifi',
+            ]);
+
+        $allMerged = $allPayments->merge($allWifi)->sortBy('due_date');
+
+        $overduePayments = $allMerged->filter(fn ($p) => $p['due_date']->lt($today));
+        $todayPayments = $allMerged->filter(fn ($p) => $p['due_date']->isToday());
+        $warningPayments = $allMerged->filter(fn ($p) => $p['due_date']->gt($today) && $p['due_date']->lte($threeDaysFromNow));
 
         $approvalWaitingMeetings = Meeting::with(['requester', 'team', 'room'])
             ->where('status', 'pending')
@@ -68,10 +109,10 @@ class DashboardController extends Controller
 
         // Asset expiration data
         $expiringAssets = collect();
-        $expiredAssets  = collect();
+        $expiredAssets = collect();
         $digitalAssetsNeedMaintenance = collect();
 
-        if (\Illuminate\Support\Facades\Schema::hasColumn('assets', 'expire_date')) {
+        if (Schema::hasColumn('assets', 'expire_date')) {
             $expiringAssets = Asset::whereNotNull('expire_date')
                 ->where('expire_date', '>=', today())
                 ->where('expire_date', '<=', today()->addDays(30))
@@ -100,6 +141,28 @@ class DashboardController extends Controller
             ->with('meeting.room', 'meeting.team')
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'upcomingPayments', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance'));
+        // Token listrik
+        $latestTokenReading = ElectricityTokenReading::orderBy('checked_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+        $tokenAlertDashboard = null;
+        if ($latestTokenReading && $latestTokenReading->remaining_kwh < 50) {
+            $tokenAlertDashboard = [
+                'level' => 'danger',
+                'message' => "Token listrik tinggal {$latestTokenReading->remaining_kwh} KWH — Segera bayar!",
+            ];
+        } elseif ($latestTokenReading && $latestTokenReading->remaining_kwh < 100) {
+            $tokenAlertDashboard = [
+                'level' => 'warning',
+                'message' => "Token listrik tersisa {$latestTokenReading->remaining_kwh} KWH — Segera isi token.",
+            ];
+        } elseif (! $latestTokenReading) {
+            $tokenAlertDashboard = [
+                'level' => 'warning',
+                'message' => 'Belum ada pengecekan token listrik. Lakukan pengecekan setiap hari Senin.',
+            ];
+        }
+
+        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard'));
     }
 }

@@ -43,12 +43,12 @@
         onclick="toggleSidebar()"></div>
 
     {{-- Sidebar --}}
-    <aside id="sidebar" class="gaming-sidebar w-64 flex flex-col fixed top-0 left-0 z-30 transition-transform duration-300 -translate-x-full lg:translate-x-0" style="height:100dvh;">
+    <aside id="sidebar" class="gaming-sidebar w-72 flex flex-col fixed top-0 left-0 z-30 transition-transform duration-300 -translate-x-full lg:translate-x-0" style="height:100dvh;">
 
         {{-- Logo --}}
         <div class="flex-shrink-0 flex items-center gap-2 px-4 py-4" style="border-bottom:1px solid var(--sidebar-border);">
             <div class="relative flex-shrink-0">
-                <img src="{{ asset('images/logo/logo_web.png') }}" alt="JOHEN OFFICE"
+                <img src="{{ asset('images/logo/logo_web.png') }}" alt="JOHEN OFFICE" loading="lazy"
                     class="w-9 h-9 rounded-lg object-contain">
                 <div class="absolute inset-0 rounded-lg" style="box-shadow:0 0 12px rgba(124,58,237,0.5);"></div>
             </div>
@@ -69,7 +69,7 @@
                 <div class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 font-gaming font-bold text-sm"
                     style="background:linear-gradient(135deg,var(--color-accent),var(--color-primary-light));color:var(--sidebar-text-active);">
                     @if(auth()->user()->avatar_url)
-                        <img src="{{ auth()->user()->avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
+                        <img src="{{ auth()->user()->avatar_url }}" alt="Avatar" loading="lazy" class="w-full h-full object-cover">
                     @else
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     @endif
@@ -111,10 +111,10 @@
     </aside>
 
     {{-- Main Content --}}
-    <div class="lg:ml-64 flex flex-col min-h-screen-safe">
+    <div class="lg:ml-72 flex flex-col min-h-screen-safe">
 
         {{-- Topbar --}}
-        <header class="gaming-topbar px-4 lg:px-6 py-3 flex items-center justify-between topbar-safe">
+        <header class="gaming-topbar px-4 lg:px-8 py-4 flex items-center justify-between topbar-safe">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg transition"
                     style="color:var(--text-secondary);background:none;border:none;cursor:pointer;"
@@ -125,10 +125,10 @@
                     </svg>
                 </button>
                 <div>
-                    <h1 class="font-gaming font-semibold leading-tight" style="font-size:0.9rem;color:var(--text-primary);">
+                    <h1 class="font-gaming font-semibold leading-tight" style="font-size:1.1rem;color:var(--text-primary);">
                         @yield('page-title', 'Dashboard')
                     </h1>
-                    <p class="hidden sm:block" style="font-size:0.7rem;color:var(--text-muted);">@yield('page-subtitle', '')</p>
+                    <p class="hidden sm:block" style="font-size:0.8rem;color:var(--text-muted);">@yield('page-subtitle', '')</p>
                 </div>
             </div>
 
@@ -335,7 +335,7 @@
         </div>
 
         {{-- Page Content --}}
-        <main class="flex-1 px-4 lg:px-6 pb-8 page-content">
+        <main class="flex-1 px-4 lg:px-8 pt-4 pb-8 page-content">
             @yield('content')
         </main>
     </div>
