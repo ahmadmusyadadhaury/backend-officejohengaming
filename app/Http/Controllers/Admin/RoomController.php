@@ -8,9 +8,27 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.rooms.index', ['rooms' => Room::paginate(15)]);
+        $query = Room::query();
+
+        // Search by name
+        if ($search = $request->input('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        // Filter by status
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $rooms = $query->orderBy('name')->paginate(15)->withQueryString();
+
+        return view('admin.rooms.index', compact('rooms'));
     }
 
     public function create()

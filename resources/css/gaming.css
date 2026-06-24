@@ -71,10 +71,10 @@
 ============================================ */
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg-base:             #161f2e;
-        --bg-surface:          #1e2d42;
-        --bg-surface-2:        #243450;
-        --bg-overlay:          rgba(30,45,66,0.92);
+        --bg-base:             #0d0f1a;
+        --bg-surface:          #141832;
+        --bg-surface-2:        #1a1f40;
+        --bg-overlay:          rgba(13,15,26,0.92);
 
         --text-primary:        #ffffff;
         --text-secondary:      #f0f0f0;
@@ -89,7 +89,7 @@
         --shadow-glow:         0 0 30px rgba(124,58,237,0.3);
         --shadow-glow-blue:    0 0 30px rgba(0,212,255,0.2);
 
-        --sidebar-bg:          #111827;
+        --sidebar-bg:          #141832;
         --sidebar-border:      rgba(255,255,255,0.07);
     }
 }
@@ -127,10 +127,10 @@ body.light {
 }
 
 body.dark {
-    --bg-base:             #161f2e;
-    --bg-surface:          #1e2d42;
-    --bg-surface-2:        #243450;
-    --bg-overlay:          rgba(30,45,66,0.92);
+    --bg-base:             #0d0f1a;
+    --bg-surface:          #141832;
+    --bg-surface-2:        #1a1f40;
+    --bg-overlay:          rgba(13,15,26,0.92);
 
     --text-primary:        #cbd5e1;
     --text-secondary:      #94a3b8;
@@ -145,7 +145,7 @@ body.dark {
     --shadow-glow:         0 0 30px rgba(124,58,237,0.3);
     --shadow-glow-blue:    0 0 30px rgba(0,212,255,0.2);
 
-    --sidebar-bg:          #111827;
+    --sidebar-bg:          #141832;
     --sidebar-border:      rgba(255,255,255,0.07);
     --sidebar-hover-bg: rgba(255,255,255,0.03);
 }
@@ -676,13 +676,13 @@ h1, h2, h3, h4, h5, h6,
 
 @media (prefers-color-scheme: dark) {
     .gaming-topbar {
-        background: rgba(30,45,66,0.88);
+        background: rgba(13,15,26,0.88);
         border-bottom-color: rgba(255,255,255,0.08);
     }
 }
 
 body.dark .gaming-topbar {
-    background: rgba(30,45,66,0.88);
+    background: rgba(13,15,26,0.88);
     border-bottom-color: rgba(255,255,255,0.08);
 }
 

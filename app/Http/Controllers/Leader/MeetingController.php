@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 class MeetingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         Notification::where('user_id', auth()->id())
             ->where('type', 'activity')
@@ -23,18 +23,34 @@ class MeetingController extends Controller
             ->update(['is_read' => true, 'read_at' => now()]);
 
         $userId = auth()->id();
+        $search = $request->input('search', '');
+        $status = $request->input('status', '');
 
-        $meetings = Meeting::with(['room', 'team', 'teams'])
-            ->where('requested_by', $userId)
-            ->latest()->paginate(10);
+        $query = Meeting::with(['room', 'team', 'teams'])
+            ->where('requested_by', $userId);
+
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%");
+        }
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $meetings = $query->latest()->paginate(15)->withQueryString();
 
         $totalMeeting    = Meeting::where('requested_by', $userId)->count();
         $menungguMeeting = Meeting::where('requested_by', $userId)->where('status', 'pending')->count();
         $disetujuiMeeting= Meeting::where('requested_by', $userId)->whereIn('status', ['approved','confirmed','in_progress','completed'])->count();
         $ditolakMeeting  = Meeting::where('requested_by', $userId)->where('status', 'rejected')->count();
 
+        $rooms = Room::where('is_active', true)->get();
+        $teams = Team::where('is_active', true)->get();
+        $assets = Asset::where('is_active', true)->get();
+
         return view('leader.meetings.index', compact(
-            'meetings', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting'
+            'meetings', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'search', 'status',
+            'rooms', 'teams', 'assets'
         ));
     }
 

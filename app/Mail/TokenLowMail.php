@@ -10,12 +10,16 @@ class TokenLowMail extends Mailable
 {
     public function __construct(
         public float $remainingKwh,
+        public string $level = 'danger',
     ) {}
 
     public function envelope(): Envelope
     {
+        $icon = $this->level === 'danger' ? '🚨' : '⚠️';
+        $label = $this->level === 'danger' ? 'KRITIS' : 'WARNING';
+
         return new Envelope(
-            subject: '⚠️ Token Listrik Hampir Habis — '.$this->remainingKwh.' KWH',
+            subject: "{$icon} Token Listrik {$label} — {$this->remainingKwh} KWH",
         );
     }
 
@@ -25,7 +29,9 @@ class TokenLowMail extends Mailable
             view: 'emails.token-low',
             with: [
                 'remainingKwh' => $this->remainingKwh,
-                'usedKwh' => 500 - $this->remainingKwh,
+                'usedKwh' => 7000 - $this->remainingKwh,
+                'capacityKwh' => 7000,
+                'level' => $this->level,
                 'url' => 'https://meetingroom.johengaming.store/login',
             ],
         );

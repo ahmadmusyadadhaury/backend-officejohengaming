@@ -61,7 +61,7 @@ class DashboardController extends Controller
         $today = today();
         $threeDaysFromNow = today()->addDays(3);
 
-        $allPayments = Payment::where('status', 'jatuh_tempo')
+        $allPayments = collect(Payment::where('status', 'jatuh_tempo')
             ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
                 $q->where('jatuh_tempo', '>=', $today)
                     ->where('jatuh_tempo', '<=', $threeDaysFromNow);
@@ -71,14 +71,18 @@ class DashboardController extends Controller
             ->map(fn ($p) => [
                 'id' => $p->id,
                 'label' => $p->periode,
-                'due_date' => $p->jatuh_tempo,
+                'due_date' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
                 'amount' => $p->nominal,
                 'status' => $p->status,
                 'jenis' => $p->jenis ?? 'Tagihan',
                 'type' => 'payment',
-            ]);
+                'periode' => $p->periode,
+                'tanggal_tagihan' => $p->tanggal_tagihan instanceof \Carbon\Carbon ? $p->tanggal_tagihan->format('Y-m-d') : $p->tanggal_tagihan,
+                'jatuh_tempo' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
+                'nominal' => (int) $p->nominal,
+            ]));
 
-        $allWifi = WifiPayment::where('status', 'jatuh_tempo')
+        $allWifi = collect(WifiPayment::where('status', 'jatuh_tempo')
             ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
                 $q->where('masa_tenggang', '>=', $today)
                     ->where('masa_tenggang', '<=', $threeDaysFromNow);
@@ -88,18 +92,27 @@ class DashboardController extends Controller
             ->map(fn ($w) => [
                 'id' => $w->id,
                 'label' => $w->nama_internet.' ('.$w->provider.')',
-                'due_date' => $w->masa_tenggang,
-                'amount' => $w->biaya,
+                'due_date' => $w->masa_tenggang instanceof \Carbon\Carbon ? $w->masa_tenggang->format('Y-m-d') : $w->masa_tenggang,
+                'amount' => (int) $w->biaya,
                 'status' => $w->status,
                 'jenis' => 'Internet',
                 'type' => 'wifi',
-            ]);
+                'nama_internet' => $w->nama_internet,
+                'provider' => $w->provider,
+                'pic' => $w->pic,
+                'jabatan' => $w->jabatan,
+                'masa_tenggang' => $w->masa_tenggang instanceof \Carbon\Carbon ? $w->masa_tenggang->format('Y-m-d') : $w->masa_tenggang,
+                'biaya' => (int) $w->biaya,
+            ]));
 
         $allMerged = $allPayments->merge($allWifi)->sortBy('due_date');
 
-        $overduePayments = $allMerged->filter(fn ($p) => $p['due_date']->lt($today));
-        $todayPayments = $allMerged->filter(fn ($p) => $p['due_date']->isToday());
-        $warningPayments = $allMerged->filter(fn ($p) => $p['due_date']->gt($today) && $p['due_date']->lte($threeDaysFromNow));
+        $todayStr = $today->format('Y-m-d');
+        $threeDaysStr = $threeDaysFromNow->format('Y-m-d');
+
+        $overduePayments = $allMerged->filter(fn ($p) => $p['due_date'] < $todayStr);
+        $todayPayments = $allMerged->filter(fn ($p) => $p['due_date'] === $todayStr);
+        $warningPayments = $allMerged->filter(fn ($p) => $p['due_date'] > $todayStr && $p['due_date'] <= $threeDaysStr);
 
         $approvalWaitingMeetings = Meeting::with(['requester', 'team', 'room'])
             ->where('status', 'pending')
@@ -163,6 +176,6 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard'));
+        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard'));
     }
 }

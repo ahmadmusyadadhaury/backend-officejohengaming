@@ -9,10 +9,28 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminAccountController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $admins = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo'])
-            ->paginate(15);
+        $query = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo']);
+
+        // Search by name or username
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $admins = $query->orderBy('name')->paginate(15)->withQueryString();
 
         return view('admin.admins.index', compact('admins'));
     }

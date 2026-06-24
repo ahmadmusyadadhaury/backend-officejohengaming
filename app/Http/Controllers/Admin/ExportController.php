@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\DataExport;
 use App\Http\Controllers\Controller;
-use App\Models\Asset;
 use App\Models\AsetRuko;
+use App\Models\Asset;
 use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
 use App\Models\Meeting;
@@ -14,9 +14,11 @@ use App\Models\PeralatanKantor;
 use App\Models\Room;
 use App\Models\SimCard;
 use App\Models\Team;
+use App\Models\TokenPayment;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WifiPayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -40,7 +42,8 @@ class ExportController extends Controller
             'peralatan-kantor' => fn () => $this->peralatanKantorExport(),
             'ruko' => fn () => $this->rukoExport(),
             'pembayaran' => fn () => $this->pembayaranExport($jenis),
-            'token-readings' => fn () => $this->tokenReadingsExport(),
+            'token-readings' => fn () => $this->tokenReadingsExport($request),
+            'token-topups' => fn () => $this->tokenTopupsExport($request),
         ];
 
         if (! isset($exports[$type])) {
@@ -135,7 +138,7 @@ class ExportController extends Controller
             ->orderBy('meeting_date', 'desc')->get()->map(fn ($m) => [
                 'Judul' => $m->title,
                 'Tanggal' => $m->meeting_date->format('d/m/Y'),
-                'Jam' => $m->start_time->format('H:i') . ' - ' . $m->end_time->format('H:i'),
+                'Jam' => $m->start_time->format('H:i').' - '.$m->end_time->format('H:i'),
                 'Ruangan' => $m->room?->name ?? '-',
                 'Pemohon' => $m->requester?->name ?? '-',
                 'Tim' => $m->team?->name ?? '-',
@@ -160,7 +163,7 @@ class ExportController extends Controller
             'Nomor Rangka' => $v->nomor_rangka ?? '-',
             'Nomor Mesin' => $v->nomor_mesin ?? '-',
             'Status Kepemilikan' => $v->kepemilikan_status,
-            'Foto' => $v->foto ? url('storage/' . $v->foto) : '-',
+            'Foto' => $v->foto ? url('storage/'.$v->foto) : '-',
             'Keterangan' => $v->keperluan ?? '-',
         ]);
 
@@ -177,7 +180,7 @@ class ExportController extends Controller
             'Email' => $a->email,
             'Mulai' => $a->mulai?->format('d/m/Y'),
             'Berakhir' => $a->berakhir?->format('d/m/Y'),
-            'Biaya' => $a->biaya ? 'Rp ' . number_format($a->biaya, 0, ',', '.') : '-',
+            'Biaya' => $a->biaya ? 'Rp '.number_format($a->biaya, 0, ',', '.') : '-',
             'Status' => $a->is_active ? 'Aktif' : 'Tidak Aktif',
             'PIC' => $a->pic,
             'Jabatan' => $a->jabatan,
@@ -247,7 +250,7 @@ class ExportController extends Controller
                 'PIC' => $w->pic,
                 'Jabatan' => $w->jabatan,
                 'Masa Tenggang' => $w->masa_tenggang?->format('d/m/Y'),
-                'Biaya' => 'Rp ' . number_format($w->biaya, 0, ',', '.'),
+                'Biaya' => 'Rp '.number_format($w->biaya, 0, ',', '.'),
                 'Status' => $w->status,
                 'Tgl Bayar' => $w->tanggal_bayar?->format('d/m/Y') ?? '-',
             ]);
@@ -262,7 +265,7 @@ class ExportController extends Controller
             'Periode' => $p->periode,
             'Tagihan' => $p->tanggal_tagihan?->format('d/m/Y'),
             'Jatuh Tempo' => $p->jatuh_tempo?->format('d/m/Y'),
-            'Nominal' => 'Rp ' . number_format($p->nominal, 0, ',', '.'),
+            'Nominal' => 'Rp '.number_format($p->nominal, 0, ',', '.'),
             'Status' => $p->status,
             'Tgl Bayar' => $p->tanggal_bayar?->format('d/m/Y') ?? '-',
         ]);
@@ -275,21 +278,60 @@ class ExportController extends Controller
         );
     }
 
-    protected function tokenReadingsExport()
+    protected function tokenReadingsExport($request)
     {
-        $data = ElectricityTokenReading::with('checker')
-            ->orderBy('checked_date', 'desc')
+        $range = $request->get('range', 'bulanan');
+        $query = ElectricityTokenReading::with('checker');
+        if ($range === 'harian') {
+            $query->whereDate('checked_date', Carbon::today());
+        } elseif ($range === 'mingguan') {
+            $query->whereBetween('checked_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } else {
+            $tokenMonth = $request->get('token_month', now()->format('Y-m'));
+            $startDate = Carbon::parse($tokenMonth.'-01')->startOfMonth();
+            $endDate = $startDate->copy()->endOfMonth();
+            $query->whereBetween('checked_date', [$startDate, $endDate]);
+        }
+        $latestPayment = TokenPayment::orderBy('payment_date', 'desc')->first();
+        $capacityKwh = $latestPayment ? (float) $latestPayment->amount_kwh : 7000;
+
+        $data = $query->orderBy('checked_date', 'desc')
             ->get()->map(fn ($r) => [
                 'Tanggal Check' => $r->checked_date->format('d/m/Y'),
                 'Sisa KWH' => $r->remaining_kwh,
+                'Terpakai' => $capacityKwh - (float) $r->remaining_kwh,
                 'Status' => $r->status ?? '-',
                 'Pengecek' => $r->checker?->name ?? '-',
-                'Catatan' => $r->notes ?? '-',
+                'Catatan' => $r->notes ?: 'Tidak ada catatan',
             ]);
 
         return Excel::download(
             new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Pengecekan Token Listrik', 'Token Listrik'),
             'Data_Token_Listrik.xlsx'
+        );
+    }
+
+    protected function tokenTopupsExport($request)
+    {
+        $range = $request->get('range', 'bulanan');
+        $query = TokenPayment::with('creator');
+        if ($range === 'harian') {
+            $query->whereDate('payment_date', Carbon::today());
+        } elseif ($range === 'mingguan') {
+            $query->whereBetween('payment_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        }
+        $data = $query->orderBy('payment_date', 'desc')
+            ->get()->map(fn ($t) => [
+                'Tanggal Bayar' => $t->payment_date->format('d/m/Y'),
+                'Periode' => $t->period,
+                'Jumlah KWH' => $t->amount_kwh,
+                'Oleh' => $t->creator?->name ?? '-',
+                'Catatan' => $t->notes ?: 'Tidak ada catatan',
+            ]);
+
+        return Excel::download(
+            new DataExport(collect($data), array_keys($data->first() ?? []), 'Riwayat Top Up Token', 'Top Up Token'),
+            'Riwayat_TopUp_Token.xlsx'
         );
     }
 }

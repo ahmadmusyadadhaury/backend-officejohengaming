@@ -8,18 +8,27 @@ use Illuminate\Http\Request;
 
 class AssetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $assetStats = [
-            'total_assets' => Asset::count(),
-            'pajak_aktif'  => Asset::whereNull('expire_date')->orWhere('expire_date', '>=', now())->count(),
-            'pajak_mati'   => Asset::where('expire_date', '<', now())->count(),
-        ];
+        $query = Asset::query();
 
-        return view('admin.assets.index', [
-            'assets' => Asset::paginate(15),
-            'assetStats' => $assetStats,
-        ]);
+        // Search by name
+        if ($search = $request->input('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        // Filter by status
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $assets = $query->orderBy('name')->paginate(15)->withQueryString();
+
+        return view('admin.assets.index', compact('assets'));
     }
 
     public function create()

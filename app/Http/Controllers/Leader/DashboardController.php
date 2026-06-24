@@ -11,28 +11,11 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        $stats = [
-            'pending' => Meeting::where('requested_by', $user->id)->where('status', 'pending')->count(),
-            'approved' => Meeting::where('requested_by', $user->id)->where('status', 'approved')->count(),
-            'completed' => Meeting::where('requested_by', $user->id)->where('status', 'completed')->count(),
-            'cancelled' => Meeting::where('requested_by', $user->id)->where('status', 'cancelled')->count(),
-        ];
+        $totalMeeting = Meeting::where('requested_by', $user->id)->count();
+        $disetujui = Meeting::where('requested_by', $user->id)->whereIn('status', ['approved','confirmed','in_progress','completed'])->count();
+        $menunggu = Meeting::where('requested_by', $user->id)->where('status', 'pending')->count();
+        $ditolak = Meeting::where('requested_by', $user->id)->where('status', 'rejected')->count();
 
-        $upcomingMeetings = Meeting::with(['room', 'team'])
-            ->where('requested_by', $user->id)
-            ->whereIn('status', ['approved', 'confirmed'])
-            ->where('meeting_date', '>=', today())
-            ->orderBy('meeting_date')
-            ->orderBy('start_time')
-            ->take(5)
-            ->get();
-
-        $recentMeetings = Meeting::with(['room', 'team'])
-            ->where('requested_by', $user->id)
-            ->latest()
-            ->take(5)
-            ->get();
-
-        return view('leader.dashboard', compact('stats', 'upcomingMeetings', 'recentMeetings'));
+        return view('leader.dashboard', compact('totalMeeting', 'disetujui', 'menunggu', 'ditolak'));
     }
 }

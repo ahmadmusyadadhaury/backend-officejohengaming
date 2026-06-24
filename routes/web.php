@@ -5,22 +5,23 @@ use App\Http\Controllers\Admin\AsetRukoController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\DigitalAssetController;
-use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\PeralatanKantorController;
-use App\Http\Controllers\Admin\SimCardController;
-use App\Http\Controllers\Admin\VehicleController;
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\MeetingController as AdminMeetingController;
 use App\Http\Controllers\Admin\MomController as AdminMomController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PeralatanKantorController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
-use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\SimCardController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\WeeklyMeetingController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\Leader\DashboardController as KoordinatorDashboard;
 use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingController;
 use App\Http\Controllers\Leader\MomController;
+use App\Http\Controllers\MomExportController;
 use App\Http\Controllers\OverrideRequestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PushController;
@@ -57,10 +58,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
     Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
     Route::post('pembayaran', [PaymentController::class, 'store'])->name('pembayaran.store');
-    Route::patch('pembayaran/{id}', [PaymentController::class, 'update'])->name('pembayaran.update');
+    Route::put('pembayaran/{id}', [PaymentController::class, 'update'])->name('pembayaran.update');
     Route::delete('pembayaran/{id}', [PaymentController::class, 'destroy'])->name('pembayaran.destroy');
     Route::post('token-reading', [PaymentController::class, 'storeTokenReading'])->name('pembayaran.token-reading.store');
     Route::delete('token-reading/{id}', [PaymentController::class, 'destroyTokenReading'])->name('pembayaran.token-reading.destroy');
+    Route::post('token-topup', [PaymentController::class, 'storeTokenPayment'])->name('pembayaran.token-topup.store');
+    Route::delete('token-topup/{id}', [PaymentController::class, 'destroyTokenPayment'])->name('pembayaran.token-topup.destroy');
     Route::get('export', [ExportController::class, 'export'])->name('export');
 });
 
@@ -131,4 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/override/{override}', [OverrideRequestController::class, 'show'])->name('override.show');
     Route::patch('/override/{override}/accept', [OverrideRequestController::class, 'accept'])->name('override.accept');
     Route::patch('/override/{override}/reject', [OverrideRequestController::class, 'reject'])->name('override.reject');
+
+    // MOM Export
+    Route::get('/mom/{mom}/export', [MomExportController::class, 'export'])->name('mom.export');
 });

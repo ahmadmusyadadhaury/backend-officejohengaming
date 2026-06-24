@@ -63,34 +63,6 @@
             </button>
         </div>
 
-        {{-- User Info --}}
-        <div class="flex-shrink-0 px-5 py-4" style="border-bottom:1px solid var(--sidebar-border);">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 font-gaming font-bold text-sm"
-                    style="background:linear-gradient(135deg,var(--color-accent),var(--color-primary-light));color:var(--sidebar-text-active);">
-                    @if(auth()->user()->avatar_url)
-                        <img src="{{ auth()->user()->avatar_url }}" alt="Avatar" loading="lazy" class="w-full h-full object-cover">
-                    @else
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    @endif
-                </div>
-                <div class="min-w-0">
-                    <p class="text-sm font-medium truncate" style="color:var(--sidebar-text-active);">{{ auth()->user()->name }}</p>
-                    <span class="badge badge-primary" style="font-size:0.6rem;margin-top:2px;display:inline-flex;">
-                        {{ auth()->user()->role_label }}
-                    </span>
-                </div>
-            </div>
-            @if(auth()->user()->team)
-            <div class="mt-2 flex items-center gap-1.5" style="color:var(--text-muted);font-size:0.7rem;">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-                {{ auth()->user()->team->name }}
-            </div>
-            @endif
-        </div>
-
         {{-- Navigation — scrollable --}}
         <nav class="flex-1 min-h-0 overflow-y-auto px-3 py-4 space-y-0.5">
             @yield('sidebar-menu')
@@ -176,13 +148,13 @@
                                 </div>
                             @endif
                             @foreach($activeInvitations as $inv)
-                            <a href="{{ route('invitation.show', $inv) }}" class="flex items-start gap-3 px-4 py-3 transition" style="border-bottom:1px solid var(--border-color);">
+                            <button type="button" onclick="showInvitationModal({{ $inv->id }}, {{ $inv->meeting_id }})" class="flex items-start gap-3 px-4 py-3 transition text-left w-full" style="border-bottom:1px solid var(--border-color);background:none;border-left:none;border-right:none;border-top:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                 <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:{{ !$inv->is_read ? 'var(--color-accent)' : 'var(--text-muted)' }};"></div>
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $inv->meeting->title }}</p>
                                     <p class="text-xs" style="color:var(--text-muted);">{{ $inv->meeting->meeting_date->format('d M Y') }} · {{ substr($inv->meeting->start_time,0,5) }}</p>
                                 </div>
-                            </a>
+                            </button>
                             @endforeach
                             @foreach($activeWeeklyInvitations as $inv)
                             <a href="{{ route('weekly.show', $inv) }}" class="flex items-start gap-3 px-4 py-3 transition" style="border-bottom:1px solid var(--border-color);">
@@ -338,6 +310,24 @@
         <main class="flex-1 px-4 lg:px-8 pt-4 pb-8 page-content">
             @yield('content')
         </main>
+    </div>
+
+    {{-- Invitation Modal --}}
+    <div id="invitation-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+        <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Undangan Meeting</h3>
+                <button type="button" onclick="closeInvitationModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="px-6 py-5 overflow-y-auto flex-1" id="invitation-modal-body">
+                <div class="text-center py-8" style="color:var(--text-muted);">Memuat data...</div>
+            </div>
+            <div class="px-6 py-4 flex-shrink-0 flex justify-end" style="border-top:1px solid var(--border-color);">
+                <button type="button" onclick="closeInvitationModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -706,6 +696,43 @@
                     profileDropdown.classList.add('hidden');
                 }
             }
+        });
+
+        // Invitation Modal
+        function showInvitationModal(invitationId, meetingId) {
+            const body = document.getElementById('invitation-modal-body');
+            body.innerHTML = '<div class="text-center py-8" style="color:var(--text-muted);">Memuat data...</div>';
+            document.getElementById('invitation-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            fetch('/undangan/' + invitationId, { headers: { 'Accept': 'text/html' } })
+                .then(r => r.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const content = doc.querySelector('#content');
+                    if (content) {
+                        body.innerHTML = content.innerHTML;
+                    } else {
+                        body.innerHTML = '<div class="text-center py-8" style="color:var(--text-muted);">Gagal memuat data.</div>';
+                    }
+                })
+                .catch(() => {
+                    body.innerHTML = '<div class="text-center py-8" style="color:var(--text-muted);">Gagal memuat data.</div>';
+                });
+        }
+
+        function closeInvitationModal() {
+            document.getElementById('invitation-modal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('invitation-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeInvitationModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeInvitationModal();
         });
     </script>
     @stack('scripts')

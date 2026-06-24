@@ -39,88 +39,92 @@
 @endpush
 
 @section('content')
-<div class="max-w-2xl mx-auto pt-4 space-y-4 animate-fade-in">
+<div class="w-full pt-4 space-y-4 animate-fade-in">
 
-    {{-- Card Foto Profil --}}
-    <div class="gaming-card overflow-hidden">
-        <div class="px-6 py-4" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">FOTO PROFIL</h3>
-        </div>
-        <div class="p-6">
-            <form method="POST" action="{{ route('profile.update') }}" id="avatar-form">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="avatar_cropped" id="avatar_cropped">
+    {{-- 2 Column: Foto Profil + Informasi Akun --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-                <div class="flex items-center gap-6">
-                    {{-- Avatar Preview --}}
-                    <div class="relative flex-shrink-0">
-                        <div class="w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center"
-                            style="background:linear-gradient(135deg,var(--color-accent),var(--color-primary-light));box-shadow:0 4px 16px rgba(124,58,237,0.3);">
-                            @if($user->avatar_url)
-                                <img id="avatar-preview" src="{{ $user->avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
-                            @else
-                                <span id="avatar-initials" class="font-gaming font-bold text-3xl text-white">
-                                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                                </span>
-                                <img id="avatar-preview" src="" alt="Avatar" class="w-full h-full object-cover hidden">
-                            @endif
-                        </div>
-                        {{-- Edit icon --}}
-                        <label for="avatar-input" class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center cursor-pointer"
-                            style="background:var(--color-accent);box-shadow:0 2px 8px rgba(124,58,237,0.4);">
-                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </label>
-                        <input type="file" id="avatar-input" accept="image/*" class="hidden">
-                    </div>
-
-                    {{-- Info --}}
-                    <div class="flex-1 min-w-0">
-                        <p class="font-semibold text-base" style="color:var(--text-primary);">{{ $user->name }}</p>
-                        <p class="text-sm" style="color:var(--text-muted);">{{ $user->role_label }}</p>
-                        @if($user->team)
-                            <p class="text-xs mt-1" style="color:var(--text-muted);">{{ $user->team->name }}</p>
-                        @endif
-                        <p class="text-xs mt-3" style="color:var(--text-muted);">Klik ikon kamera untuk ganti foto. JPG, PNG, WEBP.</p>
-                        <div id="save-avatar-btn" class="hidden mt-2">
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                Simpan Foto
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Card Info Akun --}}
-    <div class="gaming-card overflow-hidden">
-        <div class="px-6 py-4" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">INFORMASI AKUN</h3>
-        </div>
-        <div class="p-6 space-y-3">
-            @php
-                $infos = [
-                    ['label' => 'Nama Lengkap', 'value' => $user->name],
-                    ['label' => 'Username',     'value' => $user->username],
-                    ['label' => 'Role',         'value' => $user->role_label],
-                    ['label' => 'Tim',          'value' => $user->team?->name ?? '-'],
-                    ['label' => 'Status',       'value' => $user->is_active ? 'Aktif' : 'Nonaktif'],
-                ];
-            @endphp
-            @foreach($infos as $info)
-            <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
-                <span class="text-sm" style="color:var(--text-muted);">{{ $info['label'] }}</span>
-                <span class="text-sm font-medium" style="color:var(--text-primary);">{{ $info['value'] }}</span>
+        {{-- Card Foto Profil --}}
+        <div class="gaming-card overflow-hidden flex flex-col h-full">
+            <div class="px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">FOTO PROFIL</h3>
             </div>
-            @endforeach
+            <div class="p-6 flex-1 flex items-center justify-center">
+                <form method="POST" action="{{ route('profile.update') }}" id="avatar-form" class="w-full">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="avatar_cropped" id="avatar_cropped">
+
+                    <div class="flex flex-col items-center gap-4">
+                        {{-- Avatar Preview --}}
+                        <div class="relative flex-shrink-0">
+                            <div class="w-28 h-28 rounded-2xl overflow-hidden flex items-center justify-center"
+                                style="background:linear-gradient(135deg,var(--color-accent),var(--color-primary-light));box-shadow:0 4px 16px rgba(124,58,237,0.3);">
+                                @if($user->avatar_url)
+                                    <img id="avatar-preview" src="{{ $user->avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
+                                @else
+                                    <span id="avatar-initials" class="font-gaming font-bold text-4xl text-white">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </span>
+                                    <img id="avatar-preview" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                                @endif
+                            </div>
+                            <label for="avatar-input" class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center cursor-pointer"
+                                style="background:var(--color-accent);box-shadow:0 2px 8px rgba(124,58,237,0.4);">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </label>
+                            <input type="file" id="avatar-input" accept="image/*" class="hidden">
+                        </div>
+
+                        {{-- Info --}}
+                        <div class="text-center min-w-0">
+                            <p class="font-semibold text-base" style="color:var(--text-primary);">{{ $user->name }}</p>
+                            <p class="text-sm" style="color:var(--text-muted);">{{ $user->role_label }}</p>
+                            @if($user->team)
+                                <p class="text-xs mt-1" style="color:var(--text-muted);">{{ $user->team->name }}</p>
+                            @endif
+                            <p class="text-xs mt-3" style="color:var(--text-muted);">Klik ikon kamera untuk ganti foto. JPG, PNG, WEBP.</p>
+                            <div id="save-avatar-btn" class="hidden mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Simpan Foto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
+
+        {{-- Card Info Akun --}}
+        <div class="gaming-card overflow-hidden flex flex-col h-full">
+            <div class="px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">INFORMASI AKUN</h3>
+            </div>
+            <div class="p-6 space-y-0 flex-1 flex flex-col justify-center">
+                @php
+                    $infos = [
+                        ['label' => 'Nama Lengkap', 'value' => $user->name],
+                        ['label' => 'Username',     'value' => $user->username],
+                        ['label' => 'Role',         'value' => $user->role_label],
+                        ['label' => 'Tim',          'value' => $user->team?->name ?? '-'],
+                        ['label' => 'Status',       'value' => $user->is_active ? 'Aktif' : 'Nonaktif'],
+                    ];
+                @endphp
+                @foreach($infos as $info)
+                <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
+                    <span class="text-sm" style="color:var(--text-muted);">{{ $info['label'] }}</span>
+                    <span class="text-sm font-medium" style="color:var(--text-primary);">{{ $info['value'] }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
     </div>
 
     {{-- Card Ubah Kata Sandi --}}

@@ -32,8 +32,8 @@
             </div>
             <div>
                 <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Aktif</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">WiFi aktif / lunas</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
+                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
             </div>
         </div>
         <div class="gaming-card p-5 flex items-center gap-4">
@@ -63,18 +63,18 @@
             </div>
         </div>
     </div>
-    @else
+    @elseif($jenis === 'aset_digital')
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="gaming-card p-5 flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
                 <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.1 0-2 .9-2 2H9a3 3 0 013-3V7a2 2 0 012 2h-2zm0 8a3 3 0 01-3-3h1a2 2 0 002 2v1zm2-4h4v2h-4v-2zm-8 0H2v2h4v-2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
             </div>
             <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total Tagihan</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total Aset Digital</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $stats['total'] }} tagihan</div>
             </div>
         </div>
@@ -118,10 +118,39 @@
             </div>
         </div>
     </div>
+    @elseif($jenis !== 'listrik')
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
+                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.1 0-2 .9-2 2H9a3 3 0 013-3V7a2 2 0 012 2h-2zm0 8a3 3 0 01-3-3h1a2 2 0 002 2v1zm2-4h4v2h-4v-2zm-8 0H2v2h4v-2z"/>
+                </svg>
+            </div>
+            <div class="min-w-0">
+                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total Tagihan</div>
+                <div class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $stats['total'] }} tagihan</div>
+            </div>
+        </div>
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
+                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
+                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
+            </div>
+        </div>
+    </div>
     @endif
 
     {{-- Alert Jatuh Tempo / Masa Tenggang --}}
-    @if($alertItems->isNotEmpty())
+    @if($jenis !== 'listrik' && $alertItems->isNotEmpty())
         @php
             $today = now()->startOfDay();
             $redItems = collect();
@@ -138,77 +167,50 @@
                 }
             }
         @endphp
-        @php $maxVisible = 2; @endphp
-        @if($redItems->isNotEmpty())
-            @php
-                $totalRed = $redItems->count();
-                $showMoreRed = $totalRed > $maxVisible;
-            @endphp
-            <div id="alert-red-group">
-                @foreach($redItems as $i => $a)
-                @php
-                    $dueDate = $a->{$dueField};
-                    $label = $jenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
-                    $name  = $jenis === 'internet' ? $a->nama_internet . ' (' . $a->provider . ')' : $a->periode;
-                    $dueStart = $dueDate->copy()->startOfDay();
-                    if ($dueStart->eq($today)) {
-                        $badgeTitle = 'Hari Ini';
-                        $badgeDesc = 'hari ini, segera lunasi pembayaran.';
-                    } else {
-                        $hari = $today->diffInDays($dueStart);
-                        $badgeTitle = $hari . ' Hari Lewat';
-                        $badgeDesc = 'sudah lewat ' . $hari . ' hari, segera lunasi pembayaran.';
-                    }
-                @endphp
-                <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl{{ $showMoreRed && $i >= $maxVisible ? ' alert-hidden-red' : '' }}" style="margin-bottom:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);{{ $showMoreRed && $i >= $maxVisible ? 'display:none;' : '' }}">
+        @if($redItems->isNotEmpty() || $yellowItems->isNotEmpty())
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            @if($redItems->isNotEmpty())
+            <div style="flex:1;min-width:280px;">
+                <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);">
                     <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
-                    <div>
-                        <div class="text-sm font-bold" style="color:#ef4444;">{{ $label }} {{ $badgeTitle }}</div>
-                        <div class="text-sm mt-1" style="color:var(--text-secondary);">{{ $label }} <strong>{{ $name }}</strong> {{ $badgeDesc }}</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-bold" style="color:#ef4444;">{{ $redItems->count() }} Lewat Jatuh Tempo</div>
+                        <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $redItems->count() }} tagihan lewat jatuh tempo.</div>
                     </div>
+                    <button type="button" onclick="showAlertPopup('danger')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.25);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
                 </div>
-                @endforeach
-                @if($showMoreRed)
-                <div style="text-align:right;margin-top:4px;">
-                    <button type="button" onclick="showAlertPopup('red')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;font-weight:600;padding:4px 0;">Lihat Selengkapnya</button>
-                </div>
-                @endif
             </div>
-        @endif
-        @if($yellowItems->isNotEmpty())
-            @php
-                $totalYellow = $yellowItems->count();
-                $showMoreYellow = $totalYellow > $maxVisible;
-            @endphp
-            <div id="alert-yellow-group">
-                @foreach($yellowItems as $i => $a)
-                @php
-                    $dueDate = $a->{$dueField};
-                    $label = $jenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
-                    $name  = $jenis === 'internet' ? $a->nama_internet . ' (' . $a->provider . ')' : $a->periode;
-                    $dueStart = $dueDate->copy()->startOfDay();
-                    $hari = $today->diffInDays($dueStart);
-                @endphp
-                <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl{{ $showMoreYellow && $i >= $maxVisible ? ' alert-hidden-yellow' : '' }}" style="margin-bottom:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);{{ $showMoreYellow && $i >= $maxVisible ? 'display:none;' : '' }}">
+            @endif
+            @if($yellowItems->isNotEmpty())
+            <div style="flex:1;min-width:280px;">
+                <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);">
                     <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
-                    <div>
-                        <div class="text-sm font-bold" style="color:#f59e0b;">{{ $label }} {{ $hari }} Hari Lagi</div>
-                        <div class="text-sm mt-1" style="color:var(--text-secondary);">{{ $label }} <strong>{{ $name }}</strong> {{ $hari }} hari lagi, segera lunasi pembayaran.</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-bold" style="color:#f59e0b;">{{ $yellowItems->count() }} Segera Jatuh Tempo</div>
+                        <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $yellowItems->count() }} tagihan jatuh tempo dalam 3 hari.</div>
                     </div>
+                    <button type="button" onclick="showAlertPopup('warning')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.25);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
                 </div>
-                @endforeach
-                @if($showMoreYellow)
-                <div style="text-align:right;margin-top:4px;">
-                    <button type="button" onclick="showAlertPopup('yellow')" style="background:none;border:none;color:#f59e0b;cursor:pointer;font-size:13px;font-weight:600;padding:4px 0;">Lihat Selengkapnya</button>
-                </div>
-                @endif
             </div>
+            @endif
+        </div>
         @endif
     @endif
+
+    {{-- Popup Detail Alert --}}
+    <div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:flex-start;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding-top:80px;" onclick="if(event.target===this)closeAlertPopup()">
+        <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:520px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);">Detail Tagihan</div>
+                <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
+            </div>
+            <div id="alert-popup-body"></div>
+        </div>
+    </div>
 
     {{-- Token Listrik Alert --}}
     @if($jenis === 'listrik' && $tokenAlert)
@@ -222,17 +224,6 @@
         </div>
     </div>
     @endif
-
-    {{-- Popup Lihat Selengkapnya --}}
-    <div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:flex-start;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding-top:80px;" onclick="if(event.target===this)closeAlertPopup()">
-        <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:520px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                <div style="font-weight:700;font-size:16px;color:var(--text-primary);">Pemberitahuan</div>
-                <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
-            </div>
-            <div id="alert-popup-body"></div>
-        </div>
-    </div>
 
     {{-- Table --}}
     @if($jenis !== 'listrik')
@@ -292,7 +283,7 @@
                         <th>Masa Tenggang</th>
                         <th>Biaya</th>
                         @else
-                        <th>Periode</th>
+                        <th>{{ $jenis === 'aset_digital' ? 'Nama Aset' : 'Periode' }}</th>
                         <th>Tagihan</th>
                         <th>Jatuh Tempo</th>
                         <th>Nominal</th>
@@ -378,7 +369,71 @@
     </div>
     @endif
 
-    {{-- Token Listrik Readings --}}
+    {{-- Riwayat Top Up Token --}}
+    @if($jenis === 'listrik')
+    <div class="gaming-card" style="overflow:visible;">
+        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Riwayat Top Up Token</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Riwayat pembelian/pengisian token listrik.</div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
+                    <button type="button" onclick="setTopupRange('harian')" class="topup-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'harian' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'harian' ? '#a78bfa' : 'var(--text-muted)' }};">Harian</button>
+                    <button type="button" onclick="setTopupRange('mingguan')" class="topup-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? '#a78bfa' : 'var(--text-muted)' }};">Mingguan</button>
+                    <button type="button" onclick="setTopupRange('bulanan')" class="topup-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? '#a78bfa' : 'var(--text-muted)' }};">Bulanan</button>
+                </div>
+                <a href="{{ route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan']) }}" class="btn btn-secondary btn-sm" title="Download Excel Riwayat Top Up">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Excel
+                </a>
+                <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Top Up Baru
+                </button>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="gaming-table w-full">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal Bayar</th>
+                        <th>Periode</th>
+                        <th>Jumlah KWH</th>
+                        <th>Oleh</th>
+                        <th>Catatan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($topupHistory as $i => $t)
+                    <tr>
+                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
+                        <td style="color:var(--text-primary);">{{ $t->payment_date->format('d M Y') }}</td>
+                        <td style="color:var(--text-muted);">{{ $t->period }}</td>
+                        <td style="font-weight:600;color:var(--text-primary);">{{ number_format($t->amount_kwh, 0) }} KWH</td>
+                        <td style="color:var(--text-primary);">{{ $t->creator?->name ?? '-' }}</td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $t->notes ?: 'Tidak ada catatan' }}</td>
+                        <td>
+                            <form method="POST" action="{{ route('admin.pembayaran.token-topup.destroy', $t->id) }}" onsubmit="return confirm('Hapus data top up ini?')" style="margin:0;">
+                                @csrf @method('DELETE')
+                                <button type="submit" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:2px 6px;">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     @if($jenis === 'listrik')
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -387,10 +442,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-xs font-semibold" style="color:var(--text-muted);">Kapasitas Token</div>
-                <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);">{{ $capacityKwh }} KWH</div>
+            <div class="min-w-0 flex-1">
+                <div class="text-xs font-semibold" style="color:var(--text-muted);">Top Up Terakhir</div>
+                <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);">{{ $latestPayment ? number_format($latestPayment->amount_kwh, 0) : '7.000' }} KWH</div>
+                <div class="text-xs" style="color:var(--text-muted);">{{ $latestPayment ? $latestPayment->payment_date->format('d M Y') : '-' }} · {{ $latestPayment?->creator?->name ?? '-' }}</div>
             </div>
+            <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-xs flex-shrink-0" style="font-size:11px;padding:4px 10px;">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Top Up
+            </button>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(59,130,246,0.12);">
@@ -404,34 +464,51 @@
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:{{ $latestReading && $latestReading->remaining_kwh < 50 ? 'rgba(239,68,68,0.12)' : ($latestReading && $latestReading->remaining_kwh < 100 ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.12)') }};">
-                <svg class="w-5 h-5" style="color:{{ $latestReading && $latestReading->remaining_kwh < 50 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 100 ? '#f59e0b' : '#34d399') }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:{{ $latestReading && $latestReading->remaining_kwh < 500 ? 'rgba(239,68,68,0.12)' : ($latestReading && $latestReading->remaining_kwh < 1000 ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.12)') }};">
+                <svg class="w-5 h-5" style="color:{{ $latestReading && $latestReading->remaining_kwh < 500 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 1000 ? '#f59e0b' : '#34d399') }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2m0 4h.01"/>
                 </svg>
             </div>
             <div class="min-w-0">
                 <div class="text-xs font-semibold" style="color:var(--text-muted);">Sisa Token</div>
-                <div class="text-lg font-gaming font-bold" style="color:{{ $latestReading && $latestReading->remaining_kwh < 50 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 100 ? '#f59e0b' : 'var(--text-primary)') }};">
-                    {{ $latestReading ? number_format($latestReading->remaining_kwh, 1) : '-' }} KWH
+                <div class="text-lg font-gaming font-bold" style="color:{{ $latestReading && $latestReading->remaining_kwh < 500 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 1000 ? '#f59e0b' : 'var(--text-primary)') }};">
+                    {{ $latestReading ? number_format($latestReading->remaining_kwh, 1) : number_format($capacityKwh, 0) }} KWH
                 </div>
             </div>
         </div>
     </div>
+    @endif
 
+    {{-- Pengecekan Token Listrik --}}
     <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Token Listrik</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
-                    Lakukan pengecekan sisa KWH token setiap hari Senin. Kapasitas token: 500 KWH.
+                    Lakukan pengecekan sisa KWH token setiap hari Senin. Kapasitas token: {{ number_format($capacityKwh, 0) }} KWH/bulan.
                 </div>
             </div>
-            <button type="button" onclick="openTokenModal()" class="btn btn-primary btn-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Input Pengecekan
-            </button>
+            <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
+                    <button type="button" onclick="setReadingRange('harian')" class="reading-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'harian' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'harian' ? '#60a5fa' : 'var(--text-muted)' }};">Harian</button>
+                    <button type="button" onclick="setReadingRange('mingguan')" class="reading-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'mingguan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'mingguan' ? '#60a5fa' : 'var(--text-muted)' }};">Mingguan</button>
+                    <button type="button" onclick="setReadingRange('bulanan')" class="reading-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'bulanan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'bulanan' ? '#60a5fa' : 'var(--text-muted)' }};">Bulanan</button>
+                </div>
+                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                    <input type="hidden" name="jenis" value="listrik">
+                    <input type="month" name="token_month" value="{{ $tokenMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                </form>
+                <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Download Excel Pengecekan Token">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Excel
+                </a>
+                <button type="button" onclick="openTokenModal()" class="btn btn-primary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Input Pengecekan
+                </button>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="gaming-table w-full">
@@ -440,6 +517,7 @@
                         <th>No</th>
                         <th>Tanggal Check</th>
                         <th>Sisa KWH</th>
+                        <th>Terpakai</th>
                         <th>Status</th>
                         <th>Pengecek</th>
                         <th>Catatan</th>
@@ -449,17 +527,19 @@
                 <tbody>
                     @forelse($tokenReadings as $i => $r)
                     @php
-                        $statusMap = ['kritis' => ['#ef4444', 'Kritis'], 'warning' => ['#f59e0b', 'Warning'], 'perhatian' => ['#3b82f6', 'Perhatian'], 'aman' => ['#10b981', 'Aman']];
+                        $statusMap = ['kritis' => ['#ef4444', 'Kritis'], 'warning' => ['#f97316', 'Warning'], 'perhatian' => ['#3b82f6', 'Perhatian'], 'aman' => ['#10b981', 'Aman']];
                         $statusColor = $statusMap[$r->status][0] ?? '#10b981';
                         $statusLabel = $statusMap[$r->status][1] ?? 'Aman';
+                        $usedInReading = $capacityKwh - $r->remaining_kwh;
                     @endphp
                     <tr>
                         <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
                         <td style="color:var(--text-primary);">{{ $r->checked_date->format('d M Y') }}</td>
                         <td style="font-weight:600;color:var(--text-primary);">{{ $r->remaining_kwh }} KWH</td>
-                        <td><span class="badge text-xs" style="background:{{ $statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : ($statusColor === '#f59e0b' ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)')) }};color:{{ $statusColor }};border:1px solid {{ $statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : ($statusColor === '#f59e0b' ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.3)')) }};">{{ $statusLabel }}</span></td>
+                        <td style="color:var(--text-muted);">{{ number_format($usedInReading, 0) }} KWH</td>
+                        <td><span class="badge text-xs" style="background:{{ $statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)')) }};color:{{ $statusColor }};border:1px solid {{ $statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)')) }};">{{ $statusLabel }}</span></td>
                         <td style="color:var(--text-primary);">{{ $r->checker->name }}</td>
-                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->notes ?? '-' }}</td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->notes ?: 'Tidak ada catatan' }}</td>
                         <td>
                             <div class="flex items-center gap-1">
                                 <form method="POST" action="{{ route('admin.pembayaran.token-reading.destroy', $r->id) }}" onsubmit="return confirm('Hapus data pengecekan ini?')" style="margin:0;">
@@ -474,7 +554,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada pengecekan token listrik.</td>
+                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada pengecekan token listrik.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -500,11 +580,20 @@
                         <div class="field-group">
                             <label class="gaming-label">Sisa KWH <span class="field-req">*</span></label>
                             <input type="number" name="remaining_kwh" id="f-remaining_kwh" required step="0.01" min="0" max="9999" placeholder="Contoh: 342.5" class="gaming-input">
-                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Kapasitas token: 500 KWH. Input sisa KWH yang tertera di meteran.</div>
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Input sisa KWH yang tertera di meteran.</div>
                         </div>
                         <div class="field-group">
                             <label class="gaming-label">Tanggal Pengecekan <span class="field-req">*</span></label>
                             <input type="date" name="checked_date" id="f-checked_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Pengecek <span class="field-req">*</span></label>
+                            <select name="checked_by" id="f-checked_by" required class="gaming-input">
+                                <option value="">Pilih pengecek</option>
+                                @foreach($users as $u)
+                                    <option value="{{ $u->id }}" {{ $u->id === auth()->id() ? 'selected' : '' }}>{{ $u->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="field-group">
                             <label class="gaming-label">Catatan</label>
@@ -513,6 +602,44 @@
                     </div>
                     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
                         <button type="button" onclick="closeTokenModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
+                        <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Top Up Token Modal --}}
+    <div id="topup-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);">Top Up Token Listrik</h3>
+                <button type="button" onclick="closeTopupModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-5 overflow-y-auto flex-1">
+                <form method="POST" action="{{ route('admin.pembayaran.token-topup.store') }}">
+                    @csrf
+                    <div class="space-y-4">
+                        <div class="field-group">
+                            <label class="gaming-label">Jumlah KWH <span class="field-req">*</span></label>
+                            <input type="number" name="amount_kwh" id="f-amount_kwh" required step="0.01" min="1" placeholder="Contoh: 7000" class="gaming-input">
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan jumlah KWH yang dibeli.</div>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
+                            <input type="date" name="payment_date" id="f-payment_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Catatan</label>
+                            <textarea name="notes" id="f-topup-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+                        <button type="button" onclick="closeTopupModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
                         <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
                     </div>
                 </form>
@@ -602,8 +729,8 @@
                     </div>
                     @else
                     <div class="field-group">
-                        <label class="gaming-label">Periode <span class="field-req">*</span></label>
-                        <input type="text" name="periode" id="f-periode" required placeholder="Contoh: Januari 2026" class="gaming-input">
+                        <label class="gaming-label">{{ $jenis === 'aset_digital' ? 'Nama Aset' : 'Periode' }} <span class="field-req">*</span></label>
+                        <input type="text" name="periode" id="f-periode" required placeholder="{{ $jenis === 'aset_digital' ? 'Contoh: Adobe Photoshop' : 'Contoh: Januari 2026' }}" class="gaming-input">
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Nominal <span class="field-req">*</span></label>
@@ -638,6 +765,57 @@
             </form>
         </div>
 
+    </div>
+</div>
+
+{{-- Modal Bayar/Lunaskan --}}
+<div id="bayar-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Bayar / Lunaskan</h3>
+            <button type="button" onclick="closeBayarModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1">
+            <div id="bayar-info" style="margin-bottom:16px;padding:12px;border-radius:10px;background:var(--bg-surface-2);border:1px solid var(--border-color);">
+                <div id="bayar-name" style="font-weight:600;font-size:14px;color:var(--text-primary);"></div>
+                <div id="bayar-nominal" style="font-size:13px;color:var(--text-muted);margin-top:4px;"></div>
+                <div id="bayar-due" style="font-size:13px;color:var(--text-muted);margin-top:2px;"></div>
+            </div>
+            <form id="bayar-form" method="POST" action="{{ url('admin/pembayaran') }}">
+                @csrf
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="jenis" value="{{ $jenis }}">
+                <input type="hidden" name="id" id="bayar-id" value="">
+                @if($jenis === 'internet')
+                <input type="hidden" name="nama_internet" id="bayar-nama_internet">
+                <input type="hidden" name="provider" id="bayar-provider">
+                <input type="hidden" name="pic" id="bayar-pic">
+                <input type="hidden" name="jabatan" id="bayar-jabatan">
+                <input type="hidden" name="masa_tenggang" id="bayar-masa_tenggang">
+                <input type="hidden" name="biaya" id="bayar-biaya">
+                @else
+                <input type="hidden" name="periode" id="bayar-periode">
+                <input type="hidden" name="tanggal_tagihan" id="bayar-tanggal_tagihan">
+                <input type="hidden" name="jatuh_tempo" id="bayar-jatuh_tempo">
+                <input type="hidden" name="nominal" id="bayar-nominal_val">
+                @endif
+                <input type="hidden" name="status" id="bayar-status" value="lunas">
+                <div class="space-y-4">
+                    <div class="field-group">
+                        <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
+                        <input type="date" name="tanggal_bayar" id="bayar-tanggal_bayar" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+                    <button type="button" onclick="closeBayarModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;border:none;box-shadow:0 4px 15px rgba(16,185,129,0.3);cursor:pointer;">Lunaskan</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 @endsection
@@ -699,25 +877,127 @@
 
 @push('scripts')
 <script>
+const paymentData = @json($itemsJson);
+const currentJenis = '{{ $jenis }}';
+const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+const jenisLabel = @json($jenisLabels[$jenis] ?? $jenis);
+let detailId = null;
+
 function showAlertPopup(type) {
-    const group = document.getElementById('alert-' + type + '-group');
     const overlay = document.getElementById('alert-overlay');
+    const title = document.getElementById('alert-popup-title');
     const body = document.getElementById('alert-popup-body');
-    body.innerHTML = '';
-    group.querySelectorAll(':scope > [class*="rounded-2xl"]').forEach(el => {
-        const clone = el.cloneNode(true);
-        clone.style.display = '';
-        body.appendChild(clone);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const color = type === 'danger' ? '#ef4444' : '#f59e0b';
+    const bgColor = type === 'danger' ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)';
+    const borderColor = type === 'danger' ? 'rgba(239,68,68,0.25)' : 'rgba(245,158,11,0.25)';
+    const label = currentJenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
+
+    const items = paymentData.filter(function(item) {
+        if (!item[dueField]) return false;
+        if (item.status !== 'jatuh_tempo') return false;
+        const due = new Date(item[dueField]); due.setHours(0,0,0,0);
+        if (type === 'danger') return due <= today;
+        const in3 = new Date(today); in3.setDate(in3.getDate() + 3);
+        return due > today && due <= in3;
     });
+
+    title.textContent = type === 'danger' ? 'Tagihan Lewat Jatuh Tempo' : 'Tagihan Segera Jatuh Tempo';
+    title.style.color = color;
+    body.innerHTML = '';
+
+    if (items.length === 0) {
+        body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada data.</div>';
+    } else {
+        items.forEach(function(item) {
+            const due = new Date(item[dueField]); due.setHours(0,0,0,0);
+            const diffDays = Math.round((today - due) / (1000 * 60 * 60 * 24));
+            let badgeText = '';
+            if (type === 'danger') {
+                badgeText = diffDays === 0 ? 'Hari Ini' : diffDays + ' Hari Lewat';
+            } else {
+                badgeText = diffDays + ' Hari Lagi';
+            }
+            const name = currentJenis === 'internet' ? (item.nama_internet + ' (' + item.provider + ')') : item.periode;
+            const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.nominal);
+
+            var card = document.createElement('div');
+            card.setAttribute('data-id', item.id);
+            card.style.cssText = 'padding:12px;margin-bottom:8px;border-radius:10px;background:' + bgColor + ';border:1px solid ' + borderColor + ';cursor:pointer;transition:all 0.15s;';
+
+            card.onmouseover = function() { this.style.transform = 'translateY(-1px)'; this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'; };
+            card.onmouseout = function() { this.style.transform = ''; this.style.boxShadow = ''; };
+            card.onclick = function() { goToEdit(item.id); };
+
+            card.innerHTML =
+                '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                    '<div>' +
+                        '<div style="font-weight:600;font-size:13px;color:var(--text-primary);">' + name + '</div>' +
+                        '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + label + ': ' + badgeText + ' &middot; ' + nominal + '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:6px;">' +
+                        '<span style="padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:' + bgColor + ';color:' + color + ';border:1px solid ' + borderColor + ';">' + badgeText + '</span>' +
+                        '<svg style="width:14px;height:14px;color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' +
+                    '</div>' +
+                '</div>';
+
+            body.appendChild(card);
+        });
+    }
     overlay.style.display = 'flex';
 }
+
+function goToEdit(id) {
+    closeAlertPopup();
+    openBayarModal(id);
+}
+
+function openBayarModal(id) {
+    const i = paymentData.find(function(x) { return x.id === id; });
+    if (!i) return;
+
+    document.getElementById('bayar-id').value = i.id;
+    document.getElementById('bayar-form').action = '{{ url("admin/pembayaran") }}/' + i.id;
+
+    const name = currentJenis === 'internet' ? (i.nama_internet + ' (' + i.provider + ')') : i.periode;
+    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(i.nominal);
+    const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+    const dueLabel = currentJenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
+    const dueDate = i[dueField] ? new Date(i[dueField]).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
+
+    document.getElementById('bayar-name').textContent = name;
+    document.getElementById('bayar-nominal').textContent = 'Nominal: ' + nominal;
+    document.getElementById('bayar-due').textContent = dueLabel + ': ' + dueDate;
+
+    if (currentJenis === 'internet') {
+        document.getElementById('bayar-nama_internet').value = i.nama_internet;
+        document.getElementById('bayar-provider').value = i.provider;
+        document.getElementById('bayar-pic').value = i.pic;
+        document.getElementById('bayar-jabatan').value = i.jabatan;
+        document.getElementById('bayar-masa_tenggang').value = i.masa_tenggang;
+        document.getElementById('bayar-biaya').value = i.biaya;
+    } else {
+        document.getElementById('bayar-periode').value = i.periode;
+        document.getElementById('bayar-tanggal_tagihan').value = i.tanggal_tagihan;
+        document.getElementById('bayar-jatuh_tempo').value = i.jatuh_tempo;
+        document.getElementById('bayar-nominal_val').value = i.nominal;
+    }
+
+    document.getElementById('bayar-tanggal_bayar').value = new Date().toISOString().split('T')[0];
+    document.getElementById('bayar-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeBayarModal() {
+    document.getElementById('bayar-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+document.getElementById('bayar-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBayarModal(); });
+
 function closeAlertPopup() {
     document.getElementById('alert-overlay').style.display = 'none';
 }
-
-const paymentData = @json($itemsJson);
-const currentJenis = '{{ $jenis }}';
-let detailId = null;
 
 function toggleTanggalBayar() {
     const status = document.getElementById('f-status').value;
@@ -794,7 +1074,7 @@ function showDetail(id) {
     ];
     @else
     const rows = [
-        { label: 'Periode', value: i.periode },
+        { label: '{{ $jenis === "aset_digital" ? "Nama Aset" : "Periode" }}', value: i.periode },
         { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
         { label: 'Jatuh Tempo', value: fmt(i.jatuh_tempo) },
         { label: 'Nominal', value: 'Rp ' + Number(i.nominal).toLocaleString('id-ID') },
@@ -973,16 +1253,49 @@ function filterTable() {
 
 function openTokenModal() {
     document.getElementById('token-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
     document.getElementById('f-remaining_kwh').focus();
 }
 
 function closeTokenModal() {
     document.getElementById('token-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+document.getElementById('token-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTokenModal(); });
+document.getElementById('topup-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTopupModal(); });
+
+function openTopupModal() {
+    document.getElementById('topup-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-amount_kwh').focus();
+}
+
+function closeTopupModal() {
+    document.getElementById('topup-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function setTopupRange(range) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('topup_range', range);
+    params.delete('reading_range');
+    window.location.search = params.toString();
+}
+
+function setReadingRange(range) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('reading_range', range);
+    params.delete('topup_range');
+    window.location.search = params.toString();
 }
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeTokenModal();
+        closeTopupModal();
+        closeAlertPopup();
+        closeBayarModal();
     }
 });
 </script>

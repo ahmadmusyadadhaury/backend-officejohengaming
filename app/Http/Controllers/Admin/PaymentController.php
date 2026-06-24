@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Mail\TokenLowMail;
 use App\Models\ElectricityTokenReading;
 use App\Models\Payment;
+use App\Models\TokenPayment;
+use App\Models\User;
 use App\Models\WifiPayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -71,37 +74,84 @@ class PaymentController extends Controller
         $tokenReadings = collect();
         $latestReading = null;
         $tokenAlert = null;
+        $capacityKwh = 7000;
+        $usedKwh = 0;
+        $tokenMonth = now()->format('Y-m');
+        $latestPayment = null;
+        $topupHistory = collect();
+        $topupRange = $request->get('topup_range', 'bulanan');
+        $readingRange = $request->get('reading_range', 'bulanan');
 
         if ($jenis === 'listrik') {
+            $tokenMonth = $request->get('token_month', now()->format('Y-m'));
+            $startDate = Carbon::parse($tokenMonth.'-01')->startOfMonth();
+            $endDate = $startDate->copy()->endOfMonth();
+
             $tokenReadings = ElectricityTokenReading::with('checker')
+                ->whereBetween('checked_date', [$startDate, $endDate])
                 ->orderBy('checked_date', 'desc')
                 ->orderBy('id', 'desc')
                 ->get();
 
-            $latestReading = $tokenReadings->first();
+            $latestPayment = TokenPayment::with('creator')
+                ->orderBy('payment_date', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
 
-            $capacityKwh = 500;
-            $usedKwh = $latestReading ? $capacityKwh - $latestReading->remaining_kwh : 0;
+            $topupQuery = TokenPayment::with('creator');
+            if ($topupRange === 'harian') {
+                $topupQuery->whereDate('payment_date', Carbon::today());
+            } elseif ($topupRange === 'mingguan') {
+                $topupQuery->whereBetween('payment_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+            }
+            $topupHistory = $topupQuery->orderBy('payment_date', 'desc')
+                ->orderBy('id', 'desc')
+                ->get();
 
-            if ($latestReading && $latestReading->remaining_kwh < 50) {
+            $capacityKwh = $latestPayment ? (float) $latestPayment->amount_kwh : 7000;
+
+            $latestReadingAfterTopup = null;
+            if ($latestPayment) {
+                $latestReadingAfterTopup = ElectricityTokenReading::with('checker')
+                    ->where('checked_date', '>=', $latestPayment->payment_date)
+                    ->orderBy('checked_date', 'desc')
+                    ->orderBy('id', 'desc')
+                    ->first();
+            }
+
+            if ($latestReadingAfterTopup) {
+                $latestReading = $latestReadingAfterTopup;
+                $usedKwh = $capacityKwh - (float) $latestReading->remaining_kwh;
+            } else {
+                $latestReading = null;
+                $usedKwh = 0;
+            }
+
+            $tokenAlert = null;
+            if ($latestReading && $latestReading->remaining_kwh < 500) {
                 $tokenAlert = [
                     'level' => 'danger',
                     'message' => "Sisa token listrik tinggal {$latestReading->remaining_kwh} KWH! Segera lakukan pembayaran token.",
                 ];
-            } elseif ($latestReading && $latestReading->remaining_kwh < 100) {
+            } elseif ($latestReading && $latestReading->remaining_kwh < 1000) {
                 $tokenAlert = [
                     'level' => 'warning',
                     'message' => "Sisa token listrik {$latestReading->remaining_kwh} KWH. Segera persiapkan pembayaran token.",
                 ];
-            } elseif ($latestReading && $latestReading->remaining_kwh < 200) {
+            } elseif ($latestReading && $latestReading->remaining_kwh < 2000) {
                 $tokenAlert = [
                     'level' => 'info',
                     'message' => "Sisa token listrik {$latestReading->remaining_kwh} KWH. Lakukan pengecekan rutin setiap hari Senin.",
                 ];
-            } elseif (! $latestReading) {
+            } elseif (! $latestReading && $latestPayment) {
+                $tokenAlert = [
+                    'level' => 'info',
+                    'message' => 'Belum ada pengecekan setelah top-up terakhir. Lakukan pengecekan setiap hari Senin.',
+                ];
+            } elseif (! $latestPayment) {
                 $tokenAlert = [
                     'level' => 'warning',
-                    'message' => 'Belum ada pengecekan token listrik. Lakukan pengecekan setiap hari Senin.',
+                    'message' => 'Belum ada top up token. Silakan lakukan top up terlebih dahulu.',
                 ];
             }
         }
@@ -120,7 +170,15 @@ class PaymentController extends Controller
             'ipl_ruko' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
         ];
 
-        return view('admin.pembayaran.index', compact('jenis', 'items', 'itemsJson', 'stats', 'alertItems', 'jenisLabels', 'jenisIcons', 'tokenReadings', 'latestReading', 'tokenAlert', 'capacityKwh', 'usedKwh'));
+        $users = User::orderBy('name')->get();
+
+        return view('admin.pembayaran.index', compact(
+            'jenis', 'items', 'itemsJson', 'stats', 'alertItems',
+            'jenisLabels', 'jenisIcons', 'tokenReadings', 'latestReading',
+            'tokenAlert', 'capacityKwh', 'usedKwh', 'tokenMonth',
+            'latestPayment', 'topupHistory', 'topupRange', 'readingRange',
+            'users'
+        ));
     }
 
     public function store(Request $request)
@@ -152,7 +210,7 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
-            ->with('success', 'Data berhasil ditambahkan.');
+            ->with('success', 'Tagihan berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
@@ -170,6 +228,12 @@ class PaymentController extends Controller
                 'status' => 'required|in:lunas,jatuh_tempo',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
+            if (!empty($data['masa_tenggang'])) {
+                $data['masa_tenggang'] = \Carbon\Carbon::parse($data['masa_tenggang'])->format('Y-m-d');
+            }
+            if (!empty($data['tanggal_bayar'])) {
+                $data['tanggal_bayar'] = \Carbon\Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
+            }
             $model = WifiPayment::findOrFail($id);
             $model->update($data);
         } else {
@@ -181,12 +245,21 @@ class PaymentController extends Controller
                 'status' => 'required|in:lunas,jatuh_tempo',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
+            if (!empty($data['tanggal_tagihan'])) {
+                $data['tanggal_tagihan'] = \Carbon\Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
+            }
+            if (!empty($data['jatuh_tempo'])) {
+                $data['jatuh_tempo'] = \Carbon\Carbon::parse($data['jatuh_tempo'])->format('Y-m-d');
+            }
+            if (!empty($data['tanggal_bayar'])) {
+                $data['tanggal_bayar'] = \Carbon\Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
+            }
             $model = Payment::findOrFail($id);
             $model->update($data);
         }
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
-            ->with('success', 'Data berhasil diperbarui.');
+            ->with('success', 'Tagihan berhasil diperbarui.');
     }
 
     public function destroy(Request $request, $id)
@@ -201,39 +274,43 @@ class PaymentController extends Controller
         $model->delete();
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
-            ->with('success', 'Data berhasil dihapus.');
+            ->with('success', 'Tagihan berhasil dihapus.');
     }
 
     public function storeTokenReading(Request $request)
     {
         $data = $request->validate([
-            'remaining_kwh' => 'required|numeric|min:0|max:9999',
+            'remaining_kwh' => 'required|numeric|min:0|max:99999',
             'checked_date' => 'required|date',
+            'checked_by' => 'required|exists:users,id',
             'notes' => 'nullable|string|max:500',
         ]);
 
-        $data['checked_by'] = auth()->id();
-
         $remaining = $data['remaining_kwh'];
         $data['status'] = match (true) {
-            $remaining < 50 => 'kritis',
-            $remaining < 100 => 'warning',
-            $remaining < 200 => 'perhatian',
+            $remaining < 500 => 'kritis',
+            $remaining < 1000 => 'warning',
+            $remaining < 2000 => 'perhatian',
             default => 'aman',
         };
 
         ElectricityTokenReading::create($data);
 
-        if ($remaining < 50) {
-            $recipients = array_map('trim', explode(',', (string) env('TOKEN_LOW_EMAIL_RECIPIENTS', '')));
-            $recipients = array_filter($recipients);
+        $recipients = array_map('trim', explode(',', (string) env('TOKEN_LOW_EMAIL_RECIPIENTS', '')));
+        $recipients = array_filter($recipients);
+
+        if ($remaining < 500 && $recipients) {
             foreach ($recipients as $email) {
-                Mail::to($email)->send(new TokenLowMail($remaining));
+                Mail::to($email)->send(new TokenLowMail($remaining, 'danger'));
+            }
+        } elseif ($remaining < 1000 && $recipients) {
+            foreach ($recipients as $email) {
+                Mail::to($email)->send(new TokenLowMail($remaining, 'warning'));
             }
         }
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => 'listrik'])
-            ->with('success', 'Data pengecekan token berhasil disimpan.');
+            ->with('success', 'Pengecekan token berhasil disimpan. Sisa: '.$remaining.' KWH.');
     }
 
     public function destroyTokenReading($id)
@@ -243,5 +320,31 @@ class PaymentController extends Controller
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => 'listrik'])
             ->with('success', 'Data pengecekan token berhasil dihapus.');
+    }
+
+    public function storeTokenPayment(Request $request)
+    {
+        $data = $request->validate([
+            'amount_kwh' => 'required|numeric|min:1',
+            'payment_date' => 'required|date',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $data['period'] = Carbon::parse($data['payment_date'])->format('Y-m');
+        $data['created_by'] = auth()->id();
+
+        TokenPayment::create($data);
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'listrik'])
+            ->with('success', 'Top up token sebanyak '.number_format($data['amount_kwh'], 0).' KWH berhasil disimpan.');
+    }
+
+    public function destroyTokenPayment($id)
+    {
+        $payment = TokenPayment::findOrFail($id);
+        $payment->delete();
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'listrik'])
+            ->with('success', 'Riwayat top up token berhasil dihapus.');
     }
 }

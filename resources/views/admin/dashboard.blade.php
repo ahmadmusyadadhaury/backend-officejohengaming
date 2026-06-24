@@ -12,31 +12,11 @@
 </style>
 <div class="space-y-6 pt-2 stagger-children dashboard-wrapper">
 
-    {{-- TOTAL ASET, MEETING, PEMBAYARAN, ASET DIGITAL --}}
+    {{-- STAT CARDS --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
 
-        {{-- Total Aset --}}
-        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4 relative card-hover-info" style="border:1px solid rgba(124,58,237,0.15);">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.12);box-shadow:0 0 16px rgba(124,58,237,0.2);">
-                <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total_assets'] }}</div>
-                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Aset</div>
-                @if($stats['assets_near_expire'] > 0)
-                <div class="text-xs font-medium mt-1 hover-info" style="color:#ef4444;">⚠ {{ $stats['assets_near_expire'] }} akan expire</div>
-                @endif
-            </div>
-            @if($stats['assets_near_expire'] > 0)
-            <div class="absolute top-2 right-2 w-2 h-2 rounded-full" style="background:#ef4444;box-shadow:0 0 6px #ef4444;"></div>
-            @endif
-        </div>
-
-        {{-- Meeting --}}
-        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4 relative" style="border:1px solid rgba(59,130,246,0.15);">
+        {{-- Total Meeting --}}
+        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(59,130,246,0.15);">
             <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(59,130,246,0.12);box-shadow:0 0 16px rgba(59,130,246,0.2);">
                 <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#93c5fd;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,8 +29,22 @@
             </div>
         </div>
 
-        {{-- Pembayaran --}}
-        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4 relative card-hover-info" style="border:1px solid rgba(16,185,129,0.15);">
+        {{-- Total Asset --}}
+        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(124,58,237,0.15);">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.12);box-shadow:0 0 16px rgba(124,58,237,0.2);">
+                <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </div>
+            <div class="min-w-0 flex-1">
+                <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total_assets'] }}</div>
+                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Asset</div>
+            </div>
+        </div>
+
+        {{-- Total Tagihan --}}
+        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(16,185,129,0.15);">
             <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(16,185,129,0.12);box-shadow:0 0 16px rgba(16,185,129,0.2);">
                 <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#6ee7b7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,278 +53,144 @@
             </div>
             <div class="min-w-0 flex-1">
                 <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total_payments'] }}</div>
-                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Pembayaran</div>
-                @if($stats['pending_payments'] > 0)
-                <div class="text-xs font-medium mt-1 hover-info" style="color:#f59e0b;">{{ $stats['pending_payments'] }} pending</div>
-                @endif
+                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Tagihan</div>
             </div>
-            @if($stats['pending_payments'] > 0)
-            <div class="absolute top-2 right-2 w-2 h-2 rounded-full" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b;"></div>
-            @endif
         </div>
 
-        {{-- Aset Digital --}}
-        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4 relative card-hover-info" style="border:1px solid rgba(245,158,11,0.15);">
+        {{-- Total Koordinator --}}
+        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(245,158,11,0.15);">
             <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(245,158,11,0.12);box-shadow:0 0 16px rgba(245,158,11,0.2);">
                 <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#fcd34d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
             </div>
             <div class="min-w-0 flex-1">
-                <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['digital_assets'] }}</div>
-                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Aset Digital</div>
-                @if($digitalAssetsNeedMaintenance->count() > 0)
-                <div class="text-xs font-medium mt-1 hover-info" style="color:#f59e0b;">{{ $digitalAssetsNeedMaintenance->count() }} perlu maintenance</div>
+                <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total_koordinator'] }}</div>
+                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Koordinator</div>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- Meeting Hari Ini + Pembayaran Mendatang --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
+        {{-- Meeting Hari Ini --}}
+        <div class="gaming-card overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
+                <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
+                    <svg class="w-5 h-5" style="color:#3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    MEETING HARI INI
+                </h3>
+                <span class="badge" style="background:rgba(59,130,246,0.2);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);font-size:0.7rem;">{{ today()->isoFormat('D MMM') }}</span>
+            </div>
+            <div class="divide-y" style="border-color:var(--border-color);">
+                @forelse($todayMeetings as $meeting)
+                <div class="px-5 py-3 flex items-center gap-3 transition hover:bg-slate-100/5">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#60a5fa;box-shadow:0 0 6px rgba(96,165,250,0.6);"></span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
+                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ substr($meeting->start_time,0,5) }} – {{ substr($meeting->end_time,0,5) }} · {{ $meeting->team->name }} · {{ $meeting->room->name }}</p>
+                    </div>
+                </div>
+                @empty
+                <div class="px-5 py-6 text-center">
+                    <p class="text-sm" style="color:var(--text-muted);">Tidak ada meeting hari ini</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- Pembayaran Mendatang --}}
+        @php
+            $hasOverdue = $overduePayments->isNotEmpty();
+            $hasToday   = $todayPayments->isNotEmpty();
+            $hasWarning = $warningPayments->isNotEmpty();
+        @endphp
+        @if($hasOverdue || $hasToday || $hasWarning)
+        <div class="gaming-card overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-5 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
+                <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
+                    <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    PEMBAYARAN MENDATANG
+                </h3>
+                <button type="button" onclick="document.getElementById('semua-pembayaran-modal').style.display='flex'" class="text-xs font-medium cursor-pointer" style="color:var(--color-accent);">Lihat Semua &rarr;</button>
+            </div>
+            <div class="overflow-y-auto p-2.5 space-y-2.5" style="max-height:340px;">
+                @if($hasOverdue)
+                <div class="rounded-xl overflow-hidden" style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.1);">
+                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid rgba(239,68,68,0.08);">
+                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:#ef4444;">Terlewat</span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(239,68,68,0.15);color:#ef4444;">{{ $overduePayments->count() }}</span>
+                    </div>
+                    @foreach($overduePayments as $p)
+                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="{{ !$loop->last ? 'border-bottom:1px solid rgba(239,68,68,0.06);' : '' }}">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
+                            <p class="text-xs mt-0.5" style="color:#ef4444;">Lewat {{ \Carbon\Carbon::parse($p['due_date'])->diffInDays() }} hari &middot; {{ $p['jenis'] }}</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
+                            <span class="badge text-[10px] mt-0.5" style="background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">{{ ucfirst($p['status']) }}</span>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                @if($hasToday)
+                <div class="rounded-xl overflow-hidden" style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);">
+                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid rgba(245,158,11,0.08);">
+                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:#f59e0b;">Hari Ini</span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(245,158,11,0.15);color:#f59e0b;">{{ $todayPayments->count() }}</span>
+                    </div>
+                    @foreach($todayPayments as $p)
+                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="{{ !$loop->last ? 'border-bottom:1px solid rgba(245,158,11,0.06);' : '' }}">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
+                            <p class="text-xs mt-0.5" style="color:#f59e0b;">Jatuh tempo hari ini &middot; {{ $p['jenis'] }}</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
+                            <span class="badge text-[10px] mt-0.5" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);">{{ ucfirst($p['status']) }}</span>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                @if($hasWarning)
+                <div class="rounded-xl overflow-hidden" style="background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.1);">
+                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid rgba(59,130,246,0.08);">
+                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:#3b82f6;">Mendatang</span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(59,130,246,0.15);color:#3b82f6;">{{ $warningPayments->count() }}</span>
+                    </div>
+                    @foreach($warningPayments as $p)
+                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="{{ !$loop->last ? 'border-bottom:1px solid rgba(59,130,246,0.06);' : '' }}">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
+                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">Jatuh tempo {{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }} &middot; {{ $p['jenis'] }}</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
+                            <span class="badge text-[10px] mt-0.5" style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.2);">{{ ucfirst($p['status']) }}</span>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
                 @endif
             </div>
-            @if($digitalAssetsNeedMaintenance->count() > 0)
-            <div class="absolute top-2 right-2 w-2 h-2 rounded-full" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b;"></div>
-            @endif
         </div>
-
+        @else
+        <div class="gaming-card overflow-hidden flex items-center justify-center" style="min-height:120px;">
+            <p class="text-sm" style="color:var(--text-muted);">Tidak ada pembayaran mendatang</p>
+        </div>
+        @endif
     </div>
-
-    {{-- STATISTIK MEETING --}}
-    <div>
-        <h3 class="text-xs font-gaming font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted);">Statistik Meeting</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-            {{-- Menunggu Approval --}}
-            <div class="gaming-card overflow-hidden">
-                <div class="flex items-center justify-between px-5 py-3" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);">Menunggu Approval</p>
-                            <p class="text-2xl font-gaming font-bold leading-none" style="color:var(--text-primary);">{{ $stats['pending'] }}</p>
-                        </div>
-                    </div>
-                    <span class="badge" style="background:rgba(245,158,11,0.2);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);font-size:0.7rem;">PENDING</span>
-                </div>
-                <div class="divide-y" style="border-color:var(--border-color);max-height:220px;overflow-y:auto;">
-                    @forelse($approvalWaitingMeetings as $meeting)
-                    <div class="px-5 py-3 flex items-start justify-between gap-3 transition hover:bg-slate-100/5">
-                        <div class="min-w-0">
-                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $meeting->room->name }} • {{ $meeting->meeting_date->format('d M Y') }}</p>
-                        </div>
-                        <a href="{{ route('admin.meetings.index') }}?review={{ $meeting->id }}" class="badge flex-shrink-0" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);font-size:0.7rem;">Review</a>
-                    </div>
-                    @empty
-                    <div class="px-5 py-6 text-center">
-                        <p class="text-sm" style="color:var(--text-muted);">Tidak ada meeting yang menunggu approval</p>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
-
-            {{-- Meeting Hari Ini --}}
-            <div class="gaming-card overflow-hidden">
-                <div class="flex items-center justify-between px-5 py-3" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#3b82f6,#60a5fa);">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);">Meeting Hari Ini</p>
-                            <p class="text-2xl font-gaming font-bold leading-none" style="color:var(--text-primary);">{{ $stats['today_meetings'] }}</p>
-                        </div>
-                    </div>
-                    <span class="badge" style="background:rgba(59,130,246,0.2);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);font-size:0.7rem;">{{ today()->isoFormat('D MMM') }}</span>
-                </div>
-                <div class="divide-y" style="border-color:var(--border-color);max-height:220px;overflow-y:auto;">
-                    @forelse($todayMeetings as $meeting)
-                    <div class="px-5 py-3 flex items-center gap-3 transition hover:bg-slate-100/5">
-                        <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#60a5fa;box-shadow:0 0 6px rgba(96,165,250,0.6);"></span>
-                        <div class="min-w-0 flex-1">
-                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ substr($meeting->start_time,0,5) }} – {{ substr($meeting->end_time,0,5) }} • {{ $meeting->team->name }}</p>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="px-5 py-6 text-center">
-                        <p class="text-sm" style="color:var(--text-muted);">Tidak ada meeting hari ini</p>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    {{-- Pembayaran Mendatang --}}
-    @php
-        $hasOverdue = $overduePayments->isNotEmpty();
-        $hasToday   = $todayPayments->isNotEmpty();
-        $hasWarning = $warningPayments->isNotEmpty();
-    @endphp
-    @if($hasOverdue || $hasToday || $hasWarning)
-    <div class="gaming-card overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
-            <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">PEMBAYARAN MENDATANG</h3>
-            <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="text-xs font-medium" style="color:var(--color-accent);">Lihat Semua &rarr;</a>
-        </div>
-        <div class="divide-y" style="border-color:var(--border-color);">
-
-            {{-- TERLEWAT --}}
-            @if($hasOverdue)
-            <div class="px-4 py-2 text-xs font-gaming font-bold uppercase tracking-wider" style="color:#ef4444;background:var(--bg-surface);">Terlewat</div>
-            @foreach($overduePayments as $p)
-            <div class="px-5 py-3 flex items-center justify-between gap-3 transition hover:bg-slate-100/5">
-                <div class="min-w-0 flex-1">
-                    <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
-                    <p class="text-xs mt-0.5" style="color:#ef4444;">
-                        @if($p['type'] === 'payment')
-                            Sudah lewat {{ \Carbon\Carbon::parse($p['due_date'])->diffInDays() }} hari &middot; {{ $p['jenis'] }}
-                        @else
-                            Sudah lewat {{ \Carbon\Carbon::parse($p['due_date'])->diffInDays() }} hari &middot; {{ $p['jenis'] }}
-                        @endif
-                    </p>
-                </div>
-                <div class="text-right flex-shrink-0">
-                    <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
-                    <span class="badge text-xs mt-0.5" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">
-                        {{ ucfirst($p['status']) }}
-                    </span>
-                </div>
-            </div>
-            @endforeach
-            @endif
-
-            {{-- HARI INI --}}
-            @if($hasToday)
-            <div class="px-4 py-2 text-xs font-gaming font-bold uppercase tracking-wider" style="color:#f59e0b;background:var(--bg-surface);">Hari Ini</div>
-            @foreach($todayPayments as $p)
-            <div class="px-5 py-3 flex items-center justify-between gap-3 transition hover:bg-slate-100/5">
-                <div class="min-w-0 flex-1">
-                    <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
-                    <p class="text-xs mt-0.5" style="color:#f59e0b;">
-                        @if($p['type'] === 'payment')
-                            Jatuh tempo hari ini &middot; {{ $p['jenis'] }}
-                        @else
-                            Masa tenggang hari ini &middot; {{ $p['jenis'] }}
-                        @endif
-                    </p>
-                </div>
-                <div class="text-right flex-shrink-0">
-                    <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
-                    <span class="badge text-xs mt-0.5" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);">
-                        {{ ucfirst($p['status']) }}
-                    </span>
-                </div>
-            </div>
-            @endforeach
-            @endif
-
-            {{-- WARNING --}}
-            @if($hasWarning)
-            <div class="px-4 py-2 text-xs font-gaming font-bold uppercase tracking-wider" style="color:#3b82f6;background:var(--bg-surface);">Mendatang</div>
-            @foreach($warningPayments as $p)
-            <div class="px-5 py-3 flex items-center justify-between gap-3 transition hover:bg-slate-100/5">
-                <div class="min-w-0 flex-1">
-                    <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
-                    <p class="text-xs mt-0.5" style="color:var(--text-muted);">
-                        @if($p['type'] === 'payment')
-                            Jatuh tempo {{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }} &middot; {{ $p['jenis'] }}
-                        @else
-                            Masa tenggang {{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }} &middot; {{ $p['jenis'] }}
-                        @endif
-                    </p>
-                </div>
-                <div class="text-right flex-shrink-0">
-                    <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
-                    <span class="badge text-xs mt-0.5" style="background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);">
-                        {{ ucfirst($p['status']) }}
-                    </span>
-                </div>
-            </div>
-            @endforeach
-            @endif
-
-        </div>
-    </div>
-    @endif
-
-    {{-- Token Listrik Alert --}}
-    @if($tokenAlertDashboard)
-    <div class="gaming-card overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
-            <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
-                <svg class="w-5 h-5 flex-shrink-0" style="color:{{ $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : '#f59e0b' }};" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-                TOKEN LISTRIK
-            </h3>
-            <span class="badge" style="background:{{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)' }};color:{{ $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : '#fbbf24' }};border:1px solid {{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)' }};">
-                {{ $tokenAlertDashboard['level'] === 'danger' ? 'KRITIS' : 'WARNING' }}
-            </span>
-        </div>
-        <div class="px-5 py-4">
-            <p class="text-sm" style="color:var(--text-primary);">{{ $tokenAlertDashboard['message'] }}</p>
-            <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="text-xs font-medium mt-2 inline-block" style="color:var(--color-accent);">Kelola Token &rarr;</a>
-        </div>
-    </div>
-    @endif
-
-    {{-- Peringatan Expire --}}
-    @if($expiringAssets->count() > 0 || $expiredAssets->count() > 0)
-    <div class="gaming-card overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
-            <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
-                <svg class="w-5 h-5 flex-shrink-0" style="color:#ef4444;" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-                PERINGATAN EXPIRE
-            </h3>
-            <span class="badge" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">{{ $expiringAssets->count() + $expiredAssets->count() }}</span>
-        </div>
-        <div class="divide-y" style="border-color:var(--border-color);">
-            @forelse($expiredAssets->merge($expiringAssets)->take(8) as $asset)
-            @php
-                $daysLeft = now()->diffInDays($asset->expire_date);
-                $isExpired = $asset->expire_date->isPast();
-                $badgeClass = $isExpired 
-                    ? 'background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);'
-                    : ($daysLeft <= 7 
-                        ? 'background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);'
-                        : 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);');
-            @endphp
-            <div class="px-5 py-3 flex items-center justify-between gap-3 transition hover:bg-slate-100/5">
-                <div class="min-w-0">
-                    <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $asset->asset_name }}</p>
-                    <p class="text-xs mt-0.5" style="color:var(--text-muted);">
-                        @if($isExpired)
-                            <span style="color:#ef4444;">Expired {{ $daysLeft }} hari lalu</span>
-                        @else
-                            Expire dalam {{ $daysLeft }} hari ({{ $asset->expire_date->format('d M Y') }})
-                        @endif
-                    </p>
-                </div>
-                <span class="badge flex-shrink-0 text-xs" style="{{ $badgeClass }}">
-                    @if($isExpired)
-                        EXPIRED
-                    @elseif($daysLeft <= 7)
-                        URGENT
-                    @else
-                        SOON
-                    @endif
-                </span>
-            </div>
-            @empty
-            <div class="px-5 py-8 text-center">
-                <p class="text-sm" style="color:var(--text-muted);">Semua aset dalam kondisi baik</p>
-            </div>
-            @endforelse
-        </div>
-    </div>
-    @endif
 
 </div>
 
@@ -353,6 +213,129 @@
 setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.style.display='block';p.style.opacity='0';p.style.transition='opacity 0.5s';setTimeout(function(){p.style.opacity='1';},50);setTimeout(function(){p.style.transition='opacity 0.3s';p.style.opacity='0';setTimeout(function(){p.style.display='none';},300);},6000);}},1200);
 </script>
 
+{{-- Modal Semua Pembayaran --}}
+<div id="semua-pembayaran-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow-y:auto;" onclick="if(event.target===this)this.style.display='none'">
+    <div class="w-full" style="max-width:800px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.4);">
+        <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
+            <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
+                <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                </svg>
+                SEMUA PEMBAYARAN MENDATANG
+            </h3>
+            <button type="button" onclick="document.getElementById('semua-pembayaran-modal').style.display='none'" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:4px;">&times;</button>
+        </div>
+        <div class="overflow-y-auto" style="max-height:65vh;">
+            <table class="w-full text-left" style="border-collapse:collapse;">
+                <thead>
+                    <tr style="background:var(--bg-surface);position:sticky;top:0;z-index:1;">
+                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Status</th>
+                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Label</th>
+                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Jenis</th>
+                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Jatuh Tempo</th>
+                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider text-right" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Nominal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($allMerged->sortBy('due_date') as $p)
+                    <tr class="transition modal-row" style="border-bottom:1px solid var(--border-color);cursor:pointer;" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
+                        <td class="px-5 py-3">
+                            @php
+                                $isOverdue = \Carbon\Carbon::parse($p['due_date'])->lt(today());
+                                $isToday = \Carbon\Carbon::parse($p['due_date'])->isToday();
+                            @endphp
+                            @if($isOverdue)
+                                <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.25);">Terlewat</span>
+                            @elseif($isToday)
+                                <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">Hari Ini</span>
+                            @else
+                                <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);">Mendatang</span>
+                            @endif
+                        </td>
+                        <td class="px-5 py-3">
+                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);max-width:240px;">{{ $p['label'] }}</p>
+                        </td>
+                        <td class="px-5 py-3">
+                            <span class="text-xs" style="color:var(--text-muted);">{{ $p['jenis'] }}</span>
+                        </td>
+                        <td class="px-5 py-3">
+                            <span class="text-xs" style="color:var(--text-muted);">{{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }}</span>
+                        </td>
+                        <td class="px-5 py-3 text-right">
+                            <span class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</span>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-5 py-8 text-center">
+                            <p class="text-sm" style="color:var(--text-muted);">Tidak ada data pembayaran</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-3 flex items-center justify-between" style="border-top:1px solid var(--border-color);background:var(--bg-surface);">
+            <span class="text-xs" style="color:var(--text-muted);">Total: {{ $allMerged->count() }} item &middot; Klik baris untuk bayar</span>
+            <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="text-xs font-medium" style="color:var(--color-accent);">Buka Halaman Pembayaran &rarr;</a>
+        </div>
+    </div>
+</div>
+
+{{-- Modal Bayar dari Dashboard --}}
+<div id="dashboard-bayar-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:60;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);" onclick="if(event.target===this)closeDashboardBayar()">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Bayar / Lunaskan</h3>
+            <button type="button" onclick="closeDashboardBayar()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1">
+            <div style="margin-bottom:16px;padding:12px;border-radius:10px;background:var(--bg-surface-2);border:1px solid var(--border-color);">
+                <div id="dbayar-name" style="font-weight:600;font-size:14px;color:var(--text-primary);"></div>
+                <div id="dbayar-nominal" style="font-size:13px;color:var(--text-muted);margin-top:4px;"></div>
+                <div id="dbayar-due" style="font-size:13px;color:var(--text-muted);margin-top:2px;"></div>
+            </div>
+            <form id="dashboard-bayar-form" method="POST" action="{{ url('admin/pembayaran') }}">
+                @csrf
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="jenis" id="dbayar-jenis" value="">
+                <input type="hidden" name="id" id="dbayar-id" value="">
+                <input type="hidden" name="status" value="lunas">
+                {{-- internet fields --}}
+                <input type="hidden" name="nama_internet" id="dbayar-nama_internet">
+                <input type="hidden" name="provider" id="dbayar-provider">
+                <input type="hidden" name="pic" id="dbayar-pic">
+                <input type="hidden" name="jabatan" id="dbayar-jabatan">
+                <input type="hidden" name="masa_tenggang" id="dbayar-masa_tenggang">
+                <input type="hidden" name="biaya" id="dbayar-biaya">
+                {{-- listrik fields --}}
+                <input type="hidden" name="periode" id="dbayar-periode">
+                <input type="hidden" name="tanggal_tagihan" id="dbayar-tanggal_tagihan">
+                <input type="hidden" name="jatuh_tempo" id="dbayar-jatuh_tempo_val">
+                <input type="hidden" name="nominal" id="dbayar-nominal_val">
+                <div class="space-y-4">
+                    <div>
+                        <label class="gaming-label">Tanggal Bayar <span style="color:#f87171;">*</span></label>
+                        <input type="date" name="tanggal_bayar" id="dbayar-tanggal_bayar" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+                    <button type="button" onclick="closeDashboardBayar()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;border:none;box-shadow:0 4px 15px rgba(16,185,129,0.3);cursor:pointer;">Lunaskan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@php
+    $paymentDataJson = $allMerged->sortBy('due_date')->values()->toJson();
+@endphp
+
 @push('styles')
 <style>
 .card-hover-info .hover-info {
@@ -361,6 +344,31 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
 }
 .card-hover-info:hover .hover-info {
     opacity: 1;
+}
+.pembayaran-item {
+    transition: background 0.15s ease;
+}
+.pembayaran-item:hover {
+    background: rgba(255,255,255,0.03);
+}
+.modal-row {
+    transition: background 0.15s ease;
+}
+.modal-row:hover {
+    background: rgba(255,255,255,0.02);
+}
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
 }
 </style>
 @endpush
@@ -382,6 +390,59 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
             }).catch(() => {});
     }
     setInterval(refreshDashboardStats, 60000);
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var bm = document.getElementById('dashboard-bayar-modal');
+            var pm = document.getElementById('semua-pembayaran-modal');
+            if (bm && bm.style.display !== 'none') { closeDashboardBayar(); }
+            else if (pm && pm.style.display !== 'none') { pm.style.display = 'none'; }
+        }
+    });
+
+    var dashboardPaymentData = {!! $paymentDataJson !!};
+
+    function openDashboardBayar(id, type) {
+        var item = dashboardPaymentData.find(function(x) { return x.id === id && x.type === type; });
+        if (!item) return;
+
+        document.getElementById('dbayar-id').value = item.id;
+        document.getElementById('dbayar-jenis').value = type === 'wifi' ? 'internet' : 'listrik';
+        document.getElementById('dashboard-bayar-form').action = '{{ url("admin/pembayaran") }}/' + item.id;
+
+        var name = item.label;
+        var nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.amount);
+        var dueDate = item.due_date ? new Date(item.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
+
+        document.getElementById('dbayar-name').textContent = name;
+        document.getElementById('dbayar-nominal').textContent = 'Nominal: ' + nominal;
+        document.getElementById('dbayar-due').textContent = 'Jatuh Tempo: ' + dueDate;
+
+        if (type === 'wifi') {
+            document.getElementById('dbayar-nama_internet').value = item.nama_internet || '';
+            document.getElementById('dbayar-provider').value = item.provider || '';
+            document.getElementById('dbayar-pic').value = item.pic || '';
+            document.getElementById('dbayar-jabatan').value = item.jabatan || '';
+            document.getElementById('dbayar-masa_tenggang').value = item.masa_tenggang || '';
+            document.getElementById('dbayar-biaya').value = item.biaya || '';
+        } else {
+            document.getElementById('dbayar-periode').value = item.periode || '';
+            document.getElementById('dbayar-tanggal_tagihan').value = item.tanggal_tagihan || '';
+            document.getElementById('dbayar-jatuh_tempo_val').value = item.jatuh_tempo || '';
+            document.getElementById('dbayar-nominal_val').value = item.nominal || '';
+        }
+
+        document.getElementById('dbayar-tanggal_bayar').value = new Date().toISOString().split('T')[0];
+        document.getElementById('dashboard-bayar-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDashboardBayar() {
+        document.getElementById('dashboard-bayar-modal').style.display = 'none';
+        if (!document.getElementById('semua-pembayaran-modal') || document.getElementById('semua-pembayaran-modal').style.display === 'none') {
+            document.body.style.overflow = '';
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         if ('IntersectionObserver' in window) {

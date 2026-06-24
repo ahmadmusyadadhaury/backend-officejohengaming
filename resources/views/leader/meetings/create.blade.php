@@ -1,48 +1,67 @@
 @extends('layouts.app')
 @section('title', 'Request Meeting')
-@section('page-title', 'Request Meeting Baru')
+@section('page-title', 'Request Meeting')
+@section('page-subtitle', 'Ajukan permintaan ruang meeting baru')
 @section('sidebar-menu') @include('partials.sidebar-leader') @endsection
 @section('content')
-<div class="pt-2 max-w-3xl animate-fade-in">
-    <div class="gaming-card p-6">
-        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="space-y-5">
+<div class="pt-2 space-y-4 animate-fade-in">
+
+    <div class="gaming-card overflow-hidden">
+        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Request Meeting Baru</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Isi detail pertemuan untuk mengajukan meeting.</div>
+            </div>
+            <a href="{{ route('koordinator.meetings.index') }}" class="btn btn-secondary btn-sm flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Kembali
+            </a>
+        </div>
+
+        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="p-5 space-y-5">
             @csrf
 
             {{-- Info Dasar --}}
-            <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-2">
-                    <label class="gaming-label">Judul Meeting <span style="color:#f87171;">*</span></label>
-                    <input type="text" name="title" value="{{ old('title') }}" required placeholder="Contoh: Evaluasi Konten Mingguan" class="gaming-input">
-                </div>
-                <div>
-                    <label class="gaming-label">Ruangan <span style="color:#f87171;">*</span></label>
-                    <select name="room_id" required class="gaming-input gaming-select">
-                        <option value="">Pilih Ruangan</option>
-                        @foreach($rooms as $room)
-                            <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>
-                                {{ $room->name }} ({{ $room->capacity }} orang)
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="gaming-label">Tanggal Meeting <span style="color:#f87171;">*</span></label>
-                    <input type="date" name="meeting_date" value="{{ old('meeting_date') }}" required min="{{ date('Y-m-d') }}" class="gaming-input">
-                </div>
-                <div>
-                    <label class="gaming-label">Jam Mulai <span style="color:#f87171;">*</span></label>
-                    <input type="time" name="start_time" value="{{ old('start_time') }}" required class="gaming-input">
-                </div>
-                <div>
-                    <label class="gaming-label">Jam Selesai <span style="color:#f87171;">*</span></label>
-                    <input type="time" name="end_time" value="{{ old('end_time') }}" required class="gaming-input">
+            <div>
+                <p class="font-gaming font-semibold text-sm mb-3" style="color:var(--text-primary);letter-spacing:0.05em;">INFO DASAR</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="gaming-label">Judul Meeting <span style="color:#f87171;">*</span></label>
+                        <input type="text" name="title" value="{{ old('title') }}" required placeholder="Contoh: Evaluasi Konten Mingguan" class="gaming-input">
+                    </div>
+                    <div>
+                        <label class="gaming-label">Ruangan <span style="color:#f87171;">*</span></label>
+                        <select name="room_id" required class="gaming-input gaming-select">
+                            <option value="">Pilih Ruangan</option>
+                            @foreach($rooms as $room)
+                                <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>
+                                    {{ $room->name }} ({{ $room->capacity }} orang)
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="gaming-label">Tanggal Meeting <span style="color:#f87171;">*</span></label>
+                        <input type="date" name="meeting_date" value="{{ old('meeting_date') }}" required min="{{ date('Y-m-d') }}" class="gaming-input">
+                    </div>
+                    <div>
+                        <label class="gaming-label">Jam Mulai <span style="color:#f87171;">*</span></label>
+                        <input type="time" name="start_time" value="{{ old('start_time') }}" required class="gaming-input">
+                    </div>
+                    <div>
+                        <label class="gaming-label">Jam Selesai <span style="color:#f87171;">*</span></label>
+                        <input type="time" name="end_time" value="{{ old('end_time') }}" required class="gaming-input">
+                    </div>
                 </div>
             </div>
 
             {{-- Tim Utama: hanya untuk head_of_store, gm, hr, ceo --}}
             @if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'ceo']))
-            <div>
-                <label class="gaming-label">Tim Utama <span style="color:#f87171;">*</span></label>
+            <div class="pt-4" style="border-top:1px solid var(--border-color);">
+                <p class="font-gaming font-semibold text-sm mb-3" style="color:var(--text-primary);letter-spacing:0.05em;">TIM UTAMA</p>
+                <label class="gaming-label">Pilih Tim Utama <span style="color:#f87171;">*</span></label>
                 <select name="main_team_id" required class="gaming-input gaming-select">
                     <option value="">Pilih Tim Utama</option>
                     @foreach($teams as $team)
@@ -81,7 +100,7 @@
 
             {{-- 5W1H --}}
             <div class="pt-4" style="border-top:1px solid var(--border-color);">
-                <p class="font-gaming font-semibold text-sm mb-3" style="color:var(--text-primary);letter-spacing:0.05em;">DETAIL MEETING</p>
+                <p class="font-gaming font-semibold text-sm mb-3" style="color:var(--text-primary);letter-spacing:0.05em;">DETAIL MEETING (5W1H)</p>
                 <div class="space-y-3">
                     <div>
                         <label class="gaming-label">WHY — Kenapa meeting ini diadakan? <span style="color:#f87171;">*</span></label>
@@ -121,12 +140,19 @@
             </div>
             @endif
 
-            <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
-                <button type="submit" class="btn btn-primary">Kirim Request</button>
+            {{-- Actions --}}
+            <div class="flex gap-3 pt-4" style="border-top:1px solid var(--border-color);">
+                <button type="submit" class="btn btn-primary">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    Kirim Request
+                </button>
                 <a href="{{ route('koordinator.meetings.index') }}" class="btn btn-secondary">Batal</a>
             </div>
         </form>
     </div>
+
 </div>
 @endsection
 

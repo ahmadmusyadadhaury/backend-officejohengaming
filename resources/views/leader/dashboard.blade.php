@@ -5,169 +5,85 @@
 @section('sidebar-menu') @include('partials.sidebar-leader') @endsection
 
 @section('content')
-<div class="space-y-6 pt-2 stagger-children">
+<div class="space-y-4 pt-2 animate-fade-in">
 
-    {{-- Welcome Banner --}}
-    <div class="gaming-card p-6 relative overflow-hidden" style="background:#6C63FF80;border:1px solid rgba(108,99,255,0.3);">
-        <div class="absolute inset-0 grid-pattern opacity-20"></div>
-        <div class="relative">
-            <h2 class="font-gaming font-bold text-2xl text-white tracking-wide mb-1">Selamat Datang Kembali</h2>
-            <p class="text-white/80" style="font-size:0.95rem;">Kelola Meeting, Pembayaran, Aset Perusahaan dalam Satu Sistem</p>
+    {{-- 4 Stat Cards --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
+                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div class="min-w-0">
+                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $totalMeeting }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Meeting Saya</div>
+            </div>
         </div>
-    </div>
 
-    {{-- Stats Cards - 4 Columns Responsive --}}
-    @php
-        $cards = [
-            ['label' => 'Menunggu',   'value' => $stats['pending'],   'id' => 'stat-pending',   'color' => 'linear-gradient(135deg,#f59e0b,#fbbf24)', 'glow' => 'rgba(245,158,11,0.4)',  'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
-            ['label' => 'Disetujui',  'value' => $stats['approved'],  'id' => 'stat-approved',  'color' => 'linear-gradient(135deg,#3b82f6,#60a5fa)', 'glow' => 'rgba(59,130,246,0.4)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
-            ['label' => 'Selesai',    'value' => $stats['completed'], 'id' => 'stat-completed', 'color' => 'linear-gradient(135deg,#10b981,#34d399)', 'glow' => 'rgba(16,185,129,0.4)', 'icon' => 'M5 13l4 4L19 7'],
-            ['label' => 'Dibatalkan', 'value' => $stats['cancelled'], 'id' => 'stat-cancelled', 'color' => 'linear-gradient(135deg,#ef4444,#f87171)', 'glow' => 'rgba(239,68,68,0.4)',  'icon' => 'M6 18L18 6M6 6l12 12'],
-        ];
-    @endphp
-
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        @foreach($cards as $card)
-        <div class="stat-card">
-            <div class="stat-icon" style="background:{{ $card['color'] }};box-shadow:0 4px 12px {{ $card['glow'] }};">
-                <svg class="w-5 h-5" style="color:white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/>
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
+                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="stat-value" id="{{ $card['id'] }}">{{ $card['value'] }}</div>
-                <div class="stat-label">{{ $card['label'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $disetujui }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Disetujui</div>
             </div>
         </div>
-        @endforeach
+
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
+                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $menunggu }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Menunggu</div>
+            </div>
+        </div>
+
+        <div class="gaming-card p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
+                <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-3xl font-gaming font-bold" style="color:#f87171;">{{ $ditolak }}</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Ditolak</div>
+            </div>
+        </div>
+
     </div>
 
-    {{-- Quick Action Banner --}}
-    <div class="gaming-card p-5 relative overflow-hidden"
-        style="background:linear-gradient(135deg,var(--color-primary-dark),var(--color-accent));">
-        <div class="absolute inset-0 grid-pattern opacity-20"></div>
-        <div class="relative flex items-center justify-between gap-4">
+    {{-- Ajukan Meeting Baru --}}
+    <div class="gaming-card p-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-                <h3 class="font-gaming font-bold text-lg text-white tracking-wide">REQUEST MEETING BARU</h3>
-                <p style="color:rgba(255,255,255,0.7);font-size:0.8rem;margin-top:2px;">
-                    Ajukan permintaan ruang meeting ke Admin HR
-                </p>
+                <h3 class="font-gaming font-bold text-lg" style="color:var(--text-primary);">Ajukan Meeting Baru</h3>
+                <p class="text-sm mt-1" style="color:var(--text-muted);">Butuh meeting? Ajukan permintaan meeting sekarang juga.</p>
+                <p class="text-xs mt-2" style="color:var(--text-muted);">Ajukan jadwal meeting dengan mengisi detail pertemuan. Sertakan alasan, pembahasan, dan hasil yang diharapkan.</p>
             </div>
-            <a href="{{ route('koordinator.meetings.create') }}" class="btn btn-sm flex-shrink-0"
-                style="background:white;color:var(--color-primary);font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.05em;">
+            <a href="{{ route('koordinator.meetings.index') }}?open_request=1" class="btn btn-primary btn-sm flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                REQUEST
+                Request Meeting
             </a>
-        </div>
-    </div>
-
-    {{-- Meeting Section - Two Columns --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {{-- Meeting Mendatang --}}
-        <div class="gaming-card overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(59,130,246,0.05));">
-                <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">MEETING MENDATANG</h3>
-                <a href="{{ route('koordinator.meetings.index') }}" class="badge badge-primary">Lihat semua</a>
-            </div>
-            <div class="divide-y" style="border-color:var(--border-color);">
-                @forelse($upcomingMeetings as $meeting)
-                @php $rt = \App\Services\MeetingQueueService::realtimeStatus($meeting); @endphp
-                <div class="px-5 py-3 transition hover:bg-slate-100/5">
-                    <div class="flex items-center justify-between gap-2">
-                        <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
-                        <span class="badge upcoming-badge flex-shrink-0 text-xs" data-id="{{ $meeting->id }}" style="{{ str_contains($rt['label'],'Berlangsung') ? 'background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);' : 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);' }}">
-                            {{ $rt['label'] }}
-                        </span>
-                    </div>
-                    <p class="text-xs mt-1" style="color:var(--text-muted);">📍 {{ $meeting->room->name }} • 📅 {{ $meeting->meeting_date->format('d M Y') }}</p>
-                    <p class="text-xs" style="color:var(--text-muted);">⏰ {{ substr($meeting->start_time,0,5) }} – {{ substr($meeting->end_time,0,5) }}</p>
-                </div>
-                @empty
-                <div class="px-5 py-8 text-center">
-                    <p class="text-sm" style="color:var(--text-muted);">Tidak ada meeting mendatang</p>
-                </div>
-                @endforelse
-            </div>
-        </div>
-
-        {{-- Riwayat Meeting --}}
-        <div class="gaming-card overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(16,185,129,0.05));">
-                <h3 class="font-gaming font-semibold" style="color:var(--text-primary);letter-spacing:0.05em;">RIWAYAT MEETING</h3>
-            </div>
-            <div class="divide-y" style="border-color:var(--border-color);">
-                @forelse($recentMeetings as $meeting)
-                @php
-                    $badgeStyle = match($meeting->status) {
-                        'pending'     => 'background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);',
-                        'approved'    => 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);',
-                        'confirmed'   => 'background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);',
-                        'completed'   => 'background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);',
-                        'rejected'    => 'background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);',
-                        'cancelled'   => 'background:rgba(148,163,184,0.15);color:#94a3b8;border:1px solid rgba(148,163,184,0.3);',
-                        'in_progress' => 'background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);',
-                        default       => 'background:rgba(148,163,184,0.15);color:#94a3b8;',
-                    };
-                @endphp
-                <div class="px-5 py-3 flex items-center justify-between gap-2 transition hover:bg-slate-100/5">
-                    <div class="min-w-0">
-                        <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
-                        <p class="text-xs" style="color:var(--text-muted);">📅 {{ $meeting->meeting_date->format('d M Y') }}</p>
-                    </div>
-                    <span class="badge flex-shrink-0 text-xs" style="{{ $badgeStyle }}">{{ ucfirst(str_replace('_', ' ', $meeting->status)) }}</span>
-                </div>
-                @empty
-                <div class="px-5 py-8 text-center">
-                    <p class="text-sm" style="color:var(--text-muted);">Belum ada riwayat meeting</p>
-                </div>
-                @endforelse
-            </div>
         </div>
     </div>
 
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    function getRtStyle(label) {
-        if (!label) return '';
-        if (label.includes('Berlangsung')) return 'background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);';
-        if (label.includes('Antrian'))     return 'background:rgba(249,115,22,0.15);color:#fb923c;border:1px solid rgba(249,115,22,0.3);';
-        if (label.includes('Di Booking'))  return 'background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);';
-        if (label.includes('Selesai'))     return 'background:rgba(148,163,184,0.15);color:#94a3b8;border:1px solid rgba(148,163,184,0.3);';
-        return 'background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);';
-    }
-
-    function refreshLeaderStats() {
-        fetch('{{ route("realtime.dashboard") }}')
-            .then(r => r.json())
-            .then(data => {
-                ['pending','approved','completed','cancelled'].forEach(key => {
-                    const el = document.getElementById('stat-' + key);
-                    if (el && data[key] !== undefined) el.textContent = data[key];
-                });
-            }).catch(() => {});
-    }
-
-    function refreshUpcoming() {
-        fetch('{{ route("realtime.meetings") }}')
-            .then(r => r.json())
-            .then(data => {
-                data.forEach(m => {
-                    const badge = document.querySelector(`.upcoming-badge[data-id="${m.id}"]`);
-                    if (badge) {
-                        badge.textContent = m.rt_label;
-                        badge.style.cssText = getRtStyle(m.rt_label);
-                    }
-                });
-            }).catch(() => {});
-    }
-
-    setInterval(refreshLeaderStats, 60000);
-    setInterval(refreshUpcoming, 30000);
-    refreshUpcoming();
-</script>
-@endpush

@@ -8,9 +8,27 @@ use Illuminate\Http\Request;
 
 class TeamController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.teams.index', ['teams' => Team::withCount('members')->paginate(15)]);
+        $query = Team::withCount('members');
+
+        // Search by name
+        if ($search = $request->input('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        // Filter by status
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $teams = $query->orderBy('name')->paginate(15)->withQueryString();
+
+        return view('admin.teams.index', compact('teams'));
     }
 
     public function create()

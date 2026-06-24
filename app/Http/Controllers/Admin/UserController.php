@@ -10,23 +10,35 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('team')
-            ->whereNotIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo'])
-            ->paginate(15);
+        $query = User::with('team')
+            ->where('role', 'koordinator');
 
-        $breakdown = [
-            'total_ceo'         => User::where('role', 'ceo')->where('is_active', true)->count(),
-            'total_gm'          => User::where('role', 'gm')->where('is_active', true)->count(),
-            'total_head_store'  => User::where('role', 'head_of_store')->where('is_active', true)->count(),
-            'total_hr'          => User::where('role', 'hr')->where('is_active', true)->count(),
-            'total_koordinator' => User::where('role', 'koordinator')->where('is_active', true)->count(),
-            'total_karyawan'    => User::where('role', 'user')->where('is_active', true)->count(),
-            'total_team'        => Team::count(),
-        ];
+        // Search by name, username, or team name
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%")
+                  ->orWhereHas('team', function ($q2) use ($search) {
+                      $q2->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
 
-        return view('admin.users.index', compact('users', 'breakdown'));
+        // Filter by status
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $users = $query->orderBy('name')->paginate(15)->withQueryString();
+        $teams = Team::where('is_active', true)->orderBy('name')->get();
+
+        return view('admin.users.index', compact('users', 'teams'));
     }
 
     public function create()
