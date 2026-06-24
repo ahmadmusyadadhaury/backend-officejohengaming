@@ -502,38 +502,48 @@ function showDetail(id) {
     const rp = i.nilai ? 'Rp ' + Number(i.nilai).toLocaleString('id-ID') : '-';
 
     const rows = [
-        { label: 'Nama Barang', value: i.nama_barang },
-        { label: 'Jumlah', value: i.jumlah },
-        { label: 'Sub Kategori', value: i.sub_kategori },
-        { label: 'Detail', value: i.detail || '-' },
-        { label: 'Keterangan', value: i.keterangan || '-' },
-        { label: 'Lokasi Unit', value: i.lokasi_unit },
-        { label: 'Ruangan', value: i.ruangan },
-        { label: 'Milik', value: i.milik },
-        { label: 'Tahun Pengadaan', value: i.pengadaan_tahun },
-        { label: 'Tanggal Pembelian', value: i.tanggal_pembelian },
-        { label: 'Kategori Nilai', value: i.kategori_nilai },
-        { label: 'Kategori Ukuran', value: i.kategori_ukuran },
-        { label: 'Nilai', value: rp },
-        { label: 'Waktu Pakai/Hari', value: i.waktu_pakai_per_hari },
-        { label: 'Estimasi Waktu', value: i.estimasi_waktu_barang },
-        { label: 'PIC', value: i.pic },
-        { label: 'Jabatan', value: i.jabatan },
-        { label: 'Atasan', value: i.atasan },
-        { label: 'Jabatan Atasan', value: i.jabatan_atasan },
+        { label: 'Nama Barang', value: i.nama_barang, icon: 'package' },
+        { label: 'Jumlah', value: i.jumlah, icon: 'package' },
+        { label: 'Sub Kategori', value: i.sub_kategori, icon: 'package' },
+        { label: 'Detail', value: i.detail || '-', icon: 'file-text' },
+        { label: 'Keterangan', value: i.keterangan || '-', icon: 'file-text' },
+        { label: 'Lokasi Unit', value: i.lokasi_unit, icon: 'building-2' },
+        { label: 'Ruangan', value: i.ruangan, icon: 'building-2' },
+        { label: 'Milik', value: i.milik, icon: 'building-2' },
+        { label: 'Tahun Pengadaan', value: i.pengadaan_tahun, icon: 'calendar' },
+        { label: 'Tanggal Pembelian', value: i.tanggal_pembelian, icon: 'calendar' },
+        { label: 'Kategori Nilai', value: i.kategori_nilai, icon: 'credit-card' },
+        { label: 'Kategori Ukuran', value: i.kategori_ukuran, icon: 'package' },
+        { label: 'Nilai', value: rp, icon: 'wallet' },
+        { label: 'Waktu Pakai/Hari', value: i.waktu_pakai_per_hari, icon: 'clock' },
+        { label: 'Estimasi Waktu', value: i.estimasi_waktu_barang, icon: 'clock' },
+        { label: 'PIC', value: i.pic, icon: 'user' },
+        { label: 'Jabatan', value: i.jabatan, icon: 'user-cog' },
+        { label: 'Atasan', value: i.atasan, icon: 'shield-check' },
+        { label: 'Jabatan Atasan', value: i.jabatan_atasan, icon: 'shield-check' },
     ];
 
     const detailBody = document.getElementById('detail-body');
     detailBody.innerHTML = `
-        <div class="space-y-1">
+        <div class="space-y-2">
             ${rows.map((r, i) => `
-                <div class="flex items-center justify-between py-2.5" ${i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
-                    <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
-                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.value}</p>
+                <div class="flex items-center justify-between py-3" ${i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
+                    <div class="flex items-center gap-2 min-w-[140px]">
+                        <div class="w-6 h-6 rounded-md flex items-center justify-center" style="background:var(--bg-surface-2);color:var(--text-muted);">
+                            ${iconSvg(r.icon)}
+                        </div>
+                        <p class="text-sm font-medium" style="color:var(--text-muted);">${r.label}</p>
+                    </div>
+                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:60%;">${r.value}</p>
                 </div>
             `).join('')}
-            <div class="flex items-center justify-between py-2.5">
-                <p class="text-sm" style="color:var(--text-muted);">Kondisi</p>
+            <div class="flex items-center justify-between py-3 mt-2">
+                <div class="flex items-center gap-2 min-w-[140px]">
+                    <div class="w-6 h-6 rounded-md flex items-center justify-center" style="background:var(--bg-surface-2);color:var(--text-muted);">
+                        ${iconSvg('check-circle')}
+                    </div>
+                    <p class="text-sm font-medium" style="color:var(--text-muted);">Kondisi</p>
+                </div>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${k.bg};color:${k.text};border:1px solid ${k.border};">${k.label}</span>
             </div>
         </div>

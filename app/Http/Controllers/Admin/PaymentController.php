@@ -206,6 +206,7 @@ class PaymentController extends Controller
                 'status' => 'required|in:lunas,jatuh_tempo',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
+            $data['jenis'] = $jenis;
             Payment::create($data);
         }
 

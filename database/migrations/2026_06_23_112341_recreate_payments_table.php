@@ -13,6 +13,7 @@ return new class extends Migration
 
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->string('jenis')->default('listrik'); // listrik, aset_digital, ipl_ruko
             $table->string('periode');
             $table->date('tanggal_tagihan');
             $table->date('jatuh_tempo');

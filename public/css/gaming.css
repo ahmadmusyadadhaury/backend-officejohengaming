@@ -52,7 +52,7 @@
     --sidebar-border:      rgba(255,255,255,0.06);
     --sidebar-text:        #94a3b8;
     --sidebar-text-active: #ffffff;
-    --sidebar-active-bg:   rgba(124,58,237,0.2);
+    --sidebar-active-bg:   rgba(109,94,249,1);
 
     /* Transitions */
     --transition-fast:     0.15s ease;
@@ -116,9 +116,9 @@ body.light {
     --sidebar-bg:          #ffffff;
     --sidebar-border:      rgba(226,232,240,0.7);
     --sidebar-text:        #475569;
-    --sidebar-text-active: #0f172a;
-    --sidebar-active-bg:   rgba(124,58,237,0.08);
-    --sidebar-hover-bg:    rgba(15,23,42,0.04);
+    --sidebar-text-active: #ffffff;
+    --sidebar-active-bg:   rgba(109,94,249,1);
+    --sidebar-hover-bg:    rgba(109,94,249,0.1);
 }
 
 /* Sidebar hover backgrounds that follow theme */
@@ -473,8 +473,8 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .gaming-table thead tr {
-    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
-    color: white;
+    background: var(--bg-surface-2);
+    color: var(--text-primary);
 }
 
 .gaming-table thead th {
@@ -550,18 +550,18 @@ h1, h2, h3, h4, h5, h6,
 
 .sidebar-item:hover {
     background: var(--sidebar-hover-bg);
-    color: var(--sidebar-text-active);
+    color: var(--sidebar-text);
 }
 
-.sidebar-item:hover::before { height: 60%; }
+.sidebar-item:hover::before { height: 0; }
 
 .sidebar-item.active {
     background: var(--sidebar-active-bg);
     color: var(--sidebar-text-active);
-    border: 1px solid rgba(124,58,237,0.2);
+    border: 1px solid rgba(109,94,249,1);
 }
 
-.sidebar-item.active::before { height: 70%; }
+.sidebar-item.active::before { height: 0; }
 
 .sidebar-submenu-item {
     display: flex;
@@ -592,17 +592,17 @@ h1, h2, h3, h4, h5, h6,
 
 .sidebar-submenu-item:hover {
     background: var(--sidebar-hover-bg);
-    color: var(--sidebar-text-active);
+    color: var(--sidebar-text);
 }
 
-.sidebar-submenu-item:hover::before { height: 55%; }
+.sidebar-submenu-item:hover::before { height: 0; }
 
 .sidebar-submenu-item.active {
     background: var(--sidebar-active-bg);
     color: var(--sidebar-text-active);
 }
 
-.sidebar-submenu-item.active::before { height: 65%; }
+.sidebar-submenu-item.active::before { height: 0; }
 
 .sidebar-submenu {
     display: flex;
@@ -614,7 +614,7 @@ h1, h2, h3, h4, h5, h6,
 
 .sidebar-submenu-item:hover {
     background: var(--sidebar-hover-bg);
-    color: var(--sidebar-text-active);
+    color: var(--sidebar-text);
 }
 
 .sidebar-submenu-item.active {
@@ -704,8 +704,8 @@ body.light .topbar-profile-btn:hover {
 }
 
 body.light .gaming-table thead tr {
-    background: linear-gradient(135deg, #e4e9f2, #edf0f5);
-    color: #475569;
+    background: var(--bg-surface-2);
+    color: var(--text-primary);
 }
 
 body.light .gaming-table thead th {

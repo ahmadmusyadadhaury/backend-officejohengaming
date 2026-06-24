@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     protected $fillable = [
+        'jenis',
         'periode',
         'tanggal_tagihan',
         'jatuh_tempo',

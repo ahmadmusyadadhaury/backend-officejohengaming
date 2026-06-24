@@ -61,6 +61,12 @@ class DashboardController extends Controller
         $today = today();
         $threeDaysFromNow = today()->addDays(3);
 
+        $jenisLabels = [
+            'listrik' => 'Listrik',
+            'aset_digital' => 'Aset Digital',
+            'ipl_ruko' => 'IPL Ruko',
+        ];
+
         $allPayments = collect(Payment::where('status', 'jatuh_tempo')
             ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
                 $q->where('jatuh_tempo', '>=', $today)
@@ -68,19 +74,22 @@ class DashboardController extends Controller
             })
             ->orderBy('jatuh_tempo')
             ->get()
-            ->map(fn ($p) => [
-                'id' => $p->id,
-                'label' => $p->periode,
-                'due_date' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
-                'amount' => $p->nominal,
-                'status' => $p->status,
-                'jenis' => $p->jenis ?? 'Tagihan',
-                'type' => 'payment',
-                'periode' => $p->periode,
-                'tanggal_tagihan' => $p->tanggal_tagihan instanceof \Carbon\Carbon ? $p->tanggal_tagihan->format('Y-m-d') : $p->tanggal_tagihan,
-                'jatuh_tempo' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
-                'nominal' => (int) $p->nominal,
-            ]));
+            ->map(function ($p) use ($jenisLabels) {
+                $jenisName = $jenisLabels[$p->jenis] ?? ucfirst($p->jenis);
+                return [
+                    'id' => $p->id,
+                    'label' => $jenisName . ' · ' . $p->periode,
+                    'due_date' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
+                    'amount' => $p->nominal,
+                    'status' => $p->status,
+                    'jenis' => $jenisName,
+                    'type' => 'payment',
+                    'periode' => $p->periode,
+                    'tanggal_tagihan' => $p->tanggal_tagihan instanceof \Carbon\Carbon ? $p->tanggal_tagihan->format('Y-m-d') : $p->tanggal_tagihan,
+                    'jatuh_tempo' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
+                    'nominal' => (int) $p->nominal,
+                ];
+            }));
 
         $allWifi = collect(WifiPayment::where('status', 'jatuh_tempo')
             ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
