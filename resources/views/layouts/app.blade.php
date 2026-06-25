@@ -373,9 +373,6 @@
             </div>
         </div>
     </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         function openModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'flex'; document.body.style.overflow = 'hidden'; } }
