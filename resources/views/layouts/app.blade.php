@@ -380,9 +380,14 @@
 
         // Success Modal
         function closeSuccessModal() {
-            closeModal('success-modal');
-            const el = document.getElementById('success-flash-data');
-            if (el) el.remove();
+            const el = document.getElementById('success-modal');
+            if (el) {
+                el.style.display = 'none';
+                el.style.visibility = 'hidden';
+                el.style.opacity = '0';
+                el.style.pointerEvents = 'none';
+            }
+            document.body.style.overflow = '';
         }
 
         function parseSuccessMessage(msg) {
@@ -434,19 +439,13 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const el = document.getElementById('success-flash-data');
-            if (el) {
-                showSuccessModal(el.textContent);
-                // Auto-close after 5 seconds
-                setTimeout(closeSuccessModal, 5000);
-            }
+            if (el) showSuccessModal(el.textContent);
 
             const sm = document.getElementById('success-modal');
             if (sm) {
                 sm.addEventListener('click', function(e) {
                     if (e.target === this) closeSuccessModal();
                 });
-            } else {
-                console.warn('success-modal element not found');
             }
         });
 
