@@ -8,7 +8,7 @@
 <div class="pt-2 space-y-4 animate-fade-in">
 
     {{-- 4 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="gaming-card p-5 flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
@@ -37,19 +37,6 @@
         </div>
         <div class="gaming-card p-5 flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(59,130,246,0.15);box-shadow:0 0 16px rgba(59,130,246,0.2);">
-                <svg class="w-6 h-6" style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#60a5fa;">{{ $stats['sim_aktif'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">SIM Aktif</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Kartu & paket kuota aktif</div>
-            </div>
-        </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
                 <svg class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -57,7 +44,7 @@
             </div>
             <div>
                 <div class="text-3xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['nonaktif'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">SIM Nonaktif</div>
+                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Tidak Aktif</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Status kartu nonaktif</div>
             </div>
         </div>
@@ -86,6 +73,17 @@
                     class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
+            <div class="relative" style="position:relative;">
+                <button type="button" onclick="toggleExportMenu(event)" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Export
+                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="export-menu" class="export-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:160px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                    <a href="{{ route('admin.export', ['type' => 'sim-cards', 'filter' => 'all']) }}" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Download Semua Data</a>
+                    <button type="button" onclick="exportFiltered('sim-cards')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Download Hasil Filter</button>
+                </div>
+            </div>
             <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -94,7 +92,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;bottom:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-bottom:4px;">
+                <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                     <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
                     <button type="button" data-value="aktif" onclick="setFilter('aktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
                     <button type="button" data-value="nonaktif" onclick="setFilter('nonaktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
@@ -131,13 +129,13 @@
                         <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span></td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $c->id }})" class="btn btn-secondary btn-sm">Detail</button>
-                                <a href="{{ route('admin.export', ['type' => 'sim-cards']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                </a>
+                                <button type="button" onclick="showDetail({{ $c->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
                                 <div class="relative" style="position:relative;">
                                     <button type="button" onclick="toggleDropdown({{ $c->id }})" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $c->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;bottom:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-bottom:4px;">
+                                    <div id="dropdown-{{ $c->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $c->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $c->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.sim-cards.destroy', $c) }}" onsubmit="return confirm('Hapus SIM Card ini?')" style="margin:0;">
@@ -162,8 +160,8 @@
 </div>
 
 {{-- Detail Modal --}}
-<div id="detail-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow-y:auto;">
-    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:80vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail SIM Card</h3>
             <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
@@ -180,12 +178,12 @@
 </div>
 
 {{-- Modal Tambah / Edit SIM Card --}}
-<div id="sim-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow-y:auto;">
-    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="sim-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:80vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);" id="modal-title">Tambah SIM Card</h3>
-            <button type="button" onclick="closeModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <button type="button" onclick="closeModal('sim-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -219,14 +217,7 @@
                         <label class="gaming-label">Masa Tenggang <span class="field-req">*</span></label>
                         <input type="date" name="masa_tenggang" id="f-masa_tenggang" required class="gaming-input">
                     </div>
-                    <div class="field-group">
-                        <label class="gaming-label">Status Paket Kuota <span class="field-req">*</span></label>
-                        <select name="status_paket_kuota" id="f-status_paket_kuota" required class="gaming-input">
-                            <option value="1">Aktif</option>
-                            <option value="0">Tidak Aktif</option>
-                        </select>
-                    </div>
-                    <div class="field-group">
+                    <div class="field-group" style="grid-column:1/-1;">
                         <label class="gaming-label">Status Kartu <span class="field-req">*</span></label>
                         <select name="status_kartu" id="f-status_kartu" required class="gaming-input">
                             <option value="1">Aktif</option>
@@ -240,7 +231,7 @@
                 </div>
 
                 <div class="form-footer">
-                    <button type="button" onclick="closeModal()" class="btn-form btn-form-batal">Batal</button>
+                    <button type="button" onclick="closeModal('sim-modal')" class="btn-form btn-form-batal">Batal</button>
                     <button type="submit" class="btn-form btn-form-simpan" id="form-submit-btn">Simpan</button>
                 </div>
             </form>
@@ -320,7 +311,6 @@ function openCreateModal() {
             el.value = '';
         }
     });
-    document.getElementById('f-status_paket_kuota').value = '1';
     document.getElementById('f-status_kartu').value = '1';
     showModal();
 }
@@ -330,11 +320,7 @@ function showDetail(id) {
     if (!c) return;
     document.getElementById('detail-title').textContent = c.nomor_sim_card;
 
-    const statusPaket = c.status_paket_kuota ? 'Aktif' : 'Tidak Aktif';
     const statusKartu = c.status_kartu ? 'Aktif' : 'Nonaktif';
-    const pkColor = c.status_paket_kuota ? '#059669' : '#dc2626';
-    const pkBg = c.status_paket_kuota ? '#ecfdf5' : '#fef2f2';
-    const pkBorder = c.status_paket_kuota ? '#a7f3d0' : '#fecaca';
     const skColor = c.status_kartu ? '#059669' : '#dc2626';
     const skBg = c.status_kartu ? '#ecfdf5' : '#fef2f2';
     const skBorder = c.status_kartu ? '#a7f3d0' : '#fecaca';
@@ -358,20 +344,16 @@ function showDetail(id) {
                 </div>
             `).join('')}
             <div class="flex items-center justify-between py-2.5">
-                <p class="text-sm" style="color:var(--text-muted);">Status Paket Kuota</p>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${pkBg};color:${pkColor};border:1px solid ${pkBorder};">${statusPaket}</span>
-            </div>
-            <div class="flex items-center justify-between py-2.5">
                 <p class="text-sm" style="color:var(--text-muted);">Status Kartu</p>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${skBg};color:${skColor};border:1px solid ${skBorder};">${statusKartu}</span>
             </div>
         </div>
     `;
-    document.getElementById('detail-modal').style.display = 'flex';
+    openModal('detail-modal');
 }
 
 function closeDetail() {
-    document.getElementById('detail-modal').style.display = 'none';
+    closeModal('detail-modal');
 }
 
 document.getElementById('detail-modal')?.addEventListener('click', function(e) {
@@ -387,7 +369,7 @@ function toggleDropdown(id) {
 
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.relative')) {
-        document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.dropdown-menu, .export-menu').forEach(el => el.style.display = 'none');
     }
 });
 
@@ -407,29 +389,20 @@ function openEditModal(id) {
     document.getElementById('f-jabatan').value = c.jabatan;
     document.getElementById('f-masa_aktif').value = c.masa_aktif ? c.masa_aktif.split('/').reverse().join('-') : '';
     document.getElementById('f-masa_tenggang').value = c.masa_tenggang ? c.masa_tenggang.split('/').reverse().join('-') : '';
-    document.getElementById('f-status_paket_kuota').value = c.status_paket_kuota ? '1' : '0';
     document.getElementById('f-status_kartu').value = c.status_kartu ? '1' : '0';
     document.getElementById('f-keperluan').value = c.keperluan;
 
     showModal();
 }
 
-function showModal() {
-    document.getElementById('sim-modal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-    document.getElementById('sim-modal').style.display = 'none';
-    document.body.style.overflow = '';
-}
+function showModal() { openModal('sim-modal'); }
 
 document.getElementById('sim-modal')?.addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+    if (e.target === this) closeModal('sim-modal');
 });
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeDetail(); closeModal(); }
+    if (e.key === 'Escape') { closeDetail(); closeModal('sim-modal'); }
 });
 
 let currentFilter = 'all';

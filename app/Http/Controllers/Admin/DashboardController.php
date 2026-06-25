@@ -3,14 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AsetRuko;
 use App\Models\Asset;
+use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
 use App\Models\Payment;
+use App\Models\PeralatanKantor;
 use App\Models\Room;
+use App\Models\SimCard;
 use App\Models\Team;
+use App\Models\TokenPayment;
 use App\Models\User;
+use App\Models\Vehicle;
 use App\Models\WifiPayment;
 use Illuminate\Support\Facades\Schema;
 
@@ -23,13 +29,13 @@ class DashboardController extends Controller
             'total_gm' => User::where('role', 'gm')->where('is_active', true)->count(),
             'total_head_store' => User::where('role', 'head_of_store')->where('is_active', true)->count(),
             'total_hr' => User::where('role', 'hr')->where('is_active', true)->count(),
-            'total_koordinator' => User::where('role', 'koordinator')->where('is_active', true)->count(),
+            'total_koordinator' => User::where('role', 'koordinator')->count(),
             'total_karyawan' => User::where('role', 'user')->where('is_active', true)->count(),
             'total_team' => Team::count(),
             'total_teams' => Team::count(),
             'total_rooms' => Room::count(),
-            // Asset stats
-            'total_assets' => Asset::count(),
+            // Asset stats — dari semua tabel data aset
+            'total_assets' => Vehicle::count() + DigitalAsset::count() + SimCard::count() + PeralatanKantor::count() + AsetRuko::count(),
             'digital_assets' => Asset::where('is_active', true)->count(),
             'assets_near_expire' => Schema::hasColumn('assets', 'expire_date')
                 ? Asset::whereNotNull('expire_date')->where('expire_date', '>=', today())->where('expire_date', '<=', today()->addDays(30))->count()
@@ -40,8 +46,8 @@ class DashboardController extends Controller
             'pending' => Meeting::where('status', 'pending')->count(),
             'today_meetings' => Meeting::whereDate('meeting_date', today())->whereIn('status', ['approved', 'confirmed', 'in_progress'])->count(),
             'this_month' => Meeting::whereMonth('meeting_date', now()->month)->whereYear('meeting_date', now()->year)->count(),
-            // Payment stats
-            'total_payments' => Payment::count() + WifiPayment::count(),
+            // Payment stats — dari semua tabel pembayaran
+            'total_payments' => Payment::count() + WifiPayment::count() + TokenPayment::count(),
             'pending_payments' => Payment::where('status', 'jatuh_tempo')->count() + WifiPayment::where('status', 'jatuh_tempo')->count(),
         ];
 
@@ -70,7 +76,8 @@ class DashboardController extends Controller
         $allPayments = collect(Payment::where('status', 'jatuh_tempo')
             ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
                 $q->where('jatuh_tempo', '>=', $today)
-                    ->where('jatuh_tempo', '<=', $threeDaysFromNow);
+                    ->where('jatuh_tempo', '<=', $threeDaysFromNow)
+                    ->where('status', '!=', 'lunas');
             })
             ->orderBy('jatuh_tempo')
             ->get()
@@ -94,7 +101,8 @@ class DashboardController extends Controller
         $allWifi = collect(WifiPayment::where('status', 'jatuh_tempo')
             ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
                 $q->where('masa_tenggang', '>=', $today)
-                    ->where('masa_tenggang', '<=', $threeDaysFromNow);
+                    ->where('masa_tenggang', '<=', $threeDaysFromNow)
+                    ->where('status', '!=', 'lunas');
             })
             ->orderBy('masa_tenggang')
             ->get()
@@ -168,23 +176,32 @@ class DashboardController extends Controller
             ->orderBy('id', 'desc')
             ->first();
         $tokenAlertDashboard = null;
-        if ($latestTokenReading && $latestTokenReading->remaining_kwh < 50) {
+        if ($latestTokenReading && $latestTokenReading->remaining_kwh < 500) {
             $tokenAlertDashboard = [
                 'level' => 'danger',
-                'message' => "Token listrik tinggal {$latestTokenReading->remaining_kwh} KWH — Segera bayar!",
+                'message' => "Sisa token listrik tinggal {$latestTokenReading->remaining_kwh} KWH — Segera Isi Token!",
+                'kwh' => (float) $latestTokenReading->remaining_kwh,
             ];
-        } elseif ($latestTokenReading && $latestTokenReading->remaining_kwh < 100) {
+        } elseif ($latestTokenReading && $latestTokenReading->remaining_kwh < 1000) {
             $tokenAlertDashboard = [
                 'level' => 'warning',
-                'message' => "Token listrik tersisa {$latestTokenReading->remaining_kwh} KWH — Segera isi token.",
+                'message' => "Sisa token listrik {$latestTokenReading->remaining_kwh} KWH — Warning, segera persiapkan isi token.",
+                'kwh' => (float) $latestTokenReading->remaining_kwh,
+            ];
+        } elseif ($latestTokenReading && $latestTokenReading->remaining_kwh < 2000) {
+            $tokenAlertDashboard = [
+                'level' => 'info',
+                'message' => "Sisa token listrik {$latestTokenReading->remaining_kwh} KWH — Perhatian, lakukan pengecekan rutin.",
+                'kwh' => (float) $latestTokenReading->remaining_kwh,
             ];
         } elseif (! $latestTokenReading) {
             $tokenAlertDashboard = [
                 'level' => 'warning',
-                'message' => 'Belum ada pengecekan token listrik. Lakukan pengecekan setiap hari Senin.',
+                'message' => 'Belum ada pengecekan token listrik. Lakukan pengecekan setiap minggu.',
+                'kwh' => 0,
             ];
         }
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard'));
+        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading'));
     }
 }

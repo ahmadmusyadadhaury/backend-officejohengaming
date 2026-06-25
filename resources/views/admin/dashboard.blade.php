@@ -73,6 +73,8 @@
 
     </div>
 
+
+
     {{-- Meeting Hari Ini + Pembayaran Mendatang --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         {{-- Meeting Hari Ini --}}
@@ -118,8 +120,31 @@
                     </svg>
                     PEMBAYARAN MENDATANG
                 </h3>
-                <button type="button" onclick="document.getElementById('semua-pembayaran-modal').style.display='flex'" class="text-xs font-medium cursor-pointer" style="color:var(--color-accent);">Lihat Semua &rarr;</button>
+                <button type="button" onclick="openModal('semua-pembayaran-modal')" class="text-xs font-medium cursor-pointer" style="color:var(--color-accent);">Lihat Semua &rarr;</button>
             </div>
+                @if($tokenAlertDashboard)
+                <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="block rounded-xl overflow-hidden transition" style="text-decoration:none;margin-bottom:8px;background:{{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.04)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.04)' : 'rgba(59,130,246,0.04)') }};border:1px solid {{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.15)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.15)' : 'rgba(59,130,246,0.15)') }};" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid {{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.08)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.08)' : 'rgba(59,130,246,0.08)') }};">
+                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:{{ $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : ($tokenAlertDashboard['level'] === 'warning' ? '#f59e0b' : '#3b82f6') }};">
+                            Token Listrik
+                            @if($tokenAlertDashboard['level'] === 'danger')
+                                — Segera Isi
+                            @elseif($tokenAlertDashboard['level'] === 'warning')
+                                — Warning
+                            @else
+                                — Perhatian
+                            @endif
+                        </span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:{{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.15)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.15)' : 'rgba(59,130,246,0.15)') }};color:{{ $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : ($tokenAlertDashboard['level'] === 'warning' ? '#f59e0b' : '#3b82f6') }};">{{ number_format($tokenAlertDashboard['kwh'], 0) }} KWH</span>
+                    </div>
+                    <div class="px-4 py-2.5 flex items-center justify-between">
+                        <span class="text-xs" style="color:var(--text-muted);">{{ $tokenAlertDashboard['message'] }}</span>
+                        <svg class="w-4 h-4 flex-shrink-0" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+                @endif
             <div class="overflow-y-auto p-2.5 space-y-2.5" style="max-height:340px;">
                 @if($hasOverdue)
                 <div class="rounded-xl overflow-hidden" style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.1);">
@@ -128,7 +153,7 @@
                         <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(239,68,68,0.15);color:#ef4444;">{{ $overduePayments->count() }}</span>
                     </div>
                     @foreach($overduePayments as $p)
-                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="{{ !$loop->last ? 'border-bottom:1px solid rgba(239,68,68,0.06);' : '' }}">
+                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="cursor:pointer;{{ !$loop->last ? 'border-bottom:1px solid rgba(239,68,68,0.06);' : '' }}" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
                             <p class="text-xs mt-0.5" style="color:#ef4444;">Lewat {{ \Carbon\Carbon::parse($p['due_date'])->diffInDays() }} hari &middot; {{ $p['jenis'] }}</p>
@@ -149,7 +174,7 @@
                         <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(245,158,11,0.15);color:#f59e0b;">{{ $todayPayments->count() }}</span>
                     </div>
                     @foreach($todayPayments as $p)
-                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="{{ !$loop->last ? 'border-bottom:1px solid rgba(245,158,11,0.06);' : '' }}">
+                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="cursor:pointer;{{ !$loop->last ? 'border-bottom:1px solid rgba(245,158,11,0.06);' : '' }}" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
                             <p class="text-xs mt-0.5" style="color:#f59e0b;">Jatuh tempo hari ini &middot; {{ $p['jenis'] }}</p>
@@ -164,20 +189,20 @@
                 @endif
 
                 @if($hasWarning)
-                <div class="rounded-xl overflow-hidden" style="background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.1);">
-                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid rgba(59,130,246,0.08);">
-                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:#3b82f6;">Mendatang</span>
-                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(59,130,246,0.15);color:#3b82f6;">{{ $warningPayments->count() }}</span>
+                <div class="rounded-xl overflow-hidden" style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);">
+                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid rgba(245,158,11,0.08);">
+                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:#f59e0b;">Mendatang</span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(245,158,11,0.15);color:#fbbf24;">{{ $warningPayments->count() }}</span>
                     </div>
                     @foreach($warningPayments as $p)
-                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="{{ !$loop->last ? 'border-bottom:1px solid rgba(59,130,246,0.06);' : '' }}">
+                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="cursor:pointer;{{ !$loop->last ? 'border-bottom:1px solid rgba(245,158,11,0.06);' : '' }}" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
                             <p class="text-xs mt-0.5" style="color:var(--text-muted);">Jatuh tempo {{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }} &middot; {{ $p['jenis'] }}</p>
                         </div>
                         <div class="text-right flex-shrink-0">
                             <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
-                            <span class="badge text-[10px] mt-0.5" style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.2);">{{ ucfirst($p['status']) }}</span>
+                            <span class="badge text-[10px] mt-0.5" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);">{{ ucfirst($p['status']) }}</span>
                         </div>
                     </div>
                     @endforeach
@@ -214,7 +239,7 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
 </script>
 
 {{-- Modal Semua Pembayaran --}}
-<div id="semua-pembayaran-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow-y:auto;" onclick="if(event.target===this)this.style.display='none'">
+<div id="semua-pembayaran-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeModal('semua-pembayaran-modal')">
     <div class="w-full" style="max-width:800px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.4);">
         <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
             <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
@@ -223,7 +248,7 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
                 </svg>
                 SEMUA PEMBAYARAN MENDATANG
             </h3>
-            <button type="button" onclick="document.getElementById('semua-pembayaran-modal').style.display='none'" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:4px;">&times;</button>
+            <button type="button" onclick="closeModal('semua-pembayaran-modal')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:4px;">&times;</button>
         </div>
         <div class="overflow-y-auto" style="max-height:65vh;">
             <table class="w-full text-left" style="border-collapse:collapse;">
@@ -283,7 +308,7 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
 </div>
 
 {{-- Modal Bayar dari Dashboard --}}
-<div id="dashboard-bayar-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:60;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);" onclick="if(event.target===this)closeDashboardBayar()">
+<div id="dashboard-bayar-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeDashboardBayar()">
     <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);">Bayar / Lunaskan</h3>
@@ -396,7 +421,7 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
             var bm = document.getElementById('dashboard-bayar-modal');
             var pm = document.getElementById('semua-pembayaran-modal');
             if (bm && bm.style.display !== 'none') { closeDashboardBayar(); }
-            else if (pm && pm.style.display !== 'none') { pm.style.display = 'none'; }
+            else if (pm && pm.style.display !== 'none') { closeModal('semua-pembayaran-modal'); }
         }
     });
 

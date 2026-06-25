@@ -174,14 +174,14 @@
 </div>
 
 {{-- Request Meeting Modal --}}
-<div id="request-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+<div id="request-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[820px] rounded-3xl shadow-2xl flex flex-col" style="max-height:calc(100vh - 32px);background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-5 py-3 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Request Meeting Baru</h3>
                 <p class="text-xs mt-0.5" style="color:var(--text-muted);">Isi detail pertemuan untuk mengajukan meeting.</p>
             </div>
-            <button type="button" onclick="closeRequestModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <button type="button" onclick="closeModal('request-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -313,7 +313,7 @@
                     </svg>
                     Kirim Request
                 </button>
-                <button type="button" onclick="closeRequestModal()" class="btn btn-secondary">Batal</button>
+                <button type="button" onclick="closeModal('request-modal')" class="btn btn-secondary">Batal</button>
             </div>
         </form>
     </div>
@@ -375,21 +375,19 @@ refreshStatus();
 const teamsData = @json($teams);
 
 function openRequestModal() {
-    document.getElementById('request-modal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    openModal('request-modal');
 }
 
 function closeRequestModal() {
-    document.getElementById('request-modal').style.display = 'none';
-    document.body.style.overflow = '';
+    closeModal('request-modal');
 }
 
 document.getElementById('request-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeRequestModal();
+    if (e.target === this) closeModal('request-modal');
 });
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeRequestModal();
+    if (e.key === 'Escape') closeModal('request-modal');
 });
 
 function addTeamRowModal() {

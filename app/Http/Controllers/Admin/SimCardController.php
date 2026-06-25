@@ -15,7 +15,6 @@ class SimCardController extends Controller
         $stats = [
             'total'       => $cards->count(),
             'nomor_aktif' => $cards->where('status_kartu', true)->count(),
-            'sim_aktif'   => $cards->where('status_kartu', true)->where('status_paket_kuota', true)->count(),
             'nonaktif'    => $cards->where('status_kartu', false)->count(),
         ];
 
@@ -27,7 +26,6 @@ class SimCardController extends Controller
                 'jabatan'           => $c->jabatan,
                 'masa_aktif'        => $c->masa_aktif?->format('d/m/Y'),
                 'masa_tenggang'     => $c->masa_tenggang?->format('d/m/Y'),
-                'status_paket_kuota' => $c->status_paket_kuota,
                 'status_kartu'      => $c->status_kartu,
                 'keperluan'         => $c->keperluan,
             ];
@@ -48,12 +46,10 @@ class SimCardController extends Controller
             'jabatan'            => 'required|string|max:255',
             'masa_aktif'         => 'required|date',
             'masa_tenggang'      => 'required|date',
-            'status_paket_kuota' => 'boolean',
             'status_kartu'       => 'boolean',
             'keperluan'          => 'nullable|string',
         ]);
 
-        $data['status_paket_kuota'] = $request->boolean('status_paket_kuota');
         $data['status_kartu'] = $request->boolean('status_kartu');
 
         SimCard::create($data);
@@ -69,12 +65,10 @@ class SimCardController extends Controller
             'jabatan'            => 'required|string|max:255',
             'masa_aktif'         => 'required|date',
             'masa_tenggang'      => 'required|date',
-            'status_paket_kuota' => 'boolean',
             'status_kartu'       => 'boolean',
             'keperluan'          => 'nullable|string',
         ]);
 
-        $data['status_paket_kuota'] = $request->boolean('status_paket_kuota');
         $data['status_kartu'] = $request->boolean('status_kartu');
 
         $simCard->update($data);

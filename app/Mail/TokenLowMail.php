@@ -16,7 +16,7 @@ class TokenLowMail extends Mailable
     public function envelope(): Envelope
     {
         $icon = $this->level === 'danger' ? '🚨' : '⚠️';
-        $label = $this->level === 'danger' ? 'KRITIS' : 'WARNING';
+        $label = $this->level === 'danger' ? 'SEGERA ISI' : 'WARNING';
 
         return new Envelope(
             subject: "{$icon} Token Listrik {$label} — {$this->remainingKwh} KWH",

@@ -53,7 +53,7 @@
                 <div class="absolute inset-0 rounded-lg" style="box-shadow:0 0 12px rgba(124,58,237,0.5);"></div>
             </div>
             <div class="min-w-0 flex-1">
-                <p class="font-gaming font-bold leading-none truncate" style="font-size:0.85rem;color:var(--sidebar-text-active);letter-spacing:0.05em;">JOHEN OFFICE</p>
+                <p class="font-gaming font-bold leading-none truncate" style="font-size:0.85rem;color:var(--sidebar-brand);letter-spacing:0.05em;">JOHEN OFFICE</p>
                 <p class="truncate" style="font-size:0.6rem;color:var(--color-neon-blue);opacity:0.9;letter-spacing:0.1em;margin-top:2px;">MANAGEMENT SYSTEM</p>
             </div>
             <button onclick="toggleSidebar()" class="lg:hidden flex-shrink-0" style="color:var(--sidebar-text);background:none;border:none;cursor:pointer;padding:4px;">
@@ -313,7 +313,7 @@
     </div>
 
     {{-- Invitation Modal --}}
-    <div id="invitation-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div id="invitation-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:var(--bg-overlay);">
         <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Undangan Meeting</h3>
@@ -331,6 +331,9 @@
     </div>
 
     <script>
+        function openModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'flex'; document.body.style.overflow = 'hidden'; } }
+        function closeModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'none'; document.body.style.overflow = ''; } }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -702,8 +705,7 @@
         function showInvitationModal(invitationId, meetingId) {
             const body = document.getElementById('invitation-modal-body');
             body.innerHTML = '<div class="text-center py-8" style="color:var(--text-muted);">Memuat data...</div>';
-            document.getElementById('invitation-modal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            openModal('invitation-modal');
 
             fetch('/undangan/' + invitationId, { headers: { 'Accept': 'text/html' } })
                 .then(r => r.text())
@@ -723,8 +725,7 @@
         }
 
         function closeInvitationModal() {
-            document.getElementById('invitation-modal').style.display = 'none';
-            document.body.style.overflow = '';
+            closeModal('invitation-modal');
         }
 
         document.getElementById('invitation-modal').addEventListener('click', function(e) {

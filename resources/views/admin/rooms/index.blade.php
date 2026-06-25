@@ -38,7 +38,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;bottom:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-bottom:4px;">
+                <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                     <button type="button" data-value="" onclick="setFilter('')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
                     <button type="button" data-value="active" onclick="setFilter('active')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
                     <button type="button" data-value="inactive" onclick="setFilter('inactive')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Nonaktif</button>
@@ -107,7 +107,7 @@
     </div>
 </div>
 
-<div id="edit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+<div id="edit-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[480px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);">Edit Ruangan</h3>
@@ -152,7 +152,7 @@
 </div>
 
 {{-- Create Modal --}}
-<div id="create-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+<div id="create-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[480px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);">Tambah Ruangan</h3>
@@ -218,24 +218,20 @@ function openEditModal(data) {
     document.getElementById('edit-facilities').value = data.facilities;
     document.getElementById('edit-description').value = data.description;
     document.getElementById('edit-is-active').checked = data.is_active == 1;
-    document.getElementById('edit-modal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    openModal('edit-modal');
 }
 function closeEditModal() {
-    document.getElementById('edit-modal').style.display = 'none';
-    document.body.style.overflow = '';
+    closeModal('edit-modal');
 }
 document.getElementById('edit-modal').addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeEditModal(); closeCreateModal(); } });
 
 function openCreateModal() {
     document.getElementById('create-form').reset();
-    document.getElementById('create-modal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    openModal('create-modal');
 }
 function closeCreateModal() {
-    document.getElementById('create-modal').style.display = 'none';
-    document.body.style.overflow = '';
+    closeModal('create-modal');
 }
 document.getElementById('create-modal').addEventListener('click', function(e) { if (e.target === this) closeCreateModal(); });
 </script>

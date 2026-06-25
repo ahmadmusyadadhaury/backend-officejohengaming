@@ -83,6 +83,10 @@ class PeralatanKantorController extends Controller
 
         PeralatanKantor::create($data);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['message' => 'Peralatan kantor berhasil ditambahkan.'], 201);
+        }
+
         return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Peralatan kantor berhasil ditambahkan.');
     }
 
@@ -114,6 +118,10 @@ class PeralatanKantorController extends Controller
         ]);
 
         $peralatanKantor->update($data);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['message' => 'Peralatan kantor berhasil diperbarui.']);
+        }
 
         return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Peralatan kantor berhasil diperbarui.');
     }

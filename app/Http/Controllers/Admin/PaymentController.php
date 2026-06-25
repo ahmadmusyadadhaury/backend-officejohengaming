@@ -141,12 +141,12 @@ class PaymentController extends Controller
             } elseif ($latestReading && $latestReading->remaining_kwh < 2000) {
                 $tokenAlert = [
                     'level' => 'info',
-                    'message' => "Sisa token listrik {$latestReading->remaining_kwh} KWH. Lakukan pengecekan rutin setiap hari Senin.",
+                    'message' => "Sisa token listrik {$latestReading->remaining_kwh} KWH. Lakukan pengecekan rutin setiap minggu.",
                 ];
             } elseif (! $latestReading && $latestPayment) {
                 $tokenAlert = [
                     'level' => 'info',
-                    'message' => 'Belum ada pengecekan setelah top-up terakhir. Lakukan pengecekan setiap hari Senin.',
+                    'message' => 'Belum ada pengecekan setelah top-up terakhir. Lakukan pengecekan setiap minggu.',
                 ];
             } elseif (! $latestPayment) {
                 $tokenAlert = [
@@ -289,7 +289,7 @@ class PaymentController extends Controller
 
         $remaining = $data['remaining_kwh'];
         $data['status'] = match (true) {
-            $remaining < 500 => 'kritis',
+            $remaining < 500 => 'segera_isi',
             $remaining < 1000 => 'warning',
             $remaining < 2000 => 'perhatian',
             default => 'aman',

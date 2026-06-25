@@ -670,11 +670,11 @@
         </aside>
 
         {{-- Edit Weekly Modal --}}
-        <div id="weekly-edit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:999;align-items:center;justify-content:center;padding:1rem;">
+        <div id="weekly-edit-modal" style="display:none;position:fixed;inset:0;background:var(--bg-overlay);z-index:999;align-items:flex-start;justify-content:center;padding:50px 16px 16px;">
             <div style="width:100%;max-width:420px;background:var(--bg-surface);border-radius:1.25rem;border:1px solid var(--border-color);box-shadow:var(--shadow-lg);overflow:hidden;" onclick="event.stopPropagation()">
                 <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);">
                     <h3 id="weekly-modal-title" class="text-sm font-bold" style="color:var(--text-primary);">Edit Jadwal Mingguan</h3>
-                    <button type="button" onclick="closeWeeklyEdit()" class="p-1 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <button type="button" onclick="closeModal('weekly-edit-modal')" class="p-1 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -729,7 +729,7 @@
                     </div>
                     <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
                         <button type="submit" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold text-white transition" style="background:#10b981;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Simpan</button>
-                        <button type="button" onclick="closeWeeklyEdit()" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);">Batal</button>
+                        <button type="button" onclick="closeModal('weekly-edit-modal')" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);">Batal</button>
                     </div>
                 </form>
             </div>
@@ -1123,7 +1123,7 @@
             document.getElementById('we-start').value = '13:00';
             document.getElementById('we-end').value = '14:00';
             document.getElementById('we-active').checked = true;
-            modal.style.display = 'flex';
+            openModal('weekly-edit-modal');
             return;
         }
         const w = weeklyData.find(i => i.id === id);
@@ -1136,15 +1136,15 @@
         document.getElementById('we-start').value = w.start_time;
         document.getElementById('we-end').value = w.end_time;
         document.getElementById('we-active').checked = w.is_active;
-        modal.style.display = 'flex';
+        openModal('weekly-edit-modal');
     }
 
     function closeWeeklyEdit() {
-        document.getElementById('weekly-edit-modal').style.display = 'none';
+        closeModal('weekly-edit-modal');
     }
 
     document.getElementById('weekly-edit-modal')?.addEventListener('click', function(e) {
-        if (e.target === this) closeWeeklyEdit();
+        if (e.target === this) closeModal('weekly-edit-modal');
     });
 
     document.getElementById('weekly-edit-form')?.addEventListener('submit', function(e) {
@@ -1154,7 +1154,7 @@
         btn.textContent = 'Menyimpan...';
         const body = new URLSearchParams(new FormData(this));
         if (this.action.match(/\/admin\/weekly-meetings\/\d+$/)) {
-            body.append('_method', 'PUT');
+            body.set('_method', 'PUT');
         }
         fetch(this.action, {
             method: 'POST',

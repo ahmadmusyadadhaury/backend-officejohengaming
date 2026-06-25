@@ -86,6 +86,17 @@
                     class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
+            <div class="relative" style="position:relative;">
+                <button type="button" onclick="toggleExportMenu(event)" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Export
+                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="export-menu" class="export-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:160px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                    <a href="{{ route('admin.export', ['type' => 'peralatan-kantor', 'filter' => 'all']) }}" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Download Semua Data</a>
+                    <button type="button" onclick="exportFiltered('peralatan-kantor')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Download Hasil Filter</button>
+                </div>
+            </div>
             <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -94,7 +105,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
-                <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;bottom:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-bottom:4px;">
+                <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                     <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Kondisi</button>
                     <button type="button" data-value="baik" onclick="setFilter('baik')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Kondisi Baik</button>
                     <button type="button" data-value="perlu_servis" onclick="setFilter('perlu_servis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Perlu Servis</button>
@@ -140,13 +151,13 @@
                         <td><span class="badge {{ $kondisiBadge }}">{{ $kondisiLabel }}</span></td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm">Detail</button>
-                                <a href="{{ route('admin.export', ['type' => 'peralatan-kantor']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                </a>
+                                <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
                                 <div class="relative" style="position:relative;">
                                     <button type="button" onclick="toggleDropdown({{ $i->id }})" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $i->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;bottom:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-bottom:4px;">
+                                    <div id="dropdown-{{ $i->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.peralatan-kantor.destroy', $i) }}" onsubmit="return confirm('Hapus peralatan ini?')" style="margin:0;">
@@ -171,8 +182,8 @@
 </div>
 
 {{-- Detail Modal --}}
-<div id="detail-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow-y:auto;">
-    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:80vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Peralatan</h3>
             <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
@@ -189,13 +200,13 @@
 </div>
 
 {{-- Modal Tambah / Edit Peralatan Kantor (6 Step) --}}
-<div id="item-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:40px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow-y:auto;">
-    <div class="w-full max-w-[640px] rounded-3xl shadow-2xl flex flex-col" style="max-height:94vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="item-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:40px 16px 16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[640px] rounded-3xl shadow-2xl flex flex-col" style="max-height:84vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);" id="modal-title">Tambah Peralatan</h3>
-            <button type="button" onclick="closeModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <button type="button" onclick="closeModal('item-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -415,11 +426,15 @@
                 </div>
 
                 {{-- Navigation Buttons --}}
-                <div class="flex gap-3 pt-4 mt-4" style="border-top:1px solid var(--border-color);">
-                    <button type="button" id="prev-btn" onclick="prevStep()" class="btn btn-secondary" style="display:none;">Sebelumnya</button>
-                    <button type="button" id="next-btn" onclick="nextStep()" class="btn btn-primary">Selanjutnya</button>
-                    <button type="submit" id="submit-btn" class="btn btn-primary" style="display:none;">Simpan</button>
-                    <button type="button" onclick="closeModal()" class="btn btn-secondary" id="cancel-btn">Batal</button>
+                <div class="flex items-center pt-4 mt-4" style="border-top:1px solid var(--border-color);">
+                    <div class="flex gap-3">
+                        <button type="button" id="prev-btn" onclick="prevStep()" class="btn btn-secondary" style="display:none;">Sebelumnya</button>
+                    </div>
+                    <div class="flex gap-3 ml-auto">
+                        <button type="button" onclick="closeModal('item-modal')" class="btn btn-secondary" id="cancel-btn">Batal</button>
+                        <button type="button" id="next-btn" onclick="nextStep()" class="btn btn-primary">Selanjutnya</button>
+                        <button type="submit" id="submit-btn" class="btn btn-primary" style="display:none;">Simpan</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -548,11 +563,11 @@ function showDetail(id) {
             </div>
         </div>
     `;
-    document.getElementById('detail-modal').style.display = 'flex';
+    openModal('detail-modal');
 }
 
 function closeDetail() {
-    document.getElementById('detail-modal').style.display = 'none';
+    closeModal('detail-modal');
 }
 
 document.getElementById('detail-modal')?.addEventListener('click', function(e) {
@@ -568,7 +583,7 @@ function toggleDropdown(id) {
 
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.relative')) {
-        document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.dropdown-menu, .export-menu').forEach(el => el.style.display = 'none');
     }
 });
 
@@ -664,7 +679,28 @@ function updatePreview() {
     }
 }
 
+function validateStep(step) {
+    const stepEl = document.getElementById('step-' + step);
+    const requiredInputs = stepEl.querySelectorAll('[required]');
+    let valid = true;
+    requiredInputs.forEach(input => {
+        if (!input.value.trim()) {
+            input.style.borderColor = '#ef4444';
+            input.style.boxShadow = '0 0 0 2px rgba(239,68,68,0.2)';
+            valid = false;
+        } else {
+            input.style.borderColor = '';
+            input.style.boxShadow = '';
+        }
+    });
+    if (!valid) {
+        alert('Harap isi semua field yang wajib diisi.');
+    }
+    return valid;
+}
+
 function nextStep() {
+    if (!validateStep(currentStep)) return;
     if (currentStep < totalSteps) {
         currentStep++;
         showStep(currentStep);
@@ -678,23 +714,130 @@ function prevStep() {
     }
 }
 
-function showModal() {
-    document.getElementById('item-modal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+document.getElementById('item-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    for (let s = 1; s < totalSteps; s++) {
+        if (!validateStep(s)) {
+            const firstInvalid = this.querySelector('[required]');
+            if (firstInvalid) {
+                const stepNum = findStepForElement(firstInvalid);
+                if (stepNum) {
+                    currentStep = stepNum;
+                    showStep(currentStep);
+                    firstInvalid.focus();
+                }
+            }
+            return;
+        }
+    }
+
+    const formData = new FormData(this);
+    const url = this.action;
+    const method = document.getElementById('form-method').value;
+
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Menyimpan...';
+
+    fetch(url, {
+        method: method === 'PUT' || method === 'PATCH' ? 'POST' : 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: method === 'PUT' || method === 'PATCH'
+            ? (formData.set('_method', 'PUT'), formData)
+            : formData
+    })
+    .then(res => res.json().then(data => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+        if (status === 200 || status === 201) {
+            closeModal('item-modal');
+            showToast('success', data.message || 'Peralatan kantor berhasil disimpan.');
+            setTimeout(() => location.reload(), 1200);
+        } else if (status === 422) {
+            const errors = data.errors || {};
+            for (const [field, msgs] of Object.entries(errors)) {
+                const el = document.getElementById('f-' + field);
+                if (el) {
+                    el.style.borderColor = '#ef4444';
+                    el.style.boxShadow = '0 0 0 2px rgba(239,68,68,0.2)';
+                    const tip = document.createElement('p');
+                    tip.className = 'text-xs mt-1';
+                    tip.style.color = '#ef4444';
+                    tip.textContent = msgs[0];
+                    tip.id = 'err-' + field;
+                    const existing = document.getElementById('err-' + field);
+                    if (existing) existing.remove();
+                    el.parentNode.appendChild(tip);
+                }
+            }
+            showToast('error', 'Mohon periksa kembali data yang diisi.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = document.getElementById('form-id').value ? 'Simpan Perubahan' : 'Simpan';
+        } else {
+            showToast('error', data.message || 'Terjadi kesalahan saat menyimpan.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = document.getElementById('form-id').value ? 'Simpan Perubahan' : 'Simpan';
+        }
+    })
+    .catch(err => {
+        showToast('error', 'Terjadi kesalahan jaringan.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = document.getElementById('form-id').value ? 'Simpan Perubahan' : 'Simpan';
+    });
+});
+
+function findStepForElement(el) {
+    for (let s = 1; s <= totalSteps; s++) {
+        if (document.getElementById('step-' + s).contains(el)) return s;
+    }
+    return null;
 }
 
-function closeModal() {
-    document.getElementById('item-modal').style.display = 'none';
-    document.body.style.overflow = '';
-}
+function showModal() { openModal('item-modal'); }
 
 document.getElementById('item-modal')?.addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+    if (e.target === this) closeModal('item-modal');
 });
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeDetail(); closeModal(); }
+    if (e.key === 'Escape') { closeDetail(); closeModal('item-modal'); }
 });
+
+function iconSvg(name) {
+    const icons = {
+        'package': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
+        'file-text': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+        'building-2': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11M8 14v3m4-3v3m4-3v3"/></svg>',
+        'calendar': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
+        'credit-card': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>',
+        'wallet': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>',
+        'clock': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        'user': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
+        'user-cog': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
+        'shield-check': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
+        'check-circle': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+    };
+    return icons[name] || icons['package'];
+}
+
+function showToast(type, message) {
+    const existing = document.querySelector('.toast-notif');
+    if (existing) existing.remove();
+
+    const isSuccess = type === 'success';
+    const bg = isSuccess ? '#10b981' : '#ef4444';
+    const borderColor = isSuccess ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)';
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-notif';
+    toast.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;padding:14px 22px;border-radius:12px;font-size:14px;font-weight:500;color:#fff;background:' + bg + ';border:1px solid ' + borderColor + ';box-shadow:0 8px 32px rgba(0,0,0,0.25);display:flex;align-items:center;gap:10px;transform:translateX(120%);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);max-width:400px;';
+    toast.innerHTML = (isSuccess
+        ? '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+        : '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>')
+        + '<span>' + message + '</span>';
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.style.transform = 'translateX(0)');
+    setTimeout(() => { toast.style.transform = 'translateX(120%)'; setTimeout(() => toast.remove(), 350); }, 4000);
+}
 
 let currentFilter = 'all';
 

@@ -22,7 +22,7 @@
         </p>
         <p style="margin:0 0 16px;font-size:14px;color:#555;">
             @if($level === 'danger')
-                <strong style="color:#dc2626;">KRITIS:</strong> Segera lakukan pengisian token listrik untuk menghindari gangguan operasional!
+                <strong style="color:#dc2626;">SEGERA ISI TOKEN:</strong> Segera lakukan pengisian token listrik untuk menghindari gangguan operasional!
             @else
                 Mohon segera mempersiapkan pengisian token listrik untuk menghindari gangguan operasional.
             @endif

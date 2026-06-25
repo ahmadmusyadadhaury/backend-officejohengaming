@@ -27,8 +27,9 @@ function renderSidebar() {
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#6C63FF,#a855f7);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;">JO</div>
         <div>
-          <div style="font-weight:600;font-size:14px;color:#fff;">${CURRENT_USER.name}</div>
-          <div style="font-size:11px;color:#8888aa;">${CURRENT_USER.email}</div>
+          <div style="font-weight:700;font-size:14px;color:#6C63FF;line-height:1.3;">Johen Office<br><span style="font-size:9px;color:#8888aa;font-weight:400;letter-spacing:0.05em;">MANAGEMENT SYSTEM</span></div>
+          <div style="font-weight:600;font-size:13px;color:#fff;">${CURRENT_USER.name}</div>
+          <div style="font-size:10px;color:#8888aa;">${CURRENT_USER.email}</div>
         </div>
       </div>
     </div>

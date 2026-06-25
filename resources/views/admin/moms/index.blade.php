@@ -66,58 +66,36 @@
         </div>
     </div>
 
-    {{-- Filter --}}
-    <div class="gaming-card p-5">
-        <form method="GET" class="flex flex-wrap items-end gap-3">
-            <div>
-                <label class="gaming-label">Periode</label>
-                <select name="period" class="gaming-input" onchange="this.form.submit()">
-                    <option value="all" {{ $period === 'all' ? 'selected' : '' }}>Semua</option>
-                    <option value="daily" {{ $period === 'daily' ? 'selected' : '' }}>Harian</option>
-                    <option value="weekly" {{ $period === 'weekly' ? 'selected' : '' }}>Mingguan</option>
-                    <option value="monthly" {{ $period === 'monthly' ? 'selected' : '' }}>Bulanan</option>
-                </select>
-            </div>
-            <div id="filter-date" class="{{ $period === 'daily' ? '' : 'hidden' }}">
-                <label class="gaming-label">Tanggal</label>
-                <input type="date" name="date" class="gaming-input" value="{{ request('date', today()->format('Y-m-d')) }}" onchange="this.form.submit()">
-            </div>
-            <div id="filter-week" class="{{ $period === 'weekly' ? '' : 'hidden' }}">
-                <label class="gaming-label">Minggu</label>
-                <input type="week" name="week" class="gaming-input" value="{{ request('week', now()->format('Y-\WW')) }}" onchange="this.form.submit()">
-            </div>
-            <div id="filter-month" class="{{ $period === 'monthly' ? '' : 'hidden' }}">
-                <label class="gaming-label">Bulan</label>
-                <input type="month" name="month" class="gaming-input" value="{{ request('month', now()->format('Y-m')) }}" onchange="this.form.submit()">
-            </div>
-            <div id="filter-custom" class="{{ !in_array($period, ['daily','weekly','monthly','all']) ? '' : 'hidden' }}">
-                <label class="gaming-label">Dari</label>
-                <input type="date" name="start_date" class="gaming-input" value="{{ request('start_date') }}">
-            </div>
-            <div id="filter-custom-end" class="{{ !in_array($period, ['daily','weekly','monthly','all']) ? '' : 'hidden' }}">
-                <label class="gaming-label">Sampai</label>
-                <input type="date" name="end_date" class="gaming-input" value="{{ request('end_date') }}">
-            </div>
-            <div>
-                <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
-            </div>
-            <div>
-                <button type="button" onclick="window.print()" class="btn btn-secondary btn-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                    </svg>
-                    Cetak / PDF
-                </button>
-            </div>
-        </form>
-    </div>
-
     {{-- Table --}}
     <div class="gaming-card overflow-hidden">
+        <div class="px-5 py-4" style="border-bottom:1px solid var(--border-color);">
+            <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Rekap Minutes of Meeting</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Dokumentasi hasil setiap meeting yang telah dilaksanakan.</div>
+        </div>
+        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-sm">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="search-mom" placeholder="Cari berdasarkan judul meeting" oninput="filterMoms()"
+                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+            </div>
+            <form method="GET" action="{{ route('admin.moms.index') }}" class="flex items-center gap-2 ml-auto">
+                <select name="period" onchange="this.form.submit()"
+                    style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;">
+                    <option value="all" {{ $period == 'all' ? 'selected' : '' }}>Semua Periode</option>
+                    <option value="daily" {{ $period == 'daily' ? 'selected' : '' }}>Hari Ini</option>
+                    <option value="weekly" {{ $period == 'weekly' ? 'selected' : '' }}>Minggu Ini</option>
+                    <option value="monthly" {{ $period == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
+                </select>
+            </form>
+        </div>
         <div class="overflow-x-auto">
             <table class="gaming-table min-w-[900px]">
                 <thead>
                     <tr>
+                        <th>No</th>
                         <th>Judul Meeting</th>
                         <th>PIC</th>
                         <th>Dibuat Oleh</th>
@@ -129,6 +107,7 @@
                 <tbody>
                     @forelse($moms as $mom)
                     <tr>
+                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $mom->meeting->title ?? '—' }}</td>
                         <td style="color:var(--text-secondary);">{{ $mom->pic }}</td>
                         <td style="color:var(--text-muted);">{{ $mom->creator->name ?? '—' }}</td>
@@ -154,7 +133,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada MOM terkirim.</td></tr>
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada MOM terkirim.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -188,7 +167,7 @@
 </div>
 
 {{-- Modal Detail MOM --}}
-<div id="mom-detail-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:center;justify-content:center;padding:20px;background:var(--bg-overlay);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);">
+<div id="mom-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:50px 16px 16px;background:var(--bg-overlay);">
     <div class="w-full" style="max-width:920px;width:90vw;max-height:86vh;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
 
         {{-- Header --}}
@@ -199,7 +178,7 @@
                 </div>
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail MOM — <span id="mom-modal-judul">Meeting Tim IT</span></h3>
             </div>
-            <button type="button" onclick="closeMomDetail()" class="p-1.5 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <button type="button" onclick="closeModal('mom-detail-modal')" class="p-1.5 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -238,7 +217,7 @@
 
         {{-- Footer --}}
         <div class="flex items-center justify-end px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeMomDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-secondary);border:1px solid var(--border-color);background:var(--bg-surface-2);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
+            <button type="button" onclick="closeModal('mom-detail-modal')" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-secondary);border:1px solid var(--border-color);background:var(--bg-surface-2);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
         </div>
     </div>
 </div>
@@ -365,20 +344,29 @@ function showMomDetail(id) {
         </div>`
         : '';
 
-    document.getElementById('mom-detail-modal').style.display = 'flex';
+    openModal('mom-detail-modal');
 }
 
 function closeMomDetail() {
-    document.getElementById('mom-detail-modal').style.display = 'none';
+    closeModal('mom-detail-modal');
 }
 
 document.getElementById('mom-detail-modal')?.addEventListener('click', function(e) {
-    if (e.target === this) closeMomDetail();
+    if (e.target === this) closeModal('mom-detail-modal');
 });
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeMomDetail();
+    if (e.key === 'Escape') closeModal('mom-detail-modal');
 });
+
+function filterMoms() {
+    const search = (document.getElementById('search-mom')?.value || '').toLowerCase();
+    const rows = document.querySelectorAll('.gaming-table tbody tr:not([colspan])');
+    rows.forEach(row => {
+        const judul = (row.querySelector('td:nth-child(2)')?.textContent || '').toLowerCase();
+        row.style.display = !search || judul.includes(search) ? '' : 'none';
+    });
+}
 </script>
 @endpush
 

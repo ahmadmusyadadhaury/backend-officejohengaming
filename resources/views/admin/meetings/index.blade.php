@@ -178,13 +178,13 @@
 </div>
 
 {{-- Modal Detail --}}
-<div id="detail-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:50px 16px 16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[680px] rounded-3xl shadow-2xl flex flex-col" style="max-height:85vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Permintaan Meeting</h3>
-            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <button type="button" onclick="closeModal('detail-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -222,7 +222,7 @@
 
         {{-- Footer --}}
         <div class="px-6 py-4 flex-shrink-0 flex justify-end" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+            <button type="button" onclick="closeModal('detail-modal')" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
         </div>
     </div>
 </div>
@@ -249,36 +249,6 @@ function showDetail(id) {
     const body = document.getElementById('detail-body');
     const st = statusMap[m.status] || statusMap.cancelled;
 
-    let whyHtml = '';
-    if (m.why) whyHtml += `<div class="mb-4"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);letter-spacing:0.03em;">Why — Kenapa meeting ini diadakan?</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.why}</p></div>`;
-    if (m.what) whyHtml += `<div class="mb-4"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);letter-spacing:0.03em;">What — Apa yang dibahas?</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.what}</p></div>`;
-    if (m.how_expected) whyHtml += `<div class="mb-4"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);letter-spacing:0.03em;">How — Bagaimana hasil yang diharapkan?</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.how_expected}</p></div>`;
-
-    let assetsHtml = '';
-    if (m.assets && m.assets.length) {
-        assetsHtml = `<div class="pt-4" style="border-top:1px solid var(--border-color);">
-            <p class="text-xs font-bold mb-2" style="color:var(--color-accent-light);letter-spacing:0.03em;">Aset Dibutuhkan</p>
-            <div class="flex flex-wrap gap-2">${m.assets.map(a => `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4338ca;">${a.name} (${a.quantity})</span>`).join('')}</div>
-        </div>`;
-    }
-
-    let momHtml = '';
-    if (m.mom) {
-        momHtml = `<div class="pt-4" style="border-top:1px solid var(--border-color);">
-            <div class="p-4 rounded-2xl" style="background:#f0fdf4;border:1px solid #bbf7d0;">
-                <div class="flex items-center justify-between gap-3 mb-3">
-                    <p class="text-xs font-bold" style="color:#059669;letter-spacing:0.05em;">MINUTES OF MEETING</p>
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="background:${m.mom.status === 'sent' ? '#dcfce7' : '#fef3c7'};color:${m.mom.status === 'sent' ? '#059669' : '#d97706'};">${m.mom.status === 'sent' ? 'Terkirim' : 'Draft'}</span>
-                </div>`;
-        if (m.mom.summary) momHtml += `<div class="mb-3"><p class="text-xs font-bold mb-1" style="color:#059669;">Ringkasan Pembahasan</p><p class="text-sm p-3 rounded-xl" style="color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-color);">${m.mom.summary}</p></div>`;
-        if (m.mom.decisions) momHtml += `<div class="mb-3"><p class="text-xs font-bold mb-1" style="color:#059669;">Keputusan</p><p class="text-sm p-3 rounded-xl" style="color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-color);">${m.mom.decisions}</p></div>`;
-        if (m.mom.action_plan) momHtml += `<div class="mb-3"><p class="text-xs font-bold mb-1" style="color:#059669;">Action Plan</p><p class="text-sm p-3 rounded-xl" style="color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-color);">${m.mom.action_plan}</p></div>`;
-        momHtml += `<div class="grid grid-cols-2 gap-3"><div><p class="text-xs font-bold mb-0.5" style="color:#059669;">PIC</p><p class="text-sm font-semibold" style="color:var(--text-primary);">${m.mom.pic || '-'}</p></div><div><p class="text-xs font-bold mb-0.5" style="color:#059669;">Dibuat Oleh</p><p class="text-sm font-semibold" style="color:var(--text-primary);">${m.mom.creator_name || '-'}</p></div></div>`;
-        if (m.mom.file_url) momHtml += `<div class="mt-3"><a href="${m.mom.file_url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download Lampiran</a></div>`;
-        if (m.mom.sent_at) momHtml += `<p class="text-xs mt-2" style="color:var(--text-muted);">Dikirim pada ${m.mom.sent_at}</p>`;
-        momHtml += `</div></div>`;
-    }
-
     const infoRows = [
         { label: 'Pemohon', value: m.requester?.name || '-' },
         { label: 'Judul Meeting', value: m.title },
@@ -286,30 +256,72 @@ function showDetail(id) {
         { label: 'Ruangan', value: m.room?.name || '-' },
     ];
 
+    let detailHtml = '';
+    if (m.why || m.what || m.how_expected) {
+        if (m.why) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">Why</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.why}</p></div>`;
+        if (m.what) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">What</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.what}</p></div>`;
+        if (m.how_expected) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">How</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.how_expected}</p></div>`;
+    }
+
+    let assetsHtml = '';
+    if (m.assets && m.assets.length) {
+        assetsHtml += `<div class="flex flex-wrap gap-1.5">${m.assets.map(a => `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4338ca;">${a.name} (${a.quantity})</span>`).join('')}</div>`;
+    }
+
+    let momHtml = '';
+    if (m.mom) {
+        momHtml += `<div class="flex items-center gap-2 mb-3"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${m.mom.status === 'sent' ? '#dcfce7' : '#fef3c7'};color:${m.mom.status === 'sent' ? '#059669' : '#d97706'};">${m.mom.status === 'sent' ? 'Terkirim' : 'Draft'}</span></div>`;
+        if (m.mom.summary) momHtml += `<div class="mb-3 p-4 rounded-xl" style="background:var(--bg-surface);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1" style="color:#059669;">Ringkasan</p><p class="text-sm" style="color:var(--text-secondary);line-height:1.6;">${m.mom.summary}</p></div>`;
+        if (m.mom.decisions) momHtml += `<div class="mb-3 p-4 rounded-xl" style="background:var(--bg-surface);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1" style="color:#059669;">Keputusan</p><p class="text-sm" style="color:var(--text-secondary);line-height:1.6;">${m.mom.decisions}</p></div>`;
+        if (m.mom.action_plan) momHtml += `<div class="mb-3 p-4 rounded-xl" style="background:var(--bg-surface);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1" style="color:#059669;">Action Plan</p><p class="text-sm" style="color:var(--text-secondary);line-height:1.6;">${m.mom.action_plan}</p></div>`;
+        momHtml += `<div class="grid grid-cols-2 gap-3 text-sm"><div><span class="text-xs font-bold" style="color:#059669;">PIC</span><p class="font-semibold mt-0.5" style="color:var(--text-primary);">${m.mom.pic || '-'}</p></div><div><span class="text-xs font-bold" style="color:#059669;">Dibuat</span><p class="font-semibold mt-0.5" style="color:var(--text-primary);">${m.mom.creator_name || '-'}</p></div></div>`;
+        if (m.mom.file_url) momHtml += `<div class="mt-3"><a href="${m.mom.file_url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download</a></div>`;
+        if (m.mom.sent_at) momHtml += `<p class="text-xs mt-2" style="color:var(--text-muted);">Dikirim ${m.mom.sent_at}</p>`;
+    }
+
     body.innerHTML = `
-        <div class="space-y-5">
-            <div>
-                ${infoRows.map((r, i) => `
-                    <div class="flex items-center justify-between py-2.5" ${i < infoRows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
-                        <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
-                        <p class="text-sm font-semibold" style="color:var(--text-primary);">${r.value}</p>
-                    </div>
-                `).join('')}
-                <div class="flex items-center justify-between py-2.5">
-                    <p class="text-sm" style="color:var(--text-muted);">Status</p>
+        <div class="space-y-4">
+            <!-- Info Card -->
+            <div class="rounded-2xl overflow-hidden" style="border:1px solid var(--border-color);">
+                <div class="px-5 py-3 flex items-center justify-between" style="background:var(--bg-surface-2);border-bottom:1px solid var(--border-color);">
+                    <p class="text-xs font-bold tracking-wider" style="color:var(--text-muted);">INFORMASI MEETING</p>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${st.bg};color:${st.text};border:1px solid ${st.border};">${st.label}</span>
+                </div>
+                <div class="grid grid-cols-2 gap-0">
+                    ${infoRows.map((r, i) => `
+                        <div class="px-5 py-3" ${i < 2 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
+                            <p class="text-xs mb-0.5" style="color:var(--text-muted);">${r.label}</p>
+                            <p class="text-sm font-semibold" style="color:var(--text-primary);">${r.value}</p>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
 
-            ${whyHtml ? `
-                <div class="pt-1">
-                    <p class="text-xs font-bold tracking-wider mb-3" style="color:var(--color-accent-light);">DETAIL PERMOHONAN MEETING</p>
-                    ${whyHtml}
+            ${detailHtml ? `
+            <!-- Detail Permohonan -->
+            <div>
+                <p class="text-xs font-bold tracking-wider mb-2.5 px-1" style="color:var(--color-accent-light);">DETAIL PERMOHONAN</p>
+                <div class="space-y-2.5">
+                    ${detailHtml}
                 </div>
-            ` : ''}
+            </div>` : ''}
 
-            ${assetsHtml}
-            ${momHtml}
+            ${assetsHtml ? `
+            <!-- Aset -->
+            <div>
+                <p class="text-xs font-bold tracking-wider mb-2 px-1" style="color:var(--color-accent-light);">ASET DIBUTUHKAN</p>
+                ${assetsHtml}
+            </div>` : ''}
+
+            ${momHtml ? `
+            <!-- MOM -->
+            <div class="rounded-2xl p-5" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.25);">
+                <div class="flex items-center gap-2 mb-3">
+                    <svg class="w-4 h-4" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <p class="text-xs font-bold" style="color:#059669;letter-spacing:0.05em;">MINUTES OF MEETING</p>
+                </div>
+                ${momHtml}
+            </div>` : ''}
         </div>
     `;
 
@@ -334,19 +346,19 @@ function showDetail(id) {
         actionsSec.classList.add('hidden');
     }
 
-    document.getElementById('detail-modal').style.display = 'flex';
+    openModal('detail-modal');
 }
 
 function closeDetail() {
-    document.getElementById('detail-modal').style.display = 'none';
+    closeModal('detail-modal');
 }
 
 document.getElementById('detail-modal')?.addEventListener('click', function(e) {
-    if (e.target === this) closeDetail();
+    if (e.target === this) closeModal('detail-modal');
 });
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeDetail();
+    if (e.key === 'Escape') closeModal('detail-modal');
 });
 
 document.getElementById('d-approve-form')?.addEventListener('submit', function(e) {

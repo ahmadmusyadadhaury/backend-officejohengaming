@@ -53,6 +53,7 @@
     --sidebar-text:        #94a3b8;
     --sidebar-text-active: #ffffff;
     --sidebar-active-bg:   rgba(109,94,249,1);
+    --sidebar-brand:       #bf5fff;
 
     /* Transitions */
     --transition-fast:     0.15s ease;
@@ -119,6 +120,7 @@ body.light {
     --sidebar-text-active: #ffffff;
     --sidebar-active-bg:   rgba(109,94,249,1);
     --sidebar-hover-bg:    rgba(109,94,249,0.1);
+    --sidebar-brand:       #bf5fff;
 }
 
 /* Sidebar hover backgrounds that follow theme */
@@ -148,6 +150,7 @@ body.dark {
     --sidebar-bg:          #141832;
     --sidebar-border:      rgba(255,255,255,0.07);
     --sidebar-hover-bg: rgba(255,255,255,0.03);
+    --sidebar-brand:       #ffffff;
 }
 
 /* ============================================

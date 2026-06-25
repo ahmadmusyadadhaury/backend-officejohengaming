@@ -28,20 +28,21 @@ class ExportController extends Controller
     {
         $type = $request->query('type');
         $jenis = $request->query('jenis');
+        $filter = $request->query('filter', 'all');
 
         $exports = [
-            'assets' => fn () => $this->assetsExport(),
-            'users' => fn () => $this->usersExport(),
-            'admins' => fn () => $this->adminsExport(),
-            'teams' => fn () => $this->teamsExport(),
-            'rooms' => fn () => $this->roomsExport(),
-            'meetings' => fn () => $this->meetingsExport(),
-            'vehicles' => fn () => $this->vehiclesExport(),
-            'digital-assets' => fn () => $this->digitalAssetsExport(),
-            'sim-cards' => fn () => $this->simCardsExport(),
-            'peralatan-kantor' => fn () => $this->peralatanKantorExport(),
-            'ruko' => fn () => $this->rukoExport(),
-            'pembayaran' => fn () => $this->pembayaranExport($jenis),
+            'assets' => fn () => $this->assetsExport($filter),
+            'users' => fn () => $this->usersExport($filter),
+            'admins' => fn () => $this->adminsExport($filter),
+            'teams' => fn () => $this->teamsExport($filter),
+            'rooms' => fn () => $this->roomsExport($filter),
+            'meetings' => fn () => $this->meetingsExport($filter),
+            'vehicles' => fn () => $this->vehiclesExport($filter),
+            'digital-assets' => fn () => $this->digitalAssetsExport($filter),
+            'sim-cards' => fn () => $this->simCardsExport($filter),
+            'peralatan-kantor' => fn () => $this->peralatanKantorExport($filter),
+            'ruko' => fn () => $this->rukoExport($filter),
+            'pembayaran' => fn () => $this->pembayaranExport($jenis, $filter),
             'token-readings' => fn () => $this->tokenReadingsExport($request),
             'token-topups' => fn () => $this->tokenTopupsExport($request),
         ];
@@ -53,7 +54,7 @@ class ExportController extends Controller
         return $exports[$type]();
     }
 
-    protected function assetsExport()
+    protected function assetsExport($filter = 'all')
     {
         $data = Asset::orderBy('created_at', 'desc')->get()->map(fn ($a) => [
             'Nama Aset' => $a->nama_aset,
@@ -70,7 +71,7 @@ class ExportController extends Controller
         );
     }
 
-    protected function usersExport()
+    protected function usersExport($filter = 'all')
     {
         $data = User::where('role', 'user')->orderBy('name')->get()->map(fn ($u) => [
             'Nama' => $u->name,
@@ -86,7 +87,7 @@ class ExportController extends Controller
         );
     }
 
-    protected function adminsExport()
+    protected function adminsExport($filter = 'all')
     {
         $data = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo'])
             ->orderBy('name')->get()->map(fn ($u) => [
@@ -103,7 +104,7 @@ class ExportController extends Controller
         );
     }
 
-    protected function teamsExport()
+    protected function teamsExport($filter = 'all')
     {
         $data = Team::orderBy('name')->get()->map(fn ($t) => [
             'Nama Tim' => $t->name,
@@ -117,7 +118,7 @@ class ExportController extends Controller
         );
     }
 
-    protected function roomsExport()
+    protected function roomsExport($filter = 'all')
     {
         $data = Room::orderBy('name')->get()->map(fn ($r) => [
             'Nama Ruangan' => $r->name,
@@ -132,7 +133,7 @@ class ExportController extends Controller
         );
     }
 
-    protected function meetingsExport()
+    protected function meetingsExport($filter = 'all')
     {
         $data = Meeting::with(['requester', 'room', 'team'])
             ->orderBy('meeting_date', 'desc')->get()->map(fn ($m) => [
@@ -151,9 +152,13 @@ class ExportController extends Controller
         );
     }
 
-    protected function vehiclesExport()
+    protected function vehiclesExport($filter = 'all')
     {
-        $data = Vehicle::orderBy('nama_kendaraan')->get()->map(fn ($v) => [
+        $query = Vehicle::orderBy('nama_kendaraan');
+        if ($filter !== 'all') {
+            $query->where('status_pajak', $filter);
+        }
+        $data = $query->get()->map(fn ($v) => [
             'Nama Kendaraan' => $v->nama_kendaraan,
             'Nomor Polisi' => $v->plat_nomor ?? '-',
             'Jenis Kendaraan' => $v->jenis_kendaraan,
@@ -173,9 +178,13 @@ class ExportController extends Controller
         );
     }
 
-    protected function digitalAssetsExport()
+    protected function digitalAssetsExport($filter = 'all')
     {
-        $data = DigitalAsset::orderBy('nama_aset')->get()->map(fn ($a) => [
+        $query = DigitalAsset::orderBy('nama_aset');
+        if ($filter !== 'all') {
+            $query->where('is_active', $filter === 'aktif' ? 1 : 0);
+        }
+        $data = $query->get()->map(fn ($a) => [
             'Nama Aset' => $a->nama_aset,
             'Email' => $a->email,
             'Mulai' => $a->mulai?->format('d/m/Y'),
@@ -193,9 +202,13 @@ class ExportController extends Controller
         );
     }
 
-    protected function simCardsExport()
+    protected function simCardsExport($filter = 'all')
     {
-        $data = SimCard::orderBy('nomor_kartu')->get()->map(fn ($s) => [
+        $query = SimCard::orderBy('nomor_kartu');
+        if ($filter !== 'all') {
+            $query->where('status_kartu', $filter === 'aktif' ? 1 : 0);
+        }
+        $data = $query->get()->map(fn ($s) => [
             'Nomor Kartu' => $s->nomor_kartu,
             'Provider' => $s->provider ?? '-',
             'Pemilik' => $s->pemilik ?? '-',
@@ -209,9 +222,13 @@ class ExportController extends Controller
         );
     }
 
-    protected function peralatanKantorExport()
+    protected function peralatanKantorExport($filter = 'all')
     {
-        $data = PeralatanKantor::orderBy('nama_barang')->get()->map(fn ($p) => [
+        $query = PeralatanKantor::orderBy('nama_barang');
+        if ($filter !== 'all') {
+            $query->where('kondisi', $filter);
+        }
+        $data = $query->get()->map(fn ($p) => [
             'Nama Barang' => $p->nama_barang,
             'Merek' => $p->merek ?? '-',
             'Jumlah' => $p->jumlah,
@@ -226,9 +243,13 @@ class ExportController extends Controller
         );
     }
 
-    protected function rukoExport()
+    protected function rukoExport($filter = 'all')
     {
-        $data = AsetRuko::orderBy('nama_ruko')->get()->map(fn ($r) => [
+        $query = AsetRuko::orderBy('nama_ruko');
+        if ($filter !== 'all') {
+            $query->where('kondisi', $filter);
+        }
+        $data = $query->get()->map(fn ($r) => [
             'Nama Ruko' => $r->nama_ruko,
             'Alamat' => $r->alamat ?? '-',
             'Status' => $r->status,
@@ -241,10 +262,14 @@ class ExportController extends Controller
         );
     }
 
-    protected function pembayaranExport($jenis)
+    protected function pembayaranExport($jenis, $filter = 'all')
     {
         if ($jenis === 'internet') {
-            $data = WifiPayment::orderBy('created_at', 'desc')->get()->map(fn ($w) => [
+            $query = WifiPayment::orderBy('created_at', 'desc');
+            if ($filter !== 'all') {
+                $query->where('status', $filter);
+            }
+            $data = $query->get()->map(fn ($w) => [
                 'Nama Internet' => $w->nama_internet,
                 'Provider' => $w->provider,
                 'PIC' => $w->pic,
@@ -261,7 +286,14 @@ class ExportController extends Controller
             );
         }
 
-        $data = Payment::orderBy('created_at', 'desc')->get()->map(fn ($p) => [
+        $query = Payment::orderBy('created_at', 'desc');
+        if ($filter !== 'all') {
+            $query->where('status', $filter);
+        }
+        if ($jenis && $jenis !== 'internet') {
+            $query->where('jenis', $jenis);
+        }
+        $data = $query->get()->map(fn ($p) => [
             'Periode' => $p->periode,
             'Tagihan' => $p->tanggal_tagihan?->format('d/m/Y'),
             'Jatuh Tempo' => $p->jatuh_tempo?->format('d/m/Y'),

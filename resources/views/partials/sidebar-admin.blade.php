@@ -65,7 +65,7 @@
     <a href="{{ route('admin.digital-assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.digital-assets.*') ? 'active' : '' }}">Digital</a>
     <a href="{{ route('admin.sim-cards.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.sim-cards.*') ? 'active' : '' }}">SIM Card</a>
     <a href="{{ route('admin.peralatan-kantor.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.peralatan-kantor.*') ? 'active' : '' }}">Peralatan Kantor</a>
-    <a href="{{ route('admin.ruko.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.ruko.*') ? 'active' : '' }}">Milik Ruko</a>
+    <a href="{{ route('admin.ruko.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.ruko.*') ? 'active' : '' }}">Aset Ruko</a>
 </div>
 
 <div class="sidebar-section">
