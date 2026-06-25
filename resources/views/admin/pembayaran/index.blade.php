@@ -1130,7 +1130,7 @@ function markAsLunas() {
 
     const formData = new FormData();
     formData.append('_token', '{{ csrf_token() }}');
-    formData.append('_method', 'PATCH');
+    formData.append('_method', 'PUT');
     formData.append('jenis', currentJenis);
     formData.append('status', 'lunas');
     formData.append('tanggal_bayar', new Date().toISOString().split('T')[0]);

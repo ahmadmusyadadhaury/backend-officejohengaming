@@ -70,12 +70,18 @@
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Peralatan Kantor</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Inventaris peralatan kantor milik perusahaan.</div>
             </div>
-            <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Tambah Peralatan
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.export', ['type' => 'peralatan-kantor']) }}" class="btn btn-sm" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Download Excel
+                </a>
+                <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Tambah Peralatan
+                </button>
+            </div>
         </div>
         <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-sm">
@@ -183,7 +189,7 @@
 
 {{-- Detail Modal --}}
 <div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:80vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[640px] rounded-3xl shadow-2xl flex flex-col" style="max-height:80vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Peralatan</h3>
             <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
@@ -433,7 +439,7 @@
                     <div class="flex gap-3 ml-auto">
                         <button type="button" onclick="closeModal('item-modal')" class="btn btn-secondary" id="cancel-btn">Batal</button>
                         <button type="button" id="next-btn" onclick="nextStep()" class="btn btn-primary">Selanjutnya</button>
-                        <button type="submit" id="submit-btn" class="btn btn-primary" style="display:none;">Simpan</button>
+                        <button type="button" id="submit-btn" class="btn btn-primary" style="display:none;" onclick="submitForm()">Simpan</button>
                     </div>
                 </div>
             </form>
@@ -517,49 +523,52 @@ function showDetail(id) {
     const rp = i.nilai ? 'Rp ' + Number(i.nilai).toLocaleString('id-ID') : '-';
 
     const rows = [
-        { label: 'Nama Barang', value: i.nama_barang, icon: 'package' },
-        { label: 'Jumlah', value: i.jumlah, icon: 'package' },
-        { label: 'Sub Kategori', value: i.sub_kategori, icon: 'package' },
-        { label: 'Detail', value: i.detail || '-', icon: 'file-text' },
-        { label: 'Keterangan', value: i.keterangan || '-', icon: 'file-text' },
-        { label: 'Lokasi Unit', value: i.lokasi_unit, icon: 'building-2' },
-        { label: 'Ruangan', value: i.ruangan, icon: 'building-2' },
-        { label: 'Milik', value: i.milik, icon: 'building-2' },
-        { label: 'Tahun Pengadaan', value: i.pengadaan_tahun, icon: 'calendar' },
-        { label: 'Tanggal Pembelian', value: i.tanggal_pembelian, icon: 'calendar' },
-        { label: 'Kategori Nilai', value: i.kategori_nilai, icon: 'credit-card' },
-        { label: 'Kategori Ukuran', value: i.kategori_ukuran, icon: 'package' },
-        { label: 'Nilai', value: rp, icon: 'wallet' },
-        { label: 'Waktu Pakai/Hari', value: i.waktu_pakai_per_hari, icon: 'clock' },
-        { label: 'Estimasi Waktu', value: i.estimasi_waktu_barang, icon: 'clock' },
-        { label: 'PIC', value: i.pic, icon: 'user' },
-        { label: 'Jabatan', value: i.jabatan, icon: 'user-cog' },
-        { label: 'Atasan', value: i.atasan, icon: 'shield-check' },
-        { label: 'Jabatan Atasan', value: i.jabatan_atasan, icon: 'shield-check' },
+        { label: 'Nama Barang', value: i.nama_barang },
+        { label: 'Jumlah', value: i.jumlah },
+        { label: 'Sub Kategori', value: i.sub_kategori },
+        { label: 'Detail', value: i.detail || '-' },
+        { label: 'Keterangan', value: i.keterangan || '-' },
+        { label: 'Lokasi Unit', value: i.lokasi_unit },
+        { label: 'Ruangan', value: i.ruangan },
+        { label: 'Milik', value: i.milik },
+        { label: 'Tahun Pengadaan', value: i.pengadaan_tahun },
+        { label: 'Tanggal Pembelian', value: i.tanggal_pembelian },
+        { label: 'Kategori Nilai', value: i.kategori_nilai },
+        { label: 'Kategori Ukuran', value: i.kategori_ukuran },
+        { label: 'Nilai', value: rp },
+        { label: 'Waktu Pakai/Hari', value: i.waktu_pakai_per_hari },
+        { label: 'Estimasi Waktu', value: i.estimasi_waktu_barang },
+        { label: 'PIC', value: i.pic },
+        { label: 'Jabatan', value: i.jabatan },
+        { label: 'Atasan', value: i.atasan },
+        { label: 'Jabatan Atasan', value: i.jabatan_atasan },
     ];
+
+    const leftItems = rows.slice(0, 10);
+    const rightItems = rows.slice(10);
+
+    const gridCell = (r) => `
+        <div class="flex flex-col gap-0.5 px-3 py-2.5" style="border:1px solid var(--border-color);border-radius:10px;background:var(--bg-surface-2);">
+            <p class="text-xs" style="color:var(--text-muted);">${r.label}</p>
+            <p class="text-sm font-semibold" style="color:var(--text-primary);">${r.value}</p>
+        </div>
+    `;
+
+    const maxLen = Math.max(leftItems.length, rightItems.length);
+    let gridRows = '';
+    for (let i = 0; i < maxLen; i++) {
+        const left = leftItems[i] ? gridCell(leftItems[i]) : '<div></div>';
+        const right = rightItems[i] ? gridCell(rightItems[i]) : '<div></div>';
+        gridRows += `<div class="grid grid-cols-2 gap-3">${left}${right}</div>`;
+    }
 
     const detailBody = document.getElementById('detail-body');
     detailBody.innerHTML = `
-        <div class="space-y-2">
-            ${rows.map((r, i) => `
-                <div class="flex items-center justify-between py-3" ${i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
-                    <div class="flex items-center gap-2 min-w-[140px]">
-                        <div class="w-6 h-6 rounded-md flex items-center justify-center" style="background:var(--bg-surface-2);color:var(--text-muted);">
-                            ${iconSvg(r.icon)}
-                        </div>
-                        <p class="text-sm font-medium" style="color:var(--text-muted);">${r.label}</p>
-                    </div>
-                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:60%;">${r.value}</p>
-                </div>
-            `).join('')}
-            <div class="flex items-center justify-between py-3 mt-2">
-                <div class="flex items-center gap-2 min-w-[140px]">
-                    <div class="w-6 h-6 rounded-md flex items-center justify-center" style="background:var(--bg-surface-2);color:var(--text-muted);">
-                        ${iconSvg('check-circle')}
-                    </div>
-                    <p class="text-sm font-medium" style="color:var(--text-muted);">Kondisi</p>
-                </div>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${k.bg};color:${k.text};border:1px solid ${k.border};">${k.label}</span>
+        <div class="space-y-3">
+            ${gridRows}
+            <div class="flex items-center justify-between px-4 py-3" style="border:1px solid ${k.border};border-radius:10px;background:${k.bg};">
+                    <p class="text-sm font-semibold" style="color:${k.text};">Kondisi Barang</p>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold" style="background:${k.bg};color:${k.text};border:1px solid ${k.border};">${k.label}</span>
             </div>
         </div>
     `;
@@ -714,82 +723,19 @@ function prevStep() {
     }
 }
 
-document.getElementById('item-form').addEventListener('submit', function(e) {
-    e.preventDefault();
+function submitForm() {
     for (let s = 1; s < totalSteps; s++) {
         if (!validateStep(s)) {
-            const firstInvalid = this.querySelector('[required]');
+            const firstInvalid = document.querySelector('#step-' + s + ' [required]');
             if (firstInvalid) {
-                const stepNum = findStepForElement(firstInvalid);
-                if (stepNum) {
-                    currentStep = stepNum;
-                    showStep(currentStep);
-                    firstInvalid.focus();
-                }
+                currentStep = s;
+                showStep(currentStep);
+                firstInvalid.focus();
             }
             return;
         }
     }
-
-    const formData = new FormData(this);
-    const url = this.action;
-    const method = document.getElementById('form-method').value;
-
-    const submitBtn = document.getElementById('submit-btn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Menyimpan...';
-
-    fetch(url, {
-        method: method === 'PUT' || method === 'PATCH' ? 'POST' : 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: method === 'PUT' || method === 'PATCH'
-            ? (formData.set('_method', 'PUT'), formData)
-            : formData
-    })
-    .then(res => res.json().then(data => ({ status: res.status, data })))
-    .then(({ status, data }) => {
-        if (status === 200 || status === 201) {
-            closeModal('item-modal');
-            showToast('success', data.message || 'Peralatan kantor berhasil disimpan.');
-            setTimeout(() => location.reload(), 1200);
-        } else if (status === 422) {
-            const errors = data.errors || {};
-            for (const [field, msgs] of Object.entries(errors)) {
-                const el = document.getElementById('f-' + field);
-                if (el) {
-                    el.style.borderColor = '#ef4444';
-                    el.style.boxShadow = '0 0 0 2px rgba(239,68,68,0.2)';
-                    const tip = document.createElement('p');
-                    tip.className = 'text-xs mt-1';
-                    tip.style.color = '#ef4444';
-                    tip.textContent = msgs[0];
-                    tip.id = 'err-' + field;
-                    const existing = document.getElementById('err-' + field);
-                    if (existing) existing.remove();
-                    el.parentNode.appendChild(tip);
-                }
-            }
-            showToast('error', 'Mohon periksa kembali data yang diisi.');
-            submitBtn.disabled = false;
-            submitBtn.textContent = document.getElementById('form-id').value ? 'Simpan Perubahan' : 'Simpan';
-        } else {
-            showToast('error', data.message || 'Terjadi kesalahan saat menyimpan.');
-            submitBtn.disabled = false;
-            submitBtn.textContent = document.getElementById('form-id').value ? 'Simpan Perubahan' : 'Simpan';
-        }
-    })
-    .catch(err => {
-        showToast('error', 'Terjadi kesalahan jaringan.');
-        submitBtn.disabled = false;
-        submitBtn.textContent = document.getElementById('form-id').value ? 'Simpan Perubahan' : 'Simpan';
-    });
-});
-
-function findStepForElement(el) {
-    for (let s = 1; s <= totalSteps; s++) {
-        if (document.getElementById('step-' + s).contains(el)) return s;
-    }
-    return null;
+    document.getElementById('item-form').submit();
 }
 
 function showModal() { openModal('item-modal'); }

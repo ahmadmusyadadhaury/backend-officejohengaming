@@ -245,15 +245,15 @@ class ExportController extends Controller
 
     protected function rukoExport($filter = 'all')
     {
-        $query = AsetRuko::orderBy('nama_ruko');
+        $query = AsetRuko::orderBy('nama_aset');
         if ($filter !== 'all') {
             $query->where('kondisi', $filter);
         }
         $data = $query->get()->map(fn ($r) => [
-            'Nama Ruko' => $r->nama_ruko,
-            'Alamat' => $r->alamat ?? '-',
-            'Status' => $r->status,
-            'Keterangan' => $r->keterangan ?? '-',
+            'Nama Aset' => $r->nama_aset,
+            'Lokasi' => $r->lokasi,
+            'Jumlah' => $r->jumlah,
+            'Kondisi' => $r->kondisi,
         ]);
 
         return Excel::download(
