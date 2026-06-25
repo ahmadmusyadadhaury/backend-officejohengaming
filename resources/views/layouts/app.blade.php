@@ -277,13 +277,7 @@
         {{-- Flash Messages --}}
         <div class="px-4 lg:px-6 pt-4">
             @if(session('success'))
-                <div class="flash-success rounded-lg px-4 py-3 mb-4 text-sm flex items-center gap-2 animate-fade-in"
-                    style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10b981;">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    {{ session('success') }}
-                </div>
+                <span id="success-flash-data" style="display:none;">{{ session('success') }}</span>
             @endif
             @if(session('error'))
                 <div class="flash-error rounded-lg px-4 py-3 mb-4 text-sm flex items-center gap-2 animate-fade-in"
@@ -330,9 +324,99 @@
         </div>
     </div>
 
+    {{-- Success Modal --}}
+    <div id="success-modal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:var(--bg-overlay);" onclick="if(event.target===this)closeSuccessModal()">
+        <div class="w-full max-w-[400px] rounded-3xl shadow-2xl overflow-hidden animate-fade-in" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);">
+                <div class="flex items-center gap-2.5">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="#10b981" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <h3 class="text-base font-bold" style="color:var(--text-primary);" id="success-modal-header">Berhasil</h3>
+                </div>
+                <button type="button" onclick="closeSuccessModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="px-6 py-10 flex flex-col items-center text-center space-y-4">
+                <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background:rgba(16,185,129,0.15);">
+                    <svg class="w-8 h-8" fill="#10b981" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="space-y-1.5">
+                    <h2 class="text-lg font-bold" style="color:var(--text-primary);" id="success-modal-title">Berhasil!</h2>
+                    <p class="text-sm" style="color:var(--text-tertiary);" id="success-modal-sub">Data telah diproses.</p>
+                </div>
+            </div>
+            <div class="px-6 py-4 flex justify-center" style="border-top:1px solid var(--border-color);">
+                <button type="button" onclick="closeSuccessModal()" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 active:scale-95" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 15px rgba(99,102,241,0.3);">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'flex'; document.body.style.overflow = 'hidden'; } }
         function closeModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'none'; document.body.style.overflow = ''; } }
+
+        // Success Modal
+        function closeSuccessModal() { closeModal('success-modal'); }
+
+        function parseSuccessMessage(msg) {
+            const clean = msg.replace(/\.\s*$/, '').trim();
+            const parts = clean.split(' berhasil ');
+            let entity = parts[0] || clean;
+            let action = parts[1] || '';
+
+            const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+            let header = entity + ' Berhasil';
+            if (action) header += ' ' + capitalize(action);
+
+            let title = entity + ' berhasil';
+            if (action) title += ' ' + action;
+            if (!title.endsWith('!')) title += '!';
+
+            let sub = entity;
+            if (action.includes('ditambah') || action.includes('dibuat') || action.includes('dikirim')) {
+                sub += ' telah ditambahkan';
+            } else if (action.includes('diperbarui')) {
+                sub += ' telah diperbarui';
+            } else if (action.includes('dihapus') || action.includes('dibatalkan')) {
+                sub += ' telah dihapus';
+            } else if (action.includes('disetujui')) {
+                sub += ' telah disetujui';
+            } else if (action.includes('ditolak')) {
+                sub += ' telah ditolak';
+            } else if (action.includes('dikonfirmasi')) {
+                sub += ' telah dikonfirmasi';
+            } else if (action.includes('diselesaikan')) {
+                sub += ' telah diselesaikan';
+            } else if (action) {
+                sub += ' telah ' + action;
+            } else {
+                sub = clean;
+            }
+
+            return { header, title, sub };
+        }
+
+        function showSuccessModal(msg) {
+            const { header, title, sub } = parseSuccessMessage(msg);
+            document.getElementById('success-modal-header').textContent = header;
+            document.getElementById('success-modal-title').textContent = title;
+            document.getElementById('success-modal-sub').textContent = sub;
+            openModal('success-modal');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const el = document.getElementById('success-flash-data');
+            if (el) showSuccessModal(el.textContent);
+        });
+
+        document.getElementById('success-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeSuccessModal();
+        });
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -733,7 +817,11 @@
         });
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeInvitationModal();
+            if (e.key === 'Escape') {
+                const sm = document.getElementById('success-modal');
+                if (sm && sm.style.display === 'flex') { closeSuccessModal(); return; }
+                closeInvitationModal();
+            }
         });
     </script>
     @stack('scripts')
