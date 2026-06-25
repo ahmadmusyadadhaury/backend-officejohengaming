@@ -355,6 +355,28 @@
         </div>
     </div>
 
+    {{-- Confirm Modal --}}
+    <div id="confirm-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[380px] rounded-2xl shadow-2xl flex flex-col p-6" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex flex-col items-center text-center mb-5">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background:rgba(239,68,68,0.15);">
+                    <svg class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <p class="text-base font-semibold" style="color:var(--text-primary);" id="confirm-title">Konfirmasi</p>
+                <p class="text-sm mt-1" style="color:var(--text-muted);" id="confirm-message">Yakin ingin melanjutkan?</p>
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeConfirmModal()" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition" style="background:var(--bg-surface-2);color:var(--text-primary);border:none;cursor:pointer;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='var(--bg-surface-2)'">Batal</button>
+                <button type="button" id="confirm-yes-btn" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition" style="background:#ef4444;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'flex'; document.body.style.overflow = 'hidden'; } }
         function closeModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'none'; document.body.style.overflow = ''; } }
@@ -417,6 +439,30 @@
         document.getElementById('success-modal').addEventListener('click', function(e) {
             if (e.target === this) closeSuccessModal();
         });
+
+        let confirmCallback = null;
+        function showConfirmModal(message, onConfirm) {
+            document.getElementById('confirm-message').textContent = message;
+            confirmCallback = onConfirm;
+            openModal('confirm-modal');
+        }
+        function closeConfirmModal() {
+            confirmCallback = null;
+            closeModal('confirm-modal');
+        }
+        document.getElementById('confirm-yes-btn')?.addEventListener('click', function() {
+            if (typeof confirmCallback === 'function') confirmCallback();
+            closeConfirmModal();
+        });
+        document.getElementById('confirm-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeConfirmModal();
+        });
+
+        function confirmSubmit(event, form) {
+            event.preventDefault();
+            const msg = form.getAttribute('data-confirm') || 'Yakin ingin melanjutkan?';
+            showConfirmModal(msg, function() { form.submit(); });
+        }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -820,6 +866,8 @@
             if (e.key === 'Escape') {
                 const sm = document.getElementById('success-modal');
                 if (sm && sm.style.display === 'flex') { closeSuccessModal(); return; }
+                const cm = document.getElementById('confirm-modal');
+                if (cm && cm.style.display === 'flex') { closeConfirmModal(); return; }
                 closeInvitationModal();
             }
         });
