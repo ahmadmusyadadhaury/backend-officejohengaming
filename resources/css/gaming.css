@@ -53,7 +53,7 @@
     --sidebar-text:        #94a3b8;
     --sidebar-text-active: #ffffff;
     --sidebar-active-bg:   rgba(109,94,249,1);
-    --sidebar-brand:       #bf5fff;
+    --sidebar-brand:       #000000;
 
     /* Transitions */
     --transition-fast:     0.15s ease;
@@ -120,7 +120,7 @@ body.light {
     --sidebar-text-active: #ffffff;
     --sidebar-active-bg:   rgba(109,94,249,1);
     --sidebar-hover-bg:    rgba(109,94,249,0.1);
-    --sidebar-brand:       #bf5fff;
+    --sidebar-brand:       #000000;
 }
 
 /* Sidebar hover backgrounds that follow theme */
@@ -838,6 +838,17 @@ body.light .badge-orange {
     }
     .topbar-badge {
         box-shadow: 0 0 0 3px var(--bg-surface);
+    }
+}
+
+/* Mobile touch targets — minimum 44x44px */
+@media (max-width: 639px) {
+    .topbar-btn {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+    .gaming-topbar .flex.items-center.gap-2 {
+        gap: 0.5rem;
     }
 }
 

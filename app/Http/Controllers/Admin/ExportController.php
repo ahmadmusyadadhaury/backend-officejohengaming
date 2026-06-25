@@ -10,6 +10,8 @@ use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
 use App\Models\Meeting;
 use App\Models\Payment;
+use App\Models\PembayaranAsetDigital;
+use App\Models\PembayaranIplRuko;
 use App\Models\PeralatanKantor;
 use App\Models\Room;
 use App\Models\SimCard;
@@ -286,12 +288,15 @@ class ExportController extends Controller
             );
         }
 
-        $query = Payment::orderBy('created_at', 'desc');
+        if ($jenis === 'aset_digital') {
+            $query = PembayaranAsetDigital::orderBy('created_at', 'desc');
+        } elseif ($jenis === 'ipl_ruko') {
+            $query = PembayaranIplRuko::orderBy('created_at', 'desc');
+        } else {
+            $query = Payment::where('jenis', 'listrik')->orderBy('created_at', 'desc');
+        }
         if ($filter !== 'all') {
             $query->where('status', $filter);
-        }
-        if ($jenis && $jenis !== 'internet') {
-            $query->where('jenis', $jenis);
         }
         $data = $query->get()->map(fn ($p) => [
             'Periode' => $p->periode,
@@ -302,7 +307,7 @@ class ExportController extends Controller
             'Tgl Bayar' => $p->tanggal_bayar?->format('d/m/Y') ?? '-',
         ]);
 
-        $label = $jenis === 'listrik' ? 'Listrik' : ($jenis === 'ipl_ruko' ? 'IPL Ruko' : 'Tagihan');
+        $label = $jenis === 'listrik' ? 'Listrik' : ($jenis === 'aset_digital' ? 'Aset Digital' : ($jenis === 'ipl_ruko' ? 'IPL Ruko' : 'Tagihan'));
 
         return Excel::download(
             new DataExport(collect($data), array_keys($data->first() ?? []), "Data Pembayaran {$label}", $label),

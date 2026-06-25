@@ -10,6 +10,8 @@ use App\Models\ElectricityTokenReading;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
 use App\Models\Payment;
+use App\Models\PembayaranAsetDigital;
+use App\Models\PembayaranIplRuko;
 use App\Models\PeralatanKantor;
 use App\Models\Room;
 use App\Models\SimCard;
@@ -47,8 +49,8 @@ class DashboardController extends Controller
             'today_meetings' => Meeting::whereDate('meeting_date', today())->whereIn('status', ['approved', 'confirmed', 'in_progress'])->count(),
             'this_month' => Meeting::whereMonth('meeting_date', now()->month)->whereYear('meeting_date', now()->year)->count(),
             // Payment stats — dari semua tabel pembayaran
-            'total_payments' => Payment::count() + WifiPayment::count() + TokenPayment::count(),
-            'pending_payments' => Payment::where('status', 'jatuh_tempo')->count() + WifiPayment::where('status', 'jatuh_tempo')->count(),
+            'total_payments' => Payment::where('jenis', 'listrik')->count() + PembayaranAsetDigital::count() + PembayaranIplRuko::count() + WifiPayment::count() + TokenPayment::count(),
+            'pending_payments' => Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')->count() + PembayaranAsetDigital::where('status', 'jatuh_tempo')->count() + PembayaranIplRuko::where('status', 'jatuh_tempo')->count() + WifiPayment::where('status', 'jatuh_tempo')->count(),
         ];
 
         // Data untuk tampilan
@@ -73,30 +75,57 @@ class DashboardController extends Controller
             'ipl_ruko' => 'IPL Ruko',
         ];
 
-        $allPayments = collect(Payment::where('status', 'jatuh_tempo')
-            ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
-                $q->where('jatuh_tempo', '>=', $today)
-                    ->where('jatuh_tempo', '<=', $threeDaysFromNow)
-                    ->where('status', '!=', 'lunas');
-            })
-            ->orderBy('jatuh_tempo')
-            ->get()
-            ->map(function ($p) use ($jenisLabels) {
-                $jenisName = $jenisLabels[$p->jenis] ?? ucfirst($p->jenis);
-                return [
-                    'id' => $p->id,
-                    'label' => $jenisName . ' · ' . $p->periode,
-                    'due_date' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
-                    'amount' => $p->nominal,
-                    'status' => $p->status,
-                    'jenis' => $jenisName,
-                    'type' => 'payment',
-                    'periode' => $p->periode,
-                    'tanggal_tagihan' => $p->tanggal_tagihan instanceof \Carbon\Carbon ? $p->tanggal_tagihan->format('Y-m-d') : $p->tanggal_tagihan,
-                    'jatuh_tempo' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
-                    'nominal' => (int) $p->nominal,
-                ];
-            }));
+        $mapPayment = function ($p, $jenisName) {
+            return [
+                'id' => $p->id,
+                'label' => $jenisName . ' · ' . $p->periode,
+                'due_date' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
+                'amount' => $p->nominal,
+                'status' => $p->status,
+                'jenis' => $jenisName,
+                'type' => 'payment',
+                'periode' => $p->periode,
+                'tanggal_tagihan' => $p->tanggal_tagihan instanceof \Carbon\Carbon ? $p->tanggal_tagihan->format('Y-m-d') : $p->tanggal_tagihan,
+                'jatuh_tempo' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
+                'nominal' => (int) $p->nominal,
+            ];
+        };
+
+        $allPayments = collect()
+            ->merge(
+                Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')
+                    ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
+                        $q->where('jenis', 'listrik')
+                          ->where('jatuh_tempo', '>=', $today)
+                          ->where('jatuh_tempo', '<=', $threeDaysFromNow)
+                          ->where('status', '!=', 'lunas');
+                    })
+                    ->orderBy('jatuh_tempo')
+                    ->get()
+                    ->map(fn ($p) => $mapPayment($p, $jenisLabels['listrik'] ?? 'Listrik'))
+            )
+            ->merge(
+                PembayaranAsetDigital::where('status', 'jatuh_tempo')
+                    ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
+                        $q->where('jatuh_tempo', '>=', $today)
+                          ->where('jatuh_tempo', '<=', $threeDaysFromNow)
+                          ->where('status', '!=', 'lunas');
+                    })
+                    ->orderBy('jatuh_tempo')
+                    ->get()
+                    ->map(fn ($p) => $mapPayment($p, $jenisLabels['aset_digital'] ?? 'Aset Digital'))
+            )
+            ->merge(
+                PembayaranIplRuko::where('status', 'jatuh_tempo')
+                    ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
+                        $q->where('jatuh_tempo', '>=', $today)
+                          ->where('jatuh_tempo', '<=', $threeDaysFromNow)
+                          ->where('status', '!=', 'lunas');
+                    })
+                    ->orderBy('jatuh_tempo')
+                    ->get()
+                    ->map(fn ($p) => $mapPayment($p, $jenisLabels['ipl_ruko'] ?? 'IPL Ruko'))
+            );
 
         $allWifi = collect(WifiPayment::where('status', 'jatuh_tempo')
             ->orWhere(function ($q) use ($today, $threeDaysFromNow) {

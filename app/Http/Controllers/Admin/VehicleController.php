@@ -49,11 +49,24 @@ class VehicleController extends Controller
             ];
         });
 
+        $alertVehicles = $vehicles->filter(fn($v) => in_array($v->status_pajak, ['segera_habis', 'mati']));
+        $alertJson = $alertVehicles->values()->map(fn($v) => [
+            'id'             => $v->id,
+            'nama_kendaraan' => $v->nama_kendaraan,
+            'plat_nomor'     => $v->plat_nomor,
+            'jenis_kendaraan'=> $v->jenis_kendaraan,
+            'pajak_tahunan'  => $v->pajak_tahunan?->format('d/m/Y'),
+            'pajak_5_tahun'  => $v->pajak_5_tahun?->format('d/m/Y'),
+            'status_pajak'   => $v->status_pajak,
+        ]);
+
         return view('admin.vehicles.index', [
             'vehicles'     => $filtered,
             'vehiclesJson' => $vehiclesJson,
             'stats'        => $stats,
             'statusFilter' => $statusFilter,
+            'alertVehicles' => $alertVehicles,
+            'alertJson'    => $alertJson,
         ]);
     }
 

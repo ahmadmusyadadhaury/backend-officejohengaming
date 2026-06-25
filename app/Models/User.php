@@ -10,7 +10,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'username', 'password', 'role', 'team_id', 'is_active', 'avatar'];
+    protected $fillable = ['name', 'username', 'password', 'role', 'team_id', 'is_active', 'avatar', 'theme', 'email_notifications', 'app_notifications'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -19,6 +19,8 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'email_notifications' => 'boolean',
+            'app_notifications' => 'boolean',
         ];
     }
 

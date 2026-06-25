@@ -208,27 +208,53 @@
             opacity: 0.85;
         }
 
-        /* Grid lines */
+        /* Grid lines — bersih & rapi */
         .fc .fc-scrollgrid { border-color: var(--border-color) !important; }
         .fc td, .fc th { border-color: var(--border-color) !important; }
 
-        /* Light mode — perkuat garis & redam background agar tidak terlalu terang */
+        /* Weekly column vertical dividers */
+        .fc .fc-timegrid-col { border-left: 1px solid var(--border-color) !important; }
+        .fc .fc-timegrid-col:first-child { border-left: none !important; }
+
+        /* Horizontal slot lines */
+        .fc .fc-timegrid-slot-lane { border-bottom: 1px solid var(--border-color) !important; }
+
+        /* Clean solid background — tanpa alternating */
+        .fc .fc-timegrid-slot-lane { background: var(--bg-surface) !important; }
+
+        /* Light mode — manual toggle (body.light) */
+        body.light .calendar-wrapper { background: #f0f3f8 !important; border-color: #c8d0dc !important; }
+        body.light .fc td, body.light .fc th { border-color: #c8d0dc !important; }
+        body.light .fc .fc-scrollgrid { border-color: #c8d0dc !important; }
+        body.light .fc .fc-timegrid-col { border-left-color: #c8d0dc !important; }
+        body.light .fc .fc-timegrid-slot-lane { border-bottom-color: #d4dae5 !important; background: #f7f9fc !important; }
+        body.light .fc .fc-day-today { background: rgba(124,58,237,0.18) !important; }
+        body.light .fc .fc-timegrid-col.fc-day-today { background: rgba(124,58,237,0.14) !important; }
+        body.light .fc .fc-col-header-cell.fc-day-today {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+            box-shadow: 0 2px 8px rgba(124,58,237,0.4) !important;
+        }
+        body.light .fc .fc-daygrid-day { background: #f7f9fc !important; }
+        body.light .fc .fc-list-table td { border-color: #c8d0dc !important; }
+        body.light .fc .fc-list-event:hover td { background: rgba(124,58,237,0.08) !important; }
+        body.light .fc .fc-timegrid-axis { border-color: #c8d0dc !important; }
+
+        /* Light mode — OS prefers-color-scheme */
         @media (prefers-color-scheme: light) {
+            .calendar-wrapper { background: #f0f3f8 !important; border-color: #c8d0dc !important; }
             .fc td, .fc th { border-color: #c8d0dc !important; }
             .fc .fc-scrollgrid { border-color: #c8d0dc !important; }
-            .fc .fc-timegrid-slot-lane { background: #f0f3f8 !important; }
-            .fc .fc-timegrid-slot-lane:nth-child(even) { background: #e8ecf3 !important; }
+            .fc .fc-timegrid-col { border-left-color: #c8d0dc !important; }
+            .fc .fc-timegrid-slot-lane { border-bottom-color: #d4dae5 !important; background: #f7f9fc !important; }
             .fc .fc-day-today { background: rgba(124,58,237,0.18) !important; }
             .fc .fc-timegrid-col.fc-day-today { background: rgba(124,58,237,0.14) !important; }
             .fc .fc-col-header-cell.fc-day-today {
                 background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
                 box-shadow: 0 2px 8px rgba(124,58,237,0.4) !important;
             }
-            .fc .fc-daygrid-day { background: #f0f3f8 !important; }
-            .fc .fc-daygrid-day:nth-child(even) { background: #e8ecf3 !important; }
+            .fc .fc-daygrid-day { background: #f7f9fc !important; }
             .fc .fc-list-table td { border-color: #c8d0dc !important; }
             .fc .fc-list-event:hover td { background: rgba(124,58,237,0.08) !important; }
-            .calendar-wrapper { background: #e8ecf3 !important; border-color: #c8d0dc !important; }
             .fc .fc-timegrid-axis { border-color: #c8d0dc !important; }
         }
 
@@ -570,28 +596,28 @@
                         <svg class="w-4 h-4 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
-                        <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ $wm->title }}</p>
+                        <p id="weekly-panel-title" class="text-sm font-semibold" style="color:var(--text-primary);">{{ $wm->title }}</p>
                     </div>
                     <div class="space-y-1">
-                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            Setiap {{ $days[$wm->day_of_week] ?? 'Hari' }}
-                        </p>
-                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            {{ substr($wm->start_time, 0, 5) }} – {{ substr($wm->end_time, 0, 5) }}
-                        </p>
-                        <p class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            {{ $wm->room->name ?? '-' }}
-                        </p>
+                            <p id="weekly-panel-day" class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Setiap <span id="weekly-panel-day-text">{{ $days[$wm->day_of_week] ?? 'Hari' }}</span>
+                            </p>
+                            <p id="weekly-panel-time" class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span id="weekly-panel-time-text">{{ substr($wm->start_time, 0, 5) }} – {{ substr($wm->end_time, 0, 5) }}</span>
+                            </p>
+                            <p id="weekly-panel-room" class="flex items-center gap-1.5 text-xs" style="color:var(--text-secondary);">
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:var(--color-neon-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <span id="weekly-panel-room-text">{{ $wm->room->name ?? '-' }}</span>
+                            </p>
                     </div>
                     @else
                     <div class="flex items-center gap-2">
@@ -1153,7 +1179,8 @@
         btn.disabled = true;
         btn.textContent = 'Menyimpan...';
         const body = new URLSearchParams(new FormData(this));
-        if (this.action.match(/\/admin\/weekly-meetings\/\d+$/)) {
+        const isUpdate = this.action.match(/\/admin\/weekly-meetings\/(\d+)$/);
+        if (isUpdate) {
             body.set('_method', 'PUT');
         }
         fetch(this.action, {
@@ -1161,12 +1188,54 @@
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
             body: body
         }).then(r => {
-            if (!r.ok) throw new Error('Gagal');
+            if (!r.ok) throw new Error('Gagal menyimpan');
             return r.json();
         }).then(() => {
-            location.reload();
+            // Baca nilai dari form
+            const title = document.getElementById('we-title').value.trim();
+            const roomId = parseInt(document.getElementById('we-room').value);
+            const dayOfWeek = parseInt(document.getElementById('we-day').value);
+            const startTime = document.getElementById('we-start').value;
+            const endTime = document.getElementById('we-end').value;
+            const isActive = document.getElementById('we-active').checked;
+            const roomSelect = document.getElementById('we-room');
+            const roomName = roomSelect.options[roomSelect.selectedIndex]?.text || '';
+            const dayNames = {1:'Senin',2:'Selasa',3:'Rabu',4:'Kamis',5:'Jumat',6:'Sabtu',7:'Minggu'};
+            const dayName = dayNames[dayOfWeek] || 'Hari';
+
+            // Update weeklyData di memori (untuk edit selanjutnya)
+            if (isUpdate) {
+                const id = parseInt(isUpdate[1]);
+                const idx = weeklyData.findIndex(i => i.id === id);
+                if (idx !== -1) {
+                    weeklyData[idx] = {
+                        ...weeklyData[idx],
+                        title: title, room_id: roomId, day_of_week: dayOfWeek,
+                        start_time: startTime, end_time: endTime,
+                        is_active: isActive, room_name: roomName
+                    };
+                }
+            }
+
+            // Update sidebar panel
+            const titleEl = document.getElementById('weekly-panel-title');
+            if (titleEl) titleEl.textContent = title;
+            const dayTextEl = document.getElementById('weekly-panel-day-text');
+            if (dayTextEl) dayTextEl.textContent = dayName;
+            const timeTextEl = document.getElementById('weekly-panel-time-text');
+            if (timeTextEl) timeTextEl.textContent = startTime + ' \u2013 ' + endTime;
+            const roomTextEl = document.getElementById('weekly-panel-room-text');
+            if (roomTextEl) roomTextEl.textContent = roomName;
+
+            // Refetch calendar events — langsung tampilkan perubahan
+            if (calendar) calendar.refetchEvents();
+
+            closeModal('weekly-edit-modal');
         }).catch(() => {
             location.reload();
+        }).finally(() => {
+            btn.disabled = false;
+            btn.textContent = 'Simpan';
         });
     });
 
@@ -1177,7 +1246,15 @@
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
             body: new URLSearchParams({ _method: 'DELETE' })
-        }).then(() => { location.reload(); }).catch(() => { location.reload(); });
+        }).then(() => {
+            // Hapus dari weeklyData
+            const idx = weeklyData.findIndex(i => i.id === id);
+            if (idx !== -1) weeklyData.splice(idx, 1);
+            // Refetch events & sembunyikan panel
+            if (calendar) calendar.refetchEvents();
+            const panel = document.getElementById('weekly-panel');
+            if (panel) panel.style.display = 'none';
+        }).catch(() => { location.reload(); });
     }
 
     // Tutup modal

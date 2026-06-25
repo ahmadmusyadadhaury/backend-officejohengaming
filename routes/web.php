@@ -23,6 +23,7 @@ use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingControlle
 use App\Http\Controllers\Leader\MomController;
 use App\Http\Controllers\MomExportController;
 use App\Http\Controllers\OverrideRequestController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PushController;
 use App\Http\Controllers\RealtimeController;
@@ -105,6 +106,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');

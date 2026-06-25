@@ -50,11 +50,11 @@
             <div class="relative flex-shrink-0">
                 <img src="{{ asset('images/logo/logo_web.png') }}" alt="JOHEN OFFICE" loading="lazy"
                     class="w-9 h-9 rounded-lg object-contain">
-                <div class="absolute inset-0 rounded-lg" style="box-shadow:0 0 12px rgba(124,58,237,0.5);"></div>
+
             </div>
             <div class="min-w-0 flex-1">
                 <p class="font-gaming font-bold leading-none truncate" style="font-size:0.85rem;color:var(--sidebar-brand);letter-spacing:0.05em;">JOHEN OFFICE</p>
-                <p class="truncate" style="font-size:0.6rem;color:var(--color-neon-blue);opacity:0.9;letter-spacing:0.1em;margin-top:2px;">MANAGEMENT SYSTEM</p>
+                <p class="truncate" style="font-size:0.6rem;color:#9398b8;letter-spacing:0.1em;margin-top:2px;">MANAGEMENT SYSTEM</p>
             </div>
             <button onclick="toggleSidebar()" class="lg:hidden flex-shrink-0" style="color:var(--sidebar-text);background:none;border:none;cursor:pointer;padding:4px;">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,7 +249,7 @@
                                 </svg>
                                 <span class="text-sm font-medium">Profile Saya</span>
                             </a>
-                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 transition"
+                            <a href="{{ route('settings.index') }}" class="flex items-center gap-3 px-4 py-3 transition"
                                 style="color:var(--text-primary);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>

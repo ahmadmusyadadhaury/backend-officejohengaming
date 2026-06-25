@@ -28,9 +28,18 @@ class AsetRukoController extends Controller
             ];
         });
 
+        $alertJson = $items->where('kondisi', 'perlu_servis')->values()->map(fn($i) => [
+            'id'        => $i->id,
+            'nama_aset' => $i->nama_aset,
+            'lokasi'    => $i->lokasi,
+            'jumlah'    => $i->jumlah,
+            'kondisi'   => $i->kondisi,
+        ]);
+
         return view('admin.ruko.index', [
             'items'     => $items,
             'itemsJson' => $itemsJson,
+            'alertJson' => $alertJson,
             'stats'     => $stats,
         ]);
     }
@@ -49,7 +58,7 @@ class AsetRukoController extends Controller
         return redirect()->route('admin.ruko.index')->with('success', 'Aset ruko berhasil ditambahkan.');
     }
 
-    public function update(Request $request, AsetRuko $asetRuko)
+    public function update(Request $request, AsetRuko $ruko)
     {
         $data = $request->validate([
             'nama_aset' => 'required|string|max:255',
@@ -58,14 +67,14 @@ class AsetRukoController extends Controller
             'kondisi'   => 'required|string|in:baik,perlu_servis',
         ]);
 
-        $asetRuko->update($data);
+        $ruko->update($data);
 
         return redirect()->route('admin.ruko.index')->with('success', 'Aset ruko berhasil diperbarui.');
     }
 
-    public function destroy(AsetRuko $asetRuko)
+    public function destroy(AsetRuko $ruko)
     {
-        $asetRuko->delete();
+        $ruko->delete();
 
         return redirect()->route('admin.ruko.index')->with('success', 'Aset ruko berhasil dihapus.');
     }
