@@ -379,7 +379,11 @@
         function closeModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'none'; document.body.style.overflow = ''; } }
 
         // Success Modal
-        function closeSuccessModal() { closeModal('success-modal'); }
+        function closeSuccessModal() {
+            closeModal('success-modal');
+            const el = document.getElementById('success-flash-data');
+            if (el) el.remove();
+        }
 
         function parseSuccessMessage(msg) {
             const clean = msg.replace(/\.\s*$/, '').trim();
@@ -430,11 +434,20 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const el = document.getElementById('success-flash-data');
-            if (el) showSuccessModal(el.textContent);
-        });
+            if (el) {
+                showSuccessModal(el.textContent);
+                // Auto-close after 5 seconds
+                setTimeout(closeSuccessModal, 5000);
+            }
 
-        document.getElementById('success-modal').addEventListener('click', function(e) {
-            if (e.target === this) closeSuccessModal();
+            const sm = document.getElementById('success-modal');
+            if (sm) {
+                sm.addEventListener('click', function(e) {
+                    if (e.target === this) closeSuccessModal();
+                });
+            } else {
+                console.warn('success-modal element not found');
+            }
         });
 
         let confirmCallback = null;
