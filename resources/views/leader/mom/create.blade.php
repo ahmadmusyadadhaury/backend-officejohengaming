@@ -34,8 +34,8 @@
             </div>
             <div>
                 <label class="gaming-label">Upload File <span style="color:var(--text-muted);font-weight:400;">(Opsional)</span></label>
-                <input type="file" name="file" accept=".pdf,.doc,.docx" class="gaming-input" style="padding:0.5rem;">
-                <p class="text-xs mt-1" style="color:var(--text-muted);">Format: PDF, DOC, DOCX</p>
+                <input type="file" name="file" accept=".pdf,.doc,.docx,.xls,.xlsx" class="gaming-input" style="padding:0.5rem;">
+                <p class="text-xs mt-1" style="color:var(--text-muted);">Format: PDF, DOC, DOCX, XLS, XLSX (maks. 10MB)</p>
             </div>
             <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
                 <button type="submit" class="btn btn-primary">Simpan Draft</button>

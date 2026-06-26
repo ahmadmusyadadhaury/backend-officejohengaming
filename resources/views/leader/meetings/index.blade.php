@@ -253,12 +253,12 @@
                                 </div>
                                 <div>
                                     <label class="gaming-label">Jam Mulai <span style="color:#f87171;">*</span></label>
-                                    <input type="time" name="start_time" value="{{ old('start_time') }}" required class="gaming-input">
+                                    <input type="text" name="start_time" id="modal-start-time" value="{{ old('start_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
                                 </div>
                             </div>
                             <div>
                                 <label class="gaming-label">Jam Selesai <span style="color:#f87171;">*</span></label>
-                                <input type="time" name="end_time" value="{{ old('end_time') }}" required class="gaming-input">
+                                <input type="text" name="end_time" id="modal-end-time" value="{{ old('end_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
                             </div>
                         </div>
                     </div>
@@ -358,6 +358,70 @@
 
 @push('scripts')
 <script>
+// Flatpickr for request modal
+let modalStartFp = null;
+let modalEndFp = null;
+
+function initModalTimeRestrictions() {
+    const form = document.querySelector('#request-modal form');
+    if (!form) return;
+    const dateInput = form.querySelector('input[name="meeting_date"]');
+    const startInput = document.getElementById('modal-start-time');
+    const endInput = document.getElementById('modal-end-time');
+
+    if (modalStartFp) modalStartFp.destroy();
+    if (modalEndFp) modalEndFp.destroy();
+
+    const today = getTodayStr();
+    const isToday = dateInput.value === today;
+    const min = isToday ? nowTime() : '00:00';
+    const startVal = isToday ? nowTime() : (startInput.value || '08:00');
+    const endVal = isToday ? addHour(nowTime()) : (endInput.value || '09:00');
+
+    modalStartFp = flatpickr(startInput, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: 'H:i',
+        time_24hr: true,
+        minTime: min,
+        defaultDate: startVal,
+        onChange: function(selectedDates, dateStr) {
+            if (modalEndFp) {
+                modalEndFp.set('minTime', dateStr);
+                if (modalEndFp.selectedDates.length && modalEndFp.selectedDates[0] <= selectedDates[0]) {
+                    modalEndFp.setDate(addHour(dateStr));
+                }
+            }
+        }
+    });
+
+    modalEndFp = flatpickr(endInput, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: 'H:i',
+        time_24hr: true,
+        minTime: modalStartFp.selectedDates.length ? modalStartFp.input.value : startVal,
+        defaultDate: endVal,
+    });
+
+    dateInput.addEventListener('change', function() {
+        const isToday = this.value === getTodayStr();
+        if (isToday) {
+            modalStartFp.set('minTime', nowTime());
+            modalStartFp.setDate(nowTime());
+            modalEndFp.set('minTime', nowTime());
+            modalEndFp.setDate(addHour(nowTime()));
+        } else {
+            modalStartFp.set('minTime', '00:00');
+            if (!modalStartFp.selectedDates.length) modalStartFp.setDate('08:00');
+            modalEndFp.set('minTime', modalStartFp.input.value);
+            if (!modalEndFp.selectedDates.length) modalEndFp.setDate('09:00');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initModalTimeRestrictions);
+
 function filterMeetings() {
     const status = document.getElementById('status-filter').value;
     const search = (document.getElementById('search-meeting')?.value || '').toLowerCase();
@@ -597,7 +661,7 @@ function showDetail(id) {
             <div id="d-finish-form-${m.id}" class="hidden mt-3 p-3 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);">
                 <label class="gaming-label">Jam Selesai Aktual</label>
                 <div class="flex items-center gap-2 mt-1">
-                    <input type="time" id="d-finish-time-${m.id}" value="${getCurrentTime()}" class="gaming-input" style="width:140px;">
+                    <input type="text" id="d-finish-time-${m.id}" value="${getCurrentTime()}" data-min="${m.start_time ? m.start_time.substring(0,5) : '00:00'}" class="gaming-input finish-time-fp" style="width:140px;" autocomplete="off">
                     <button onclick="submitFinish(${m.id})" class="btn btn-success btn-sm">✓ Selesaikan Meeting</button>
                     <button onclick="document.getElementById('d-finish-form-${m.id}').classList.add('hidden')" class="btn btn-secondary btn-sm">Batal</button>
                 </div>
@@ -612,7 +676,7 @@ function showDetail(id) {
             <div id="d-finish-form-${m.id}" class="hidden mt-3 p-3 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);">
                 <label class="gaming-label">Jam Selesai Aktual</label>
                 <div class="flex items-center gap-2 mt-1">
-                    <input type="time" id="d-finish-time-${m.id}" value="${getCurrentTime()}" class="gaming-input" style="width:140px;">
+                    <input type="text" id="d-finish-time-${m.id}" value="${getCurrentTime()}" data-min="${m.start_time ? m.start_time.substring(0,5) : '00:00'}" class="gaming-input finish-time-fp" style="width:140px;" autocomplete="off">
                     <button onclick="submitFinish(${m.id})" class="btn btn-success btn-sm">✓ Selesaikan Meeting</button>
                     <button onclick="document.getElementById('d-finish-form-${m.id}').classList.add('hidden')" class="btn btn-secondary btn-sm">Batal</button>
                 </div>
@@ -640,6 +704,10 @@ function showDetail(id) {
                         <option value="">Pilih PIC</option>
                         ${usersData.map(u => `<option value="${escHtml(u.name)}">${escHtml(u.name)}</option>`).join('')}
                     </select>
+                </div>
+                <div>
+                    <label class="gaming-label">Upload File <span style="color:var(--text-muted);font-weight:400;">(Opsional)</span></label>
+                    <input type="file" id="mom-file-${m.id}" accept=".pdf,.doc,.docx,.xls,.xlsx" class="gaming-input" style="padding:0.4rem;font-size:0.8rem;">
                 </div>
                 <div class="flex gap-2">
                     <button onclick="submitMom(${m.id})" class="btn btn-primary btn-sm">Simpan Draft</button>
@@ -686,7 +754,19 @@ function submitAction(id, action) {
 }
 
 function showFinishForm(id) {
-    document.getElementById('d-finish-form-' + id).classList.remove('hidden');
+    const form = document.getElementById('d-finish-form-' + id);
+    form.classList.remove('hidden');
+    const el = document.getElementById('d-finish-time-' + id);
+    if (el && !el._flatpickr) {
+        flatpickr(el, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i',
+            time_24hr: true,
+            minTime: el.dataset.min || '00:00',
+            defaultDate: el.value,
+        });
+    }
 }
 
 function submitFinish(id) {
@@ -708,11 +788,20 @@ function submitMom(id) {
     const decisions = document.getElementById('mom-decisions-' + id).value.trim();
     const actionPlan = document.getElementById('mom-action-' + id).value.trim();
     const pic = document.getElementById('mom-pic-' + id).value;
+    const fileInput = document.getElementById('mom-file-' + id);
     if (!summary || !decisions || !actionPlan || !pic) { alert('Semua field harus diisi.'); return; }
+    const formData = new FormData();
+    formData.append('summary', summary);
+    formData.append('decisions', decisions);
+    formData.append('action_plan', actionPlan);
+    formData.append('pic', pic);
+    if (fileInput && fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
     fetch('/koordinator/meetings/' + id + '/mom', {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ summary, decisions, action_plan: actionPlan, pic })
+        headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+        body: formData
     }).then(r => r.json()).then(() => location.reload()).catch(() => location.reload());
 }
 

@@ -8,6 +8,7 @@ use App\Models\Mom;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MomController extends Controller
 {
@@ -23,6 +24,7 @@ class MomController extends Controller
             'decisions' => 'required|string',
             'action_plan' => 'required|string',
             'pic' => 'required|string|max:255',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
         ]);
 
         $filePath = null;
@@ -67,8 +69,24 @@ class MomController extends Controller
         if ($mom->status === 'sent') {
             abort(403);
         }
-        $request->validate(['summary' => 'required', 'decisions' => 'required', 'action_plan' => 'required', 'pic' => 'required']);
-        $mom->update($request->only('summary', 'decisions', 'action_plan', 'pic'));
+        $request->validate([
+            'summary' => 'required',
+            'decisions' => 'required',
+            'action_plan' => 'required',
+            'pic' => 'required',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
+        ]);
+
+        $data = $request->only('summary', 'decisions', 'action_plan', 'pic');
+
+        if ($request->hasFile('file')) {
+            if ($mom->file_path) {
+                Storage::disk('public')->delete($mom->file_path);
+            }
+            $data['file_path'] = $request->file('file')->store('mom-files', 'public');
+        }
+
+        $mom->update($data);
 
         return redirect()->route('koordinator.meetings.show', $mom->meeting_id)->with('success', 'MOM diperbarui.');
     }

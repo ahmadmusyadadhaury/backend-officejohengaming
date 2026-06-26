@@ -72,7 +72,7 @@
             </form>
             <form method="POST" action="{{ route('koordinator.meetings.finish', $meeting) }}" class="flex items-center gap-2" onsubmit="return confirm('Selesaikan meeting sekarang?')">
                 @csrf @method('PATCH')
-                <input type="time" name="actual_end_time" value="{{ now()->format('H:i') }}" class="gaming-input" style="width:130px;">
+                <input type="text" name="actual_end_time" id="actual-end-time-1" value="{{ now()->format('H:i') }}" required class="gaming-input" style="width:130px;" autocomplete="off">
                 <button class="btn btn-success btn-sm">✓ Selesaikan</button>
             </form>
             <form method="POST" action="{{ route('koordinator.meetings.cancel', $meeting) }}" onsubmit="return confirm('Batalkan meeting ini?')">
@@ -87,12 +87,12 @@
     @if($meeting->status === 'confirmed')
     <div class="gaming-card p-5" style="border-color:rgba(99,102,241,0.3);background:rgba(99,102,241,0.05);">
         <p class="font-gaming font-semibold text-sm mb-3" style="color:#a5b4fc;letter-spacing:0.05em;">MEETING TERKONFIRMASI</p>
-        <form method="POST" action="{{ route('koordinator.meetings.finish', $meeting) }}" class="flex flex-wrap items-end gap-3" onsubmit="return confirm('Selesaikan meeting sekarang?')">
-            @csrf @method('PATCH')
-            <div>
-                <label class="gaming-label">Jam Selesai Aktual</label>
-                <input type="time" name="actual_end_time" value="{{ now()->format('H:i') }}" class="gaming-input" style="width:140px;">
-            </div>
+            <form method="POST" action="{{ route('koordinator.meetings.finish', $meeting) }}" class="flex flex-wrap items-end gap-3" onsubmit="return confirm('Selesaikan meeting sekarang?')">
+                @csrf @method('PATCH')
+                <div>
+                    <label class="gaming-label">Jam Selesai Aktual</label>
+                    <input type="text" name="actual_end_time" id="actual-end-time-2" value="{{ now()->format('H:i') }}" required class="gaming-input" style="width:140px;" autocomplete="off">
+                </div>
             <button class="btn btn-success btn-sm">✓ Selesaikan Meeting</button>
         </form>
         <form method="POST" action="{{ route('koordinator.meetings.cancel', $meeting) }}" onsubmit="return confirm('Batalkan meeting ini?')" class="mt-3">
@@ -167,6 +167,16 @@
                 @else
                     <div class="space-y-2 mt-3">
                         <p style="color:var(--text-secondary);">PIC: <strong style="color:var(--text-primary);">{{ $meeting->mom->pic }}</strong></p>
+                        @if($meeting->mom->file_path)
+                        <div>
+                            <a href="{{ Storage::url($meeting->mom->file_path) }}" target="_blank" class="btn btn-secondary btn-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Download Lampiran
+                            </a>
+                        </div>
+                        @endif
                         <div class="flex gap-2">
                             <a href="{{ route('koordinator.mom.edit', $meeting->mom) }}" class="btn btn-secondary btn-sm">Edit MOM</a>
                             <form method="POST" action="{{ route('koordinator.mom.send', $meeting->mom) }}">
@@ -189,3 +199,21 @@
     </a>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    ['actual-end-time-1', 'actual-end-time-2'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) {
+            flatpickr(el, {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: 'H:i',
+                time_24hr: true,
+                minTime: '{{ \Carbon\Carbon::parse($meeting->start_time)->format('H:i') }}',
+                defaultDate: el.value,
+            });
+        }
+    });
+</script>
+@endpush

@@ -10,6 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v={{ filemtime(public_path('apple-touch-icon.png')) }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ asset('css/gaming.css') }}?v={{ filemtime(public_path('css/gaming.css')) }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .sidebar-safe  { padding-bottom: env(safe-area-inset-bottom, 16px); }
         .topbar-safe   { padding-top: env(safe-area-inset-top, 0px); }
@@ -31,6 +32,48 @@
         @media (prefers-color-scheme: dark) {
             .flash-success { background: rgba(16,185,129,0.1) !important; border-color: rgba(16,185,129,0.3) !important; color: #34d399 !important; }
             .flash-error   { background: rgba(239,68,68,0.1) !important; border-color: rgba(239,68,68,0.3) !important; color: #f87171 !important; }
+        }
+
+        /* Flatpickr time picker — lebar sesuai input */
+        .flatpickr-calendar {
+            width: auto !important;
+            min-width: 100% !important;
+            max-width: none !important;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            background: var(--bg-surface, #1e1e2e) !important;
+            border: 1px solid var(--border-color, #2e2e3e) !important;
+        }
+        .flatpickr-calendar.noCalendar {
+            min-width: 160px !important;
+        }
+        .flatpickr-time {
+            max-height: none !important;
+            border-radius: 8px;
+            border: none !important;
+        }
+        .flatpickr-time input {
+            font-size: 0.95rem !important;
+            font-weight: 600;
+            color: var(--text-primary, #eee) !important;
+            background: transparent !important;
+        }
+        .flatpickr-time .flatpickr-am-pm {
+            font-size: 0.8rem;
+            color: var(--text-secondary, #aaa) !important;
+        }
+        .flatpickr-time .flatpickr-am-pm:hover {
+            background: var(--bg-surface-2, #2a2a3e) !important;
+        }
+        .flatpickr-time .numInputWrapper span {
+            border-color: var(--border-color, #2e2e3e) !important;
+        }
+        .flatpickr-time .numInputWrapper span:hover {
+            background: var(--bg-surface-2, #2a2a3e) !important;
+        }
+        .flatpickr-calendar:before,
+        .flatpickr-calendar:after {
+            display: none !important;
         }
     </style>
     @stack('styles')
@@ -880,6 +923,21 @@
                 closeInvitationModal();
             }
         });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+    function pad2(v) { return String(v).padStart(2, '0'); }
+    function nowTime() {
+        const n = new Date();
+        return pad2(n.getHours()) + ':' + pad2(n.getMinutes());
+    }
+    function addHour(t) {
+        const [h, m] = t.split(':').map(Number);
+        return pad2((h + 1) % 24) + ':' + pad2(m);
+    }
+    function getTodayStr() {
+        return new Date().toISOString().slice(0, 10);
+    }
     </script>
     @stack('modals')
     @stack('scripts')

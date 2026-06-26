@@ -78,11 +78,11 @@
                 </div>
                 <div>
                     <label class="gaming-label">Waktu Mulai <span style="color:#f87171;">*</span></label>
-                    <input type="datetime-local" name="start_time" required class="gaming-input">
+                    <input type="text" name="start_time" id="booking-start" required class="gaming-input" placeholder="YYYY-MM-DD HH:MM" autocomplete="off">
                 </div>
                 <div>
                     <label class="gaming-label">Waktu Selesai <span style="color:#f87171;">*</span></label>
-                    <input type="datetime-local" name="end_time" required class="gaming-input">
+                    <input type="text" name="end_time" id="booking-end" required class="gaming-input" placeholder="YYYY-MM-DD HH:MM" autocomplete="off">
                 </div>
                 <button type="submit" class="btn btn-primary w-full">Book Ruangan</button>
             </form>
@@ -95,3 +95,40 @@
     </a>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    const bookingStart = document.getElementById('booking-start');
+    const bookingEnd = document.getElementById('booking-end');
+
+    if (bookingStart) {
+        const startFp = flatpickr(bookingStart, {
+            enableTime: true,
+            dateFormat: 'Y-m-d H:i',
+            time_24hr: true,
+            minDate: 'today',
+            minTime: nowTime(),
+            defaultDate: new Date(),
+            onChange: function(selectedDates, dateStr) {
+                if (endFp) {
+                    endFp.set('minDate', dateStr.slice(0, 10));
+                    endFp.set('minTime', dateStr.slice(11, 16));
+                    if (endFp.selectedDates.length && endFp.selectedDates[0] <= selectedDates[0]) {
+                        const d = new Date(selectedDates[0].getTime() + 3600000);
+                        endFp.setDate(d);
+                    }
+                }
+            }
+        });
+
+        const endFp = flatpickr(bookingEnd, {
+            enableTime: true,
+            dateFormat: 'Y-m-d H:i',
+            time_24hr: true,
+            minDate: 'today',
+            minTime: nowTime(),
+            defaultDate: new Date(Date.now() + 3600000),
+        });
+    }
+</script>
+@endpush

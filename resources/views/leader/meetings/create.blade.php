@@ -48,11 +48,11 @@
                     </div>
                     <div>
                         <label class="gaming-label">Jam Mulai <span style="color:#f87171;">*</span></label>
-                        <input type="time" name="start_time" value="{{ old('start_time') }}" required class="gaming-input">
+                        <input type="text" name="start_time" id="start-time" value="{{ old('start_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
                     </div>
                     <div>
                         <label class="gaming-label">Jam Selesai <span style="color:#f87171;">*</span></label>
-                        <input type="time" name="end_time" value="{{ old('end_time') }}" required class="gaming-input">
+                        <input type="text" name="end_time" id="end-time" value="{{ old('end_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -159,6 +159,7 @@
 @push('scripts')
 <script>
     const teamsData = @json($teams);
+
     function addTeamRow() {
         const container = document.getElementById('extra-teams');
         const selected = [...container.querySelectorAll('select')].map(s => s.value);
@@ -171,8 +172,74 @@
             <select name="extra_teams[]" class="gaming-input flex-1">
                 <option value="">Pilih Tim</option>${options}
             </select>
-            <button type="button" onclick="this.closest('.team-row').remove()" class="btn btn-danger btn-sm">✕</button>`;
+            <button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm">✕</button>`;
         container.appendChild(row);
     }
+
+    const dateInput = document.querySelector('input[name="meeting_date"]');
+    const startInput = document.querySelector('#start-time');
+    const endInput = document.querySelector('#end-time');
+
+    let startFp = null;
+    let endFp = null;
+
+    function initPickers() {
+        const today = getTodayStr();
+        const isToday = dateInput.value === today;
+        const min = isToday ? nowTime() : '00:00';
+        const startVal = isToday ? nowTime() : (startInput.value || '08:00');
+        const endVal = isToday ? addHour(nowTime()) : (endInput.value || '09:00');
+
+        if (startFp) startFp.destroy();
+        if (endFp) endFp.destroy();
+
+        startFp = flatpickr(startInput, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i',
+            time_24hr: true,
+            minTime: isToday ? nowTime() : '00:00',
+            defaultDate: startVal,
+            onChange: function(selectedDates, dateStr) {
+                if (endFp) {
+                    endFp.set('minTime', dateStr);
+                    if (endFp.selectedDates.length && endFp.selectedDates[0] <= selectedDates[0]) {
+                        endFp.setDate(addHour(dateStr));
+                    }
+                }
+            }
+        });
+
+        endFp = flatpickr(endInput, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i',
+            time_24hr: true,
+            minTime: startFp.selectedDates.length ? startFp.input.value : startVal,
+            defaultDate: endVal,
+        });
+
+        if (!isToday) {
+            startFp.set('minTime', '00:00');
+            endFp.set('minTime', startFp.input.value);
+        }
+    }
+
+    initPickers();
+
+    dateInput.addEventListener('change', function() {
+        const isToday = this.value === getTodayStr();
+        if (isToday) {
+            startFp.set('minTime', nowTime());
+            startFp.setDate(nowTime());
+            endFp.set('minTime', nowTime());
+            endFp.setDate(addHour(nowTime()));
+        } else {
+            startFp.set('minTime', '00:00');
+            if (!startFp.selectedDates.length) startFp.setDate('08:00');
+            endFp.set('minTime', startFp.input.value);
+            if (!endFp.selectedDates.length) endFp.setDate('09:00');
+        }
+    });
 </script>
 @endpush

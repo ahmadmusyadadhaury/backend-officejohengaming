@@ -31,11 +31,11 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="gaming-label">Jam Mulai <span style="color:#f87171;">*</span></label>
-                    <input type="time" name="start_time" value="{{ old('start_time') }}" required class="gaming-input">
+                    <input type="text" name="start_time" id="weekly-start" value="{{ old('start_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
                 </div>
                 <div>
                     <label class="gaming-label">Jam Selesai <span style="color:#f87171;">*</span></label>
-                    <input type="time" name="end_time" value="{{ old('end_time') }}" required class="gaming-input">
+                    <input type="text" name="end_time" id="weekly-end" value="{{ old('end_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
                 </div>
             </div>
             <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
@@ -46,3 +46,27 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    const weeklyStart = document.getElementById('weekly-start');
+    const weeklyEnd = document.getElementById('weekly-end');
+    if (weeklyStart && weeklyEnd) {
+        const wsFp = flatpickr(weeklyStart, {
+            enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true,
+            defaultDate: weeklyStart.value || '08:00',
+            onChange: function(sel, str) {
+                weFp.set('minTime', str);
+                if (weFp.selectedDates.length && weFp.selectedDates[0] <= sel[0]) {
+                    weFp.setDate(sel[0].getTime() + 3600000);
+                }
+            }
+        });
+        const weFp = flatpickr(weeklyEnd, {
+            enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true,
+            minTime: wsFp.selectedDates.length ? wsFp.input.value : '09:00',
+            defaultDate: weeklyEnd.value || '09:00',
+        });
+    }
+</script>
+@endpush
