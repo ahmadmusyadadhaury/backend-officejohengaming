@@ -26,7 +26,7 @@
     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
     </svg>
-    Dashboard
+    <span class="truncate">Dashboard</span>
 </a>
 
 @if($isAdminHr)
@@ -38,15 +38,15 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
-            Meeting
+            <span class="truncate">Meeting</span>
         </span>
         <svg class="w-3 h-3 caret {{ $isMeetingActive ? 'rotated' : '' }}" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/></svg>
     </button>
 </div>
 <div class="sidebar-submenu {{ $isMeetingActive ? '' : 'hidden' }}">
-    <a href="{{ route('admin.meetings.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.meetings.*') ? 'active' : '' }}">Permintaan Meeting</a>
-    <a href="{{ route('admin.moms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.moms.*') ? 'active' : '' }}">Rekap MOM</a>
-    <a href="{{ route('calendar') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('calendar') ? 'active' : '' }}">Jadwal Meeting</a>
+    <a href="{{ route('admin.meetings.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.meetings.*') ? 'active' : '' }}"><span class="truncate">Permintaan Meeting</span></a>
+    <a href="{{ route('admin.moms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.moms.*') ? 'active' : '' }}"><span class="truncate">Rekap MOM</span></a>
+    <a href="{{ route('calendar') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('calendar') ? 'active' : '' }}"><span class="truncate">Jadwal Meeting</span></a>
 </div>
 
 <div class="sidebar-section">
@@ -55,17 +55,17 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>
-            Data Aset
+            <span class="truncate">Data Aset</span>
         </span>
         <svg class="w-3 h-3 caret {{ $isAssetActive ? 'rotated' : '' }}" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/></svg>
     </button>
 </div>
 <div class="sidebar-submenu {{ $isAssetActive ? '' : 'hidden' }}">
-    <a href="{{ route('admin.vehicles.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.vehicles.*') ? 'active' : '' }}">Kendaraan</a>
-    <a href="{{ route('admin.digital-assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.digital-assets.*') ? 'active' : '' }}">Digital</a>
-    <a href="{{ route('admin.sim-cards.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.sim-cards.*') ? 'active' : '' }}">SIM Card</a>
-    <a href="{{ route('admin.peralatan-kantor.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.peralatan-kantor.*') ? 'active' : '' }}">Peralatan Kantor</a>
-    <a href="{{ route('admin.ruko.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.ruko.*') ? 'active' : '' }}">Aset Ruko</a>
+    <a href="{{ route('admin.vehicles.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.vehicles.*') ? 'active' : '' }}"><span class="truncate">Kendaraan</span></a>
+    <a href="{{ route('admin.digital-assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.digital-assets.*') ? 'active' : '' }}"><span class="truncate">Digital</span></a>
+    <a href="{{ route('admin.sim-cards.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.sim-cards.*') ? 'active' : '' }}"><span class="truncate">SIM Card</span></a>
+    <a href="{{ route('admin.peralatan-kantor.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.peralatan-kantor.*') ? 'active' : '' }}"><span class="truncate">Peralatan Kantor</span></a>
+    <a href="{{ route('admin.ruko.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.ruko.*') ? 'active' : '' }}"><span class="truncate">Aset Ruko</span></a>
 </div>
 
 <div class="sidebar-section">
@@ -74,16 +74,16 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
             </svg>
-            Pembayaran
+            <span class="truncate">Pembayaran</span>
         </span>
         <svg class="w-3 h-3 caret {{ $isPaymentActive ? 'rotated' : '' }}" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/></svg>
     </button>
 </div>
 <div class="sidebar-submenu {{ $isPaymentActive ? '' : 'hidden' }}">
-    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'listrik' ? 'active' : '' }}">Listrik</a>
-    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'internet']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'internet' ? 'active' : '' }}">Internet</a>
-    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'aset_digital']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'aset_digital' ? 'active' : '' }}">Aset Digital</a>
-    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'ipl_ruko']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'ipl_ruko' ? 'active' : '' }}">IPL Ruko</a>
+    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'listrik' ? 'active' : '' }}"><span class="truncate">Listrik</span></a>
+    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'internet']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'internet' ? 'active' : '' }}"><span class="truncate">Internet</span></a>
+    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'aset_digital']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'aset_digital' ? 'active' : '' }}"><span class="truncate">Aset Digital</span></a>
+    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'ipl_ruko']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'ipl_ruko' ? 'active' : '' }}"><span class="truncate">IPL Ruko</span></a>
 </div>
 
 <p class="sidebar-section-label">Admin</p>
@@ -94,19 +94,19 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
-            Kelola
+            <span class="truncate">Kelola</span>
         </span>
         <svg class="w-3 h-3 caret {{ $isAdminActive ? 'rotated' : '' }}" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/></svg>
     </button>
 </div>
 <div class="sidebar-submenu {{ $isAdminActive ? '' : 'hidden' }}">
-    <a href="{{ route('admin.users.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">Kelola Akun</a>
+    <a href="{{ route('admin.users.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"><span class="truncate">Kelola Akun</span></a>
     @if(auth()->user()->role === 'admin')
-    <a href="{{ route('admin.admins.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">Kelola Admin</a>
+    <a href="{{ route('admin.admins.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}"><span class="truncate">Kelola Admin</span></a>
     @endif
-    <a href="{{ route('admin.assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.assets.*') ? 'active' : '' }}">Kelola Aset Meeting</a>
-    <a href="{{ route('admin.teams.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.teams.*') ? 'active' : '' }}">Kelola Tim</a>
-    <a href="{{ route('admin.rooms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">Kelola Ruangan</a>
+    <a href="{{ route('admin.assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.assets.*') ? 'active' : '' }}"><span class="truncate">Kelola Aset Meeting</span></a>
+    <a href="{{ route('admin.teams.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.teams.*') ? 'active' : '' }}"><span class="truncate">Kelola Tim</span></a>
+    <a href="{{ route('admin.rooms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}"><span class="truncate">Kelola Ruangan</span></a>
 </div>
 
 @else
@@ -115,7 +115,7 @@
     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
     </svg>
-    Jadwal Meeting
+    <span class="truncate">Jadwal Meeting</span>
 </a>
 
 @endif
@@ -134,7 +134,7 @@
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
-        Request Meeting
+        <span class="truncate">Request Meeting</span>
     </a>
     @if($hasInvitations)
         <a href="{{ route('invitation.index') }}"
@@ -154,5 +154,5 @@
     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
     </svg>
-    Profile
+    <span class="truncate">Profile</span>
 </a>

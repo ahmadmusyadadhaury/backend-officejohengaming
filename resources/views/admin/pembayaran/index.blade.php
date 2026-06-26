@@ -85,7 +85,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
@@ -98,7 +98,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['jatuh_tempo'] }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Belum dibayar</div>
@@ -111,7 +111,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#f87171;">{{ $stats['terlambat'] }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Lewat jatuh tempo</div>
@@ -287,21 +287,21 @@
                     <tr>
                         <th>No</th>
                         @if($jenis === 'internet')
-                        <th>Nama Internet</th>
-                        <th>Provider</th>
-                        <th>PIC</th>
-                        <th>Jabatan</th>
-                        <th>Masa Tenggang</th>
-                        <th>Biaya</th>
+                            <th>Nama Internet</th>
+                            <th class="hidden md:table-cell">Provider</th>
+                            <th class="hidden md:table-cell">PIC</th>
+                            <th class="hidden lg:table-cell">Jabatan</th>
+                            <th class="hidden md:table-cell">Masa Tenggang</th>
+                            <th class="hidden md:table-cell">Biaya</th>
                         @else
-                        <th>{{ $jenis === 'aset_digital' ? 'Nama Aset' : 'Periode' }}</th>
-                        <th>Tagihan</th>
-                        <th>Jatuh Tempo</th>
-                        <th>Nominal</th>
+                            <th>{{ $jenis === 'aset_digital' ? 'Nama Aset' : 'Periode' }}</th>
+                            <th class="hidden md:table-cell">Tagihan</th>
+                            <th>Jatuh Tempo</th>
+                            <th>Nominal</th>
                         @endif
                         <th>Status</th>
-                        <th>Tgl Bayar</th>
-                        <th>Aksi</th>
+                            <th class="hidden md:table-cell">Tgl Bayar</th>
+                            <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="payment-tbody">
@@ -335,27 +335,27 @@
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         @if($jenis === 'internet')
                         <td style="color:var(--text-primary);font-weight:500;">{{ $item->nama_internet }}</td>
-                        <td style="color:var(--text-muted);">{{ $item->provider }}</td>
-                        <td style="color:var(--text-muted);">{{ $item->pic }}</td>
-                        <td style="color:var(--text-muted);">{{ $item->jabatan }}</td>
-                        <td style="color:var(--text-muted);">{{ $item->masa_tenggang?->format('d/m/Y') }}</td>
-                        <td style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->biaya, 0, ',', '.') }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->provider }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->pic }}</td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $item->jabatan }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->masa_tenggang?->format('d/m/Y') }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->biaya, 0, ',', '.') }}</td>
                         @else
                         <td style="color:var(--text-primary);font-weight:500;">{{ $item->periode }}</td>
-                        <td style="color:var(--text-muted);">{{ $item->tanggal_tagihan?->format('d/m/Y') }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->tanggal_tagihan?->format('d/m/Y') }}</td>
                         <td style="color:var(--text-muted);">{{ $item->jatuh_tempo?->format('d/m/Y') }}</td>
                         <td style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
                         @endif
                         <td><span class="badge {{ $badgeClass }}">{{ $badgeLabel }}</span></td>
-                        <td style="color:var(--text-muted);">{{ ($item->tanggal_bayar) ? $item->tanggal_bayar->format('d/m/Y') : '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ ($item->tanggal_bayar) ? $item->tanggal_bayar->format('d/m/Y') : '-' }}</td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $itemId }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <button type="button" onclick="showDetail({{ $itemId }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="relative" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown({{ $itemId }})" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;">⋮</button>
+                                    <button type="button" onclick="toggleDropdown({{ $itemId }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $itemId }}" class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>

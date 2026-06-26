@@ -29,7 +29,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['pajak_aktif'] }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Aktif</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak masih berlaku</div>
@@ -42,7 +42,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['segera_habis'] }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Segera Habis</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak akan habis dalam 30 hari</div>
@@ -55,7 +55,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['pajak_mati'] }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Mati</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak sudah expired</div>
@@ -158,12 +158,12 @@
                         <th>No</th>
                         <th>Nama Kendaraan</th>
                         <th>Nomor Polisi</th>
-                        <th>Jenis</th>
-                        <th>Merk/Tipe</th>
-                        <th>Tahun</th>
-                        <th>Warna</th>
+                        <th class="hidden md:table-cell">Jenis</th>
+                        <th class="hidden lg:table-cell">Merk/Tipe</th>
+                        <th class="hidden md:table-cell">Tahun</th>
+                        <th class="hidden lg:table-cell">Warna</th>
                         <th>Status</th>
-                        <th>Keterangan</th>
+                        <th class="hidden md:table-cell">Keterangan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -187,20 +187,20 @@
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $v->nama_kendaraan }}</td>
                         <td style="color:var(--text-muted);font-family:monospace;font-weight:600;">{{ $v->plat_nomor }}</td>
-                        <td style="color:var(--text-primary);">{{ $v->jenis_kendaraan }}</td>
-                        <td style="color:var(--text-muted);">{{ $v->merk_tipe ?? '-' }}</td>
-                        <td style="color:var(--text-muted);">{{ $v->tahun }}</td>
-                        <td style="color:var(--text-muted);">{{ $v->warna ?? '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-primary);">{{ $v->jenis_kendaraan }}</td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $v->merk_tipe ?? '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $v->tahun }}</td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $v->warna ?? '-' }}</td>
                         <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span></td>
-                        <td style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $v->keperluan }}">{{ $v->keperluan ?? '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $v->keperluan }}">{{ $v->keperluan ?? '-' }}</td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $v->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <button type="button" onclick="showDetail({{ $v->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="relative" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown({{ $v->id }})" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;">⋮</button>
+                                    <button type="button" onclick="toggleDropdown({{ $v->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $v->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>

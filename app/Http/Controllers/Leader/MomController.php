@@ -41,6 +41,10 @@ class MomController extends Controller
             'status' => 'draft',
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'MOM berhasil disimpan sebagai draft.']);
+        }
+
         return redirect()->route('koordinator.meetings.show', $meeting)->with('success', 'MOM berhasil disimpan sebagai draft.');
     }
 
@@ -69,10 +73,12 @@ class MomController extends Controller
         return redirect()->route('koordinator.meetings.show', $mom->meeting_id)->with('success', 'MOM diperbarui.');
     }
 
-    public function send(Mom $mom)
+    public function send(Mom $mom, Request $request)
     {
         if ($mom->status === 'sent') {
-            return back()->with('error', 'MOM sudah dikirim.');
+            return $request->expectsJson()
+                ? response()->json(['success' => false, 'message' => 'MOM sudah dikirim.'])
+                : back()->with('error', 'MOM sudah dikirim.');
         }
         $mom->update(['status' => 'sent', 'sent_at' => now()]);
 
@@ -107,6 +113,10 @@ class MomController extends Controller
             'Minutes of Meeting untuk "'.$meeting->title.'" telah dikirim.',
             $url
         );
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'MOM berhasil dikirim.']);
+        }
 
         return back()->with('success', 'MOM berhasil dikirim.');
     }

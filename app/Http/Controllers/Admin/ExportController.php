@@ -38,7 +38,7 @@ class ExportController extends Controller
             'admins' => fn () => $this->adminsExport($filter),
             'teams' => fn () => $this->teamsExport($filter),
             'rooms' => fn () => $this->roomsExport($filter),
-            'meetings' => fn () => $this->meetingsExport($filter),
+            'meetings' => fn () => $this->meetingsExport($request),
             'vehicles' => fn () => $this->vehiclesExport($filter),
             'digital-assets' => fn () => $this->digitalAssetsExport($filter),
             'sim-cards' => fn () => $this->simCardsExport($filter),
@@ -135,18 +135,32 @@ class ExportController extends Controller
         );
     }
 
-    protected function meetingsExport($filter = 'all')
+    protected function meetingsExport($request)
     {
-        $data = Meeting::with(['requester', 'room', 'team'])
-            ->orderBy('meeting_date', 'desc')->get()->map(fn ($m) => [
-                'Judul' => $m->title,
-                'Tanggal' => $m->meeting_date->format('d/m/Y'),
-                'Jam' => $m->start_time->format('H:i').' - '.$m->end_time->format('H:i'),
-                'Ruangan' => $m->room?->name ?? '-',
-                'Pemohon' => $m->requester?->name ?? '-',
-                'Tim' => $m->team?->name ?? '-',
-                'Status' => $m->status,
-            ]);
+        $meetingMonth = $request->get('meeting_month', now()->format('Y-m'));
+        $startDate = Carbon::parse($meetingMonth.'-01')->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+
+        $query = Meeting::with(['requester', 'room', 'team'])
+            ->whereBetween('meeting_date', [$startDate, $endDate]);
+
+        $statusLabelMap = [
+            'pending' => 'Menunggu Review', 'approved' => 'Disetujui', 'rejected' => 'Ditolak',
+            'confirmed' => 'Dikonfirmasi', 'cancelled' => 'Dibatalkan',
+            'in_progress' => 'Berlangsung', 'completed' => 'Selesai',
+        ];
+
+        $data = $query->orderBy('meeting_date', 'desc')->get()->values()->map(fn ($m, $i) => [
+            'No' => $i + 1,
+            'Judul' => $m->title,
+            'Tanggal' => $m->meeting_date->format('d/m/Y'),
+            'Waktu' => substr($m->start_time, 0, 5).' - '.substr($m->end_time, 0, 5),
+            'Ruangan' => $m->room?->name ?? '-',
+            'Pemohon' => $m->requester?->name ?? '-',
+            'Tim' => $m->team?->name ?? '-',
+            'Status' => $statusLabelMap[$m->status] ?? $m->status,
+            'Antrian' => $m->queue_position ? 'Antrian ke-'.$m->queue_position : ($m->status === 'completed' ? 'Selesai' : ($m->status === 'in_progress' ? 'Berlangsung' : '-')),
+        ]);
 
         return Excel::download(
             new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Meeting', 'Meeting'),

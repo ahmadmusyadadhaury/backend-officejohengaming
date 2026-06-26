@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $status = $request->input('status', '');
 
         $query = $user->participatingMeetings()
-            ->with(['room', 'team', 'requester'])
+            ->with(['room', 'team', 'requester', 'assets'])
             ->whereIn('meetings.status', ['approved', 'confirmed', 'in_progress']);
 
         if ($search) {
@@ -50,8 +50,28 @@ class DashboardController extends Controller
             ->where('meetings.status', 'completed')
             ->count();
 
+        $meetingsJson = $myMeetings->map(fn($m) => [
+            'id' => $m->id,
+            'title' => $m->title,
+            'why' => $m->why,
+            'what' => $m->what,
+            'how_expected' => $m->how_expected,
+            'status' => $m->status,
+            'room' => $m->room ? ['name' => $m->room->name] : null,
+            'requester' => $m->requester ? ['name' => $m->requester->name] : null,
+            'team' => $m->team ? ['name' => $m->team->name] : null,
+            'meeting_date' => $m->meeting_date?->format('d M Y'),
+            'meeting_date_raw' => $m->meeting_date?->format('Y-m-d'),
+            'start_time' => $m->start_time,
+            'end_time' => $m->end_time,
+            'assets' => $m->assets->map(fn($a) => [
+                'name' => $a->name,
+                'quantity' => $a->pivot->quantity,
+            ]),
+        ]);
+
         return view('user.dashboard', compact(
-            'myMeetings', 'todayMeetings', 'search', 'status',
+            'myMeetings', 'todayMeetings', 'meetingsJson', 'search', 'status',
             'totalInvitations', 'mendatangCount', 'selesaiCount'
         ));
     }

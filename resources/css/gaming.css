@@ -971,7 +971,7 @@ body.light .badge-orange {
 }
 
 /* ============================================
-   MOBILE OPTIMIZATIONS
+   MOBILE OPTIMIZATIONS (< 640px)
 ============================================ */
 @media (max-width: 640px) {
     .stat-card { padding: 1rem; }
@@ -980,6 +980,159 @@ body.light .badge-orange {
     /* Disable heavy animations on mobile */
     .animate-float { animation: none; }
     .gaming-sidebar::before { display: none; }
+
+    /* ── Compact sidebar ── */
+    .gaming-sidebar { width: 14rem; }
+    .sidebar-item,
+    .sidebar-submenu-item,
+    .sidebar-section-toggle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sidebar-item { padding: 0.35rem 0.6rem; font-size: 0.75rem; gap: 0.5rem; }
+    .sidebar-item svg:first-child { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+    .sidebar-submenu-item { padding: 0.35rem 0.6rem; padding-left: 0.75rem; font-size: 0.75rem; gap: 0.5rem; }
+    .sidebar-section-toggle { padding: 0.3rem 0.45rem; font-size: 0.75rem; }
+    .sidebar-section-toggle svg:first-child { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+    .sidebar-section-toggle .caret { width: 0.7rem; height: 0.7rem; }
+    .sidebar-submenu { padding-left: 0.35rem; }
+    .sidebar-section-label { font-size: 0.5rem; padding: 0.3rem 0.6rem 0.1rem; }
+    .gaming-sidebar .flex-shrink-0 .w-9 { width: 1.5rem; height: 1.5rem; }
+    .gaming-sidebar .flex-shrink-0 .gap-2 { gap: 0.4rem; }
+    .gaming-sidebar .px-4 { padding-left: 0.6rem; padding-right: 0.6rem; }
+    .gaming-sidebar .px-3 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .gaming-sidebar .py-4 { padding-top: 0.6rem; padding-bottom: 0.6rem; }
+    .gaming-sidebar .py-3 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .gaming-sidebar .notif-badge-activity,
+    .gaming-sidebar .notif-badge-meeting { font-size: 0.5rem !important; padding: 0 4px !important; min-width: 14px !important; line-height: 14px !important; }
+    .gaming-sidebar .sidebar-item .flex-1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+    /* ── Compact table ── */
+    .gaming-table thead th { padding: 0.35rem 0.4rem; font-size: 0.55rem; }
+    .gaming-table tbody td { padding: 0.35rem 0.4rem; font-size: 0.7rem; }
+    .gaming-table { font-size: 0.7rem; }
+
+    /* ── Compact topbar ── */
+    .gaming-topbar { padding-left: 0.6rem; padding-right: 0.6rem; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .topbar-btn { width: 1.75rem; height: 1.75rem; border-radius: 8px; }
+    .topbar-btn svg { width: 0.8rem; height: 0.8rem; }
+    .topbar-badge { min-width: 0.8rem; height: 0.8rem; font-size: 0.45rem; line-height: 0.8rem; top: -0.05rem; right: -0.05rem; }
+    .topbar-profile-btn { padding: 0.2rem 0.35rem; gap: 0.25rem; border-radius: 10px; }
+    .topbar-profile-avatar { width: 1.1rem; height: 1.1rem; font-size: 0.5rem; }
+    .gaming-topbar h1 { font-size: 0.95rem !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70vw; }
+    .topbar-dropdown { min-width: 14rem; right: 0; left: auto; }
+
+    /* ── Compact all buttons ── */
+    .btn { padding: 0.35rem 0.85rem; font-size: 0.75rem; border-radius: 8px; gap: 0.35rem; }
+    .btn-sm { padding: 0.25rem 0.6rem; font-size: 0.65rem; border-radius: 6px; gap: 0.3rem; }
+    .btn-sm svg { width: 0.75rem; height: 0.75rem; }
+    .btn-lg { padding: 0.5rem 1.1rem; font-size: 0.85rem; }
+    .btn-primary, .btn-danger, .btn-success { box-shadow: none; }
+    .btn-form { padding: 0.35rem 0.85rem !important; font-size: 0.7rem !important; gap: 0.3rem !important; }
+    .filter-btn { font-size: 0.65rem !important; padding: 3px 8px !important; }
+    .filter-btn svg { width: 0.7rem; height: 0.7rem; }
+
+    /* ── Compact inputs ── */
+    .gaming-input { padding: 0.45rem 0.65rem; font-size: 0.75rem; }
+    .gaming-label { font-size: 0.6rem; margin-bottom: 4px; }
+    select, input[type="text"], input[type="search"], input[type="email"], input[type="password"] { font-size: 0.75rem !important; padding: 0.4rem 0.6rem !important; }
+
+    /* ── Compact content & typography ── */
+    .page-content { padding-left: 0.6rem; padding-right: 0.6rem; padding-top: 0.6rem; padding-bottom: 0.75rem; }
+    .page-content { font-size: 0.75rem; }
+    .page-content .text-sm { font-size: 0.7rem !important; }
+    .page-content .text-xs { font-size: 0.6rem !important; }
+    .badge { font-size: 0.6rem !important; padding: 0.15rem 0.45rem !important; }
+    .gaming-card .text-base { font-size: 0.8rem !important; }
+
+    /* ── Compact gaming-card headers ── */
+    .gaming-card .px-5.py-4 { padding-left: 0.6rem !important; padding-right: 0.6rem !important; padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+    .gaming-card .px-5.py-3 { padding-left: 0.6rem !important; padding-right: 0.6rem !important; padding-top: 0.4rem !important; padding-bottom: 0.4rem !important; }
+
+    /* ── Compact stat cards (all pages) ── */
+    .gaming-card.p-5 { padding: 0.6rem !important; }
+    .gaming-card.p-5 .w-12.h-12,
+    .gaming-card.p-5 .w-12 { width: 2rem !important; height: 2rem !important; }
+    .gaming-card.p-5 svg.w-6.h-6 { width: 0.9rem !important; height: 0.9rem !important; }
+    .gaming-card.p-5 svg.w-5.h-5 { width: 0.75rem !important; height: 0.75rem !important; }
+    .gaming-card.p-5 .gap-4 { gap: 0.4rem !important; }
+    .gaming-card.p-5 .text-3xl { font-size: 1.15rem !important; }
+    .gaming-card.p-5 .text-sm.font-semibold { font-size: 0.65rem !important; }
+
+    /* ── Dashboard wrapper stat cards ── */
+    .dashboard-wrapper .gaming-card.p-4 { padding: 0.5rem !important; }
+    .dashboard-wrapper .gap-3 { gap: 0.3rem; }
+    .dashboard-wrapper .w-10 { width: 1.5rem; height: 1.5rem; }
+    .dashboard-wrapper .h-10 { width: 1.5rem; height: 1.5rem; }
+    .dashboard-wrapper .w-5 { width: 0.7rem; height: 0.7rem; }
+    .dashboard-wrapper .h-5 { width: 0.7rem; height: 0.7rem; }
+    .dashboard-wrapper .text-2xl { font-size: 1rem; }
+    .dashboard-wrapper .text-xs { font-size: 0.6rem !important; }
+    .dashboard-wrapper .md\:gap-4 { gap: 0.35rem; }
+    .dashboard-wrapper .rounded-xl { border-radius: 8px; }
+
+    /* ── Compact table action buttons ── */
+    td .btn-sm { padding: 1px 5px; font-size: 0.55rem; border-radius: 4px; }
+    td .btn-sm svg { width: 0.6rem; height: 0.6rem; }
+
+    /* ── Card inner spacing ── */
+    .gaming-card .px-6 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .gaming-card .py-5 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+
+    /* ── Utility: truncate all sidebar text by default ── */
+    .sidebar-item,
+    .sidebar-section-toggle span { min-width: 0; }
+    .sidebar-item span,
+    .sidebar-submenu-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── Filter bar ── */
+    .filter-btn { font-size: 0.65rem !important; padding: 4px 10px !important; }
+    .filter-btn svg { width: 0.75rem; height: 0.75rem; }
+}
+
+/* ── Very small screens (< 380px) ── */
+@media (max-width: 380px) {
+    .gaming-sidebar { width: 12rem; }
+    .sidebar-item { padding: 0.3rem 0.5rem; font-size: 0.7rem; gap: 0.4rem; }
+    .sidebar-submenu-item { padding: 0.3rem 0.5rem; padding-left: 0.6rem; font-size: 0.7rem; gap: 0.4rem; }
+    .sidebar-section-toggle { padding: 0.25rem 0.4rem; font-size: 0.7rem; }
+    .gaming-sidebar .px-4 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .gaming-sidebar .px-3 { padding-left: 0.4rem; padding-right: 0.4rem; }
+    .gaming-sidebar .py-4 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+    .gaming-table thead th { padding: 0.25rem 0.3rem; font-size: 0.5rem; }
+    .gaming-table tbody td { padding: 0.25rem 0.3rem; font-size: 0.65rem; }
+
+    .page-content { padding-left: 0.4rem; padding-right: 0.4rem; }
+    .gaming-topbar { padding-left: 0.4rem; padding-right: 0.4rem; }
+
+    .gaming-card.p-5 { padding: 0.5rem !important; }
+    .gaming-card.p-5 .w-12.h-12 { width: 1.75rem !important; height: 1.75rem !important; }
+    .gaming-card.p-5 .text-3xl { font-size: 1rem !important; }
+    .gaming-card.p-5 .text-sm.font-semibold { font-size: 0.6rem !important; }
+    .gaming-card.p-5 .gap-4 { gap: 0.3rem !important; }
+
+    .dashboard-wrapper .gaming-card.p-4 { padding: 0.4rem !important; }
+    .dashboard-wrapper .text-2xl { font-size: 0.9rem; }
+    .dashboard-wrapper .gap-3 { gap: 0.25rem; }
+
+    .btn { padding: 0.25rem 0.65rem; font-size: 0.65rem; }
+    .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.55rem; }
+    .btn-sm svg { width: 0.65rem; height: 0.65rem; }
+    .gaming-table thead th { padding: 0.2rem 0.25rem; font-size: 0.45rem; }
+    .gaming-table tbody td { padding: 0.2rem 0.25rem; font-size: 0.6rem; }
+    td .btn-sm { padding: 1px 4px; font-size: 0.5rem; }
+    td .btn-sm svg { width: 0.55rem; height: 0.55rem; }
+}
+
+/* ============================================
+   TABLET OPTIMIZATIONS (641px - 1023px)
+============================================ */
+@media (min-width: 641px) and (max-width: 1023px) {
+    .gaming-sidebar { width: 14rem; }
+    .sidebar-item { padding: 0.5rem 0.75rem; font-size: 0.8rem; gap: 0.6rem; }
+    .sidebar-submenu-item { padding: 0.45rem 0.75rem; padding-left: 1rem; font-size: 0.8rem; }
+    .sidebar-section-toggle { font-size: 0.8rem; }
+    .sidebar-section-label { font-size: 0.6rem; }
+    .gaming-table thead th { padding: 0.6rem 0.75rem; }
+    .gaming-table tbody td { padding: 0.6rem 0.75rem; }
 }
 
 /* Reduce motion for accessibility */

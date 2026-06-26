@@ -105,14 +105,14 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Aset</th>
-                        <th>Email</th>
-                        <th>Mulai</th>
-                        <th>Berakhir</th>
-                        <th>Biaya</th>
+                        <th class="hidden md:table-cell">Email</th>
+                        <th class="hidden md:table-cell">Mulai</th>
+                        <th class="hidden md:table-cell">Berakhir</th>
+                        <th class="hidden md:table-cell">Biaya</th>
                         <th>Status</th>
                         <th>PIC</th>
-                        <th>Jabatan</th>
-                        <th>Keterangan</th>
+                        <th class="hidden lg:table-cell">Jabatan</th>
+                        <th class="hidden md:table-cell">Keterangan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -125,22 +125,22 @@
                     <tr data-status="{{ $a->is_active ? 'aktif' : 'nonaktif' }}">
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
-                        <td style="color:var(--text-muted);">{{ $a->email }}</td>
-                        <td style="color:var(--text-muted);">{{ $a->mulai?->format('d/m/Y') }}</td>
-                        <td style="color:var(--text-muted);">{{ $a->berakhir?->format('d/m/Y') }}</td>
-                        <td style="color:var(--text-muted);">Rp {{ number_format($a->biaya, 0, ',', '.') }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $a->email }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $a->mulai?->format('d/m/Y') }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $a->berakhir?->format('d/m/Y') }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">Rp {{ number_format($a->biaya, 0, ',', '.') }}</td>
                         <td><span class="badge {{ $activeBadge }}">{{ $activeLabel }}</span></td>
                         <td style="color:var(--text-muted);">{{ $a->pic }}</td>
-                        <td style="color:var(--text-muted);">{{ $a->jabatan }}</td>
-                        <td style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $a->keperluan }}">{{ $a->keperluan ?? '-' }}</td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $a->jabatan }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $a->keperluan }}">{{ $a->keperluan ?? '-' }}</td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $a->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <button type="button" onclick="showDetail({{ $a->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="relative" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown({{ $a->id }})" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;">⋮</button>
+                                    <button type="button" onclick="toggleDropdown({{ $a->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $a->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $a->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $a->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>

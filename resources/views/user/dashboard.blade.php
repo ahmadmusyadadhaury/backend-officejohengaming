@@ -131,9 +131,10 @@
                         <th>Judul</th>
                         <th>Tanggal</th>
                         <th>Waktu</th>
-                        <th>Ruangan</th>
-                        <th>Pemohon</th>
+                        <th class="hidden md:table-cell">Ruangan</th>
+                        <th class="hidden md:table-cell">Pemohon</th>
                         <th>Status</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -152,20 +153,23 @@
                             default       => ucfirst($meeting->status),
                         };
                     @endphp
-                    <tr>
+                    <tr data-meeting-id="{{ $meeting->id }}">
                         <td style="color:var(--text-muted);">{{ $myMeetings->firstItem() + $i }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $meeting->title }}</td>
                         <td style="color:var(--text-muted);">{{ $meeting->meeting_date->format('d M Y') }}</td>
                         <td style="color:var(--text-muted);">{{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }}</td>
-                        <td style="color:var(--text-muted);">{{ $meeting->room->name }}</td>
-                        <td style="color:var(--text-muted);">{{ $meeting->requester->name }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $meeting->room->name }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $meeting->requester->name }}</td>
                         <td>
                             <span class="badge" style="{{ $badgeStyle }}">{{ $statusLabel }}</span>
+                        </td>
+                        <td>
+                            <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;">Detail</button>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">
                             @if($search || $status)
                                 Tidak ada meeting ditemukan.
                             @else
@@ -186,10 +190,106 @@
     </div>
 
 </div>
+
+{{-- Modal Detail Meeting --}}
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:50px 16px 16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[680px] rounded-3xl shadow-2xl flex flex-col" style="max-height:85vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Meeting</h3>
+            <button type="button" onclick="closeModal('detail-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="px-6 py-4 flex-shrink-0 flex justify-end" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeModal('detail-modal')" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
+const meetingsData = @json($meetingsJson);
+
+const statusMap = {
+    approved:    { label: '● DISETUJUI',  cls: 'badge-blue' },
+    confirmed:   { label: '● DIKONFIRMASI', cls: 'badge-primary' },
+    in_progress: { label: '● BERLANGSUNG', cls: 'badge-primary' },
+};
+
+function showDetail(id) {
+    const m = meetingsData.find(i => i.id === id);
+    if (!m) return;
+
+    const body = document.getElementById('detail-body');
+    const st = statusMap[m.status] || { label: '● ' + m.status, cls: 'badge-gray' };
+
+    const infoRows = [
+        { label: 'Pemohon', value: m.requester?.name || '-' },
+        { label: 'Judul', value: m.title },
+        { label: 'Tanggal', value: m.meeting_date || '-' },
+        { label: 'Waktu', value: (m.start_time?.substring(0,5)||'') + ' – ' + (m.end_time?.substring(0,5)||'') },
+        { label: 'Ruangan', value: m.room?.name || '-' },
+    ];
+
+    let detailHtml = '';
+    if (m.why) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">Why</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${escHtml(m.why)}</p></div>`;
+    if (m.what) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">What</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${escHtml(m.what)}</p></div>`;
+    if (m.how_expected) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">How</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${escHtml(m.how_expected)}</p></div>`;
+
+    let assetsHtml = '';
+    if (m.assets && m.assets.length) {
+        assetsHtml = `<div class="flex flex-wrap gap-1.5">${m.assets.map(a => `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4338ca;">${escHtml(a.name)} (${a.quantity})</span>`).join('')}</div>`;
+    }
+
+    body.innerHTML = `
+        <div class="space-y-4">
+            <div class="rounded-2xl overflow-hidden" style="border:1px solid var(--border-color);">
+                <div class="px-5 py-3 flex items-center justify-between" style="background:var(--bg-surface-2);border-bottom:1px solid var(--border-color);">
+                    <p class="text-xs font-bold tracking-wider" style="color:var(--text-muted);">INFORMASI MEETING</p>
+                    <span class="badge ${st.cls}">${st.label}</span>
+                </div>
+                <div class="grid grid-cols-2 gap-0">
+                    ${infoRows.map((r, i) => `
+                        <div class="px-5 py-3" ${i < 2 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
+                            <p class="text-xs mb-0.5" style="color:var(--text-muted);">${r.label}</p>
+                            <p class="text-sm font-semibold" style="color:var(--text-primary);">${escHtml(r.value)}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            ${detailHtml ? `
+            <div>
+                <p class="text-xs font-bold tracking-wider mb-2.5 px-1" style="color:var(--color-accent-light);">DETAIL PERMOHONAN</p>
+                <div class="space-y-2.5">${detailHtml}</div>
+            </div>` : ''}
+            ${assetsHtml ? `
+            <div>
+                <p class="text-xs font-bold tracking-wider mb-2 px-1" style="color:var(--color-accent-light);">ASET DIBUTUHKAN</p>
+                ${assetsHtml}
+            </div>` : ''}
+        </div>
+    `;
+
+    openModal('detail-modal');
+}
+
+function escHtml(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+document.getElementById('detail-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeModal('detail-modal');
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal('detail-modal');
+});
+
     function toggleFilterMenu(e) {
         e.stopPropagation();
         var menu = document.getElementById('filter-menu');

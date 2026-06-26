@@ -35,7 +35,7 @@
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $menungguMeeting }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Menunggu Review</div>
             </div>
@@ -50,7 +50,7 @@
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $disetujuiMeeting }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Disetujui</div>
             </div>
@@ -65,7 +65,7 @@
                         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="text-3xl font-gaming font-bold" style="color:#f87171;">{{ $ditolakMeeting }}</div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Ditolak</div>
             </div>
@@ -80,7 +80,7 @@
             <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Tinjau dan kelola permintaan meeting dari seluruh tim.</div>
         </div>
         <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+            <div class="relative flex-1 min-w-0">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
@@ -88,27 +88,43 @@
                     class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
-            <select id="status-filter" onchange="filterMeetings(this.value)" class="ml-auto"
-                style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;">
-                <option value="all">Semua Status</option>
-                <option value="pending">Menunggu Review</option>
-                <option value="approved">Disetujui</option>
-                <option value="rejected">Ditolak</option>
-            </select>
+                <div class="flex items-center gap-2 ml-auto">
+                <div id="meeting-month-wrap">
+                    <input type="month" id="meeting-month-input" value="{{ $meetingMonth ?? now()->format('Y-m') }}" onchange="setMeetingMonth()" class="gaming-input" style="padding:6px 10px;font-size:13px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;">
+                </div>
+                <a href="{{ route('admin.export', ['type' => 'meetings', 'meeting_month' => $meetingMonth ?? now()->format('Y-m')]) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" title="Download Excel" id="meeting-export-link">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Excel
+                </a>
+                <div class="filter-dropdown-wrap" style="position:relative;">
+                <button type="button" onclick="toggleMeetingFilter(event)" class="filter-btn"
+                    style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                    <span id="meeting-filter-label" data-value="all">Semua Status</span>
+                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="meeting-filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                    <button type="button" data-value="all" onclick="setMeetingFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
+                    <button type="button" data-value="pending" onclick="setMeetingFilter('pending')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Menunggu Review</button>
+                    <button type="button" data-value="approved" onclick="setMeetingFilter('approved')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Disetujui</button>
+                    <button type="button" data-value="rejected" onclick="setMeetingFilter('rejected')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ditolak</button>
+                </div>
+            </div>
 
         </div>
-        <div class="overflow-x-auto">
-            <table class="gaming-table min-w-[700px]" id="meetings-table">
+        <div class="overflow-x-auto w-full">
+            <table class="gaming-table min-w-full" id="meetings-table" style="width:100%;">
                 <thead>
                     <tr>
                         <th>No</th>
                         <th>Judul</th>
-                        <th>Pemohon</th>
-                        <th>Tim</th>
+                        <th class="hidden sm:table-cell">Pemohon</th>
+                        <th class="hidden lg:table-cell">Tim</th>
                         <th>Tanggal</th>
-                        <th>Waktu</th>
+                        <th class="hidden sm:table-cell">Waktu</th>
                         <th>Status</th>
-                        <th>Antrian</th>
+                        <th class="hidden md:table-cell">Antrian</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -137,31 +153,60 @@
                     @endphp
                     <tr data-status="{{ $meeting->status }}">
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $meeting->title }}</td>
-                        <td style="color:var(--text-muted);" class="meeting-pemohon">{{ $meeting->requester->name }}</td>
-                        <td style="color:var(--text-muted);">{{ $meeting->team->name }}</td>
-                        <td style="color:var(--text-muted);">{{ $meeting->meeting_date->format('d M Y') }}</td>
-                        <td style="color:var(--text-muted);">{{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }}</td>
-                        <td><span class="badge {{ $statusStyle }}">{{ ucfirst($meeting->status) }}</span></td>
-                        <td>
+                        <td style="color:var(--text-primary);font-weight:500;max-width:200px;" class="truncate">{{ $meeting->title }}</td>
+                        <td style="color:var(--text-muted);" class="meeting-pemohon hidden sm:table-cell">{{ $meeting->requester->name }}</td>
+                        <td style="color:var(--text-muted);" class="hidden lg:table-cell">{{ $meeting->team->name }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;">
+                            <span class="sm:hidden">{{ $meeting->meeting_date->format('d/m') }}</span>
+                            <span class="hidden sm:inline">{{ $meeting->meeting_date->format('d M Y') }}</span>
+                            <span class="sm:hidden text-[10px]" style="color:var(--text-muted);"> {{ substr($meeting->start_time,0,5) }}</span>
+                        </td>
+                        <td style="color:var(--text-muted);" class="hidden sm:table-cell">{{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }}</td>
+                        <td><span class="badge {{ $statusStyle }}" style="white-space:nowrap;">{{ ucfirst($meeting->status) }}</span></td>
+                        <td class="hidden md:table-cell">
                             @if($meeting->queue_position !== null && !in_array($meeting->status, ['pending','rejected','cancelled']))
-                                <span class="badge {{ $queueBadge }}">{{ $rt['label'] }}</span>
+                                <span class="badge {{ $queueBadge }}" style="white-space:nowrap;">{{ $rt['label'] }}</span>
                             @else
                                 <span style="color:var(--text-muted);">—</span>
                             @endif
                         </td>
-                        <td class="flex items-center gap-2">
-                            <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm">Detail</button>
-                            <a href="{{ route('admin.export', ['type' => 'meetings']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            </a>
-                            @if(in_array($meeting->status, ['cancelled','rejected']))
-                            <form method="POST" action="{{ route('admin.meetings.destroy', $meeting) }}" class="inline"
-                                onsubmit="return confirm('Hapus meeting ini?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
-                            @endif
+                        <td>
+                            <div class="flex items-center gap-1 justify-end" style="white-space:nowrap;">
+                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:3px;padding:3px 6px;font-size:0.7rem;" title="Lihat detail">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Lihat detail
+                                </button>
+                                <div class="relative dropdown-actions">
+                                    <button type="button" onclick="toggleActionMenu(event, {{ $meeting->id }})" class="btn btn-secondary btn-sm" style="padding:4px 6px;line-height:1;font-size:0.7rem;" title="Aksi">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/>
+                                        </svg>
+                                    </button>
+                                    <div id="action-menu-{{ $meeting->id }}" style="display:none;position:fixed;min-width:160px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;">
+                                        <button type="button" onclick="showDetail({{ $meeting->id }})" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            Lihat Detail
+                                        </button>
+                                        @if(in_array($meeting->status, ['cancelled','rejected']))
+                                        <form method="POST" action="{{ route('admin.meetings.destroy', $meeting) }}" onsubmit="return confirm('Hapus meeting ini?')" class="w-full">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:#f87171;display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                                Hapus
+                                            </button>
+                                        </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -384,7 +429,7 @@ document.getElementById('d-reject-form')?.addEventListener('submit', function(e)
 });
 
 function filterMeetings() {
-    const status = document.getElementById('status-filter').value;
+    const status = document.getElementById('meeting-filter-label').dataset.value || 'all';
     const search = (document.getElementById('search-meeting')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('#meetings-tbody tr:not(#empty-row)');
 
@@ -397,11 +442,63 @@ function filterMeetings() {
     });
 }
 
+function toggleMeetingFilter(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('meeting-filter-menu');
+    const isHidden = menu.style.display === 'none';
+    document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = isHidden ? 'block' : 'none';
+}
+
+function setMeetingFilter(value) {
+    const label = document.getElementById('meeting-filter-label');
+    const map = { all: 'Semua Status', pending: 'Menunggu Review', approved: 'Disetujui', rejected: 'Ditolak' };
+    label.textContent = map[value] || value;
+    label.dataset.value = value;
+    document.getElementById('meeting-filter-menu').style.display = 'none';
+    filterMeetings();
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    }
+});
+
+function setMeetingMonth() {
+    const month = document.getElementById('meeting-month-input').value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('meeting_month', month);
+    window.location.href = url.toString();
+}
+
 // Auto-open detail modal from dashboard review link
 const reviewId = new URLSearchParams(window.location.search).get('review');
 if (reviewId) {
     showDetail(parseInt(reviewId));
 }
+
+// Dropdown titik tiga
+function toggleActionMenu(e, id) {
+    e.stopPropagation();
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const menu = document.getElementById('action-menu-' + id);
+    const isHidden = menu.style.display === 'none';
+    document.querySelectorAll('[id^="action-menu-"]').forEach(m => m.style.display = 'none');
+    if (isHidden) {
+        menu.style.top = (rect.bottom + 4) + 'px';
+        menu.style.left = Math.min(rect.left, window.innerWidth - 170) + 'px';
+        menu.style.right = 'auto';
+        menu.style.display = 'block';
+    }
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-actions')) {
+        document.querySelectorAll('[id^="action-menu-"]').forEach(m => m.style.display = 'none');
+    }
+});
 </script>
 @endpush
 

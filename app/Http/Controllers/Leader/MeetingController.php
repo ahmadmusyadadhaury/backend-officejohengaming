@@ -12,6 +12,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Services\MeetingQueueService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MeetingController extends Controller
 {
@@ -26,7 +27,7 @@ class MeetingController extends Controller
         $search = $request->input('search', '');
         $status = $request->input('status', '');
 
-        $query = Meeting::with(['room', 'team', 'teams'])
+        $query = Meeting::with(['room', 'team', 'teams', 'assets', 'mom.creator', 'requester'])
             ->where('requested_by', $userId);
 
         if ($search) {
@@ -39,6 +40,42 @@ class MeetingController extends Controller
 
         $meetings = $query->latest()->paginate(15)->withQueryString();
 
+        $meetingsJson = $meetings->map(fn($m) => [
+            'id' => $m->id,
+            'title' => $m->title,
+            'why' => $m->why,
+            'what' => $m->what,
+            'how_expected' => $m->how_expected,
+            'status' => $m->status,
+            'queue_position' => $m->queue_position,
+            'room' => $m->room ? ['name' => $m->room->name] : null,
+            'team' => $m->team ? ['name' => $m->team->name] : null,
+            'requester' => $m->requester ? ['name' => $m->requester->name] : null,
+            'meeting_date' => $m->meeting_date?->format('d M Y'),
+            'meeting_date_raw' => $m->meeting_date?->format('Y-m-d'),
+            'start_time' => $m->start_time,
+            'end_time' => $m->end_time,
+            'actual_end_time' => $m->actual_end_time,
+            'reject_reason' => $m->reject_reason,
+            'teams' => $m->teams->map(fn($t) => $t->name),
+            'rt_label' => MeetingQueueService::realtimeStatus($m)['label'] ?? '-',
+            'assets' => $m->assets->map(fn($a) => [
+                'name' => $a->name,
+                'quantity' => $a->pivot->quantity,
+            ]),
+            'mom' => $m->mom ? [
+                'id' => $m->mom->id,
+                'status' => $m->mom->status,
+                'summary' => $m->mom->summary,
+                'decisions' => $m->mom->decisions,
+                'action_plan' => $m->mom->action_plan,
+                'pic' => $m->mom->pic,
+                'creator_name' => $m->mom->creator->name ?? null,
+                'sent_at' => $m->mom->sent_at?->format('d M Y H:i'),
+                'file_url' => $m->mom->file_path ? Storage::url($m->mom->file_path) : null,
+            ] : null,
+        ]);
+
         $totalMeeting    = Meeting::where('requested_by', $userId)->count();
         $menungguMeeting = Meeting::where('requested_by', $userId)->where('status', 'pending')->count();
         $disetujuiMeeting= Meeting::where('requested_by', $userId)->whereIn('status', ['approved','confirmed','in_progress','completed'])->count();
@@ -47,10 +84,11 @@ class MeetingController extends Controller
         $rooms = Room::where('is_active', true)->get();
         $teams = Team::where('is_active', true)->get();
         $assets = Asset::where('is_active', true)->get();
+        $users = User::where('is_active', true)->orderBy('name')->get(['id', 'name']);
 
         return view('leader.meetings.index', compact(
-            'meetings', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'search', 'status',
-            'rooms', 'teams', 'assets'
+            'meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'search', 'status',
+            'rooms', 'teams', 'assets', 'users'
         ));
     }
 

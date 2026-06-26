@@ -122,7 +122,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Aset</th>
-                        <th>Lokasi</th>
+                        <th class="hidden md:table-cell">Lokasi</th>
                         <th>Jumlah</th>
                         <th>Kondisi</th>
                         <th>Aksi</th>
@@ -137,17 +137,17 @@
                     <tr data-id="{{ $i->id }}" data-kondisi="{{ $i->kondisi }}">
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $i->nama_aset }}</td>
-                        <td style="color:var(--text-muted);">{{ $i->lokasi }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $i->lokasi }}</td>
                         <td><span class="badge badge-cyan">{{ $i->jumlah }}</span></td>
                         <td><span class="badge {{ $kondisiBadge }}">{{ $kondisiLabel }}</span></td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;">
+                                <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="relative" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown({{ $i->id }})" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;">⋮</button>
+                                    <button type="button" onclick="toggleDropdown({{ $i->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $i->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>

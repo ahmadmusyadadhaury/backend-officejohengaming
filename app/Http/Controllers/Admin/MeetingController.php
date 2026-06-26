@@ -8,20 +8,28 @@ use App\Models\MeetingInvitation;
 use App\Models\Notification;
 use App\Models\User;
 use App\Services\MeetingQueueService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MeetingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         Notification::where('user_id', auth()->id())
             ->where('type', 'activity')
             ->where('is_read', false)
             ->update(['is_read' => true, 'read_at' => now()]);
 
-        $meetings = Meeting::with(['requester', 'team', 'teams', 'room', 'assets', 'mom.creator'])
-            ->latest()->paginate(15);
+        $meetingMonth = $request->get('meeting_month', now()->format('Y-m'));
+
+        $query = Meeting::with(['requester', 'team', 'teams', 'room', 'assets', 'mom.creator']);
+
+        $startDate = Carbon::parse($meetingMonth.'-01')->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+        $query->whereBetween('meeting_date', [$startDate, $endDate]);
+
+        $meetings = $query->latest()->paginate(15)->withQueryString();
 
         $meetingsJson = $meetings->map(fn($m) => [
             'id' => $m->id,
@@ -63,7 +71,7 @@ class MeetingController extends Controller
         $disetujuiMeeting = Meeting::whereIn('status', ['approved','confirmed','in_progress','completed'])->count();
         $ditolakMeeting   = Meeting::where('status', 'rejected')->count();
 
-        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting'));
+        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'meetingMonth'));
     }
 
     public function show(Meeting $meeting)

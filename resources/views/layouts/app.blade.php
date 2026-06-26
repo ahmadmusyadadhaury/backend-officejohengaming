@@ -96,11 +96,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                <div>
-                    <h1 class="font-gaming font-semibold leading-tight" style="font-size:1.1rem;color:var(--text-primary);">
+                <div class="min-w-0">
+                    <h1 class="font-gaming font-semibold leading-tight truncate" style="font-size:1.1rem;color:var(--text-primary);">
                         @yield('page-title', 'Dashboard')
                     </h1>
-                    <p class="hidden sm:block" style="font-size:0.8rem;color:var(--text-muted);">@yield('page-subtitle', '')</p>
+                    <p class="hidden sm:block truncate" style="font-size:0.8rem;color:var(--text-muted);">@yield('page-subtitle', '')</p>
                 </div>
             </div>
 

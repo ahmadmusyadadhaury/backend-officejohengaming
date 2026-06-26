@@ -81,15 +81,21 @@
                     class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
-            <form method="GET" action="{{ route('admin.moms.index') }}" class="flex items-center gap-2 ml-auto">
-                <select name="period" onchange="this.form.submit()"
-                    style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;">
-                    <option value="all" {{ $period == 'all' ? 'selected' : '' }}>Semua Periode</option>
-                    <option value="daily" {{ $period == 'daily' ? 'selected' : '' }}>Hari Ini</option>
-                    <option value="weekly" {{ $period == 'weekly' ? 'selected' : '' }}>Minggu Ini</option>
-                    <option value="monthly" {{ $period == 'monthly' ? 'selected' : '' }}>Bulan Ini</option>
-                </select>
-            </form>
+            <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
+                <button type="button" onclick="togglePeriodFilter(event)" class="filter-btn"
+                    style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                    <span id="period-filter-label" data-value="{{ $period }}">{{ $period == 'all' ? 'Semua Periode' : ($period == 'daily' ? 'Hari Ini' : ($period == 'weekly' ? 'Minggu Ini' : 'Bulan Ini')) }}</span>
+                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="period-filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                    <button type="button" data-value="all" onclick="setPeriodFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Periode</button>
+                    <button type="button" data-value="daily" onclick="setPeriodFilter('daily')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hari Ini</button>
+                    <button type="button" data-value="weekly" onclick="setPeriodFilter('weekly')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Minggu Ini</button>
+                    <button type="button" data-value="monthly" onclick="setPeriodFilter('monthly')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Bulan Ini</button>
+                </div>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="gaming-table min-w-[900px]">
@@ -357,6 +363,26 @@ document.getElementById('mom-detail-modal')?.addEventListener('click', function(
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeModal('mom-detail-modal');
+});
+
+function togglePeriodFilter(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('period-filter-menu');
+    const isHidden = menu.style.display === 'none';
+    document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = isHidden ? 'block' : 'none';
+}
+
+function setPeriodFilter(value) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('period', value);
+    window.location.search = params.toString();
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    }
 });
 
 function filterMoms() {
