@@ -696,7 +696,7 @@
         </aside>
 
         {{-- Edit Weekly Modal --}}
-        <div id="weekly-edit-modal" style="display:none;position:fixed;inset:0;background:var(--bg-overlay);z-index:999;align-items:flex-start;justify-content:center;padding:50px 16px 16px;">
+        <div id="weekly-edit-modal" style="display:none;position:fixed;inset:0;background:var(--bg-overlay);z-index:999;align-items:center;justify-content:center;padding:16px;">
             <div style="width:100%;max-width:420px;background:var(--bg-surface);border-radius:1.25rem;border:1px solid var(--border-color);box-shadow:var(--shadow-lg);overflow:hidden;" onclick="event.stopPropagation()">
                 <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);">
                     <h3 id="weekly-modal-title" class="text-sm font-bold" style="color:var(--text-primary);">Edit Jadwal Mingguan</h3>

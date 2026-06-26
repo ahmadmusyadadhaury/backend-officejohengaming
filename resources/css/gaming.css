@@ -820,7 +820,7 @@ body.light .badge-orange {
 }
 
 .topbar-dropdown {
-    min-width: 18rem;
+    min-width: 14rem;
     border-radius: 18px;
     overflow: hidden;
 }
@@ -953,7 +953,7 @@ body.light .badge-orange {
    PAGE TRANSITION
 ============================================ */
 .page-content {
-    animation: fadeIn 0.35s ease forwards;
+    /* animation removed — was causing stacking context that hid modals behind topbar */
 }
 
 /* ============================================

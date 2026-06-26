@@ -136,7 +136,7 @@
                             </svg>
                             <span data-notif-badge class="topbar-badge {{ $totalPending > 0 ? '' : 'hidden' }}">{{ $totalPending }}</span>
                         </button>
-                        <div class="hidden absolute right-0 top-12 w-72 rounded-xl z-50 max-h-96 overflow-y-auto topbar-dropdown"
+                        <div class="hidden absolute right-0 top-12 w-64 rounded-xl z-50 max-h-80 overflow-y-auto topbar-dropdown"
                             style="background:var(--bg-surface);border:1px solid var(--border-color);box-shadow:var(--shadow-lg);">
                             {{-- Undangan Aktif --}}
                             <p class="px-4 py-2 font-gaming font-semibold" style="font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);border-bottom:1px solid var(--border-color);">
@@ -307,8 +307,8 @@
     </div>
 
     {{-- Invitation Modal --}}
-    <div id="invitation-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:var(--bg-overlay);">
-        <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div id="invitation-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[480px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Undangan Meeting</h3>
                 <button type="button" onclick="closeInvitationModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
@@ -881,6 +881,7 @@
             }
         });
     </script>
+    @stack('modals')
     @stack('scripts')
 </body>
 </html>

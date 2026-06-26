@@ -239,7 +239,7 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
 </script>
 
 {{-- Modal Semua Pembayaran --}}
-<div id="semua-pembayaran-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeModal('semua-pembayaran-modal')">
+<div id="semua-pembayaran-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeModal('semua-pembayaran-modal')">
     <div class="w-full" style="max-width:800px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.4);">
         <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
             <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
@@ -308,8 +308,8 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
 </div>
 
 {{-- Modal Bayar dari Dashboard --}}
-<div id="dashboard-bayar-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:flex-start;justify-content:center;padding:80px 16px 16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeDashboardBayar()">
-    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:88vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="dashboard-bayar-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeDashboardBayar()">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);">Bayar / Lunaskan</h3>
             <button type="button" onclick="closeDashboardBayar()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px;">

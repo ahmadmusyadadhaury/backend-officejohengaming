@@ -113,8 +113,8 @@
             </div>
 
         </div>
-        <div class="overflow-x-auto w-full">
-            <table class="gaming-table min-w-full" id="meetings-table" style="width:100%;">
+        <div class="w-full" style="overflow:visible;">
+            <table class="gaming-table" id="meetings-table" style="width:100%;min-width:700px;">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -185,7 +185,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/>
                                         </svg>
                                     </button>
-                                    <div id="action-menu-{{ $meeting->id }}" style="display:none;position:fixed;min-width:160px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;">
+                                    <div id="action-menu-{{ $meeting->id }}" style="display:none;position:absolute;top:100%;right:0;min-width:160px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $meeting->id }})" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -222,22 +222,64 @@
 
 </div>
 
+@endsection
+
+@push('modals')
 {{-- Modal Detail --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:50px 16px 16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[680px] rounded-3xl shadow-2xl flex flex-col" style="max-height:85vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full" style="max-width:920px;width:90vw;max-height:65vh;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Permintaan Meeting</h3>
-            <button type="button" onclick="closeModal('detail-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.18);">
+                    <svg class="w-4.5 h-4.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </div>
+                <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Permintaan Meeting — <span id="detail-judul">Meeting</span></h3>
+            </div>
+            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
 
         {{-- Body --}}
-        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="p-6 overflow-y-auto flex-1" id="detail-body" style="scrollbar-width:thin;scrollbar-color:rgba(129,140,248,0.25) transparent;">
+
+            {{-- 2-Column Grid: Left Info / Right Permohonan --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {{-- Left: Meeting Info --}}
+                <div id="meeting-info-rows" class="space-y-0"></div>
+
+                {{-- Right: Detail Permohonan --}}
+                <div id="meeting-permohonan-section" class="hidden">
+                    <div id="meeting-permohonan-content"></div>
+                </div>
+            </div>
+
+            {{-- Aset Dibutuhkan --}}
+            <div class="mt-6" id="meeting-assets-section" style="display:none;">
+                <div style="border:1px solid var(--border-color);background:var(--bg-surface-2);border-radius:16px;padding:14px;">
+                    <div id="meeting-assets-content"></div>
+                </div>
+            </div>
+
+            {{-- MOM --}}
+            <div class="mt-6" id="meeting-mom-section" style="display:none;">
+                <div style="border:1px solid rgba(16,185,129,0.35);background:var(--bg-base);border-radius:16px;padding:18px;">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-5 h-5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <h4 class="text-sm font-bold" style="color:#10b981;">Minutes of Meeting (MOM)</h4>
+                    </div>
+                    <div style="border:1px solid rgba(16,185,129,0.2);background:var(--bg-surface-2);border-radius:14px;padding:18px;">
+                        <div id="mom-ringkasan" class="mb-4"></div>
+                        <div id="mom-keputusan" class="mb-4"></div>
+                        <div id="mom-action-plan" class="mb-4"></div>
+                        <div id="mom-pic-section" class="mb-4"></div>
+                        <div id="mom-file-section"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         {{-- Reject reason --}}
         <div id="d-reject-section" class="hidden px-6 pb-4 flex-shrink-0">
@@ -266,12 +308,12 @@
         </div>
 
         {{-- Footer --}}
-        <div class="px-6 py-4 flex-shrink-0 flex justify-end" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeModal('detail-modal')" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        <div class="flex items-center justify-end px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-secondary);border:1px solid var(--border-color);background:var(--bg-surface-2);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
         </div>
     </div>
 </div>
-@endsection
+@endpush
 
 @push('scripts')
 <script>
@@ -291,84 +333,109 @@ function showDetail(id) {
     const m = meetingsData.find(i => i.id === id);
     if (!m) return;
 
-    const body = document.getElementById('detail-body');
     const st = statusMap[m.status] || statusMap.cancelled;
 
-    const infoRows = [
-        { label: 'Pemohon', value: m.requester?.name || '-' },
-        { label: 'Judul Meeting', value: m.title },
-        { label: 'Tanggal', value: m.meeting_date || '-' },
-        { label: 'Ruangan', value: m.room?.name || '-' },
-    ];
+    document.getElementById('detail-judul').textContent = m.title;
 
-    let detailHtml = '';
-    if (m.why || m.what || m.how_expected) {
-        if (m.why) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">Why</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.why}</p></div>`;
-        if (m.what) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">What</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.what}</p></div>`;
-        if (m.how_expected) detailHtml += `<div class="p-4 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1.5" style="color:var(--color-accent-light);">How</p><p class="text-sm leading-relaxed" style="color:var(--text-secondary);">${m.how_expected}</p></div>`;
-    }
-
-    let assetsHtml = '';
-    if (m.assets && m.assets.length) {
-        assetsHtml += `<div class="flex flex-wrap gap-1.5">${m.assets.map(a => `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4338ca;">${a.name} (${a.quantity})</span>`).join('')}</div>`;
-    }
-
-    let momHtml = '';
-    if (m.mom) {
-        momHtml += `<div class="flex items-center gap-2 mb-3"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${m.mom.status === 'sent' ? '#dcfce7' : '#fef3c7'};color:${m.mom.status === 'sent' ? '#059669' : '#d97706'};">${m.mom.status === 'sent' ? 'Terkirim' : 'Draft'}</span></div>`;
-        if (m.mom.summary) momHtml += `<div class="mb-3 p-4 rounded-xl" style="background:var(--bg-surface);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1" style="color:#059669;">Ringkasan</p><p class="text-sm" style="color:var(--text-secondary);line-height:1.6;">${m.mom.summary}</p></div>`;
-        if (m.mom.decisions) momHtml += `<div class="mb-3 p-4 rounded-xl" style="background:var(--bg-surface);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1" style="color:#059669;">Keputusan</p><p class="text-sm" style="color:var(--text-secondary);line-height:1.6;">${m.mom.decisions}</p></div>`;
-        if (m.mom.action_plan) momHtml += `<div class="mb-3 p-4 rounded-xl" style="background:var(--bg-surface);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1" style="color:#059669;">Action Plan</p><p class="text-sm" style="color:var(--text-secondary);line-height:1.6;">${m.mom.action_plan}</p></div>`;
-        momHtml += `<div class="grid grid-cols-2 gap-3 text-sm"><div><span class="text-xs font-bold" style="color:#059669;">PIC</span><p class="font-semibold mt-0.5" style="color:var(--text-primary);">${m.mom.pic || '-'}</p></div><div><span class="text-xs font-bold" style="color:#059669;">Dibuat</span><p class="font-semibold mt-0.5" style="color:var(--text-primary);">${m.mom.creator_name || '-'}</p></div></div>`;
-        if (m.mom.file_url) momHtml += `<div class="mt-3"><a href="${m.mom.file_url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download</a></div>`;
-        if (m.mom.sent_at) momHtml += `<p class="text-xs mt-2" style="color:var(--text-muted);">Dikirim ${m.mom.sent_at}</p>`;
-    }
-
-    body.innerHTML = `
-        <div class="space-y-4">
-            <!-- Info Card -->
-            <div class="rounded-2xl overflow-hidden" style="border:1px solid var(--border-color);">
-                <div class="px-5 py-3 flex items-center justify-between" style="background:var(--bg-surface-2);border-bottom:1px solid var(--border-color);">
-                    <p class="text-xs font-bold tracking-wider" style="color:var(--text-muted);">INFORMASI MEETING</p>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${st.bg};color:${st.text};border:1px solid ${st.border};">${st.label}</span>
-                </div>
-                <div class="grid grid-cols-2 gap-0">
-                    ${infoRows.map((r, i) => `
-                        <div class="px-5 py-3" ${i < 2 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
-                            <p class="text-xs mb-0.5" style="color:var(--text-muted);">${r.label}</p>
-                            <p class="text-sm font-semibold" style="color:var(--text-primary);">${r.value}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-
-            ${detailHtml ? `
-            <!-- Detail Permohonan -->
-            <div>
-                <p class="text-xs font-bold tracking-wider mb-2.5 px-1" style="color:var(--color-accent-light);">DETAIL PERMOHONAN</p>
-                <div class="space-y-2.5">
-                    ${detailHtml}
-                </div>
-            </div>` : ''}
-
-            ${assetsHtml ? `
-            <!-- Aset -->
-            <div>
-                <p class="text-xs font-bold tracking-wider mb-2 px-1" style="color:var(--color-accent-light);">ASET DIBUTUHKAN</p>
-                ${assetsHtml}
-            </div>` : ''}
-
-            ${momHtml ? `
-            <!-- MOM -->
-            <div class="rounded-2xl p-5" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.25);">
-                <div class="flex items-center gap-2 mb-3">
-                    <svg class="w-4 h-4" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <p class="text-xs font-bold" style="color:#059669;letter-spacing:0.05em;">MINUTES OF MEETING</p>
-                </div>
-                ${momHtml}
-            </div>` : ''}
+    const rows = document.getElementById('meeting-info-rows');
+    rows.innerHTML = `
+        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-xs font-semibold" style="color:var(--text-muted);">Pemohon</span>
+            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.requester?.name || '-'}</span>
+        </div>
+        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-xs font-semibold" style="color:var(--text-muted);">Judul Meeting</span>
+            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.title}</span>
+        </div>
+        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-xs font-semibold" style="color:var(--text-muted);">Tanggal</span>
+            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.meeting_date || '-'}</span>
+        </div>
+        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-xs font-semibold" style="color:var(--text-muted);">Ruangan</span>
+            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.room?.name || '-'}</span>
+        </div>
+        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-xs font-semibold" style="color:var(--text-muted);">Waktu</span>
+            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.start_time || '-'}${m.end_time ? ' - ' + m.end_time : ''}</span>
+        </div>
+        <div class="flex items-center justify-between py-3">
+            <span class="text-xs font-semibold" style="color:var(--text-muted);">Status</span>
+            <span class="text-xs font-bold px-3 py-1.5" style="background:${st.bg};color:${st.text};border-radius:8px;">${st.label}</span>
         </div>
     `;
+
+    const permohonanSec = document.getElementById('meeting-permohonan-section');
+    const permohonanContent = document.getElementById('meeting-permohonan-content');
+    let pHtml = '';
+    if (m.why) pHtml += `
+        <div class="mb-4">
+            <div class="flex items-center gap-1.5 mb-2">
+                <svg class="w-4 h-4" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="text-xs font-bold" style="color:#8b5cf6;">Why — Kenapa meeting ini diadakan?</span>
+            </div>
+            <div class="text-sm leading-relaxed p-3.5" style="background:var(--bg-surface-2);border-radius:10px;color:var(--text-secondary);line-height:1.6;">${m.why}</div>
+        </div>`;
+    if (m.what) pHtml += `
+        <div class="mb-4">
+            <div class="flex items-center gap-1.5 mb-2">
+                <svg class="w-4 h-4" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                <span class="text-xs font-bold" style="color:#8b5cf6;">What — Apa yang dibahas?</span>
+            </div>
+            <div class="text-sm leading-relaxed p-3.5" style="background:var(--bg-surface-2);border-radius:10px;color:var(--text-secondary);line-height:1.6;">${m.what}</div>
+        </div>`;
+    if (m.how_expected) pHtml += `
+        <div class="mb-4">
+            <div class="flex items-center gap-1.5 mb-2">
+                <svg class="w-4 h-4" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span class="text-xs font-bold" style="color:#8b5cf6;">How — Bagaimana hasil yang diharapkan?</span>
+            </div>
+            <div class="text-sm leading-relaxed p-3.5" style="background:var(--bg-surface-2);border-radius:10px;color:var(--text-secondary);line-height:1.6;">${m.how_expected}</div>
+        </div>`;
+    if (pHtml) {
+        permohonanContent.innerHTML = pHtml;
+        permohonanSec.classList.remove('hidden');
+    } else {
+        permohonanSec.classList.add('hidden');
+    }
+
+    const assetsSection = document.getElementById('meeting-assets-section');
+    const assetsContent = document.getElementById('meeting-assets-content');
+    if (m.assets && m.assets.length) {
+        assetsContent.innerHTML = `
+            <p class="text-xs font-bold tracking-wider mb-3" style="color:var(--color-accent-light);">ASET DIBUTUHKAN</p>
+            <div class="flex flex-wrap gap-2">${m.assets.map(a => `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4338ca;">${a.name} (${a.quantity})</span>`).join('')}</div>
+        `;
+        assetsSection.style.display = '';
+    } else {
+        assetsSection.style.display = 'none';
+    }
+
+    const momSection = document.getElementById('meeting-mom-section');
+    const hasMom = m.mom && (m.mom.summary || m.mom.decisions || m.mom.action_plan || m.mom.pic || m.mom.file_url);
+    if (hasMom) {
+        function momItem(label, content, icon) {
+            if (!content) return '';
+            return '<div class="mb-4"><div class="flex items-center gap-1.5 mb-1.5"><svg class="w-3.5 h-3.5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + icon + '"/></svg><span class="text-xs font-bold uppercase tracking-wider" style="color:#10b981;">' + label + '</span></div><p class="text-sm" style="color:var(--text-primary);line-height:1.7;">' + content + '</p></div>';
+        }
+
+        let ringkasanHtml = '';
+        if (m.mom.status) {
+            const isSent = m.mom.status === 'sent';
+            ringkasanHtml += '<div class="flex items-center gap-2 mb-3"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:' + (isSent ? '#dcfce7' : '#fef3c7') + ';color:' + (isSent ? '#059669' : '#d97706') + ';">' + (isSent ? 'Terkirim' : 'Draft') + '</span></div>';
+        }
+        ringkasanHtml += momItem('Ringkasan Pembahasan', m.mom.summary, 'M7 4V2m17 2v2M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z');
+        document.getElementById('mom-ringkasan').innerHTML = ringkasanHtml;
+        document.getElementById('mom-keputusan').innerHTML = momItem('Keputusan', m.mom.decisions, 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
+        document.getElementById('mom-action-plan').innerHTML = momItem('Action Plan', m.mom.action_plan, 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2');
+        document.getElementById('mom-pic-section').innerHTML = momItem('Penanggung Jawab (PIC)', m.mom.pic, 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z');
+        document.getElementById('mom-file-section').innerHTML = m.mom.file_url
+            ? '<div><div class="flex items-center gap-1.5 mb-1.5"><svg class="w-3.5 h-3.5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><span class="text-xs font-bold uppercase tracking-wider" style="color:#10b981;">File Pendukung</span></div><a href="' + m.mom.file_url + '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg max-w-full" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);"><svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="truncate max-w-[200px]">' + (m.mom.file_name || 'Download') + '</span></a></div>'
+            : '';
+        momSection.style.display = '';
+    } else {
+        momSection.style.display = 'none';
+    }
 
     const rejectSec = document.getElementById('d-reject-section');
     const rejectReason = document.getElementById('d-reject-reason');
@@ -382,10 +449,8 @@ function showDetail(id) {
     const actionsSec = document.getElementById('d-actions-section');
     if (m.status === 'pending') {
         actionsSec.classList.remove('hidden');
-        const approveForm = document.getElementById('d-approve-form');
-        approveForm.action = '/admin/meetings/' + m.id + '/approve';
-        const rejectForm = document.getElementById('d-reject-form');
-        rejectForm.action = '/admin/meetings/' + m.id + '/reject';
+        document.getElementById('d-approve-form').action = '/admin/meetings/' + m.id + '/approve';
+        document.getElementById('d-reject-form').action = '/admin/meetings/' + m.id + '/reject';
         document.getElementById('d-reject-input').value = '';
     } else {
         actionsSec.classList.add('hidden');
@@ -481,15 +546,10 @@ if (reviewId) {
 // Dropdown titik tiga
 function toggleActionMenu(e, id) {
     e.stopPropagation();
-    const btn = e.currentTarget;
-    const rect = btn.getBoundingClientRect();
     const menu = document.getElementById('action-menu-' + id);
     const isHidden = menu.style.display === 'none';
     document.querySelectorAll('[id^="action-menu-"]').forEach(m => m.style.display = 'none');
     if (isHidden) {
-        menu.style.top = (rect.bottom + 4) + 'px';
-        menu.style.left = Math.min(rect.left, window.innerWidth - 170) + 'px';
-        menu.style.right = 'auto';
         menu.style.display = 'block';
     }
 }
@@ -500,5 +560,25 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
+@endpush
+
+@push('styles')
+<style>
+#detail-body::-webkit-scrollbar {
+    width: 5px;
+}
+#detail-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+#detail-body::-webkit-scrollbar-thumb {
+    background: rgba(129,140,248,0.25);
+    border-radius: 4px;
+}
+
+@keyframes momFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
 @endpush
 

@@ -220,16 +220,19 @@ class ExportController extends Controller
 
     protected function simCardsExport($filter = 'all')
     {
-        $query = SimCard::orderBy('nomor_kartu');
+        $query = SimCard::orderBy('nomor_sim_card');
         if ($filter !== 'all') {
             $query->where('status_kartu', $filter === 'aktif' ? 1 : 0);
         }
         $data = $query->get()->map(fn ($s) => [
-            'Nomor Kartu' => $s->nomor_kartu,
-            'Provider' => $s->provider ?? '-',
-            'Pemilik' => $s->pemilik ?? '-',
-            'Status' => $s->status,
-            'Keterangan' => $s->keterangan ?? '-',
+            'Nomor SIM Card'     => $s->nomor_sim_card,
+            'PIC'                => $s->pic,
+            'Jabatan'            => $s->jabatan,
+            'Masa Aktif'         => $s->masa_aktif?->format('d/m/Y'),
+            'Masa Tenggang'      => $s->masa_tenggang?->format('d/m/Y'),
+            'Status Paket Kuota' => $s->status_paket_kuota ? 'Aktif' : 'Nonaktif',
+            'Status Kartu'       => $s->status_kartu ? 'Aktif' : 'Nonaktif',
+            'Keperluan'          => $s->keperluan ?? '-',
         ]);
 
         return Excel::download(
@@ -245,12 +248,28 @@ class ExportController extends Controller
             $query->where('kondisi', $filter);
         }
         $data = $query->get()->map(fn ($p) => [
-            'Nama Barang' => $p->nama_barang,
-            'Merek' => $p->merek ?? '-',
-            'Jumlah' => $p->jumlah,
-            'Lokasi' => $p->lokasi ?? '-',
-            'Kondisi' => $p->kondisi,
-            'Keterangan' => $p->keterangan ?? '-',
+            'Nama Barang'              => $p->nama_barang,
+            'Jumlah'                   => $p->jumlah,
+            'Detail'                   => $p->detail ?? '-',
+            'Sub Kategori'             => $p->sub_kategori,
+            'Keterangan'               => $p->keterangan ?? '-',
+            'Lokasi Unit'              => $p->lokasi_unit,
+            'Ruangan'                  => $p->ruangan,
+            'Milik'                    => $p->milik,
+            'Pengadaan (Tahun)'        => $p->pengadaan_tahun,
+            'Tanggal Pembelian'        => $p->tanggal_pembelian?->format('d/m/Y'),
+            'Kategori Nilai'           => $p->kategori_nilai,
+            'Kategori Ukuran'          => $p->kategori_ukuran,
+            'Nilai'                    => $p->nilai ? 'Rp '.number_format($p->nilai, 0, ',', '.') : '-',
+            'Waktu Pakai Per Hari'     => $p->waktu_pakai_per_hari,
+            'Estimasi Waktu Barang'    => $p->estimasi_waktu_barang,
+            'Pengurangan Harga/Hari'   => $p->pengurangan_harga_per_hari,
+            'Harga Per Hari Ini'       => $p->harga_per_hari_ini,
+            'PIC'                      => $p->pic,
+            'Jabatan'                  => $p->jabatan,
+            'Atasan'                   => $p->atasan,
+            'Jabatan Atasan'           => $p->jabatan_atasan,
+            'Kondisi'                  => $p->kondisi,
         ]);
 
         return Excel::download(

@@ -124,18 +124,9 @@
                     class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
-            <div class="relative" style="position:relative;">
-                <button type="button" onclick="toggleExportMenu(event)" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Export
-                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div id="export-menu" class="export-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:160px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                    <a href="{{ route('admin.export', ['type' => 'vehicles', 'filter' => 'all']) }}" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Download Semua Data</a>
-                    <button type="button" onclick="exportFiltered('vehicles')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Download Hasil Filter</button>
-                </div>
-            </div>
-            <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
+            <div class="flex items-center gap-2" style="margin-left:auto;">
+                <a href="{{ route('admin.export', ['type' => 'vehicles', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">Download Excel</a>
+                <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
                     <span id="filter-label">{{ $statusFilter === 'all' ? 'Semua Status' : ($statusFilter === 'aktif' ? 'Pajak Aktif' : ($statusFilter === 'segera_habis' ? 'Segera Habis' : 'Pajak Mati')) }}</span>
@@ -150,8 +141,9 @@
                     <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Pajak Mati</button>
                 </div>
             </div>
+            </div>
         </div>
-        <div class="overflow-x-auto">
+        <div>
             <table class="gaming-table min-w-[700px]" id="vehicles-table">
                 <thead>
                     <tr>
@@ -199,9 +191,9 @@
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
-                                <div class="relative" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown({{ $v->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $v->id }}" class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, {{ $v->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-{{ $v->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.vehicles.destroy', $v) }}" onsubmit="return confirm('Hapus kendaraan ini?')" style="margin:0;">
@@ -226,8 +218,8 @@
 </div>
 
 {{-- Popup Alert Pajak --}}
-<div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:flex-start;justify-content:center;padding-top:80px;" onclick="if(event.target===this)closeAlertPopup()">
-    <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:520px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+<div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
+    <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:460px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);">Detail Pajak Kendaraan</div>
             <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
@@ -237,36 +229,29 @@
 </div>
 
 {{-- Detail Modal --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:60px 16px 16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[600px] rounded-3xl shadow-2xl flex flex-col" style="max-height:75vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
-        <div id="detail-header" style="padding:0;flex-shrink:0;border-bottom:none;border-radius:20px 20px 0 0;overflow:hidden;">
-            <div style="background:linear-gradient(135deg,rgba(109,94,249,0.12),rgba(109,94,249,0.04));padding:24px 24px 20px;position:relative;">
-                <button type="button" onclick="closeDetail()" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.08);border:none;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.15)'" onmouseout="this.style.background='rgba(0,0,0,0.08)'">
-                    <svg class="w-4 h-4" style="color:var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-                <div id="detail-header-icon" style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(109,94,249,0.15);margin-bottom:12px;">
-                    <svg class="w-6 h-6" style="color:#6D5ef9;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
-                </div>
-                <h3 id="detail-title" style="font-size:20px;font-weight:700;color:var(--text-primary);margin:0;line-height:1.3;">Detail Kendaraan</h3>
-                <p id="detail-subtitle" style="font-size:13px;color:var(--text-muted);margin:4px 0 0;"></p>
-                <div id="detail-badge" style="margin-top:10px;"></div>
-            </div>
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Kendaraan</h3>
+            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
 
         {{-- Body --}}
-        <div class="px-5 py-4 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
 
         {{-- Footer --}}
-        <div class="px-5 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeDetail()" style="width:100%;padding:10px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;background:var(--bg-surface-2);border:1px solid var(--border-color);color:var(--text-primary);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
+        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
         </div>
     </div>
 </div>
 
 {{-- Modal Tambah / Edit Kendaraan --}}
-<div id="vehicle-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:50px 16px 16px;background:var(--bg-overlay);">
+<div id="vehicle-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="vehicle-modal-card" onclick="event.stopPropagation()">
 
         {{-- Header --}}
@@ -635,80 +620,50 @@ function showDetail(id) {
             <img src="${v.foto}" alt="Foto Kendaraan" style="max-width:100%;max-height:180px;border-radius:12px;object-fit:cover;">
         </div>` : '';
 
-    const renderField = (icon, label, value) => `
-        <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-color);">
-            <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg-surface-2);">
-                <svg class="w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg>
-            </div>
-            <div style="flex:1;min-width:0;">
-                <p style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;margin:0;">${label}</p>
-                <p style="font-size:14px;color:var(--text-primary);font-weight:600;margin:2px 0 0;word-break:break-word;">${value}</p>
-            </div>
-        </div>`;
+    const rows = [
+        { label: 'Plat Nomor', value: `<span style="font-family:monospace;background:var(--bg-surface-2);padding:2px 8px;border-radius:6px;">${v.plat_nomor}</span>` },
+        { label: 'Jenis', value: v.jenis_kendaraan },
+        { label: 'Merk / Tipe', value: v.merk_tipe || '-' },
+        { label: 'Tahun', value: v.tahun },
+        { label: 'Warna', value: v.warna || '-' },
+        { label: 'Kepemilikan', value: v.kepemilikan_status },
+        { label: 'PIC', value: v.pic },
+        { label: 'Jabatan', value: v.jabatan },
+        { label: 'Pajak Tahunan', value: v.pajak_tahunan },
+        { label: 'Pajak 5 Tahun', value: v.pajak_5_tahunan },
+        { label: 'Biaya', value: rp },
+        { label: 'Keterangan', value: v.keperluan || '-' },
+    ];
 
-    const icons = {
-        plat: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>',
-        jenis: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>',
-        merk: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>',
-        tahun: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>',
-        warna: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>',
-        status: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>',
-        pic: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>',
-        jabatan: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>',
-        pajak: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>',
-        biaya: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
-        keterangan: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>',
-    };
+    const mid = Math.ceil(rows.length / 2);
+    const leftItems = rows.slice(0, mid);
+    const rightItems = rows.slice(mid);
 
-    const leftContent = [
-        renderField(icons.plat, 'Plat Nomor', `<span style="font-family:monospace;background:var(--bg-surface-2);padding:2px 8px;border-radius:6px;">${v.plat_nomor}</span>`),
-        renderField(icons.jenis, 'Jenis', v.jenis_kendaraan),
-        renderField(icons.merk, 'Merk / Tipe', v.merk_tipe || '-'),
-        renderField(icons.tahun, 'Tahun', v.tahun),
-        renderField(icons.warna, 'Warna', v.warna || '-'),
-        renderField(icons.status, 'Kepemilikan', v.kepemilikan_status),
-    ].join('');
-
-    const rightContent = [
-        renderField(icons.pic, 'PIC', v.pic),
-        renderField(icons.jabatan, 'Jabatan', v.jabatan),
-        renderField(icons.pajak, 'Pajak Tahunan', v.pajak_tahunan),
-        renderField(icons.pajak, 'Pajak 5 Tahun', v.pajak_5_tahun),
-        renderField(icons.biaya, 'Biaya', rp),
-        renderField(icons.keterangan, 'Keterangan', v.keperluan || '-'),
-    ].join('');
+    const renderCol = (items) => items.map(r => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
+            <span style="font-size:12px;color:var(--text-muted);">${r.label}</span>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);text-align:right;margin-left:12px;">${r.value}</span>
+        </div>
+    `).join('');
 
     const detailBody = document.getElementById('detail-body');
     detailBody.innerHTML = `
         ${fotoHtml}
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px;">
-            <div>${leftContent}</div>
-            <div>${rightContent}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;">
+            <div>${renderCol(leftItems)}</div>
+            <div>${renderCol(rightItems)}</div>
         </div>
         <div style="margin-top:16px;padding:12px 16px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;background:${st.bg};border:1px solid ${st.border};">
             <div style="display:flex;align-items:center;gap:8px;">
-                <svg class="w-4 h-4" style="color:${st.text};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
                 <span style="font-size:13px;font-weight:600;color:${st.text};">${st.label}</span>
             </div>
-            <span style="font-size:11px;color:${st.text};opacity:0.7;">Status saat ini</span>
         </div>
         <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border-color);">
-            <p style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px;">UPDATE STATUS PAJAK</p>
+            <p style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Update Status Pajak</p>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                <button onclick="updatePajakStatus(${v.id}, 'aktif')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;" onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#ecfdf5'">
-                    <div style="font-size:16px;">✓</div>
-                    <div style="margin-top:2px;">Hidup</div>
-                </button>
-                <button onclick="updatePajakStatus(${v.id}, 'segera_habis')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;" onmouseover="this.style.background='#ffedd5'" onmouseout="this.style.background='#fff7ed'">
-                    <div style="font-size:16px;">⚠</div>
-                    <div style="margin-top:2px;">Mau Habis</div>
-                </button>
-                <button onclick="updatePajakStatus(${v.id}, 'mati')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
-                    <div style="font-size:16px;">✕</div>
-                    <div style="margin-top:2px;">Mati</div>
-                </button>
+                <button onclick="updatePajakStatus(${v.id}, 'aktif')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;" onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#ecfdf5'">Hidup</button>
+                <button onclick="updatePajakStatus(${v.id}, 'segera_habis')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;" onmouseover="this.style.background='#ffedd5'" onmouseout="this.style.background='#fff7ed'">Mau Habis</button>
+                <button onclick="updatePajakStatus(${v.id}, 'mati')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">Mati</button>
             </div>
         </div>
     `;
@@ -731,7 +686,7 @@ function updatePajakStatus(id, status) {
     }).then(r => r.json()).then(() => { location.reload(); }).catch(() => { location.reload(); });
 }
 
-function toggleDropdown(id) {
+function toggleDropdown(btn, id) {
     const all = document.querySelectorAll('.dropdown-menu');
     all.forEach(el => { if (el.id !== 'dropdown-' + id) el.style.display = 'none'; });
     const menu = document.getElementById('dropdown-' + id);
@@ -739,9 +694,8 @@ function toggleDropdown(id) {
 }
 
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('.relative')) {
+    if (!e.target.closest('.dropdown-wrap')) {
         document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.export-menu').forEach(el => el.style.display = 'none');
     }
 });
 
@@ -823,21 +777,6 @@ function filterVehicles() {
         const matchSearch = !search || text.includes(search);
         row.style.display = matchStatus && matchSearch ? '' : 'none';
     });
-}
-
-function toggleExportMenu(e) {
-    e.stopPropagation();
-    const all = document.querySelectorAll('.export-menu');
-    all.forEach(el => el.style.display = 'none');
-    const menu = document.getElementById('export-menu');
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-
-function exportFiltered(type) {
-    const filterValue = document.querySelector('#filter-menu button.active, .filter-btn [data-value].active')?.getAttribute('data-value') || document.querySelector('#filter-menu button[data-value="all"]')?.getAttribute('data-value') || 'all';
-    const search = document.getElementById('search-vehicle')?.value || '';
-    const params = new URLSearchParams({ type, filter: filterValue, search });
-    window.location.href = '{{ route("admin.export") }}?' + params.toString();
 }
 
 const urlParams = new URLSearchParams(window.location.search);

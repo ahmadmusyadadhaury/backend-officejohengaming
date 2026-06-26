@@ -12,6 +12,7 @@ class SimCard extends Model
         'jabatan',
         'masa_aktif',
         'masa_tenggang',
+        'status_paket_kuota',
         'status_kartu',
         'keperluan',
     ];
@@ -21,6 +22,7 @@ class SimCard extends Model
         return [
             'masa_aktif'         => 'date',
             'masa_tenggang'      => 'date',
+            'status_paket_kuota' => 'boolean',
             'status_kartu'       => 'boolean',
         ];
     }

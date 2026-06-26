@@ -173,9 +173,10 @@
 
 </div>
 
+@push('modals')
 {{-- Modal Detail Meeting --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:50px 16px 16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[680px] rounded-3xl shadow-2xl flex flex-col" style="max-height:85vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -207,9 +208,9 @@
 </div>
 
 {{-- Request Meeting Modal --}}
-<div id="request-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:flex-start;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[820px] rounded-3xl shadow-2xl flex flex-col" style="max-height:calc(100vh - 32px);background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-5 py-3 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+<div id="request-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full max-w-[820px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Request Meeting Baru</h3>
                 <p class="text-xs mt-0.5" style="color:var(--text-muted);">Isi detail pertemuan untuk mengajukan meeting.</p>
@@ -218,7 +219,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="px-5 py-4 overflow-y-auto flex-1">
+        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
             @csrf
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -339,7 +340,7 @@
             </div>
 
             {{-- Actions --}}
-            <div class="flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border-color);">
+            <div class="flex gap-3 pt-3" style="border-top:1px solid var(--border-color);">
                 <button type="submit" class="btn btn-primary">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
@@ -351,6 +352,7 @@
         </form>
     </div>
 </div>
+@endpush
 
 @endsection
 
