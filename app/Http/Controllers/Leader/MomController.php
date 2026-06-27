@@ -25,6 +25,7 @@ class MomController extends Controller
             'action_plan' => 'required|string',
             'pic' => 'required|string|max:255',
             'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
+            'action' => 'nullable|in:draft,send',
         ]);
 
         $filePath = null;
@@ -32,7 +33,7 @@ class MomController extends Controller
             $filePath = $request->file('file')->store('mom-files', 'public');
         }
 
-        Mom::create([
+        $mom = Mom::create([
             'meeting_id' => $meeting->id,
             'created_by' => auth()->id(),
             'summary' => $request->summary,
@@ -43,11 +44,22 @@ class MomController extends Controller
             'status' => 'draft',
         ]);
 
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true, 'message' => 'MOM berhasil disimpan sebagai draft.']);
+        if ($request->input('action') === 'send') {
+            $this->sendMom($mom);
+            $message = 'MOM berhasil dibuat dan dikirim.';
+        } else {
+            $message = 'MOM berhasil disimpan sebagai draft.';
         }
 
-        return redirect()->route('koordinator.meetings.show', $meeting)->with('success', 'MOM berhasil disimpan sebagai draft.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'mom_id' => $mom->id,
+            ]);
+        }
+
+        return redirect()->route('koordinator.meetings.show', $meeting)->with('success', $message);
     }
 
     public function show(Mom $mom)
@@ -98,6 +110,18 @@ class MomController extends Controller
                 ? response()->json(['success' => false, 'message' => 'MOM sudah dikirim.'])
                 : back()->with('error', 'MOM sudah dikirim.');
         }
+
+        $this->sendMom($mom);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'MOM berhasil dikirim.']);
+        }
+
+        return back()->with('success', 'MOM berhasil dikirim.');
+    }
+
+    private function sendMom(Mom $mom): void
+    {
         $mom->update(['status' => 'sent', 'sent_at' => now()]);
 
         $meeting = $mom->meeting;
@@ -131,12 +155,6 @@ class MomController extends Controller
             'Minutes of Meeting untuk "'.$meeting->title.'" telah dikirim.',
             $url
         );
-
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true, 'message' => 'MOM berhasil dikirim.']);
-        }
-
-        return back()->with('success', 'MOM berhasil dikirim.');
     }
 
     public function destroy(Mom $mom)

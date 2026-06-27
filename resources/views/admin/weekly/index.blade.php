@@ -42,7 +42,7 @@
             </div>
             <div class="flex gap-2 pt-3" style="border-top:1px solid var(--border-color);">
                 <a href="{{ route('admin.weekly-meetings.edit', $weekly) }}" class="btn btn-secondary btn-sm flex-1">Edit</a>
-                <form method="POST" action="{{ route('admin.weekly-meetings.destroy', $weekly) }}" onsubmit="return confirm('Hapus jadwal ini?')" class="flex-1">
+                <form method="POST" action="{{ route('admin.weekly-meetings.destroy', $weekly) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus jadwal ini?" class="flex-1">
                     @csrf @method('DELETE')
                     <button class="btn btn-danger btn-sm w-full">Hapus</button>
                 </form>

@@ -36,14 +36,14 @@ class PeralatanKantor extends Model
     protected function casts(): array
     {
         return [
-            'jumlah'                     => 'integer',
-            'pengadaan_tahun'            => 'integer',
-            'tanggal_pembelian'          => 'date',
-            'nilai'                      => 'decimal:2',
-            'waktu_pakai_per_hari'       => 'integer',
-            'estimasi_waktu_barang'      => 'integer',
+            'jumlah' => 'integer',
+            'pengadaan_tahun' => 'integer',
+            'tanggal_pembelian' => 'date',
+            'nilai' => 'decimal:2',
+            'waktu_pakai_per_hari' => 'integer',
+            'estimasi_waktu_barang' => 'integer',
             'pengurangan_harga_per_hari' => 'decimal:2',
-            'harga_per_hari_ini'         => 'decimal:2',
+            'harga_per_hari_ini' => 'decimal:2',
         ];
     }
 }

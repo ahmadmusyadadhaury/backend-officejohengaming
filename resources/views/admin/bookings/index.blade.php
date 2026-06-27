@@ -39,7 +39,7 @@
                             <span class="badge {{ $sc }}">{{ ucfirst($booking->status) }}</span>
                         </td>
                         <td>
-                            <form method="POST" action="{{ route('admin.bookings.destroy', $booking) }}" onsubmit="return confirm('Hapus booking ini?')">
+                            <form method="POST" action="{{ route('admin.bookings.destroy', $booking) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus booking ini?">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>
                             </form>

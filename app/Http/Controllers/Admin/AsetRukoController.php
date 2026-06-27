@@ -13,34 +13,34 @@ class AsetRukoController extends Controller
         $items = AsetRuko::orderBy('created_at', 'desc')->get();
 
         $stats = [
-            'total'        => $items->count(),
+            'total' => $items->count(),
             'kondisi_baik' => $items->where('kondisi', 'baik')->count(),
             'perlu_servis' => $items->where('kondisi', 'perlu_servis')->count(),
         ];
 
         $itemsJson = $items->values()->map(function ($i) {
             return [
-                'id'        => $i->id,
+                'id' => $i->id,
                 'nama_aset' => $i->nama_aset,
-                'lokasi'    => $i->lokasi,
-                'jumlah'    => $i->jumlah,
-                'kondisi'   => $i->kondisi,
+                'lokasi' => $i->lokasi,
+                'jumlah' => $i->jumlah,
+                'kondisi' => $i->kondisi,
             ];
         });
 
-        $alertJson = $items->where('kondisi', 'perlu_servis')->values()->map(fn($i) => [
-            'id'        => $i->id,
+        $alertJson = $items->where('kondisi', 'perlu_servis')->values()->map(fn ($i) => [
+            'id' => $i->id,
             'nama_aset' => $i->nama_aset,
-            'lokasi'    => $i->lokasi,
-            'jumlah'    => $i->jumlah,
-            'kondisi'   => $i->kondisi,
+            'lokasi' => $i->lokasi,
+            'jumlah' => $i->jumlah,
+            'kondisi' => $i->kondisi,
         ]);
 
         return view('admin.ruko.index', [
-            'items'     => $items,
+            'items' => $items,
             'itemsJson' => $itemsJson,
             'alertJson' => $alertJson,
-            'stats'     => $stats,
+            'stats' => $stats,
         ]);
     }
 
@@ -48,9 +48,9 @@ class AsetRukoController extends Controller
     {
         $data = $request->validate([
             'nama_aset' => 'required|string|max:255',
-            'lokasi'    => 'required|string|max:255',
-            'jumlah'    => 'required|integer|min:1',
-            'kondisi'   => 'required|string|in:baik,perlu_servis',
+            'lokasi' => 'required|string|max:255',
+            'jumlah' => 'required|integer|min:1',
+            'kondisi' => 'required|string|in:baik,perlu_servis',
         ]);
 
         AsetRuko::create($data);
@@ -62,9 +62,9 @@ class AsetRukoController extends Controller
     {
         $data = $request->validate([
             'nama_aset' => 'required|string|max:255',
-            'lokasi'    => 'required|string|max:255',
-            'jumlah'    => 'required|integer|min:1',
-            'kondisi'   => 'required|string|in:baik,perlu_servis',
+            'lokasi' => 'required|string|max:255',
+            'jumlah' => 'required|integer|min:1',
+            'kondisi' => 'required|string|in:baik,perlu_servis',
         ]);
 
         $ruko->update($data);

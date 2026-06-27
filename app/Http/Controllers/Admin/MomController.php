@@ -35,31 +35,31 @@ class MomController extends Controller
 
         $momsJson = $moms->map(function ($mom) {
             return [
-                'id'                => $mom->id,
-                'judul_meeting'     => $mom->meeting->title ?? '—',
-                'tanggal_meeting'   => $mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : '—',
-                'dibuat_oleh'       => $mom->creator->name ?? '—',
-                'pic'               => $mom->pic ?? '—',
-                'dikirim'           => $mom->sent_at ? $mom->sent_at->format('d M Y H:i') : '—',
-                'status'            => $mom->meeting->status ?? '—',
-                'file_path'         => $mom->file_path,
-                'file_name'         => $mom->file_path ? basename($mom->file_path) : null,
-                'file_url'          => $mom->file_path ? asset('storage/' . $mom->file_path) : null,
-                'why'               => $mom->meeting->why ?? '',
-                'what'              => $mom->meeting->what ?? '',
-                'how'               => $mom->meeting->how_expected ?? '',
-                'summary'           => $mom->summary ?? '',
-                'decisions'         => $mom->decisions ?? '',
-                'action_plan'       => $mom->action_plan ?? '',
+                'id' => $mom->id,
+                'judul_meeting' => $mom->meeting->title ?? '—',
+                'tanggal_meeting' => $mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : '—',
+                'dibuat_oleh' => $mom->creator->name ?? '—',
+                'pic' => $mom->pic ?? '—',
+                'dikirim' => $mom->sent_at ? $mom->sent_at->format('d M Y H:i') : '—',
+                'status' => $mom->meeting->status ?? '—',
+                'file_path' => $mom->file_path,
+                'file_name' => $mom->file_path ? basename($mom->file_path) : null,
+                'file_url' => $mom->file_path ? asset('storage/'.$mom->file_path) : null,
+                'why' => $mom->meeting->why ?? '',
+                'what' => $mom->meeting->what ?? '',
+                'how' => $mom->meeting->how_expected ?? '',
+                'summary' => $mom->summary ?? '',
+                'decisions' => $mom->decisions ?? '',
+                'action_plan' => $mom->action_plan ?? '',
             ];
         });
 
         $momStats = [
-            'total_moms'     => Mom::count(),
-            'month_moms'     => Mom::whereMonth('created_at', now()->month)
-                                   ->whereYear('created_at', now()->year)->count(),
-            'reviewed_moms'  => Mom::where('status', 'sent')->count(),
-            'unreviewed_moms'=> Mom::where('status', 'draft')->count(),
+            'total_moms' => Mom::count(),
+            'month_moms' => Mom::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)->count(),
+            'reviewed_moms' => Mom::where('status', 'sent')->count(),
+            'unreviewed_moms' => Mom::where('status', 'draft')->count(),
         ];
 
         return view('admin.moms.index', compact('moms', 'period', 'momStats', 'momsJson'));

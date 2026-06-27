@@ -4,7 +4,7 @@
     $isPaymentActive = request()->routeIs('admin.pembayaran.*');
     $isAdminActive = request()->routeIs('admin.users.*', 'admin.admins.*', 'admin.assets.*', 'admin.teams.*', 'admin.rooms.*');
 
-    $isAdminHr = in_array(auth()->user()->role, ['admin', 'hr']);
+    $isFullAccess = in_array(auth()->user()->role, \App\Models\User::FULL_ACCESS_ROLES);
 
     $hasInvitations = \App\Models\MeetingInvitation::where('user_id', auth()->id())
         ->whereHas('meeting', function($q) {
@@ -29,7 +29,7 @@
     <span class="truncate">Dashboard</span>
 </a>
 
-@if($isAdminHr)
+@if($isFullAccess)
 <p class="sidebar-section-label">Manajemen</p>
 
 <div class="sidebar-section">
@@ -118,34 +118,6 @@
     <span class="truncate">Jadwal Meeting</span>
 </a>
 
-@endif
-
-@if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'ceo']))
-    <a href="{{ route('koordinator.meetings.index') }}"
-        class="sidebar-item {{ request()->routeIs('koordinator.meetings.index') ? 'active' : '' }}">
-        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        <span class="flex-1">Meeting Saya</span>
-        <span class="notif-badge-activity" style="display:none;background:#ef4444;color:white;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;"></span>
-    </a>
-    <a href="{{ route('koordinator.meetings.create') }}"
-        class="sidebar-item {{ request()->routeIs('koordinator.meetings.create') ? 'active' : '' }}">
-        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-        </svg>
-        <span class="truncate">Request Meeting</span>
-    </a>
-    @if($hasInvitations)
-        <a href="{{ route('invitation.index') }}"
-            class="sidebar-item {{ request()->routeIs('invitation.*') ? 'active' : '' }}">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-            </svg>
-            <span class="flex-1">Undangan</span>
-            <span class="notif-badge-meeting" style="display:none;background:#ef4444;color:white;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;"></span>
-        </a>
-    @endif
 @endif
 
 <p class="sidebar-section-label">Akun</p>

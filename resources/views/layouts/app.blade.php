@@ -172,8 +172,8 @@
                 <span id="notif-total-pending" data-count="{{ $totalPending }}" class="hidden"></span>
 
                 <div class="flex items-center gap-2">
-                    <div class="relative">
-                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="topbar-btn" aria-label="Notifikasi">
+                    <div class="relative hidden sm:block">
+                        <button type="button" data-notif-btn onclick="this.nextElementSibling.classList.toggle('hidden')" class="topbar-btn" aria-label="Notifikasi">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                             </svg>
@@ -256,16 +256,33 @@
                             </div>
                             @endforeach
                             @endif
+                            @php
+                                $notif_isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin']);
+                            @endphp
+                            @if($notif_isApprover && ($pendingPajakApprovalsCount ?? 0) > 0)
+                            <a href="{{ route('admin.vehicles.index') }}#pending-approvals" style="text-decoration:none;">
+                                <p class="px-4 py-2 font-gaming font-semibold" style="font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);margin-top:4px;">
+                                    🔔 PENGAJUAN PAJAK
+                                </p>
+                                <div class="flex items-start gap-3 px-4 py-3" style="border-bottom:1px solid var(--border-color);">
+                                    <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:#f59e0b;"></div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $pendingPajakApprovalsCount }} pengajuan menunggu</p>
+                                        <p class="text-xs" style="color:var(--text-muted);">Pembayaran pajak kendaraan perlu disetujui</p>
+                                    </div>
+                                </div>
+                            </a>
+                            @endif
                         </div>
                     </div>
 
-                    <button type="button" class="topbar-btn" onclick="window.location.href='{{ route('calendar') }}'" aria-label="Kalender">
+                    <button type="button" class="topbar-btn hidden sm:inline-flex" onclick="window.location.href='{{ route('calendar') }}'" aria-label="Kalender">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                     </button>
 
-                    <button id="theme-toggle" type="button" onclick="toggleTheme()" class="topbar-btn" aria-label="Toggle theme">
+                    <button id="theme-toggle" type="button" onclick="toggleTheme()" class="topbar-btn hidden sm:inline-flex" aria-label="Toggle theme">
                         <svg id="theme-toggle-icon" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 3.75a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V4.5A.75.75 0 0112 3.75zm0 14.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zm8.25-6.75a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75.75.75 0 01.75-.75zM4.5 12a.75.75 0 01.75.75H3.75a.75.75 0 010-1.5h1.5A.75.75 0 014.5 12zm12.03-5.72a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM6.36 17.64a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06L6.36 18.7a.75.75 0 010-1.06zm12.03 0a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM7.42 6.34a.75.75 0 010 1.06L6.36 8.46a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"/>
                         </svg>
@@ -300,6 +317,44 @@
                                 </svg>
                                 <span class="text-sm font-medium">Pengaturan</span>
                             </a>
+
+                            {{-- Mobile: Notifikasi --}}
+                            <div class="sm:hidden border-t" style="border-color:var(--border-color);">
+                                <button type="button" onclick="var dd=this.closest('[data-profile-dropdown]');dd.classList.add('hidden');var nd=document.querySelector('[data-notif-btn]');if(nd)nd.click();" class="w-full flex items-center gap-3 px-4 py-3 transition"
+                                    style="color:var(--text-primary);background:none;border:none;cursor:pointer;text-align:left;"
+                                    onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                    </svg>
+                                    <span class="text-sm font-medium">Notifikasi</span>
+                                    <span data-notif-badge class="topbar-badge {{ $totalPending > 0 ? '' : 'hidden' }}" style="position:static;margin-left:auto;">{{ $totalPending }}</span>
+                                </button>
+                            </div>
+
+                            {{-- Mobile: Kalender --}}
+                            <div class="sm:hidden" style="border-top:1px solid var(--border-color);">
+                                <a href="{{ route('calendar') }}" class="flex items-center gap-3 px-4 py-3 transition"
+                                    style="color:var(--text-primary);text-decoration:none;"
+                                    onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="text-sm font-medium">Kalender</span>
+                                </a>
+                            </div>
+
+                            {{-- Mobile: Tema --}}
+                            <div class="sm:hidden" style="border-top:1px solid var(--border-color);">
+                                <button type="button" onclick="toggleTheme();this.closest('[data-profile-dropdown]').classList.toggle('hidden')" class="w-full flex items-center gap-3 px-4 py-3 transition"
+                                    style="color:var(--text-primary);background:none;border:none;cursor:pointer;text-align:left;"
+                                    onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 3.75a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V4.5A.75.75 0 0112 3.75zm0 14.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zm8.25-6.75a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75.75.75 0 01.75-.75zM4.5 12a.75.75 0 01.75.75H3.75a.75.75 0 010-1.5h1.5A.75.75 0 014.5 12zm12.03-5.72a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM6.36 17.64a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06L6.36 18.7a.75.75 0 010-1.06zm12.03 0a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM7.42 6.34a.75.75 0 010 1.06L6.36 8.46a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"/>
+                                    </svg>
+                                    <span class="text-sm font-medium">Tema</span>
+                                </button>
+                            </div>
+
                             <form method="POST" action="{{ route('logout') }}" class="border-t" style="border-color:var(--border-color);">
                                 @csrf
                                 <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 transition"
@@ -321,6 +376,9 @@
         <div class="px-4 lg:px-6 pt-4">
             @if(session('success'))
                 <span id="success-flash-data" style="display:none;">{{ session('success') }}</span>
+            @endif
+            @if(session('access_error'))
+                <span id="access-error-flash-data" style="display:none;">{{ session('access_error') }}</span>
             @endif
             @if(session('error'))
                 <div class="flash-error rounded-lg px-4 py-3 mb-4 text-sm flex items-center gap-2 animate-fade-in"
@@ -417,6 +475,20 @@
         </div>
     </div>
 
+    {{-- Access Error Modal --}}
+    <div id="access-error-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[400px] rounded-2xl shadow-2xl flex flex-col items-center p-8 text-center" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center mb-4" style="background:rgba(239,68,68,0.12);">
+                <svg class="w-8 h-8" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </div>
+            <p class="text-lg font-bold" style="color:var(--text-primary);">Akses Ditolak</p>
+            <p class="text-sm mt-2 leading-relaxed" style="color:var(--text-muted);" id="access-error-message">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+            <button type="button" onclick="closeAccessErrorModal()" class="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition" style="background:var(--bg-surface-2);color:var(--text-primary);border:none;cursor:pointer;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
+        </div>
+    </div>
+
     <script>
         function openModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'flex'; document.body.style.overflow = 'hidden'; } }
         function closeModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'none'; document.body.style.overflow = ''; } }
@@ -484,6 +556,9 @@
             const el = document.getElementById('success-flash-data');
             if (el) showSuccessModal(el.textContent);
 
+            const errEl = document.getElementById('access-error-flash-data');
+            if (errEl) openAccessErrorModal(errEl.textContent);
+
             const sm = document.getElementById('success-modal');
             if (sm) {
                 sm.addEventListener('click', function(e) {
@@ -501,6 +576,15 @@
         function closeConfirmModal() {
             confirmCallback = null;
             closeModal('confirm-modal');
+        }
+
+        function openAccessErrorModal(msg) {
+            document.getElementById('access-error-message').textContent = msg || 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+            openModal('access-error-modal');
+        }
+
+        function closeAccessErrorModal() {
+            closeModal('access-error-modal');
         }
         document.getElementById('confirm-yes-btn')?.addEventListener('click', function() {
             if (typeof confirmCallback === 'function') confirmCallback();
@@ -920,8 +1004,38 @@
                 if (sm && sm.style.display === 'flex') { closeSuccessModal(); return; }
                 const cm = document.getElementById('confirm-modal');
                 if (cm && cm.style.display === 'flex') { closeConfirmModal(); return; }
+                const am = document.getElementById('access-error-modal');
+                if (am && am.style.display === 'flex') { closeAccessErrorModal(); return; }
                 closeInvitationModal();
+                var prModal = document.getElementById('pajak-request-modal');
+                if (prModal && prModal.style.display === 'flex') { closeModal('pajak-request-modal'); return; }
             }
+        });
+
+        /* === Pajak Request Functions (global — available dari halaman mana pun) === */
+        function showPajakRequestModal(vehicleId) {
+            closeModal('vehicle-modal');
+            closeModal('detail-modal');
+            document.querySelectorAll('.dropdown-menu').forEach(function(el) { el.style.display = 'none'; });
+            var el = document.getElementById('pr-vehicle_id');
+            if (!el) return;
+            el.value = vehicleId;
+            document.getElementById('pr-jenis').value = '';
+            document.getElementById('pr-nominal').value = '';
+            document.getElementById('pr-bukti').value = '';
+            var label = document.getElementById('pr-bukti-label');
+            if (label) label.textContent = 'Klik untuk upload (JPG/PNG)';
+            var preview = document.getElementById('pr-bukti-preview');
+            if (preview) preview.style.display = 'none';
+            var img = document.getElementById('pr-bukti-preview-img');
+            if (img) img.src = '';
+            var form = document.getElementById('pajak-request-form');
+            if (form) form.action = '/admin/vehicles/' + vehicleId + '/pajak-request';
+            openModal('pajak-request-modal');
+        }
+
+        document.getElementById('pajak-request-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeModal('pajak-request-modal');
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -939,7 +1053,89 @@
         return new Date().toISOString().slice(0, 10);
     }
     </script>
+    {{-- Modal Ajukan Pembayaran Pajak (global — tidak terikat halaman tertentu) --}}
+    <div id="pajak-request-modal" style="display:none;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div style="width:100%;max-width:500px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:20px;box-shadow:0 25px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;max-height:80vh;" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);">Ajukan Pembayaran Pajak</h3>
+                <button type="button" onclick="closeModal('pajak-request-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="pajak-request-form" method="POST" enctype="multipart/form-data" style="padding:20px 24px;overflow-y:auto;flex:1;">
+                @csrf
+                <input type="hidden" name="vehicle_id" id="pr-vehicle_id" value="">
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label style="font-size:13px;font-weight:600;color:var(--text-primary);">Jenis Pajak <span style="color:#f87171;">*</span></label>
+                        <select name="jenis" id="pr-jenis" required style="width:100%;height:48px;padding:0 16px;background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:14px;outline:none;">
+                            <option value="">Pilih jenis pajak</option>
+                            <option value="tahunan">Pajak Tahunan</option>
+                            <option value="5_tahunan">Pajak 5 Tahunan</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label style="font-size:13px;font-weight:600;color:var(--text-primary);">Nominal Pembayaran <span style="color:#f87171;">*</span></label>
+                        <input type="number" name="nominal" id="pr-nominal" required min="0" placeholder="Masukan nominal pembayaran" style="width:100%;height:48px;padding:0 16px;background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:14px;outline:none;box-sizing:border-box;">
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <label style="font-size:13px;font-weight:600;color:var(--text-primary);">Upload Bukti Pembayaran <span style="color:#f87171;">*</span></label>
+                        <label for="pr-bukti" style="width:100%;height:80px;background:var(--bg-surface-2);border:1px dashed var(--border-color);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all 0.25s ease;" onmouseover="this.style.borderColor='rgba(108,92,255,0.4)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                            <svg class="w-5 h-5" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span id="pr-bukti-label" style="font-size:12px;color:var(--text-muted);">Klik untuk upload (JPG/PNG)</span>
+                        </label>
+                        <input type="file" name="bukti_bayar" id="pr-bukti" accept="image/jpeg,image/png" required style="display:none;">
+                        <div id="pr-bukti-preview" style="display:none;position:relative;text-align:center;margin-top:8px;">
+                            <img id="pr-bukti-preview-img" src="" alt="Preview" style="max-width:100%;max-height:100px;border-radius:8px;object-fit:cover;">
+                            <button type="button" onclick="clearUploadBukti()" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" onmouseover="this.style.background='rgba(0,0,0,0.8)'" onmouseout="this.style.background='rgba(0,0,0,0.55)'">×</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:12px;padding-top:20px;margin-top:20px;border-top:1px solid var(--border-color);">
+                    <button type="button" onclick="closeModal('pajak-request-modal')" style="padding:10px 28px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;background:transparent;border:1px solid var(--border-color);color:var(--text-secondary);" onmouseover="this.style.borderColor='rgba(128,128,128,0.4)';this.style.color='var(--text-primary)'" onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-secondary)'">Batal</button>
+                    <button type="submit" style="padding:10px 28px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">Kirim Pengajuan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @stack('modals')
     @stack('scripts')
+    <script>
+        (function() {
+            var buktiEl = document.getElementById('pr-bukti');
+            if (buktiEl) {
+                buktiEl.addEventListener('change', function() {
+                    var label = document.getElementById('pr-bukti-label');
+                    var preview = document.getElementById('pr-bukti-preview');
+                    var previewImg = document.getElementById('pr-bukti-preview-img');
+                    if (!label || !preview || !previewImg) return;
+                    if (this.files && this.files[0]) {
+                        label.textContent = this.files[0].name;
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.style.display = 'block';
+                            previewImg.src = e.target.result;
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    } else {
+                        label.textContent = 'Klik untuk upload (JPG/PNG)';
+                        preview.style.display = 'none';
+                        previewImg.src = '';
+                    }
+                });
+            }
+        })();
+        function clearUploadBukti() {
+            var input = document.getElementById('pr-bukti');
+            var label = document.getElementById('pr-bukti-label');
+            var preview = document.getElementById('pr-bukti-preview');
+            var previewImg = document.getElementById('pr-bukti-preview-img');
+            if (input) { input.value = ''; }
+            if (label) { label.textContent = 'Klik untuk upload (JPG/PNG)'; }
+            if (preview) { preview.style.display = 'none'; }
+            if (previewImg) { previewImg.src = ''; }
+        }
+    </script>
 </body>
 </html>

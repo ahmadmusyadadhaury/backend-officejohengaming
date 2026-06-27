@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asset;
 use App\Models\Meeting;
+use App\Models\Room;
 use App\Models\WeeklyMeeting;
 use App\Models\WeeklyMeetingSession;
 use App\Services\MeetingQueueService;
@@ -30,16 +32,16 @@ class CalendarController extends Controller
             ->get();
 
         // Peringatan Kadaluarsa (Aset dengan stock rendah)
-        $upcomingAlerts = \App\Models\Asset::where('quantity', '<=', 2)
+        $upcomingAlerts = Asset::where('quantity', '<=', 2)
             ->orderBy('quantity')
             ->take(3)
             ->get();
 
         $weeklyMeetings = WeeklyMeeting::with('room')->get();
-        $rooms = \App\Models\Room::where('is_active', true)->get();
+        $rooms = Room::where('is_active', true)->get();
         $days = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
 
-        $weeklyData = $weeklyMeetings->map(fn($w) => [
+        $weeklyData = $weeklyMeetings->map(fn ($w) => [
             'id' => $w->id,
             'title' => $w->title,
             'room_id' => $w->room_id,

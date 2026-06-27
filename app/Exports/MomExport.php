@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Mom;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -35,8 +36,8 @@ class MomExport implements FromCollection, WithEvents, WithTitle
                 $meeting = $this->mom->meeting;
                 $room = $meeting->room?->name ?? '-';
                 $date = $meeting->meeting_date->format('d/m/Y');
-                $start = \Carbon\Carbon::parse($meeting->start_time)->format('H:i');
-                $end = \Carbon\Carbon::parse($meeting->end_time)->format('H:i');
+                $start = Carbon::parse($meeting->start_time)->format('H:i');
+                $end = Carbon::parse($meeting->end_time)->format('H:i');
                 $duration = $start.' - '.$end;
 
                 $participants = $meeting->participants->pluck('name')->implode(', ');

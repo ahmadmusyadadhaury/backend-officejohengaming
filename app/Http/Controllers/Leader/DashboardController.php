@@ -12,7 +12,7 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         $totalMeeting = Meeting::where('requested_by', $user->id)->count();
-        $disetujui = Meeting::where('requested_by', $user->id)->whereIn('status', ['approved','confirmed','in_progress','completed'])->count();
+        $disetujui = Meeting::where('requested_by', $user->id)->whereIn('status', ['approved', 'confirmed', 'in_progress', 'completed'])->count();
         $menunggu = Meeting::where('requested_by', $user->id)->where('status', 'pending')->count();
         $ditolak = Meeting::where('requested_by', $user->id)->where('status', 'rejected')->count();
 

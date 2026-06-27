@@ -64,13 +64,13 @@
                 Tambah Aset Digital
             </button>
         </div>
-        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="text" id="search-digital" placeholder="Cari nama aset atau PIC" oninput="filterDigital()"
-                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
@@ -91,7 +91,7 @@
             </div>
             </div>
         </div>
-        <div>
+        <div class="table-responsive">
             <table class="gaming-table min-w-[700px]" id="digital-table">
                 <thead>
                     <tr>
@@ -124,7 +124,14 @@
                         <td><span class="badge {{ $activeBadge }}">{{ $activeLabel }}</span></td>
                         <td style="color:var(--text-muted);">{{ $a->pic }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $a->jabatan }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $a->keperluan }}">{{ $a->keperluan ?? '-' }}</td>
+                        <td class="hidden md:table-cell" style="max-width:150px;">
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <span id="kep-{{ $a->id }}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted);" title="{{ $a->keperluan }}">{{ $a->keperluan ?? '-' }}</span>
+                                <button type="button" onclick="editKeterangan({{ $a->id }})" style="flex-shrink:0;padding:2px;border:none;background:none;cursor:pointer;color:var(--text-muted);border-radius:4px;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                            </div>
+                        </td>
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $a->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -136,7 +143,7 @@
                                     <div id="dropdown-{{ $a->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $a->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $a->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="{{ route('admin.digital-assets.destroy', $a) }}" onsubmit="return confirm('Hapus aset digital ini?')" style="margin:0;">
+                                        <form method="POST" action="{{ route('admin.digital-assets.destroy', $a) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus aset digital ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
@@ -218,11 +225,8 @@
                         <input type="number" name="biaya" id="f-biaya" required placeholder="Masukan biaya" class="gaming-input" min="0" step="0.01">
                     </div>
                     <div class="field-group">
-                        <label class="gaming-label">Status <span class="field-req">*</span></label>
-                        <select name="is_active" id="f-is_active" required class="gaming-input">
-                            <option value="1">Aktif</option>
-                            <option value="0">Tidak Aktif</option>
-                        </select>
+                        <label class="gaming-label">Status</label>
+                        <div style="padding:8px 0;font-size:13px;color:var(--text-muted);">Otomatis berdasarkan tanggal Berakhir</div>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">PIC <span class="field-req">*</span></label>
@@ -321,7 +325,6 @@ function openCreateModal() {
             el.value = '';
         }
     });
-    document.getElementById('f-is_active').value = '1';
     showModal();
 }
 
@@ -405,7 +408,6 @@ function openEditModal(id) {
     document.getElementById('f-pic').value = a.pic;
     document.getElementById('f-jabatan').value = a.jabatan;
     document.getElementById('f-keperluan').value = a.keperluan;
-    document.getElementById('f-is_active').value = a.is_active ? '1' : '0';
 
     showModal();
 }
@@ -453,6 +455,49 @@ function filterDigital() {
         const matchSearch = !search || text.includes(search);
         row.style.display = matchStatus && matchSearch ? '' : 'none';
     });
+}
+
+function editKeterangan(id) {
+    var span = document.getElementById('kep-' + id);
+    if (!span) return;
+    var current = span.textContent === '-' ? '' : span.textContent;
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.value = current;
+    input.style.cssText = 'padding:2px 6px;font-size:13px;width:100%;box-sizing:border-box;border-radius:6px;background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;';
+    span.style.display = 'none';
+    span.parentNode.insertBefore(input, span.nextSibling);
+    input.focus();
+    input.select();
+
+    function done() {
+        var val = input.value.trim();
+        fetch('/admin/digital-assets/' + id, {
+            method: 'PUT',
+            headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ keperluan: val || '' }),
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                span.textContent = val || '-';
+                span.title = val || '';
+                var a = digitalData.find(function(i) { return i.id === id; });
+                if (a) a.keperluan = val;
+            }
+        })
+        .catch(function() {})
+        .finally(function() {
+            span.style.display = '';
+            input.remove();
+        });
+    }
+
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); done(); }
+        if (e.key === 'Escape') { span.style.display = ''; input.remove(); }
+    });
+    input.addEventListener('blur', done);
 }
 
 </script>

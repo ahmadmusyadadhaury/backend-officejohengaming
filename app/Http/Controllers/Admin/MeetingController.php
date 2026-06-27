@@ -31,7 +31,7 @@ class MeetingController extends Controller
 
         $meetings = $query->latest()->paginate(15)->withQueryString();
 
-        $meetingsJson = $meetings->map(fn($m) => [
+        $meetingsJson = $meetings->map(fn ($m) => [
             'id' => $m->id,
             'title' => $m->title,
             'description' => $m->description,
@@ -49,8 +49,8 @@ class MeetingController extends Controller
             'queue_position' => $m->queue_position,
             'rt_label' => MeetingQueueService::realtimeStatus($m)['label'] ?? '-',
             'reject_reason' => $m->reject_reason,
-            'teams' => $m->teams->map(fn($t) => $t->name),
-            'assets' => $m->assets->map(fn($a) => [
+            'teams' => $m->teams->map(fn ($t) => $t->name),
+            'assets' => $m->assets->map(fn ($a) => [
                 'name' => $a->name,
                 'quantity' => $a->pivot->quantity,
             ]),
@@ -66,10 +66,10 @@ class MeetingController extends Controller
             ] : null,
         ]);
 
-        $totalMeeting     = Meeting::count();
-        $menungguMeeting  = Meeting::where('status', 'pending')->count();
-        $disetujuiMeeting = Meeting::whereIn('status', ['approved','confirmed','in_progress','completed'])->count();
-        $ditolakMeeting   = Meeting::where('status', 'rejected')->count();
+        $totalMeeting = Meeting::count();
+        $menungguMeeting = Meeting::where('status', 'pending')->count();
+        $disetujuiMeeting = Meeting::whereIn('status', ['approved', 'confirmed', 'in_progress', 'completed'])->count();
+        $ditolakMeeting = Meeting::where('status', 'rejected')->count();
 
         return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'meetingMonth'));
     }

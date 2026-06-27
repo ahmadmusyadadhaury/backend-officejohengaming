@@ -217,6 +217,28 @@
         @endif
     </div>
 
+    @php
+        $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin']);
+    @endphp
+    @if($isApprover && ($pendingPajakApprovalsCount ?? 0) > 0)
+    <a href="{{ route('admin.vehicles.index') }}#pending-approvals" style="text-decoration:none;display:block;">
+        <div class="gaming-card px-5 py-4 flex items-center gap-3" style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.15);transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(245,158,11,0.4)'" onmouseout="this.style.borderColor='rgba(245,158,11,0.15)'">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(245,158,11,0.12);">
+                <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div style="font-weight:600;font-size:15px;color:#f59e0b;">{{ $pendingPajakApprovalsCount }} Pengajuan Pajak Menunggu</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Pengajuan pembayaran pajak kendaraan perlu persetujuan</div>
+            </div>
+            <svg class="w-4 h-4 flex-shrink-0" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </div>
+    </a>
+    @endif
+
 </div>
 
 {{-- Welcome Popup --}}

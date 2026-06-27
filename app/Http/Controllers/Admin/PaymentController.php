@@ -60,6 +60,7 @@ class PaymentController extends Controller
 
             $itemsJson = $items->values()->map(fn ($p) => [
                 'id' => $p->id,
+                'digital_asset_id' => $p->digital_asset_id,
                 'periode' => $p->periode,
                 'tanggal_tagihan' => $p->tanggal_tagihan?->format('Y-m-d'),
                 'jatuh_tempo' => $p->jatuh_tempo?->format('Y-m-d'),
@@ -295,11 +296,11 @@ class PaymentController extends Controller
                 'status' => 'required|in:lunas,jatuh_tempo',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
-            if (!empty($data['masa_tenggang'])) {
-                $data['masa_tenggang'] = \Carbon\Carbon::parse($data['masa_tenggang'])->format('Y-m-d');
+            if (! empty($data['masa_tenggang'])) {
+                $data['masa_tenggang'] = Carbon::parse($data['masa_tenggang'])->format('Y-m-d');
             }
-            if (!empty($data['tanggal_bayar'])) {
-                $data['tanggal_bayar'] = \Carbon\Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
+            if (! empty($data['tanggal_bayar'])) {
+                $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
             $model = WifiPayment::findOrFail($id);
             $model->update($data);
@@ -312,14 +313,14 @@ class PaymentController extends Controller
                 'status' => 'required|in:lunas,jatuh_tempo',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
-            if (!empty($data['tanggal_tagihan'])) {
-                $data['tanggal_tagihan'] = \Carbon\Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
+            if (! empty($data['tanggal_tagihan'])) {
+                $data['tanggal_tagihan'] = Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
             }
-            if (!empty($data['jatuh_tempo'])) {
-                $data['jatuh_tempo'] = \Carbon\Carbon::parse($data['jatuh_tempo'])->format('Y-m-d');
+            if (! empty($data['jatuh_tempo'])) {
+                $data['jatuh_tempo'] = Carbon::parse($data['jatuh_tempo'])->format('Y-m-d');
             }
-            if (!empty($data['tanggal_bayar'])) {
-                $data['tanggal_bayar'] = \Carbon\Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
+            if (! empty($data['tanggal_bayar'])) {
+                $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
             $model = PembayaranAsetDigital::findOrFail($id);
             $model->update($data);
@@ -332,14 +333,14 @@ class PaymentController extends Controller
                 'status' => 'required|in:lunas,jatuh_tempo',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
-            if (!empty($data['tanggal_tagihan'])) {
-                $data['tanggal_tagihan'] = \Carbon\Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
+            if (! empty($data['tanggal_tagihan'])) {
+                $data['tanggal_tagihan'] = Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
             }
-            if (!empty($data['jatuh_tempo'])) {
-                $data['jatuh_tempo'] = \Carbon\Carbon::parse($data['jatuh_tempo'])->format('Y-m-d');
+            if (! empty($data['jatuh_tempo'])) {
+                $data['jatuh_tempo'] = Carbon::parse($data['jatuh_tempo'])->format('Y-m-d');
             }
-            if (!empty($data['tanggal_bayar'])) {
-                $data['tanggal_bayar'] = \Carbon\Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
+            if (! empty($data['tanggal_bayar'])) {
+                $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
             $model = PembayaranIplRuko::findOrFail($id);
             $model->update($data);
@@ -352,14 +353,14 @@ class PaymentController extends Controller
                 'status' => 'required|in:lunas,jatuh_tempo',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
-            if (!empty($data['tanggal_tagihan'])) {
-                $data['tanggal_tagihan'] = \Carbon\Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
+            if (! empty($data['tanggal_tagihan'])) {
+                $data['tanggal_tagihan'] = Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
             }
-            if (!empty($data['jatuh_tempo'])) {
-                $data['jatuh_tempo'] = \Carbon\Carbon::parse($data['jatuh_tempo'])->format('Y-m-d');
+            if (! empty($data['jatuh_tempo'])) {
+                $data['jatuh_tempo'] = Carbon::parse($data['jatuh_tempo'])->format('Y-m-d');
             }
-            if (!empty($data['tanggal_bayar'])) {
-                $data['tanggal_bayar'] = \Carbon\Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
+            if (! empty($data['tanggal_bayar'])) {
+                $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
             $model = Payment::findOrFail($id);
             $model->update($data);

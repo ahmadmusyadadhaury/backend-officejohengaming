@@ -83,13 +83,13 @@
                 Request Meeting
             </button>
         </div>
-        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="text" id="search-meeting" placeholder="Cari berdasarkan judul meeting" oninput="filterMeetings()"
-                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <select id="status-filter" onchange="filterMeetings(this.value)" class="ml-auto"
@@ -353,6 +353,94 @@
     </div>
 </div>
 @endpush
+
+{{-- MOM Modal (terpisah dari modal detail) --}}
+<div id="mom-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);" data-meeting-id="">
+    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:75vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <h3 class="text-base font-bold" style="color:var(--text-primary);">Buat Minutes of Meeting</h3>
+                <p class="text-xs mt-0.5" style="color:var(--text-muted);" id="mom-modal-meeting-info">Meeting: -</p>
+            </div>
+            <button type="button" onclick="closeMomModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1 space-y-4">
+            <div>
+                <label class="gaming-label">Ringkasan Pembahasan <span style="color:#f87171;">*</span></label>
+                <textarea id="mom-summary" rows="2" class="gaming-input" style="resize:vertical;" placeholder="Ringkasan hasil pembahasan meeting"></textarea>
+            </div>
+            <div>
+                <label class="gaming-label">Keputusan <span style="color:#f87171;">*</span></label>
+                <textarea id="mom-decisions" rows="2" class="gaming-input" style="resize:vertical;" placeholder="Keputusan yang diambil"></textarea>
+            </div>
+            <div>
+                <label class="gaming-label">Action Plan <span style="color:#f87171;">*</span></label>
+                <textarea id="mom-action" rows="2" class="gaming-input" style="resize:vertical;" placeholder="Rencana tindak lanjut"></textarea>
+            </div>
+            <div>
+                <label class="gaming-label">Penanggung Jawab (PIC) <span style="color:#f87171;">*</span></label>
+                <select id="mom-pic" class="gaming-input gaming-select">
+                    <option value="">Pilih PIC</option>
+                    @foreach($users as $u)
+                        <option value="{{ $u->name }}">{{ $u->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="gaming-label">Upload File <span style="color:var(--text-muted);font-weight:400;">(Opsional)</span></label>
+                <input type="file" id="mom-file" accept=".pdf,.doc,.docx,.xls,.xlsx" class="gaming-input" style="padding:0.4rem;font-size:0.8rem;">
+            </div>
+        </div>
+        <div class="px-6 py-4 flex-shrink-0 flex items-center gap-2" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="submitMomWithAction('send')" class="btn btn-success">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                Kirim
+            </button>
+            <button type="button" onclick="submitMomWithAction('draft')" class="btn btn-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                Simpan Draft
+            </button>
+            <button type="button" onclick="closeMomModal()" class="btn btn-secondary">Batal</button>
+        </div>
+    </div>
+</div>
+
+{{-- Modal Sukses Kirim MOM --}}
+<div id="mom-success-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full max-w-[400px] rounded-3xl shadow-2xl p-8 text-center" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background:rgba(16,185,129,0.15);">
+            <svg class="w-8 h-8" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <h3 class="text-lg font-bold mb-2" style="color:var(--text-primary);">MOM Terkirim!</h3>
+        <p class="text-sm mb-6" style="color:var(--text-secondary);" id="mom-success-message">Minutes of Meeting berhasil dikirim ke seluruh peserta.</p>
+        <button type="button" onclick="closeMomSuccessModal()" class="btn btn-primary px-8">Tutup</button>
+    </div>
+</div>
+
+{{-- Modal Draft MOM (Belum Terkirim) --}}
+<div id="mom-draft-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full max-w-[400px] rounded-3xl shadow-2xl p-8 text-center" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background:rgba(245,158,11,0.15);">
+            <svg class="w-8 h-8" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+        </div>
+        <h3 class="text-lg font-bold mb-2" style="color:var(--text-primary);">MOM Disimpan!</h3>
+        <p class="text-sm mb-1" style="color:var(--text-secondary);" id="mom-draft-message">MOM berhasil disimpan sebagai draft.</p>
+        <p class="text-xs font-semibold mb-6" style="color:#f59e0b;">⚠ MOM Belum Terkirim</p>
+        <div class="flex gap-3 justify-center">
+            <button type="button" onclick="sendDraftMom()" class="btn btn-success">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                Kirim Sekarang
+            </button>
+            <button type="button" onclick="closeMomDraftModal()" class="btn btn-secondary">Tutup</button>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -776,7 +864,14 @@ function submitFinish(id) {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
         body: new URLSearchParams({ _method: 'PATCH', actual_end_time: time })
-    }).then(r => r.json()).then(() => location.reload()).catch(() => location.reload());
+    }).then(r => r.json()).then(data => {
+        if (data.show_mom) {
+            closeModal('detail-modal');
+            showMomModal(data.meeting_id);
+        } else {
+            location.reload();
+        }
+    }).catch(() => location.reload());
 }
 
 function showMomForm(id) {
@@ -817,12 +912,138 @@ function sendMom(meetingId) {
     }).then(r => r.json()).then(() => location.reload()).catch(() => location.reload());
 }
 
+// ─── MOM Modal (terpisah) ───
+function showMomModal(meetingId) {
+    const m = meetingsData.find(i => i.id === meetingId);
+    if (!m) return;
+    const modal = document.getElementById('mom-modal');
+    modal.dataset.meetingId = meetingId;
+    document.getElementById('mom-modal-meeting-info').textContent = 'Meeting: ' + (m.title || '') + ' · ' + (m.meeting_date || '');
+    document.getElementById('mom-summary').value = '';
+    document.getElementById('mom-decisions').value = '';
+    document.getElementById('mom-action').value = '';
+    document.getElementById('mom-pic').value = '';
+    document.getElementById('mom-file').value = '';
+    modal.style.display = 'flex';
+}
+
+function closeMomModal() {
+    document.getElementById('mom-modal').style.display = 'none';
+}
+
+function submitMomWithAction(action) {
+    const modal = document.getElementById('mom-modal');
+    const meetingId = modal.dataset.meetingId;
+    if (!meetingId) return;
+    const summary = document.getElementById('mom-summary').value.trim();
+    const decisions = document.getElementById('mom-decisions').value.trim();
+    const actionPlan = document.getElementById('mom-action').value.trim();
+    const pic = document.getElementById('mom-pic').value;
+    const fileInput = document.getElementById('mom-file');
+    if (!summary || !decisions || !actionPlan || !pic) { alert('Semua field harus diisi.'); return; }
+    const formData = new FormData();
+    formData.append('summary', summary);
+    formData.append('decisions', decisions);
+    formData.append('action_plan', actionPlan);
+    formData.append('pic', pic);
+    formData.append('action', action);
+    if (fileInput && fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
+    const btn = event.target;
+    const origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Menyimpan...';
+    fetch('/koordinator/meetings/' + meetingId + '/mom', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+        body: formData
+    }).then(r => r.json()).then(data => {
+        if (action === 'send') {
+            closeMomModal();
+            showMomSuccessModal(data.message || 'MOM berhasil dikirim.');
+        } else {
+            closeMomModal();
+            showMomDraftModal(data.message || 'MOM berhasil disimpan sebagai draft.', data.mom_id);
+        }
+    }).catch(() => location.reload());
+}
+
+function showMomSuccessModal(message) {
+    document.getElementById('mom-success-message').textContent = message || 'Minutes of Meeting berhasil dikirim ke seluruh peserta.';
+    document.getElementById('mom-success-modal').style.display = 'flex';
+}
+
+function closeMomSuccessModal() {
+    document.getElementById('mom-success-modal').style.display = 'none';
+    location.reload();
+}
+
+// ─── Draft Modal ───
+let _draftMomId = null;
+let _draftMeetingId = null;
+
+function showMomDraftModal(message, momId) {
+    _draftMomId = momId;
+    _draftMeetingId = document.getElementById('mom-modal').dataset.meetingId;
+    document.getElementById('mom-draft-message').textContent = message || 'MOM berhasil disimpan sebagai draft.';
+    document.getElementById('mom-draft-modal').style.display = 'flex';
+}
+
+function closeMomDraftModal() {
+    document.getElementById('mom-draft-modal').style.display = 'none';
+    location.reload();
+}
+
+function sendDraftMom() {
+    if (!_draftMomId) return;
+    if (!confirm('Kirim MOM ini ke semua peserta?')) return;
+    fetch('/koordinator/mom/' + _draftMomId + '/send', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+        body: new URLSearchParams({ _method: 'PATCH' })
+    }).then(r => r.json()).then(data => {
+        closeMomDraftModal();
+        showMomSuccessModal(data.message || 'MOM berhasil dikirim.');
+    }).catch(() => location.reload());
+}
+
 document.getElementById('detail-modal')?.addEventListener('click', function(e) {
     if (e.target === this) closeModal('detail-modal');
 });
 
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeModal('detail-modal');
+document.getElementById('mom-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeMomModal();
 });
+
+document.getElementById('mom-success-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeMomSuccessModal();
+});
+
+document.getElementById('mom-draft-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeMomDraftModal();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if (document.getElementById('mom-success-modal').style.display === 'flex') {
+            closeMomSuccessModal();
+        } else if (document.getElementById('mom-draft-modal').style.display === 'flex') {
+            closeMomDraftModal();
+        } else if (document.getElementById('mom-modal').style.display === 'flex') {
+            closeMomModal();
+        } else {
+            closeModal('detail-modal');
+        }
+    }
+});
+
+// Page load: cek flash session untuk auto-buka MOM modal
+(function() {
+    const momId = '{{ session('mom_meeting_id') }}';
+    if (momId) {
+        showMomModal(parseInt(momId));
+    }
+})();
 </script>
 @endpush

@@ -79,13 +79,13 @@
             <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Permintaan Meeting</div>
             <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Tinjau dan kelola permintaan meeting dari seluruh tim.</div>
         </div>
-        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-0">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="text" id="search-meeting" placeholder="Cari berdasarkan nama pemohon" oninput="filterMeetings()"
-                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
                 <div class="flex items-center gap-2 ml-auto">
@@ -113,7 +113,7 @@
             </div>
 
         </div>
-        <div class="w-full" style="overflow:visible;">
+        <div class="table-responsive">
             <table class="gaming-table" id="meetings-table" style="width:100%;min-width:700px;">
                 <thead>
                     <tr>
@@ -171,8 +171,8 @@
                             @endif
                         </td>
                         <td>
-                            <div class="flex items-center gap-1 justify-end" style="white-space:nowrap;">
-                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:3px;padding:3px 6px;font-size:0.7rem;" title="Lihat detail">
+                            <div class="flex items-center gap-1" style="white-space:nowrap;">
+                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:3px;padding:3px 8px;font-size:0.7rem;" title="Lihat detail">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -194,7 +194,7 @@
                                             Lihat Detail
                                         </button>
                                         @if(in_array($meeting->status, ['cancelled','rejected']))
-                                        <form method="POST" action="{{ route('admin.meetings.destroy', $meeting) }}" onsubmit="return confirm('Hapus meeting ini?')" class="w-full">
+                                        <form method="POST" action="{{ route('admin.meetings.destroy', $meeting) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus meeting ini?" class="w-full">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:#f87171;display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

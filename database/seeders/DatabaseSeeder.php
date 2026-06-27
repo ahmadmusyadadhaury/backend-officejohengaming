@@ -25,19 +25,19 @@ class DatabaseSeeder extends Seeder
         }
 
         // Admin Master
-        User::create(['name' => 'Admin Master',    'username' => 'admin',    'password' => Hash::make('password'), 'role' => 'admin']);
+        User::create(['name' => 'Admin Master',    'username' => 'admin',    'email' => 'admin@johen.com',    'password' => Hash::make('password'), 'role' => 'admin']);
         // Head of Store
-        User::create(['name' => 'Head of Store',   'username' => 'headstore', 'password' => Hash::make('password'), 'role' => 'head_of_store']);
+        User::create(['name' => 'Head of Store',   'username' => 'headstore', 'email' => 'headstore@johen.com', 'password' => Hash::make('password'), 'role' => 'head_of_store']);
         // GM
-        User::create(['name' => 'General Manager', 'username' => 'gm',       'password' => Hash::make('password'), 'role' => 'gm']);
+        User::create(['name' => 'General Manager', 'username' => 'gm',       'email' => 'gm@johen.com',       'password' => Hash::make('password'), 'role' => 'gm']);
         // HR
-        User::create(['name' => 'HR Manager',      'username' => 'hr',       'password' => Hash::make('password'), 'role' => 'hr']);
+        User::create(['name' => 'HR Manager',      'username' => 'hr',       'email' => 'hr@johen.com',       'password' => Hash::make('password'), 'role' => 'hr']);
         // CEO
-        User::create(['name' => 'Chief Executive Officer', 'username' => 'ceo', 'password' => Hash::make('password'), 'role' => 'ceo']);
+        User::create(['name' => 'Chief Executive Officer', 'username' => 'ceo', 'email' => 'ceo@johen.com', 'password' => Hash::make('password'), 'role' => 'ceo']);
         // Koordinator
-        User::create(['name' => 'Koordinator Konten', 'username' => 'koordinator1', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 1]);
+        User::create(['name' => 'Koordinator Konten', 'username' => 'koordinator1', 'email' => 'koordinator1@johen.com', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 1]);
         // User
-        User::create(['name' => 'Karyawan Konten',    'username' => 'user1',        'password' => Hash::make('password'), 'role' => 'user', 'team_id' => 1]);
+        User::create(['name' => 'Karyawan Konten',    'username' => 'user1', 'email' => 'user1@johen.com', 'password' => Hash::make('password'), 'role' => 'user', 'team_id' => 1]);
 
         // Room
         Room::create([

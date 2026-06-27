@@ -24,7 +24,7 @@ class WifiPayment extends Model
         return [
             'masa_tenggang' => 'date:d/m/Y',
             'tanggal_bayar' => 'date:d/m/Y',
-            'biaya'         => 'decimal:2',
+            'biaya' => 'decimal:2',
         ];
     }
 }

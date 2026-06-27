@@ -557,7 +557,7 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                <input type="date" id="filter-date-mobile" class="gaming-input pl-9 text-sm" onchange="filterByDate(this.value)">
+                <input type="date" id="filter-date-mobile" class="gaming-input pl-9 text-xs" style="padding:6px 10px 6px 2.5rem;" onchange="filterByDate(this.value)">
             </div>
             <button onclick="filterByDate(document.getElementById('filter-date-mobile').value)" class="btn btn-primary btn-sm">Cari</button>
             <button onclick="resetFilter()" class="btn btn-secondary btn-sm">Reset</button>

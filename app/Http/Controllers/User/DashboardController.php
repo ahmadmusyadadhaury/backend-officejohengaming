@@ -50,7 +50,7 @@ class DashboardController extends Controller
             ->where('meetings.status', 'completed')
             ->count();
 
-        $meetingsJson = $myMeetings->map(fn($m) => [
+        $meetingsJson = $myMeetings->map(fn ($m) => [
             'id' => $m->id,
             'title' => $m->title,
             'why' => $m->why,
@@ -64,7 +64,7 @@ class DashboardController extends Controller
             'meeting_date_raw' => $m->meeting_date?->format('Y-m-d'),
             'start_time' => $m->start_time,
             'end_time' => $m->end_time,
-            'assets' => $m->assets->map(fn($a) => [
+            'assets' => $m->assets->map(fn ($a) => [
                 'name' => $a->name,
                 'quantity' => $a->pivot->quantity,
             ]),

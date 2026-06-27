@@ -467,8 +467,25 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ============================================
-   TABLE
+   TABLES
 ============================================ */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+}
+.table-responsive::-webkit-scrollbar-track {
+    background: transparent;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
 .gaming-table {
     width: 100%;
     border-collapse: collapse;

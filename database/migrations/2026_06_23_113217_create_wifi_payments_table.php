@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('wifi_payments')) {
+        if (! Schema::hasTable('wifi_payments')) {
             Schema::create('wifi_payments', function (Blueprint $table) {
                 $table->id();
                 $table->string('nama_internet');

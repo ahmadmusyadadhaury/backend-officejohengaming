@@ -21,10 +21,15 @@ class DigitalAsset extends Model
     protected function casts(): array
     {
         return [
-            'mulai'     => 'date',
-            'berakhir'  => 'date',
-            'biaya'     => 'decimal:2',
+            'mulai' => 'date',
+            'berakhir' => 'date',
+            'biaya' => 'decimal:2',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function pembayaran()
+    {
+        return $this->hasOne(PembayaranAsetDigital::class, 'digital_asset_id');
     }
 }

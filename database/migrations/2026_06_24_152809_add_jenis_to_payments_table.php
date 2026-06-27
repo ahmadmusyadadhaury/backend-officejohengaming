@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('payments', 'jenis')) {
+        if (! Schema::hasColumn('payments', 'jenis')) {
             Schema::table('payments', function (Blueprint $table) {
                 $table->string('jenis')->default('listrik')->after('id');
             });

@@ -64,13 +64,13 @@
                 Tambah SIM Card
             </button>
         </div>
-        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="text" id="search-sim" placeholder="Cari nomor SIM atau PIC" oninput="filterSim()"
-                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
@@ -91,7 +91,7 @@
             </div>
             </div>
         </div>
-        <div>
+        <div class="table-responsive">
             <table class="gaming-table min-w-[800px]" id="sim-table">
                 <thead>
                     <tr>
@@ -130,7 +130,7 @@
                                     <div id="dropdown-{{ $c->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $c->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $c->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="{{ route('admin.sim-cards.destroy', $c) }}" onsubmit="return confirm('Hapus SIM Card ini?')" style="margin:0;">
+                                        <form method="POST" action="{{ route('admin.sim-cards.destroy', $c) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus SIM Card ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>

@@ -15,4 +15,3 @@ class Asset extends Model
         return $this->belongsToMany(Meeting::class, 'meeting_assets')->withPivot('quantity')->withTimestamps();
     }
 }
-

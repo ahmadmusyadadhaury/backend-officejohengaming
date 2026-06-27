@@ -20,6 +20,7 @@ use App\Models\TokenPayment;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WifiPayment;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
@@ -78,15 +79,15 @@ class DashboardController extends Controller
         $mapPayment = function ($p, $jenisName) {
             return [
                 'id' => $p->id,
-                'label' => $jenisName . ' · ' . $p->periode,
-                'due_date' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
+                'label' => $jenisName.' · '.$p->periode,
+                'due_date' => $p->jatuh_tempo instanceof Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
                 'amount' => $p->nominal,
                 'status' => $p->status,
                 'jenis' => $jenisName,
                 'type' => 'payment',
                 'periode' => $p->periode,
-                'tanggal_tagihan' => $p->tanggal_tagihan instanceof \Carbon\Carbon ? $p->tanggal_tagihan->format('Y-m-d') : $p->tanggal_tagihan,
-                'jatuh_tempo' => $p->jatuh_tempo instanceof \Carbon\Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
+                'tanggal_tagihan' => $p->tanggal_tagihan instanceof Carbon ? $p->tanggal_tagihan->format('Y-m-d') : $p->tanggal_tagihan,
+                'jatuh_tempo' => $p->jatuh_tempo instanceof Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
                 'nominal' => (int) $p->nominal,
             ];
         };
@@ -96,9 +97,9 @@ class DashboardController extends Controller
                 Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')
                     ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
                         $q->where('jenis', 'listrik')
-                          ->where('jatuh_tempo', '>=', $today)
-                          ->where('jatuh_tempo', '<=', $threeDaysFromNow)
-                          ->where('status', '!=', 'lunas');
+                            ->where('jatuh_tempo', '>=', $today)
+                            ->where('jatuh_tempo', '<=', $threeDaysFromNow)
+                            ->where('status', '!=', 'lunas');
                     })
                     ->orderBy('jatuh_tempo')
                     ->get()
@@ -108,8 +109,8 @@ class DashboardController extends Controller
                 PembayaranAsetDigital::where('status', 'jatuh_tempo')
                     ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
                         $q->where('jatuh_tempo', '>=', $today)
-                          ->where('jatuh_tempo', '<=', $threeDaysFromNow)
-                          ->where('status', '!=', 'lunas');
+                            ->where('jatuh_tempo', '<=', $threeDaysFromNow)
+                            ->where('status', '!=', 'lunas');
                     })
                     ->orderBy('jatuh_tempo')
                     ->get()
@@ -119,8 +120,8 @@ class DashboardController extends Controller
                 PembayaranIplRuko::where('status', 'jatuh_tempo')
                     ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
                         $q->where('jatuh_tempo', '>=', $today)
-                          ->where('jatuh_tempo', '<=', $threeDaysFromNow)
-                          ->where('status', '!=', 'lunas');
+                            ->where('jatuh_tempo', '<=', $threeDaysFromNow)
+                            ->where('status', '!=', 'lunas');
                     })
                     ->orderBy('jatuh_tempo')
                     ->get()
@@ -138,7 +139,7 @@ class DashboardController extends Controller
             ->map(fn ($w) => [
                 'id' => $w->id,
                 'label' => $w->nama_internet.' ('.$w->provider.')',
-                'due_date' => $w->masa_tenggang instanceof \Carbon\Carbon ? $w->masa_tenggang->format('Y-m-d') : $w->masa_tenggang,
+                'due_date' => $w->masa_tenggang instanceof Carbon ? $w->masa_tenggang->format('Y-m-d') : $w->masa_tenggang,
                 'amount' => (int) $w->biaya,
                 'status' => $w->status,
                 'jenis' => 'Internet',
@@ -147,7 +148,7 @@ class DashboardController extends Controller
                 'provider' => $w->provider,
                 'pic' => $w->pic,
                 'jabatan' => $w->jabatan,
-                'masa_tenggang' => $w->masa_tenggang instanceof \Carbon\Carbon ? $w->masa_tenggang->format('Y-m-d') : $w->masa_tenggang,
+                'masa_tenggang' => $w->masa_tenggang instanceof Carbon ? $w->masa_tenggang->format('Y-m-d') : $w->masa_tenggang,
                 'biaya' => (int) $w->biaya,
             ]));
 

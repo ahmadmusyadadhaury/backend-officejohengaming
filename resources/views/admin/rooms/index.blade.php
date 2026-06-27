@@ -21,13 +21,13 @@
                 Tambah Ruangan
             </button>
         </div>
-        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..."
-                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
@@ -90,7 +90,7 @@
                         <td>
                             <div class="flex gap-2">
                                 <button type="button" onclick="openEditModal({{ json_encode(['id'=>$room->id,'name'=>$room->name,'capacity'=>$room->capacity,'location'=>$room->location ?? '','facilities'=>is_array($room->facilities) ? implode("\n",$room->facilities) : '','description'=>$room->description ?? '','is_active'=>$room->is_active]) }})" class="btn btn-secondary btn-sm">Edit</button>
-                                <form method="POST" action="{{ route('admin.rooms.destroy', $room) }}" onsubmit="return confirm('Hapus ruangan ini?')">
+                                <form method="POST" action="{{ route('admin.rooms.destroy', $room) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus ruangan ini?">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-danger btn-sm">Hapus</button>
                                 </form>

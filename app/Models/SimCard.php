@@ -20,10 +20,10 @@ class SimCard extends Model
     protected function casts(): array
     {
         return [
-            'masa_aktif'         => 'date',
-            'masa_tenggang'      => 'date',
+            'masa_aktif' => 'date',
+            'masa_tenggang' => 'date',
             'status_paket_kuota' => 'boolean',
-            'status_kartu'       => 'boolean',
+            'status_kartu' => 'boolean',
         ];
     }
 }

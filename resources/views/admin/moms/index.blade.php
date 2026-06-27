@@ -72,13 +72,13 @@
             <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Rekap Minutes of Meeting</div>
             <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Dokumentasi hasil setiap meeting yang telah dilaksanakan.</div>
         </div>
-        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="text" id="search-mom" placeholder="Cari berdasarkan judul meeting" oninput="filterMoms()"
-                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
@@ -120,21 +120,28 @@
                         <td style="color:var(--text-muted);">{{ $mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : '—' }}</td>
                         <td style="color:var(--text-muted);">{{ $mom->sent_at ? $mom->sent_at->format('d M Y H:i') : '—' }}</td>
                         <td>
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="showMomDetail({{ $mom->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                    Detail
+                            <div class="flex items-center gap-1" style="white-space:nowrap;">
+                                <button type="button" onclick="showMomDetail({{ $mom->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
                                 </button>
-                                <a href="{{ route('mom.export', $mom->id) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" title="Download Excel MOM">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                    Excel
-                                </a>
-                                @if($mom->file_path)
-                                <a href="{{ asset('storage/' . $mom->file_path) }}" target="_blank" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                    Download
-                                </a>
-                                @endif
+                                <div class="relative dropdown-actions-mom">
+                                    <button type="button" onclick="toggleMomMenu(event, {{ $mom->id }})" class="btn btn-secondary btn-sm" style="padding:4px 6px;line-height:1;" title="Aksi">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                                    </button>
+                                    <div id="mom-menu-{{ $mom->id }}" style="display:none;position:absolute;top:100%;right:0;min-width:170px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;margin-top:4px;">
+                                        <a href="{{ route('mom.export', $mom->id) }}" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            Export Excel
+                                        </a>
+                                        @if($mom->file_path)
+                                        <a href="{{ asset('storage/' . $mom->file_path) }}" target="_blank" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            Download Lampiran
+                                        </a>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -393,6 +400,21 @@ function filterMoms() {
         row.style.display = !search || judul.includes(search) ? '' : 'none';
     });
 }
+
+// Dropdown titik tiga MOM
+function toggleMomMenu(e, id) {
+    e.stopPropagation();
+    const menu = document.getElementById('mom-menu-' + id);
+    const isHidden = menu.style.display === 'none';
+    document.querySelectorAll('[id^="mom-menu-"]').forEach(m => m.style.display = 'none');
+    if (isHidden) menu.style.display = 'block';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-actions-mom')) {
+        document.querySelectorAll('[id^="mom-menu-"]').forEach(m => m.style.display = 'none');
+    }
+});
 </script>
 @endpush
 

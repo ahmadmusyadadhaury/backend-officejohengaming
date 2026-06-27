@@ -115,13 +115,13 @@
                 Tambah Kendaraan
             </button>
         </div>
-        <div class="px-5 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div class="relative flex-1 min-w-[200px] max-w-sm">
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <input type="text" id="search-vehicle" placeholder="Cari plat nomor atau nama kendaraan" oninput="filterVehicles()"
-                    class="w-full pl-9 pr-3 py-2 rounded-lg text-sm"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
@@ -143,7 +143,7 @@
             </div>
             </div>
         </div>
-        <div>
+        <div class="table-responsive">
             <table class="gaming-table min-w-[700px]" id="vehicles-table">
                 <thead>
                     <tr>
@@ -154,6 +154,9 @@
                         <th class="hidden lg:table-cell">Merk/Tipe</th>
                         <th class="hidden md:table-cell">Tahun</th>
                         <th class="hidden lg:table-cell">Warna</th>
+                        <th class="hidden lg:table-cell">Nomor Rangka</th>
+                        <th class="hidden lg:table-cell">Nomor Mesin</th>
+                        <th class="hidden lg:table-cell">Foto</th>
                         <th>Status</th>
                         <th class="hidden md:table-cell">Keterangan</th>
                         <th>Aksi</th>
@@ -183,6 +186,17 @@
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $v->merk_tipe ?? '-' }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $v->tahun }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $v->warna ?? '-' }}</td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);font-family:monospace;font-size:12px;">{{ $v->nomor_rangka ?? '-' }}</td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);font-family:monospace;font-size:12px;">{{ $v->nomor_mesin ?? '-' }}</td>
+                        <td class="hidden lg:table-cell">
+                            @if($v->foto)
+                            <a href="{{ asset('storage/'.$v->foto) }}" target="_blank" rel="noopener">
+                                <img src="{{ asset('storage/'.$v->foto) }}" alt="Foto" style="width:60px;height:40px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);">
+                            </a>
+                            @else
+                            <span style="color:var(--text-muted);font-size:12px;">-</span>
+                            @endif
+                        </td>
                         <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span></td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $v->keperluan }}">{{ $v->keperluan ?? '-' }}</td>
                         <td>
@@ -196,7 +210,8 @@
                                     <div id="dropdown-{{ $v->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="{{ route('admin.vehicles.destroy', $v) }}" onsubmit="return confirm('Hapus kendaraan ini?')" style="margin:0;">
+                                        <button type="button" onclick="showPajakRequestModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ajukan Pembayaran</button>
+                                        <form method="POST" action="{{ route('admin.vehicles.destroy', $v) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus kendaraan ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
@@ -207,7 +222,7 @@
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="10" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data kendaraan.</td>
+                        <td colspan="13" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data kendaraan.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -229,7 +244,7 @@
 </div>
 
 {{-- Detail Modal --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
@@ -251,7 +266,7 @@
 </div>
 
 {{-- Modal Tambah / Edit Kendaraan --}}
-<div id="vehicle-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+<div id="vehicle-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="vehicle-modal-card" onclick="event.stopPropagation()">
 
         {{-- Header --}}
@@ -303,6 +318,18 @@
                         </div>
                         <div class="vehicle-field">
                             <label class="vehicle-label">
+                                Nomor Rangka
+                            </label>
+                            <input type="text" name="nomor_rangka" id="f-nomor_rangka" placeholder="Masukan nomor rangka" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">
+                                Nomor Mesin
+                            </label>
+                            <input type="text" name="nomor_mesin" id="f-nomor_mesin" placeholder="Masukan nomor mesin" class="vehicle-input">
+                        </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">
                                 Keterangan <span class="vehicle-required">*</span>
                             </label>
                             <textarea name="keperluan" id="f-keperluan" required placeholder="Masukan keterangan" rows="2" class="vehicle-input vehicle-textarea"></textarea>
@@ -346,7 +373,19 @@
                             </label>
                             <input type="date" name="pajak_5_tahun" id="f-pajak_5_tahun" required class="vehicle-input">
                         </div>
-                    </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">Foto Kendaraan</label>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                <label for="f-foto" class="vehicle-upload" id="foto-upload-area" style="height:80px;">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span id="foto-label" style="font-size:12px;">Klik untuk upload gambar</span>
+                                </label>
+                                <input type="file" name="foto" id="f-foto" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" style="display:none;">
+                                <div id="foto-preview" style="display:none;text-align:center;">
+                                    <img id="foto-preview-img" src="" alt="Preview" style="max-width:100%;max-height:100px;border-radius:8px;object-fit:cover;">
+                                </div>
+                            </div>
+                        </div>
                 </div>
 
                 {{-- Hidden fields --}}
@@ -362,6 +401,80 @@
             </form>
         </div>
 
+    </div>
+</div>
+
+{{-- Pending Approvals Section --}}
+@if($isApprover && $pendingPajakRequests->isNotEmpty())
+<div class="gaming-card overflow-hidden" id="pending-approvals">
+    <div class="px-5 py-4" style="border-bottom:1px solid var(--border-color);">
+        <div style="display:flex;align-items:center;gap:8px;">
+            <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengajuan Pembayaran Pajak</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">{{ $pendingPajakRequests->count() }} pengajuan menunggu persetujuan</div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="gaming-table min-w-[700px]">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Kendaraan</th>
+                    <th>Plat Nomor</th>
+                    <th>Jenis Pajak</th>
+                    <th>Nominal</th>
+                    <th>Pemohon</th>
+                    <th>Tanggal</th>
+                    <th>Bukti</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($pendingPajakRequests as $pr)
+                <tr>
+                    <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                    <td style="color:var(--text-primary);font-weight:500;">{{ $pr->vehicle->nama_kendaraan }}</td>
+                    <td style="font-family:monospace;font-weight:600;color:var(--text-muted);">{{ $pr->vehicle->plat_nomor }}</td>
+                    <td style="color:var(--text-primary);">{{ $pr->jenis === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahunan' }}</td>
+                    <td style="color:var(--text-primary);">Rp {{ number_format($pr->nominal, 0, ',', '.') }}</td>
+                    <td style="color:var(--text-muted);">{{ $pr->requester->name }}</td>
+                    <td style="color:var(--text-muted);">{{ $pr->created_at->format('d/m/Y H:i') }}</td>
+                    <td>
+                        @if($pr->bukti_bayar)
+                        <a href="{{ asset('storage/'.$pr->bukti_bayar) }}" target="_blank" rel="noopener" style="color:var(--color-accent);font-size:13px;text-decoration:none;font-weight:500;">Lihat</a>
+                        @else
+                        <span style="color:var(--text-muted);">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="flex gap-1">
+                            <button type="button" onclick="approveRequest({{ $pr->id }})" class="btn btn-success btn-sm" style="padding:3px 10px;font-size:11px;">Setuju</button>
+                            <button type="button" onclick="showRejectModal({{ $pr->id }})" class="btn btn-danger btn-sm" style="padding:3px 10px;font-size:11px;">Tolak</button>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
+
+{{-- Modal Alasan Tolak --}}
+<div id="reject-modal" style="display:none;position:fixed;inset:0;z-index:100001;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div style="width:100%;max-width:420px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:20px;box-shadow:0 25px 60px rgba(0,0,0,0.5);padding:24px;" onclick="event.stopPropagation()">
+        <h3 style="font-size:16px;font-weight:700;color:var(--text-primary);margin:0 0 4px;">Tolak Pengajuan</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 16px;">Masukan alasan penolakan</p>
+        <input type="hidden" id="reject-id" value="">
+        <textarea id="reject-notes" rows="3" placeholder="Alasan penolakan..." style="width:100%;padding:12px 16px;background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:12px;color:var(--text-primary);font-size:14px;outline:none;resize:vertical;box-sizing:border-box;min-height:80px;"></textarea>
+        <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:16px;">
+            <button type="button" onclick="closeModal('reject-modal')" style="padding:8px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;background:transparent;border:1px solid var(--border-color);color:var(--text-secondary);" onmouseover="this.style.borderColor='rgba(128,128,128,0.4)';this.style.color='var(--text-primary)'" onmouseout="this.style.borderColor='var(--border-color)';this.style.color='var(--text-secondary)'">Batal</button>
+            <button type="button" onclick="rejectRequest()" style="padding:8px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;background:#ef4444;color:#fff;border:none;">Tolak</button>
+        </div>
     </div>
 </div>
 
@@ -532,10 +645,10 @@
 }
 </style>
 @endpush
-@endsection
 
 @push('scripts')
 <script>
+console.log('[Vehicles] Script loaded');
 const vehiclesData = @json($vehiclesJson);
 const csrfToken = '{{ csrf_token() }}';
 
@@ -586,7 +699,7 @@ function showAlertPopup(type) {
                     '<p style="font-size:12px;color:var(--text-muted);margin:2px 0 0;">' + v.plat_nomor + ' — ' + v.jenis_kendaraan + '</p>' +
                     '<p style="font-size:11px;color:var(--text-secondary);margin:4px 0 0;">' + daysLabel + '</p>' +
                 '</div>' +
-                '<button onclick="event.stopPropagation(); bayarPajak(' + v.id + ')" style="flex-shrink:0;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:' + color + ';color:#fff;box-shadow:0 4px 12px ' + (isDanger ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)') + ';" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Bayar</button>' +
+                '<span onclick="event.stopPropagation()"><button onclick="showPajakRequestModal(' + v.id + ')" style="flex-shrink:0;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:' + color + ';color:#fff;box-shadow:0 4px 12px ' + (isDanger ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)') + ';" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Ajukan Pembayaran</button></span>' +
             '</div>';
         }).join('');
     }
@@ -600,14 +713,8 @@ function closeAlertPopup() {
     document.body.style.overflow = '';
 }
 
-function bayarPajak(id) {
-    closeAlertPopup();
-    if (confirm('Bayar/mperbarui pajak kendaraan ini?')) {
-        updatePajakStatus(id, 'aktif');
-    }
-}
-
 function showDetail(id) {
+    document.querySelectorAll('.dropdown-menu').forEach(function(el) { el.style.display = 'none'; });
     const v = vehiclesData.find(i => i.id === id);
     if (!v) return;
     document.getElementById('detail-title').textContent = v.nama_kendaraan;
@@ -626,6 +733,8 @@ function showDetail(id) {
         { label: 'Merk / Tipe', value: v.merk_tipe || '-' },
         { label: 'Tahun', value: v.tahun },
         { label: 'Warna', value: v.warna || '-' },
+        { label: 'Nomor Rangka', value: v.nomor_rangka || '-' },
+        { label: 'Nomor Mesin', value: v.nomor_mesin || '-' },
         { label: 'Kepemilikan', value: v.kepemilikan_status },
         { label: 'PIC', value: v.pic },
         { label: 'Jabatan', value: v.jabatan },
@@ -658,13 +767,8 @@ function showDetail(id) {
                 <span style="font-size:13px;font-weight:600;color:${st.text};">${st.label}</span>
             </div>
         </div>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border-color);">
-            <p style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Update Status Pajak</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                <button onclick="updatePajakStatus(${v.id}, 'aktif')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;" onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#ecfdf5'">Hidup</button>
-                <button onclick="updatePajakStatus(${v.id}, 'segera_habis')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;" onmouseover="this.style.background='#ffedd5'" onmouseout="this.style.background='#fff7ed'">Mau Habis</button>
-                <button onclick="updatePajakStatus(${v.id}, 'mati')" style="padding:10px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">Mati</button>
-            </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border-color);text-align:center;">
+            <span onclick="event.stopPropagation()"><button onclick="showPajakRequestModal(${v.id})" style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;box-shadow:0 4px 15px rgba(108,92,255,0.3);" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Ajukan Pembayaran Pajak</button></span>
         </div>
     `;
     openModal('detail-modal');
@@ -677,14 +781,6 @@ function closeDetail() {
 document.getElementById('detail-modal')?.addEventListener('click', function(e) {
     if (e.target === this) closeDetail();
 });
-
-function updatePajakStatus(id, status) {
-    fetch('/admin/vehicles/' + id + '/status', {
-        method: 'PATCH',
-        headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ status })
-    }).then(r => r.json()).then(() => { location.reload(); }).catch(() => { location.reload(); });
-}
 
 function toggleDropdown(btn, id) {
     const all = document.querySelectorAll('.dropdown-menu');
@@ -712,10 +808,15 @@ function openCreateModal() {
     document.getElementById('f-pajak_tahunan').value = '';
     document.getElementById('f-pajak_5_tahun').value = '';
     document.getElementById('f-biaya_kendaraan').value = '0';
+    document.getElementById('foto-preview').style.display = 'none';
+    document.getElementById('foto-preview-img').src = '';
+    document.getElementById('foto-label').textContent = 'Klik untuk upload gambar';
+    document.getElementById('f-foto').value = '';
     showModal();
 }
 
 function openEditModal(id) {
+    document.querySelectorAll('.dropdown-menu').forEach(function(el) { el.style.display = 'none'; });
     const v = vehiclesData.find(i => i.id === id);
     if (!v) return;
     closeDetail();
@@ -737,6 +838,19 @@ function openEditModal(id) {
     document.getElementById('f-keperluan').value = v.keperluan;
     document.getElementById('f-merk_tipe').value = v.merk_tipe || '';
     document.getElementById('f-warna').value = v.warna || '';
+    document.getElementById('f-nomor_rangka').value = v.nomor_rangka || '';
+    document.getElementById('f-nomor_mesin').value = v.nomor_mesin || '';
+    var fotoPreview = document.getElementById('foto-preview');
+    var fotoLabel = document.getElementById('foto-label');
+    if (v.foto) {
+        fotoPreview.style.display = 'block';
+        document.getElementById('foto-preview-img').src = v.foto;
+        fotoLabel.textContent = 'Klik untuk ganti gambar';
+    } else {
+        fotoPreview.style.display = 'none';
+        document.getElementById('foto-preview-img').src = '';
+        fotoLabel.textContent = 'Klik untuk upload gambar';
+    }
     showModal();
 }
 
@@ -785,11 +899,68 @@ if (statusParam) { currentFilter = statusParam; filterVehicles(); }
 
 document.getElementById('f-foto')?.addEventListener('change', function() {
     var label = document.getElementById('foto-label');
+    var preview = document.getElementById('foto-preview');
+    var previewImg = document.getElementById('foto-preview-img');
     if (this.files && this.files[0]) {
         label.textContent = this.files[0].name;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            preview.style.display = 'block';
+            previewImg.src = e.target.result;
+        };
+        reader.readAsDataURL(this.files[0]);
     } else {
         label.textContent = 'Klik untuk upload gambar';
+        preview.style.display = 'none';
+        previewImg.src = '';
     }
 });
+
+document.getElementById('reject-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeModal('reject-modal');
+});
+
+function approveRequest(id) {
+    if (!confirm('Setujui pengajuan pembayaran pajak ini?')) return;
+    fetch('/admin/vehicles/pajak-requests/' + id + '/approve', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    }).then(function(r) {
+        if (!r.ok) return r.json().then(function(e) { throw new Error(e.error); });
+        return r.json();
+    }).then(function() {
+        showSuccessModal('Pengajuan berhasil disetujui. Pajak kendaraan diperpanjang.');
+        setTimeout(function() { location.reload(); }, 1500);
+    }).catch(function(e) {
+        alert(e.message || 'Gagal menyetujui pengajuan.');
+    });
+}
+
+function showRejectModal(id) {
+    document.getElementById('reject-id').value = id;
+    document.getElementById('reject-notes').value = '';
+    openModal('reject-modal');
+}
+
+function rejectRequest() {
+    var id = document.getElementById('reject-id').value;
+    var notes = document.getElementById('reject-notes').value.trim();
+    if (!notes) { alert('Harap masukan alasan penolakan.'); return; }
+    fetch('/admin/vehicles/pajak-requests/' + id + '/reject', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ notes: notes }),
+    }).then(function(r) {
+        if (!r.ok) return r.json().then(function(e) { throw new Error(e.error); });
+        return r.json();
+    }).then(function() {
+        closeModal('reject-modal');
+        showSuccessModal('Pengajuan berhasil ditolak.');
+        setTimeout(function() { location.reload(); }, 1500);
+    }).catch(function(e) {
+        alert(e.message || 'Gagal menolak pengajuan.');
+    });
+}
 </script>
 @endpush
+@endsection

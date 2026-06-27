@@ -4,8 +4,9 @@ namespace App\Providers;
 
 use App\Models\Asset;
 use App\Models\Meeting;
-use Illuminate\Support\ServiceProvider;
+use App\Models\VehiclePajakRequest;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -57,7 +58,10 @@ class AppServiceProvider extends ServiceProvider
                     ->take(3)
                     ->get();
 
-                $view->with(compact('upcomingMeetings', 'upcomingPayments', 'upcomingAlerts'));
+                // Pengajuan Pajak Pending (untuk approver)
+                $pendingPajakApprovalsCount = VehiclePajakRequest::where('status', 'pending')->count();
+
+                $view->with(compact('upcomingMeetings', 'upcomingPayments', 'upcomingAlerts', 'pendingPajakApprovalsCount'));
             }
         });
     }

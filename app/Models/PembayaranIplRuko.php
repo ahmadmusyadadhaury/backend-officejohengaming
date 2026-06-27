@@ -21,9 +21,9 @@ class PembayaranIplRuko extends Model
     {
         return [
             'tanggal_tagihan' => 'date:d/m/Y',
-            'jatuh_tempo'     => 'date:d/m/Y',
-            'tanggal_bayar'   => 'date:d/m/Y',
-            'nominal'         => 'decimal:2',
+            'jatuh_tempo' => 'date:d/m/Y',
+            'tanggal_bayar' => 'date:d/m/Y',
+            'nominal' => 'decimal:2',
         ];
     }
 }
