@@ -227,26 +227,26 @@
 @push('modals')
 {{-- Modal Detail --}}
 <div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full" style="max-width:920px;width:90vw;max-height:65vh;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
+    <div class="w-full" style="max-width:640px;width:90vw;max-height:min(90vh,800px);background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.18);">
-                    <svg class="w-4.5 h-4.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        <div class="flex items-center justify-between px-5 py-3 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.18);">
+                    <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                 </div>
-                <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Permintaan Meeting — <span id="detail-judul">Meeting</span></h3>
+                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Detail Permintaan Meeting — <span id="detail-judul">Meeting</span></h3>
             </div>
-            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <button type="button" onclick="closeDetail()" class="p-1 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
 
         {{-- Body --}}
-        <div class="p-6 overflow-y-auto flex-1" id="detail-body" style="scrollbar-width:thin;scrollbar-color:rgba(129,140,248,0.25) transparent;">
+        <div class="p-4 flex-1 overflow-y-auto" id="detail-body" style="scrollbar-width:thin;scrollbar-color:rgba(129,140,248,0.25) transparent;">
 
             {{-- 2-Column Grid: Left Info / Right Permohonan --}}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                 {{-- Left: Meeting Info --}}
                 <div id="meeting-info-rows" class="space-y-0"></div>
 
@@ -257,24 +257,24 @@
             </div>
 
             {{-- Aset Dibutuhkan --}}
-            <div class="mt-6" id="meeting-assets-section" style="display:none;">
-                <div style="border:1px solid var(--border-color);background:var(--bg-surface-2);border-radius:16px;padding:14px;">
+            <div class="mt-3" id="meeting-assets-section" style="display:none;">
+                <div style="border:1px solid var(--border-color);background:var(--bg-surface-2);border-radius:12px;padding:10px;">
                     <div id="meeting-assets-content"></div>
                 </div>
             </div>
 
             {{-- MOM --}}
-            <div class="mt-6" id="meeting-mom-section" style="display:none;">
-                <div style="border:1px solid rgba(16,185,129,0.35);background:var(--bg-base);border-radius:16px;padding:18px;">
-                    <div class="flex items-center gap-2 mb-4">
-                        <svg class="w-5 h-5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <h4 class="text-sm font-bold" style="color:#10b981;">Minutes of Meeting (MOM)</h4>
+            <div class="mt-3" id="meeting-mom-section" style="display:none;">
+                <div style="border:1px solid rgba(16,185,129,0.35);background:var(--bg-base);border-radius:12px;padding:12px;">
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-4 h-4" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <h4 class="text-xs font-bold" style="color:#10b981;">Minutes of Meeting (MOM)</h4>
                     </div>
-                    <div style="border:1px solid rgba(16,185,129,0.2);background:var(--bg-surface-2);border-radius:14px;padding:18px;">
-                        <div id="mom-ringkasan" class="mb-4"></div>
-                        <div id="mom-keputusan" class="mb-4"></div>
-                        <div id="mom-action-plan" class="mb-4"></div>
-                        <div id="mom-pic-section" class="mb-4"></div>
+                    <div style="border:1px solid rgba(16,185,129,0.2);background:var(--bg-surface-2);border-radius:10px;padding:10px;">
+                        <div id="mom-ringkasan" class="mb-2"></div>
+                        <div id="mom-keputusan" class="mb-2"></div>
+                        <div id="mom-action-plan" class="mb-2"></div>
+                        <div id="mom-pic-section" class="mb-2"></div>
                         <div id="mom-file-section"></div>
                     </div>
                 </div>
@@ -282,34 +282,38 @@
         </div>
 
         {{-- Reject reason --}}
-        <div id="d-reject-section" class="hidden px-6 pb-4 flex-shrink-0">
-            <div class="p-4 rounded-2xl" style="background:#fef2f2;border:1px solid #fecaca;">
-                <p class="text-sm font-semibold mb-1" style="color:#ef4444;">Alasan Penolakan</p>
-                <p class="text-sm" style="color:#f87171;" id="d-reject-reason"></p>
+        <div id="d-reject-section" class="hidden px-6 pb-3 flex-shrink-0">
+            <div class="p-3 rounded-xl" style="background:#fef2f2;border:1px solid #fecaca;">
+                <p class="text-xs font-semibold mb-0.5" style="color:#ef4444;">Alasan Penolakan</p>
+                <p class="text-xs" style="color:#f87171;" id="d-reject-reason"></p>
             </div>
         </div>
 
         {{-- Actions --}}
-        <div id="d-actions-section" class="hidden px-6 pb-5 flex-shrink-0">
-            <p class="text-[11px] font-bold tracking-[0.1em] mb-3" style="color:var(--text-muted);">UPDATE STATUS PERMINTAAN</p>
-            <div class="flex flex-col gap-3">
-                <form id="d-approve-form" method="POST">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="_method" value="PATCH">
-                    <button type="submit" class="w-full px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition" style="background:#10b981;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">✓ Setujui</button>
-                </form>
-                <form id="d-reject-form" method="POST">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="_method" value="PATCH">
-                    <textarea name="reject_reason" id="d-reject-input" placeholder="Alasan penolakan..." required rows="2" class="w-full px-4 py-2.5 rounded-xl text-sm border transition" style="resize:none;border-color:var(--border-color);color:var(--text-primary);background:var(--bg-surface-2);" onfocus="this.style.borderColor='#f87171';this.style.background='var(--bg-surface)'" onblur="this.style.borderColor='var(--border-color)';this.style.background='var(--bg-surface-2)'"></textarea>
-                    <button type="submit" class="w-full px-5 py-2.5 rounded-xl text-sm font-semibold transition mt-2" style="color:#e11d48;background:#ffe4e6;" onmouseover="this.style.background='#fecdd3'" onmouseout="this.style.background='#ffe4e6'">× Tolak</button>
-                </form>
+        <div id="d-actions-section" class="hidden px-6 pb-4 flex-shrink-0">
+            <div class="flex items-center justify-between gap-3" style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:10px 14px;">
+                <p class="text-[10px] font-bold tracking-[0.1em] flex-shrink-0" style="color:var(--text-muted);">UPDATE STATUS</p>
+                <div class="flex items-center gap-2">
+                    <form id="d-approve-form" method="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="_method" value="PATCH">
+                        <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition" style="background:#10b981;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">✓ Setujui</button>
+                    </form>
+                    <div class="flex items-center gap-2">
+                        <textarea name="reject_reason" id="d-reject-input" placeholder="Alasan tolak..." rows="1" class="w-40 px-3 py-1.5 rounded-lg text-xs border transition" style="resize:none;border-color:var(--border-color);color:var(--text-primary);background:var(--bg-surface);" onfocus="this.style.borderColor='#f87171'" onblur="this.style.borderColor='var(--border-color)'"></textarea>
+                        <form id="d-reject-form" method="POST" class="flex-shrink-0">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="_method" value="PATCH">
+                            <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="color:#e11d48;background:#ffe4e6;" onmouseover="this.style.background='#fecdd3'" onmouseout="this.style.background='#ffe4e6'">× Tolak</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
         {{-- Footer --}}
-        <div class="flex items-center justify-end px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-secondary);border:1px solid var(--border-color);background:var(--bg-surface-2);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
+        <div class="flex items-center justify-end px-5 py-3 flex-shrink-0" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeDetail()" class="px-4 py-1.5 rounded-lg text-xs font-medium transition" style="color:var(--text-secondary);border:1px solid var(--border-color);background:var(--bg-surface-2);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
         </div>
     </div>
 </div>
@@ -339,29 +343,29 @@ function showDetail(id) {
 
     const rows = document.getElementById('meeting-info-rows');
     rows.innerHTML = `
-        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
-            <span class="text-xs font-semibold" style="color:var(--text-muted);">Pemohon</span>
-            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.requester?.name || '-'}</span>
+        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Pemohon</span>
+            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.requester?.name || '-'}</span>
         </div>
-        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
-            <span class="text-xs font-semibold" style="color:var(--text-muted);">Judul Meeting</span>
-            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.title}</span>
+        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Judul Meeting</span>
+            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.title}</span>
         </div>
-        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
-            <span class="text-xs font-semibold" style="color:var(--text-muted);">Tanggal</span>
-            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.meeting_date || '-'}</span>
+        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Tanggal</span>
+            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.meeting_date || '-'}</span>
         </div>
-        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
-            <span class="text-xs font-semibold" style="color:var(--text-muted);">Ruangan</span>
-            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.room?.name || '-'}</span>
+        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Ruangan</span>
+            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.room?.name || '-'}</span>
         </div>
-        <div class="flex items-center justify-between py-3" style="border-bottom:1px solid var(--border-color);">
-            <span class="text-xs font-semibold" style="color:var(--text-muted);">Waktu</span>
-            <span class="text-sm text-right" style="color:var(--text-primary);font-weight:700;">${m.start_time || '-'}${m.end_time ? ' - ' + m.end_time : ''}</span>
+        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+            <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Waktu</span>
+            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.start_time || '-'}${m.end_time ? ' - ' + m.end_time : ''}</span>
         </div>
-        <div class="flex items-center justify-between py-3">
-            <span class="text-xs font-semibold" style="color:var(--text-muted);">Status</span>
-            <span class="text-xs font-bold px-3 py-1.5" style="background:${st.bg};color:${st.text};border-radius:8px;">${st.label}</span>
+        <div class="flex items-center justify-between py-2">
+            <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Status</span>
+            <span class="text-[11px] font-bold px-2.5 py-1" style="background:${st.bg};color:${st.text};border-radius:6px;">${st.label}</span>
         </div>
     `;
 
@@ -369,28 +373,28 @@ function showDetail(id) {
     const permohonanContent = document.getElementById('meeting-permohonan-content');
     let pHtml = '';
     if (m.why) pHtml += `
-        <div class="mb-4">
-            <div class="flex items-center gap-1.5 mb-2">
-                <svg class="w-4 h-4" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span class="text-xs font-bold" style="color:#8b5cf6;">Why — Kenapa meeting ini diadakan?</span>
+        <div class="mb-2">
+            <div class="flex items-center gap-1.5 mb-1">
+                <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="text-[11px] font-bold" style="color:#8b5cf6;">Why — Kenapa meeting ini diadakan?</span>
             </div>
-            <div class="text-sm leading-relaxed p-3.5" style="background:var(--bg-surface-2);border-radius:10px;color:var(--text-secondary);line-height:1.6;">${m.why}</div>
+            <div class="text-xs leading-relaxed p-2.5" style="background:var(--bg-surface-2);border-radius:8px;color:var(--text-secondary);line-height:1.5;">${m.why}</div>
         </div>`;
     if (m.what) pHtml += `
-        <div class="mb-4">
-            <div class="flex items-center gap-1.5 mb-2">
-                <svg class="w-4 h-4" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                <span class="text-xs font-bold" style="color:#8b5cf6;">What — Apa yang dibahas?</span>
+        <div class="mb-2">
+            <div class="flex items-center gap-1.5 mb-1">
+                <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                <span class="text-[11px] font-bold" style="color:#8b5cf6;">What — Apa yang dibahas?</span>
             </div>
-            <div class="text-sm leading-relaxed p-3.5" style="background:var(--bg-surface-2);border-radius:10px;color:var(--text-secondary);line-height:1.6;">${m.what}</div>
+            <div class="text-xs leading-relaxed p-2.5" style="background:var(--bg-surface-2);border-radius:8px;color:var(--text-secondary);line-height:1.5;">${m.what}</div>
         </div>`;
     if (m.how_expected) pHtml += `
-        <div class="mb-4">
-            <div class="flex items-center gap-1.5 mb-2">
-                <svg class="w-4 h-4" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                <span class="text-xs font-bold" style="color:#8b5cf6;">How — Bagaimana hasil yang diharapkan?</span>
+        <div class="mb-2">
+            <div class="flex items-center gap-1.5 mb-1">
+                <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span class="text-[11px] font-bold" style="color:#8b5cf6;">How — Bagaimana hasil yang diharapkan?</span>
             </div>
-            <div class="text-sm leading-relaxed p-3.5" style="background:var(--bg-surface-2);border-radius:10px;color:var(--text-secondary);line-height:1.6;">${m.how_expected}</div>
+            <div class="text-xs leading-relaxed p-2.5" style="background:var(--bg-surface-2);border-radius:8px;color:var(--text-secondary);line-height:1.5;">${m.how_expected}</div>
         </div>`;
     if (pHtml) {
         permohonanContent.innerHTML = pHtml;
@@ -403,7 +407,7 @@ function showDetail(id) {
     const assetsContent = document.getElementById('meeting-assets-content');
     if (m.assets && m.assets.length) {
         assetsContent.innerHTML = `
-            <p class="text-xs font-bold tracking-wider mb-3" style="color:var(--color-accent-light);">ASET DIBUTUHKAN</p>
+            <p class="text-[11px] font-bold tracking-wider mb-2" style="color:var(--color-accent-light);">ASET DIBUTUHKAN</p>
             <div class="flex flex-wrap gap-2">${m.assets.map(a => `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4338ca;">${a.name} (${a.quantity})</span>`).join('')}</div>
         `;
         assetsSection.style.display = '';
@@ -416,13 +420,13 @@ function showDetail(id) {
     if (hasMom) {
         function momItem(label, content, icon) {
             if (!content) return '';
-            return '<div class="mb-4"><div class="flex items-center gap-1.5 mb-1.5"><svg class="w-3.5 h-3.5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + icon + '"/></svg><span class="text-xs font-bold uppercase tracking-wider" style="color:#10b981;">' + label + '</span></div><p class="text-sm" style="color:var(--text-primary);line-height:1.7;">' + content + '</p></div>';
+            return '<div class="mb-2"><div class="flex items-center gap-1 mb-1"><svg class="w-3 h-3" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + icon + '"/></svg><span class="text-[11px] font-bold uppercase tracking-wider" style="color:#10b981;">' + label + '</span></div><p class="text-xs" style="color:var(--text-primary);line-height:1.5;">' + content + '</p></div>';
         }
 
         let ringkasanHtml = '';
         if (m.mom.status) {
             const isSent = m.mom.status === 'sent';
-            ringkasanHtml += '<div class="flex items-center gap-2 mb-3"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:' + (isSent ? '#dcfce7' : '#fef3c7') + ';color:' + (isSent ? '#059669' : '#d97706') + ';">' + (isSent ? 'Terkirim' : 'Draft') + '</span></div>';
+            ringkasanHtml += '<div class="flex items-center gap-2 mb-2"><span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold" style="background:' + (isSent ? '#dcfce7' : '#fef3c7') + ';color:' + (isSent ? '#059669' : '#d97706') + ';">' + (isSent ? 'Terkirim' : 'Draft') + '</span></div>';
         }
         ringkasanHtml += momItem('Ringkasan Pembahasan', m.mom.summary, 'M7 4V2m17 2v2M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z');
         document.getElementById('mom-ringkasan').innerHTML = ringkasanHtml;
@@ -430,7 +434,7 @@ function showDetail(id) {
         document.getElementById('mom-action-plan').innerHTML = momItem('Action Plan', m.mom.action_plan, 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2');
         document.getElementById('mom-pic-section').innerHTML = momItem('Penanggung Jawab (PIC)', m.mom.pic, 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z');
         document.getElementById('mom-file-section').innerHTML = m.mom.file_url
-            ? '<div><div class="flex items-center gap-1.5 mb-1.5"><svg class="w-3.5 h-3.5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><span class="text-xs font-bold uppercase tracking-wider" style="color:#10b981;">File Pendukung</span></div><a href="' + m.mom.file_url + '" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg max-w-full" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);"><svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="truncate max-w-[200px]">' + (m.mom.file_name || 'Download') + '</span></a></div>'
+            ? '<div><div class="flex items-center gap-1 mb-1"><svg class="w-3 h-3" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><span class="text-[11px] font-bold uppercase tracking-wider" style="color:#10b981;">File Pendukung</span></div><a href="' + m.mom.file_url + '" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-lg max-w-full" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);"><svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="truncate max-w-[160px]">' + (m.mom.file_name || 'Download') + '</span></a></div>'
             : '';
         momSection.style.display = '';
     } else {

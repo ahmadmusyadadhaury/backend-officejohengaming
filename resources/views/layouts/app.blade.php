@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}?v={{ filemtime(public_path('favicon-16x16.png')) }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v={{ filemtime(public_path('apple-touch-icon.png')) }}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ asset('css/gaming.css') }}?v={{ filemtime(public_path('css/gaming.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/gaming.css') }}?v={{ md5_file(public_path('css/gaming.css')) }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .sidebar-safe  { padding-bottom: env(safe-area-inset-bottom, 16px); }
@@ -86,10 +86,10 @@
         onclick="toggleSidebar()"></div>
 
     {{-- Sidebar --}}
-    <aside id="sidebar" class="gaming-sidebar w-72 flex flex-col fixed top-0 left-0 z-30 transition-transform duration-300 -translate-x-full lg:translate-x-0" style="height:100dvh;">
+    <aside id="sidebar" class="gaming-sidebar lg:w-60 flex flex-col fixed top-0 left-0 z-30 transition-transform duration-300 -translate-x-full lg:translate-x-0" style="height:100dvh;">
 
         {{-- Logo --}}
-        <div class="flex-shrink-0 flex items-center gap-2 px-4 py-4" style="border-bottom:1px solid var(--sidebar-border);">
+        <div class="sidebar-brand flex-shrink-0 flex items-center gap-2 px-4 py-4" style="border-bottom:1px solid var(--sidebar-border);">
             <div class="relative flex-shrink-0">
                 <img src="{{ asset('images/logo/logo_web.png') }}" alt="JOHEN OFFICE" loading="lazy"
                     class="w-9 h-9 rounded-lg object-contain">
@@ -126,10 +126,10 @@
     </aside>
 
     {{-- Main Content --}}
-    <div class="lg:ml-72 flex flex-col min-h-screen-safe">
+    <div class="lg:ml-60 flex flex-col min-h-screen-safe">
 
         {{-- Topbar --}}
-        <header class="gaming-topbar px-4 lg:px-8 py-4 flex items-center justify-between topbar-safe">
+        <header class="gaming-topbar flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg transition"
                     style="color:var(--text-secondary);background:none;border:none;cursor:pointer;"
@@ -344,7 +344,7 @@
         </div>
 
         {{-- Page Content --}}
-        <main class="flex-1 px-4 lg:px-8 pt-4 pb-8 page-content">
+        <main class="flex-1 page-content">
             @yield('content')
         </main>
     </div>
