@@ -720,7 +720,16 @@
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Jabatan <span class="field-req">*</span></label>
-                        <input type="text" name="jabatan" id="f-jabatan" required placeholder="Jabatan PIC" class="gaming-input">
+                        <select name="jabatan" id="f-jabatan" required class="gaming-input gaming-select">
+                            <option value="">Pilih Jabatan</option>
+                            <option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option>
+                            <option value="General Manager (GM)">General Manager (GM)</option>
+                            <option value="Head of Store">Head of Store</option>
+                            <option value="Admin Master">Admin Master</option>
+                            <option value="HR">HR</option>
+                            <option value="Koordinator">Koordinator</option>
+                            <option value="Karyawan">Karyawan</option>
+                        </select>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Masa Tenggang <span class="field-req">*</span></label>

@@ -1051,6 +1051,7 @@ body.light .badge-orange {
     .gaming-input { padding: 0.45rem 0.65rem; font-size: 0.75rem; }
     .gaming-label { font-size: 0.6rem; margin-bottom: 4px; }
     select, input[type="text"], input[type="search"], input[type="email"], input[type="password"] { font-size: 0.75rem !important; padding: 0.4rem 0.6rem !important; }
+    input[type="text"].pl-9, input[type="search"].pl-9 { padding-left: 2.25rem !important; }
 
     /* ── Compact content & typography ── */
     .page-content { padding-left: 0.6rem; padding-right: 0.6rem; padding-top: 0.6rem; padding-bottom: 0.75rem; }

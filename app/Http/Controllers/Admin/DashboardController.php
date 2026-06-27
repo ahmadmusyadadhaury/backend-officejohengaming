@@ -232,6 +232,33 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading'));
+        // Monthly chart data (last 6 months)
+        $monthlyLabels = [];
+        $monthlyTagihan = [];
+        $monthlyBayar = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $monthlyLabels[] = $month->isoFormat('MMM Y');
+            $start = $month->copy()->startOfMonth();
+            $end = $month->copy()->endOfMonth();
+
+            $tagihan = Payment::where('jenis', 'listrik')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranAsetDigital::whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranIplRuko::whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + WifiPayment::whereBetween('created_at', [$start, $end])->sum('biaya');
+
+            $bayar = Payment::where('jenis', 'listrik')->where('status', 'lunas')->whereBetween('tanggal_bayar', [$start, $end])->sum('nominal')
+                + PembayaranAsetDigital::where('status', 'lunas')->whereBetween('tanggal_bayar', [$start, $end])->sum('nominal')
+                + PembayaranIplRuko::where('status', 'lunas')->whereBetween('tanggal_bayar', [$start, $end])->sum('nominal')
+                + WifiPayment::where('status', 'lunas')->whereBetween('tanggal_bayar', [$start, $end])->sum('biaya');
+
+            $monthlyTagihan[] = (int) $tagihan;
+            $monthlyBayar[] = (int) $bayar;
+        }
+        $chartLabels = $monthlyLabels;
+        $chartTagihan = $monthlyTagihan;
+        $chartBayar = $monthlyBayar;
+
+        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar'));
     }
 }

@@ -12,8 +12,108 @@
 </style>
 <div class="space-y-6 pt-2 stagger-children dashboard-wrapper">
 
-    {{-- STAT CARDS --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
+
+
+    {{-- Komposisi Tim (GM & CEO) --}}
+    @if(in_array(auth()->user()->role, ['gm', 'ceo']))
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 md:gap-4">
+
+        {{-- CEO --}}
+        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(250,204,21,0.2);background:linear-gradient(135deg,rgba(250,204,21,0.03),rgba(250,204,21,0.08));">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);box-shadow:0 4px 12px rgba(245,158,11,0.35);">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['total_ceo'] }}</div>
+                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Chief Executive Officer</div>
+            </div>
+        </div>
+
+        {{-- GM --}}
+        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(139,92,246,0.2);background:linear-gradient(135deg,rgba(139,92,246,0.03),rgba(139,92,246,0.08));">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);box-shadow:0 4px 12px rgba(124,58,237,0.35);">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#a78bfa;">{{ $stats['total_gm'] }}</div>
+                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">General Manager</div>
+            </div>
+        </div>
+
+        {{-- Head of Store --}}
+        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(52,211,153,0.2);background:linear-gradient(135deg,rgba(52,211,153,0.03),rgba(52,211,153,0.08));">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#34d399,#10b981);box-shadow:0 4px 12px rgba(16,185,129,0.35);">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#34d399;">{{ $stats['total_head_store'] }}</div>
+                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Head of Store</div>
+            </div>
+        </div>
+
+        {{-- HR --}}
+        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(251,146,60,0.2);background:linear-gradient(135deg,rgba(251,146,60,0.03),rgba(251,146,60,0.08));">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#fb923c,#f97316);box-shadow:0 4px 12px rgba(249,115,22,0.35);">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#fb923c;">{{ $stats['total_hr'] }}</div>
+                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Human Resources</div>
+            </div>
+        </div>
+
+        {{-- Koordinator --}}
+        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(56,189,248,0.2);background:linear-gradient(135deg,rgba(56,189,248,0.03),rgba(56,189,248,0.08));">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#38bdf8,#0ea5e9);box-shadow:0 4px 12px rgba(14,165,233,0.35);">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#38bdf8;">{{ $stats['total_koordinator'] }}</div>
+                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Koordinator</div>
+            </div>
+        </div>
+
+        {{-- Total Tim --}}
+        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(192,132,252,0.2);background:linear-gradient(135deg,rgba(192,132,252,0.03),rgba(192,132,252,0.08));">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#c084fc,#a855f7);box-shadow:0 4px 12px rgba(168,85,247,0.35);">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#c084fc;">{{ $stats['total_team'] }}</div>
+                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Total Tim</div>
+            </div>
+        </div>
+
+        {{-- Karyawan --}}
+        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(248,113,113,0.2);background:linear-gradient(135deg,rgba(248,113,113,0.03),rgba(248,113,113,0.08));">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#f87171,#ef4444);box-shadow:0 4px 12px rgba(239,68,68,0.35);">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#f87171;">{{ $stats['total_karyawan'] }}</div>
+                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Karyawan</div>
+            </div>
+        </div>
+
+    </div>
+    @endif
+
+    {{-- Stat Cards --}}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
 
         {{-- Total Meeting --}}
         <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(59,130,246,0.15);">
@@ -57,23 +157,7 @@
             </div>
         </div>
 
-        {{-- Total Koordinator --}}
-        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(245,158,11,0.15);">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.12);box-shadow:0 0 16px rgba(245,158,11,0.2);">
-                <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#fcd34d;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total_koordinator'] }}</div>
-                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Koordinator</div>
-            </div>
-        </div>
-
     </div>
-
-
 
     {{-- Meeting Hari Ini + Pembayaran Mendatang --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
@@ -239,25 +323,115 @@
     </a>
     @endif
 
+    {{-- Grafik Pengeluaran & Tagihan --}}
+    <div class="gaming-card p-4 md:p-5">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
+                <svg class="w-5 h-5" style="color:#3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                PENGELUARAN & TAGIHAN
+            </h3>
+            <span class="text-xs" style="color:var(--text-muted);">6 bulan terakhir</span>
+        </div>
+        <div style="position:relative;height:260px;"><canvas id="monthlyChart"></canvas></div>
+    </div>
+
 </div>
 
-{{-- Welcome Popup --}}
-<div id="welcome-popup" style="display:none;position:fixed;top:16px;right:24px;z-index:9999;max-width:360px;background:rgba(16,185,129,0.05);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(16,185,129,0.2);border-radius:16px;padding:20px 24px;box-shadow:0 12px 40px rgba(0,0,0,0.3);">
-    <button type="button" onclick="document.getElementById('welcome-popup').style.display='none'" style="position:absolute;top:8px;right:10px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:4px;">&times;</button>
-    <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(16,185,129,0.15);">
-            <svg class="w-5 h-5" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-        </div>
-        <div>
-            <div style="font-weight:700;font-size:15px;color:var(--text-primary);">Selamat datang!</div>
-            <div style="font-size:13px;color:var(--text-secondary);margin-top:3px;">Anda berhasil masuk ke Johen Office Management System</div>
-        </div>
-    </div>
-</div>
+{{-- Notifikasi Popup Container --}}
+<div id="notification-stack" style="position:fixed;top:16px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;max-width:380px;width:calc(100% - 48px);pointer-events:none;"></div>
+
+@php
+    $dismissibleAlerts = [];
+    $dismissibleAlerts[] = [
+        'id' => 'welcome',
+        'title' => 'Selamat datang!',
+        'message' => 'Anda berhasil masuk ke Johen Office Management System',
+        'color' => '#10b981',
+        'bg' => 'rgba(16,185,129,0.08)',
+        'border' => 'rgba(16,185,129,0.2)',
+        'icon' => '<svg class="w-5 h-5" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        'delay' => 500,
+    ];
+    if ($tokenAlertDashboard && $tokenAlertDashboard['level'] !== 'info') {
+        $levelColor = $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : '#f59e0b';
+        $levelBg = $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.08)' : 'rgba(245,158,11,0.08)';
+        $levelBorder = $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)';
+        $label = $tokenAlertDashboard['level'] === 'danger' ? '— Segera Isi' : '— Warning';
+        $dismissibleAlerts[] = [
+            'id' => 'token',
+            'title' => 'Token Listrik ' . $label,
+            'message' => $tokenAlertDashboard['message'],
+            'color' => $levelColor,
+            'bg' => $levelBg,
+            'border' => $levelBorder,
+            'icon' => '<svg class="w-5 h-5" style="color:'.$levelColor.';" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+            'delay' => 1500,
+        ];
+    }
+    if ($overduePayments->isNotEmpty()) {
+        $dismissibleAlerts[] = [
+            'id' => 'overdue',
+            'title' => $overduePayments->count() . ' Pembayaran Terlewat',
+            'message' => 'Segera lunasi pembayaran yang sudah melewati jatuh tempo.',
+            'color' => '#ef4444',
+            'bg' => 'rgba(239,68,68,0.08)',
+            'border' => 'rgba(239,68,68,0.2)',
+            'icon' => '<svg class="w-5 h-5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>',
+            'delay' => 2500,
+        ];
+    }
+    if ($todayPayments->isNotEmpty()) {
+        $dismissibleAlerts[] = [
+            'id' => 'today',
+            'title' => $todayPayments->count() . ' Pembayaran Jatuh Tempo Hari Ini',
+            'message' => 'Jangan lupa lunasi pembayaran sebelum jatuh tempo.',
+            'color' => '#f59e0b',
+            'bg' => 'rgba(245,158,11,0.08)',
+            'border' => 'rgba(245,158,11,0.2)',
+            'icon' => '<svg class="w-5 h-5" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            'delay' => 3500,
+        ];
+    }
+    $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin']);
+    if ($isApprover && ($pendingPajakApprovalsCount ?? 0) > 0) {
+        $dismissibleAlerts[] = [
+            'id' => 'pajak',
+            'title' => $pendingPajakApprovalsCount . ' Pengajuan Pajak Menunggu',
+            'message' => 'Pengajuan pembayaran pajak kendaraan perlu persetujuan.',
+            'color' => '#f59e0b',
+            'bg' => 'rgba(245,158,11,0.08)',
+            'border' => 'rgba(245,158,11,0.2)',
+            'icon' => '<svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            'delay' => 4500,
+        ];
+    }
+@endphp
+
 <script>
-setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.style.display='block';p.style.opacity='0';p.style.transition='opacity 0.5s';setTimeout(function(){p.style.opacity='1';},50);setTimeout(function(){p.style.transition='opacity 0.3s';p.style.opacity='0';setTimeout(function(){p.style.display='none';},300);},6000);}},1200);
+    var dismissibleAlerts = @json($dismissibleAlerts);
+    var notificationStack = document.getElementById('notification-stack');
+
+    function showDismissibleAlert(alert, index) {
+        setTimeout(function() {
+            var el = document.createElement('div');
+            el.id = 'alert-' + alert.id;
+            el.style.cssText = 'pointer-events:auto;display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-radius:14px;background:' + alert.bg + ';border:1px solid ' + alert.border + ';backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,0.25);opacity:0;transform:translateX(40px);transition:all 0.4s cubic-bezier(0.22,1,0.36,1);position:relative;';
+            el.innerHTML = '<button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:6px;right:8px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;opacity:0.6;">&times;</button><div style="width:36px;height:36px;min-width:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:' + alert.bg.replace('0.08', '0.15') + ';">' + alert.icon + '</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;color:' + alert.color + ';margin-bottom:2px;">' + alert.title + '</div><div style="font-size:12px;color:var(--text-secondary);line-height:1.4;">' + alert.message + '</div></div>';
+            notificationStack.appendChild(el);
+            requestAnimationFrame(function() {
+                el.style.opacity = '1';
+                el.style.transform = 'translateX(0)';
+            });
+        }, alert.delay + (index * 200));
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        dismissibleAlerts.forEach(function(alert, i) {
+            showDismissibleAlert(alert, i);
+        });
+    });
 </script>
 
 {{-- Modal Semua Pembayaran --}}
@@ -421,6 +595,7 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
     function refreshDashboardStats() {
         fetch('{{ route("realtime.dashboard") }}')
@@ -515,6 +690,75 @@ setTimeout(function(){var p=document.getElementById('welcome-popup');if(p){p.sty
             });
         }
     });
+
+    // Chart
+    document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('monthlyChart');
+    if (ctx) {
+        var labels = @json($chartLabels);
+        var tagihan = @json($chartTagihan);
+        var bayar = @json($chartBayar);
+
+        function formatChartCurrency(v) {
+            return 'Rp ' + v.toLocaleString('id-ID');
+        }
+
+        new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Tagihan Masuk',
+                        data: tagihan,
+                        backgroundColor: 'rgba(59,130,246,0.7)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                    {
+                        label: 'Sudah Dibayar',
+                        data: bayar,
+                        backgroundColor: 'rgba(16,185,129,0.7)',
+                        borderColor: '#10b981',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 12, padding: 12 },
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(c) { return c.dataset.label + ': ' + formatChartCurrency(c.raw); },
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#64748b', font: { size: 10 } },
+                        grid: { display: false },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#64748b',
+                            font: { size: 10 },
+                            callback: function(v) { return 'Rp ' + (v / 1000).toFixed(0) + 'k'; },
+                        },
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                    },
+                },
+            },
+        });
+    }
+    });
 </script>
+
 @endpush
 @endsection

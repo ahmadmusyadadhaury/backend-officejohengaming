@@ -52,7 +52,7 @@ class DigitalAssetController extends Controller
             'berakhir' => 'required|date|after_or_equal:mulai',
             'biaya' => 'required|numeric|min:0',
             'pic' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
+            'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'keperluan' => 'nullable|string',
         ]);
 
@@ -82,7 +82,7 @@ class DigitalAssetController extends Controller
             'berakhir' => 'sometimes|required|date|after_or_equal:mulai',
             'biaya' => 'sometimes|required|numeric|min:0',
             'pic' => 'sometimes|required|string|max:255',
-            'jabatan' => 'sometimes|required|string|max:255',
+            'jabatan' => 'sometimes|required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'keperluan' => 'nullable|string',
         ];
 

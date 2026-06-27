@@ -43,7 +43,7 @@ class SimCardController extends Controller
         $data = $request->validate([
             'nomor_sim_card' => 'required|string|max:50',
             'pic' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
+            'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'masa_aktif' => 'required|date',
             'masa_tenggang' => 'required|date',
             'status_kartu' => 'boolean',
@@ -62,7 +62,7 @@ class SimCardController extends Controller
         $data = $request->validate([
             'nomor_sim_card' => 'required|string|max:50',
             'pic' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
+            'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'masa_aktif' => 'required|date',
             'masa_tenggang' => 'required|date',
             'status_kartu' => 'boolean',

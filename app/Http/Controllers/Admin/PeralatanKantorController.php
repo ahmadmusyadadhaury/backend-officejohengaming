@@ -75,9 +75,9 @@ class PeralatanKantorController extends Controller
             'pengurangan_harga_per_hari' => 'required|numeric|min:0',
             'harga_per_hari_ini' => 'required|numeric|min:0',
             'pic' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
+            'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'atasan' => 'required|string|max:255',
-            'jabatan_atasan' => 'required|string|max:255',
+            'jabatan_atasan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'kondisi' => 'required|string|in:baik,perlu_servis,rusak',
         ]);
 
@@ -111,9 +111,9 @@ class PeralatanKantorController extends Controller
             'pengurangan_harga_per_hari' => 'required|numeric|min:0',
             'harga_per_hari_ini' => 'required|numeric|min:0',
             'pic' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
+            'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'atasan' => 'required|string|max:255',
-            'jabatan_atasan' => 'required|string|max:255',
+            'jabatan_atasan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'kondisi' => 'required|string|in:baik,perlu_servis,rusak',
         ]);
 
