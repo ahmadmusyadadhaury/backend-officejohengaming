@@ -105,16 +105,26 @@
         </div>
         <div class="overflow-x-auto">
             <table class="gaming-table min-w-[700px]" id="meetings-table">
+                <colgroup>
+                    <col style="width:50px">
+                    <col>
+                    <col style="width:120px">
+                    <col style="width:110px">
+                    <col class="hidden md:table-cell" style="width:140px">
+                    <col style="width:90px">
+                    <col class="hidden md:table-cell" style="width:90px">
+                    <col style="width:70px">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th style="width:50px">No</th>
                         <th>Judul</th>
-                        <th>Tanggal</th>
-                        <th>Waktu</th>
-                        <th class="hidden md:table-cell">Ruangan</th>
-                        <th>Status</th>
-                        <th class="hidden md:table-cell">Antrian</th>
-                        <th>Aksi</th>
+                        <th style="width:120px">Tanggal</th>
+                        <th style="width:110px">Waktu</th>
+                        <th class="hidden md:table-cell" style="width:140px">Ruangan</th>
+                        <th style="width:90px">Status</th>
+                        <th class="hidden md:table-cell" style="width:90px">Antrian</th>
+                        <th style="width:70px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="meetings-tbody">

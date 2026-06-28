@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\AsetRukoController;
 use App\Http\Controllers\Admin\AssetController;
+use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\DigitalAssetController;
 use App\Http\Controllers\Admin\ExportController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingControlle
 use App\Http\Controllers\Leader\MomController;
 use App\Http\Controllers\MomExportController;
 use App\Http\Controllers\OverrideRequestController;
+use App\Http\Controllers\PaymentApprovalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PushController;
 use App\Http\Controllers\RealtimeController;
@@ -70,7 +72,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('token-reading/{id}', [PaymentController::class, 'destroyTokenReading'])->name('pembayaran.token-reading.destroy');
     Route::post('token-topup', [PaymentController::class, 'storeTokenPayment'])->name('pembayaran.token-topup.store');
     Route::delete('token-topup/{id}', [PaymentController::class, 'destroyTokenPayment'])->name('pembayaran.token-topup.destroy');
+    Route::get('payment-approvals', [PaymentApprovalController::class, 'index'])->name('payment-approvals.index');
+    Route::post('payment-approvals/{id}/approve', [PaymentApprovalController::class, 'approve'])->name('payment-approvals.approve');
+    Route::post('payment-approvals/{id}/reject', [PaymentApprovalController::class, 'reject'])->name('payment-approvals.reject');
     Route::get('export', [ExportController::class, 'export'])->name('export');
+
+    // Chat
+    Route::get('/chat/conversations', [ChatController::class, 'conversations'])->name('chat.conversations');
+    Route::get('/chat/messages', [ChatController::class, 'messages'])->name('chat.messages');
+    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
 });
 
 // Hanya Admin & HR
@@ -104,6 +115,15 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
 // User Routes
 Route::middleware(['auth', 'role:user,koordinator,admin,head_of_store,gm,hr,ceo'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
+});
+
+// Payment Approval — Staff, Koordinator, HR, Admin submit
+Route::middleware(['auth', 'role:user,koordinator,hr,admin'])->prefix('payment-approval')->name('payment-approval.')->group(function () {
+    Route::get('create', [PaymentApprovalController::class, 'create'])->name('create');
+    Route::post('/', [PaymentApprovalController::class, 'store'])->name('store');
+    Route::get('/', [PaymentApprovalController::class, 'myRequests'])->name('status');
+    Route::get('tagihan', [PaymentApprovalController::class, 'tagihan'])->name('tagihan');
+    Route::post('tagihan/{id}/bayar', [PaymentApprovalController::class, 'bayar'])->name('tagihan.bayar');
 });
 
 // Calendar & Invitation (semua role)

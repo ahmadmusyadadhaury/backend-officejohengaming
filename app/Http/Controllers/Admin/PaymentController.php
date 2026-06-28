@@ -43,6 +43,10 @@ class PaymentController extends Controller
                     'biaya' => (float) $w->biaya,
                     'status' => $w->status,
                     'tanggal_bayar' => $w->tanggal_bayar?->format('Y-m-d'),
+                    'requested_by' => $w->requested_by,
+                    'approved_by' => $w->approved_by,
+                    'bukti_bayar' => $w->bukti_bayar,
+                    'notes' => $w->notes,
                 ];
             });
 
@@ -67,6 +71,10 @@ class PaymentController extends Controller
                 'nominal' => (float) $p->nominal,
                 'status' => $p->status,
                 'tanggal_bayar' => $p->tanggal_bayar?->format('Y-m-d'),
+                'requested_by' => $p->requested_by,
+                'approved_by' => $p->approved_by,
+                'bukti_bayar' => $p->bukti_bayar,
+                'notes' => $p->notes,
             ]);
 
             $alertItems = $all->filter(fn ($p) => $p->status === 'jatuh_tempo')->values();
@@ -89,6 +97,10 @@ class PaymentController extends Controller
                 'nominal' => (float) $p->nominal,
                 'status' => $p->status,
                 'tanggal_bayar' => $p->tanggal_bayar?->format('Y-m-d'),
+                'requested_by' => $p->requested_by,
+                'approved_by' => $p->approved_by,
+                'bukti_bayar' => $p->bukti_bayar,
+                'notes' => $p->notes,
             ]);
 
             $alertItems = $all->filter(fn ($p) => $p->status === 'jatuh_tempo')->values();
@@ -112,6 +124,10 @@ class PaymentController extends Controller
                     'nominal' => (float) $p->nominal,
                     'status' => $p->status,
                     'tanggal_bayar' => $p->tanggal_bayar?->format('Y-m-d'),
+                    'requested_by' => $p->requested_by,
+                    'approved_by' => $p->approved_by,
+                    'bukti_bayar' => $p->bukti_bayar,
+                    'notes' => $p->notes,
                 ];
             });
 
@@ -240,7 +256,7 @@ class PaymentController extends Controller
                 'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
                 'masa_tenggang' => 'required|date',
                 'biaya' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo',
+                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
             WifiPayment::create($data);
@@ -250,7 +266,7 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo',
+                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
             PembayaranAsetDigital::create($data);
@@ -260,7 +276,7 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo',
+                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
             PembayaranIplRuko::create($data);
@@ -270,7 +286,7 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo',
+                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
             $data['jenis'] = $jenis;
@@ -293,7 +309,7 @@ class PaymentController extends Controller
                 'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
                 'masa_tenggang' => 'required|date',
                 'biaya' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo',
+                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
             if (! empty($data['masa_tenggang'])) {
@@ -310,7 +326,7 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo',
+                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
             if (! empty($data['tanggal_tagihan'])) {
@@ -330,7 +346,7 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo',
+                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
             if (! empty($data['tanggal_tagihan'])) {
@@ -350,7 +366,7 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo',
+                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
                 'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
             ]);
             if (! empty($data['tanggal_tagihan'])) {

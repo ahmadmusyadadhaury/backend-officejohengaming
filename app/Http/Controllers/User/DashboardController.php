@@ -4,6 +4,10 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Meeting;
+use App\Models\Payment;
+use App\Models\PembayaranAsetDigital;
+use App\Models\PembayaranIplRuko;
+use App\Models\WifiPayment;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -50,6 +54,11 @@ class DashboardController extends Controller
             ->where('meetings.status', 'completed')
             ->count();
 
+        $dueTagihanCount = Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')->count()
+            + WifiPayment::where('status', 'jatuh_tempo')->count()
+            + PembayaranAsetDigital::where('status', 'jatuh_tempo')->count()
+            + PembayaranIplRuko::where('status', 'jatuh_tempo')->count();
+
         $meetingsJson = $myMeetings->map(fn ($m) => [
             'id' => $m->id,
             'title' => $m->title,
@@ -72,7 +81,7 @@ class DashboardController extends Controller
 
         return view('user.dashboard', compact(
             'myMeetings', 'todayMeetings', 'meetingsJson', 'search', 'status',
-            'totalInvitations', 'mendatangCount', 'selesaiCount'
+            'totalInvitations', 'mendatangCount', 'selesaiCount', 'dueTagihanCount'
         ));
     }
 }

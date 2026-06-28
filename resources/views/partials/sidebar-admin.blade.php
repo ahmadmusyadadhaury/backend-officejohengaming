@@ -1,7 +1,7 @@
 @php
     $isMeetingActive = request()->routeIs('admin.meetings.*', 'admin.moms.*', 'calendar');
     $isAssetActive = request()->routeIs('admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*');
-    $isPaymentActive = request()->routeIs('admin.pembayaran.*');
+    $isPaymentActive = request()->routeIs('admin.pembayaran.*', 'admin.payment-approvals.*', 'payment-approval.*');
     $isAdminActive = request()->routeIs('admin.users.*', 'admin.admins.*', 'admin.assets.*', 'admin.teams.*', 'admin.rooms.*');
 
     $isFullAccess = in_array(auth()->user()->role, \App\Models\User::FULL_ACCESS_ROLES);
@@ -17,6 +17,57 @@
                      });
               });
         })->exists();
+
+    $now = \Carbon\Carbon::today();
+    $threeDays = $now->copy()->addDays(3);
+
+    $totalTagihan = \App\Models\Payment::where('jenis', 'listrik')
+            ->where(function ($q) use ($now, $threeDays) {
+                $q->where('status', 'jatuh_tempo')
+                  ->orWhere(function ($q2) use ($now, $threeDays) {
+                      $q2->where('jatuh_tempo', '>=', $now)
+                         ->where('jatuh_tempo', '<=', $threeDays)
+                         ->where('status', '!=', 'lunas')
+                         ->where('status', '!=', 'pending');
+                  });
+            })->count()
+        + \App\Models\WifiPayment::where(function ($q) use ($now, $threeDays) {
+            $q->where('status', 'jatuh_tempo')
+              ->orWhere(function ($q2) use ($now, $threeDays) {
+                  $q2->where('masa_tenggang', '>=', $now)
+                     ->where('masa_tenggang', '<=', $threeDays)
+                     ->where('status', '!=', 'lunas')
+                     ->where('status', '!=', 'pending');
+              });
+        })->count()
+        + \App\Models\PembayaranAsetDigital::where(function ($q) use ($now, $threeDays) {
+            $q->where('status', 'jatuh_tempo')
+              ->orWhere(function ($q2) use ($now, $threeDays) {
+                  $q2->where('jatuh_tempo', '>=', $now)
+                     ->where('jatuh_tempo', '<=', $threeDays)
+                     ->where('status', '!=', 'lunas')
+                     ->where('status', '!=', 'pending');
+              });
+        })->count()
+        + \App\Models\PembayaranIplRuko::where(function ($q) use ($now, $threeDays) {
+            $q->where('status', 'jatuh_tempo')
+              ->orWhere(function ($q2) use ($now, $threeDays) {
+                  $q2->where('jatuh_tempo', '>=', $now)
+                     ->where('jatuh_tempo', '<=', $threeDays)
+                     ->where('status', '!=', 'lunas')
+                     ->where('status', '!=', 'pending');
+              });
+        })->count();
+
+    $role = auth()->user()->role;
+    $isGmCeo = in_array($role, ['gm', 'ceo']);
+    $totalApproval = 0;
+    if ($isGmCeo) {
+        $totalApproval = \App\Models\Payment::where('jenis', 'listrik')->where('status', 'pending')->count()
+            + \App\Models\WifiPayment::where('status', 'pending')->count()
+            + \App\Models\PembayaranAsetDigital::where('status', 'pending')->count()
+            + \App\Models\PembayaranIplRuko::where('status', 'pending')->count();
+    }
 @endphp
 
 <p class="sidebar-section-label">Overview</p>
@@ -84,6 +135,18 @@
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'internet']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'internet' ? 'active' : '' }}"><span class="truncate">Internet</span></a>
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'aset_digital']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'aset_digital' ? 'active' : '' }}"><span class="truncate">Aset Digital</span></a>
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'ipl_ruko']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'ipl_ruko' ? 'active' : '' }}"><span class="truncate">IPL Ruko</span></a>
+    @if(in_array(auth()->user()->role, ['admin', 'hr']))
+    <a href="{{ route('payment-approval.tagihan') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.tagihan') ? 'active' : '' }}">
+        <span class="truncate">Tagihan</span>
+        <span class="sidebar-badge tagihan-badge" style="{{ $totalTagihan > 0 ? '' : 'display:none;' }}background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;line-height:1.4;">{{ $totalTagihan }}</span>
+    </a>
+    <a href="{{ route('payment-approval.create') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.create') ? 'active' : '' }}"><span class="truncate">Ajukan Pembayaran</span></a>
+    <a href="{{ route('payment-approval.status') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.status') ? 'active' : '' }}"><span class="truncate">Status Pengajuan</span></a>
+    @endif
+    <a href="{{ route('admin.payment-approvals.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.payment-approvals.*') ? 'active' : '' }}">
+        <span class="truncate">Persetujuan</span>
+        <span class="sidebar-badge approval-badge" style="{{ $totalApproval > 0 ? '' : 'display:none;' }}background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;line-height:1.4;">{{ $totalApproval }}</span>
+    </a>
 </div>
 
 <p class="sidebar-section-label">Admin</p>

@@ -225,19 +225,34 @@
                             @endforeach
                             @endif
 
-                            {{-- Pembayaran Mendatang --}}
-                            @if($upcomingPayments->count() > 0)
+                            {{-- Notifikasi Real-time --}}
+                            @php
+                                $recentNotifs = \App\Models\Notification::where('user_id', auth()->id())
+                                    ->where('is_read', false)
+                                    ->latest()
+                                    ->take(5)
+                                    ->get();
+                            @endphp
+                            @if($recentNotifs->count() > 0)
                             <p class="px-4 py-2 font-gaming font-semibold" style="font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);margin-top:4px;">
-                                💳 PEMBAYARAN MENDATANG
+                                🔔 NOTIFIKASI
                             </p>
-                            @foreach($upcomingPayments as $payment)
-                            <div class="flex items-start gap-3 px-4 py-3" style="border-bottom:1px solid var(--border-color);">
-                                <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:#fbbf24;"></div>
+                            @foreach($recentNotifs as $n)
+                            @php
+                                $dotColor = match ($n->type) {
+                                    'tagihan' => '#ef4444',
+                                    'approval' => '#f59e0b',
+                                    'meeting' => '#00d4ff',
+                                    default => 'var(--color-accent)',
+                                };
+                            @endphp
+                            <a href="{{ $n->url ?? '#' }}" onclick="markNotifRead('{{ $n->type }}', event)" class="flex items-start gap-3 px-4 py-3 transition" style="border-bottom:1px solid var(--border-color);text-decoration:none;">
+                                <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:{{ $dotColor }};"></div>
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $payment->requester->name }}</p>
-                                    <p class="text-xs" style="color:var(--text-muted);">{{ $payment->meeting_date->format('d M Y') }}</p>
+                                    <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $n->title }}</p>
+                                    <p class="text-xs" style="color:var(--text-muted);">{{ $n->message }}</p>
                                 </div>
-                            </div>
+                            </a>
                             @endforeach
                             @endif
 
@@ -762,6 +777,17 @@
 
         let pageBaseTitle = document.title;
 
+        function updateSidebarBadge(selector, count) {
+            document.querySelectorAll(selector).forEach(el => {
+                if (count > 0) {
+                    el.textContent = count;
+                    el.style.display = 'inline-block';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        }
+
         function updateNotifBadges(activityCount, meetingCount) {
             document.querySelectorAll('.notif-badge-activity').forEach(el => {
                 el.textContent    = activityCount;
@@ -792,11 +818,15 @@
                 .then(data => {
                     const activityCount = data.items.filter(n => n.type === 'activity').length;
                     const meetingCount  = data.items.filter(n => n.type === 'meeting').length;
+                    const tagihanCount  = data.items.filter(n => n.type === 'tagihan').length;
+                    const approvalCount = data.items.filter(n => n.type === 'approval').length;
 
                     // Pertama kali load — set baseline tanpa bunyi
                     if (lastActivityCount === null) {
                         lastActivityCount = activityCount;
                         lastMeetingCount  = meetingCount;
+                        lastTagihanCount  = tagihanCount;
+                        lastApprovalCount = approvalCount;
                         updateNotifBadges(activityCount, meetingCount);
                         return;
                     }
@@ -807,7 +837,10 @@
 
                     lastActivityCount = activityCount;
                     lastMeetingCount  = meetingCount;
+                    lastTagihanCount  = tagihanCount;
+                    lastApprovalCount = approvalCount;
                     updateNotifBadges(activityCount, meetingCount);
+                    refreshSidebarBadges();
                 }).catch(() => {});
         }
 
@@ -829,13 +862,14 @@
                 lastActivityCount = newActivity;
                 lastMeetingCount  = newMeeting;
                 updateNotifBadges(newActivity, newMeeting);
+                refreshSidebarBadges();
                 if (href) window.location.href = href;
             }).catch(() => {
                 if (href) window.location.href = href;
             });
         }
 
-        // Topbar undangan badge
+        // Topbar undangan badge + sidebar badge
         function refreshTopbarNotif() {
             fetch('{{ route("realtime.notif") }}')
                 .then(r => r.json())
@@ -848,12 +882,25 @@
                     } else {
                         badgeEl.classList.add('hidden');
                     }
+
+                    // Update sidebar badges
+                    updateSidebarBadge('.tagihan-badge', data.total_tagihan || 0);
+                    updateSidebarBadge('.approval-badge', data.total_pending_approvals || 0);
                 }).catch(() => {});
         }
 
-        // Jalankan polling segera saat halaman load
-        pollNotifications();
-        setInterval(pollNotifications, 10000);  // setiap 10 detik
+        function refreshSidebarBadges() {
+            fetch('{{ route("realtime.notif") }}')
+                .then(r => r.json())
+                .then(data => {
+                    updateSidebarBadge('.tagihan-badge', data.total_tagihan || 0);
+                    updateSidebarBadge('.approval-badge', data.total_pending_approvals || 0);
+                }).catch(() => {});
+        }
+
+        // Jalankan polling dengan delay 2 detik agar tidak compete dengan render
+        setTimeout(pollNotifications, 2000);
+        setInterval(pollNotifications, 30000);  // setiap 30 detik
         setInterval(refreshTopbarNotif, 30000); // topbar setiap 30 detik
 
         // ── Indikator Push Status ──

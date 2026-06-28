@@ -9,7 +9,61 @@
     .dashboard-wrapper .gaming-card {
         background: var(--bg-surface) !important;
     }
+    .dash-tab-btn {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .dash-tab-btn:hover {
+        background: rgba(255,255,255,0.05);
+    }
+    .dash-tab-btn.active {
+        background: linear-gradient(135deg, #7c3aed, #3b82f6);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(124,58,237,0.3);
+    }
+    .tab-content {
+        animation: tabFadeIn 0.3s ease;
+    }
+    @keyframes tabFadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
+
+{{-- Tab Navigation --}}
+<div class="flex items-center gap-2 mb-4 flex-wrap">
+    <button class="dash-tab-btn active" onclick="switchDashboardTab('overview', this)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+        </svg>
+        Overview
+    </button>
+    <button class="dash-tab-btn" onclick="switchDashboardTab('analytics', this)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+        </svg>
+        Analytics
+    </button>
+    <button class="dash-tab-btn relative" onclick="switchDashboardTab('chat', this)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+        Chat
+        <span id="chat-tab-badge" class="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold hidden" style="background:#7c3aed;color:#fff;line-height:1;">0</span>
+    </button>
+</div>
+
+<div id="tab-overview" class="tab-content">
 <div class="space-y-6 pt-2 stagger-children dashboard-wrapper">
 
 
@@ -338,6 +392,17 @@
     </div>
 
 </div>
+</div>{{-- /tab-overview --}}
+
+{{-- Tab: Analytics --}}
+<div id="tab-analytics" class="tab-content hidden">
+    @include('admin.partials.analytics-tab')
+</div>
+
+{{-- Tab: Chat --}}
+<div id="tab-chat" class="tab-content hidden">
+    @include('admin.partials.chat-tab')
+</div>
 
 {{-- Notifikasi Popup Container --}}
 <div id="notification-stack" style="position:fixed;top:16px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;max-width:380px;width:calc(100% - 48px);pointer-events:none;"></div>
@@ -407,6 +472,20 @@
             'delay' => 4500,
         ];
     }
+    $isGmCeo = in_array(auth()->user()->role, ['gm', 'ceo']);
+    if ($isGmCeo && ($stats['approval_pending_payments'] ?? 0) > 0) {
+        $dismissibleAlerts[] = [
+            'id' => 'payment-approval',
+            'title' => $stats['approval_pending_payments'] . ' Pembayaran Perlu Disetujui',
+            'message' => 'Pengajuan pembayaran baru menunggu persetujuan Anda.',
+            'color' => '#ef4444',
+            'bg' => 'rgba(239,68,68,0.08)',
+            'border' => 'rgba(239,68,68,0.2)',
+            'icon' => '<svg class="w-5 h-5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            'delay' => 5000,
+            'url' => route('admin.payment-approvals.index'),
+        ];
+    }
 @endphp
 
 <script>
@@ -417,8 +496,11 @@
         setTimeout(function() {
             var el = document.createElement('div');
             el.id = 'alert-' + alert.id;
-            el.style.cssText = 'pointer-events:auto;display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-radius:14px;background:' + alert.bg + ';border:1px solid ' + alert.border + ';backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,0.25);opacity:0;transform:translateX(40px);transition:all 0.4s cubic-bezier(0.22,1,0.36,1);position:relative;';
-            el.innerHTML = '<button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:6px;right:8px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;opacity:0.6;">&times;</button><div style="width:36px;height:36px;min-width:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:' + alert.bg.replace('0.08', '0.15') + ';">' + alert.icon + '</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;color:' + alert.color + ';margin-bottom:2px;">' + alert.title + '</div><div style="font-size:12px;color:var(--text-secondary);line-height:1.4;">' + alert.message + '</div></div>';
+            el.style.cssText = 'pointer-events:auto;display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-radius:14px;background:' + alert.bg + ';border:1px solid ' + alert.border + ';backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,0.25);opacity:0;transform:translateX(40px);transition:all 0.4s cubic-bezier(0.22,1,0.36,1);position:relative;cursor:' + (alert.url ? 'pointer' : 'default') + ';';
+            if (alert.url) {
+                el.addEventListener('click', function() { window.location.href = alert.url; });
+            }
+            el.innerHTML = '<button type="button" onclick="event.stopPropagation();this.parentElement.remove()" style="position:absolute;top:6px;right:8px;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;opacity:0.6;">&times;</button><div style="width:36px;height:36px;min-width:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:' + alert.bg.replace('0.08', '0.15') + ';">' + alert.icon + '</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;color:' + alert.color + ';margin-bottom:2px;">' + alert.title + '</div><div style="font-size:12px;color:var(--text-secondary);line-height:1.4;">' + alert.message + '</div></div>';
             notificationStack.appendChild(el);
             requestAnimationFrame(function() {
                 el.style.opacity = '1';
@@ -758,7 +840,38 @@
         });
     }
     });
-</script>
 
+    // Tab switching
+    window.switchDashboardTab = function(tab, btn) {
+        document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.add('hidden'); });
+        document.querySelectorAll('.dash-tab-btn').forEach(function(el) { el.classList.remove('active'); });
+        btn.classList.add('active');
+        var target = document.getElementById('tab-' + tab);
+        if (target) target.classList.remove('hidden');
+        if (tab === 'analytics' && typeof initAnalytics === 'function') {
+            setTimeout(initAnalytics, 100);
+        }
+        if (tab === 'chat' && typeof initChat === 'function') {
+            setTimeout(initChat, 100);
+        }
+    };
+
+    // Chat badge polling
+    function updateChatBadge() {
+        fetch('{{ route("admin.chat.unread") }}')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var badge = document.getElementById('chat-tab-badge');
+                if (data.unread > 0) {
+                    badge.textContent = data.unread;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }).catch(function() {});
+    }
+    setInterval(updateChatBadge, 10000);
+    setTimeout(updateChatBadge, 1000);
+</script>
 @endpush
 @endsection

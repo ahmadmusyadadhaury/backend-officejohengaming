@@ -5,13 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
 use App\Models\Notification;
+use App\Models\Payment;
+use App\Models\PembayaranAsetDigital;
+use App\Models\PembayaranIplRuko;
 use App\Models\User;
 use App\Models\WeeklyMeetingInvitation;
 use App\Models\WeeklyMeetingSession;
+use App\Models\WifiPayment;
 use App\Services\MeetingQueueService;
 use App\Services\WeeklyMeetingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class RealtimeController extends Controller
 {
@@ -131,9 +136,21 @@ class RealtimeController extends Controller
             ->whereHas('session', fn ($q) => $q->whereIn('status', ['active', 'extended']))
             ->count();
 
+        $totalTagihan = Notification::where('user_id', auth()->id())
+            ->where('type', 'tagihan')
+            ->where('is_read', false)
+            ->count();
+
+        $totalApproval = Notification::where('user_id', auth()->id())
+            ->where('type', 'approval')
+            ->where('is_read', false)
+            ->count();
+
         return response()->json([
             'total_active' => $activeInvitations + $activeWeeklyInvitations,
             'total_pending' => $pendingInvitations + $pendingWeeklyInvitations,
+            'total_tagihan' => $totalTagihan,
+            'total_pending_approvals' => $totalApproval,
         ]);
     }
 
@@ -165,6 +182,12 @@ class RealtimeController extends Controller
     {
         // Cek meeting yang baru mulai & kirim notif jika belum ada
         $this->checkMeetingStart();
+
+        // Cek tagihan jatuh tempo & hampir jatuh tempo
+        $this->checkDueTagihan();
+
+        // Cek pending approval (GM/CEO)
+        $this->checkPendingApprovals();
 
         $notifs = Notification::where('user_id', auth()->id())
             ->where('is_read', false)
@@ -246,6 +269,152 @@ class RealtimeController extends Controller
                 ]);
             }
         }
+    }
+
+    private function checkDueTagihan(): void
+    {
+        $userId = auth()->id();
+
+        // Cache: cek cukup sekali per 5 menit per user
+        $cacheKey = 'tagihan_check_'.$userId;
+        if (Cache::get($cacheKey)) {
+            return;
+        }
+
+        $today = Carbon::today();
+        $threeDays = Carbon::today()->addDays(3);
+
+        $models = [
+            'payments' => ['class' => Payment::class, 'query' => fn ($q) => $q->where('jenis', 'listrik')],
+            'wifi_payments' => ['class' => WifiPayment::class, 'query' => null],
+            'pembayaran_aset_digital' => ['class' => PembayaranAsetDigital::class, 'query' => null],
+            'pembayaran_ipl_ruko' => ['class' => PembayaranIplRuko::class, 'query' => null],
+        ];
+
+        $labelMap = ['payments' => 'Listrik', 'wifi_payments' => 'Internet', 'pembayaran_aset_digital' => 'Aset Digital', 'pembayaran_ipl_ruko' => 'IPL Ruko'];
+
+        $inserts = [];
+
+        foreach ($models as $table => $cfg) {
+            $q = $cfg['class']::where(function ($q) use ($today, $threeDays) {
+                $q->where('status', 'jatuh_tempo')
+                    ->orWhere(function ($q2) use ($today, $threeDays) {
+                        $q2->where('jatuh_tempo', '>=', $today)
+                            ->where('jatuh_tempo', '<=', $threeDays)
+                            ->where('status', '!=', 'lunas')
+                            ->where('status', '!=', 'pending');
+                    });
+            });
+
+            if ($cfg['query']) {
+                ($cfg['query'])($q);
+            }
+
+            $records = $q->get();
+
+            foreach ($records as $r) {
+                $keyId = "tagihan_{$table}_{$r->id}";
+
+                // Cek dedup via indexed column
+                $already = Notification::where('user_id', $userId)
+                    ->where('dedup_key', $keyId)
+                    ->exists();
+
+                if (! $already) {
+                    $label = $r->periode ?? $r->nama_internet ?? $cfg['class']::class.' #'.$r->id;
+                    $nominal = $r->nominal ?? $r->biaya ?? 0;
+                    $inserts[] = [
+                        'user_id' => $userId,
+                        'type' => 'tagihan',
+                        'title' => 'Tagihan '.($labelMap[$table] ?? $table),
+                        'message' => "{$label} — Rp ".number_format($nominal, 0, ',', '.'),
+                        'dedup_key' => $keyId,
+                        'url' => route('payment-approval.tagihan'),
+                        'is_read' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
+        }
+
+        if ($inserts) {
+            Notification::insert($inserts);
+        }
+
+        Cache::put($cacheKey, true, now()->addMinutes(5));
+    }
+
+    private function checkPendingApprovals(): void
+    {
+        $role = auth()->user()->role;
+        if (! in_array($role, ['gm', 'ceo'])) {
+            return;
+        }
+
+        $userId = auth()->id();
+
+        // Cache: cek cukup sekali per 5 menit per user
+        $cacheKey = 'approval_check_'.$userId;
+        if (Cache::get($cacheKey)) {
+            return;
+        }
+
+        $models = [
+            'payments' => ['class' => Payment::class, 'query' => fn ($q) => $q->where('jenis', 'listrik')],
+            'wifi_payments' => ['class' => WifiPayment::class, 'query' => null],
+            'pembayaran_aset_digital' => ['class' => PembayaranAsetDigital::class, 'query' => null],
+            'pembayaran_ipl_ruko' => ['class' => PembayaranIplRuko::class, 'query' => null],
+        ];
+
+        $labelMap = ['payments' => 'Listrik', 'wifi_payments' => 'Internet', 'pembayaran_aset_digital' => 'Aset Digital', 'pembayaran_ipl_ruko' => 'IPL Ruko'];
+
+        $inserts = [];
+
+        foreach ($models as $table => $cfg) {
+            $q = $cfg['class']::where('status', 'pending');
+
+            if ($cfg['query']) {
+                ($cfg['query'])($q);
+            }
+
+            $records = $q->get();
+
+            foreach ($records as $r) {
+                $keyId = "approval_{$table}_{$r->id}";
+
+                $already = Notification::where('user_id', $userId)
+                    ->where('dedup_key', $keyId)
+                    ->exists();
+
+                if (! $already) {
+                    $label = $r->periode ?? $r->nama_internet ?? $cfg['class']::class.' #'.$r->id;
+                    $inserts[] = [
+                        'user_id' => $userId,
+                        'type' => 'approval',
+                        'title' => 'Persetujuan '.($labelMap[$table] ?? $table),
+                        'message' => "{$label} menunggu persetujuan",
+                        'dedup_key' => $keyId,
+                        'url' => route('admin.payment-approvals.index'),
+                        'is_read' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
+        }
+
+        if ($inserts) {
+            Notification::insert($inserts);
+        }
+
+        Cache::put($cacheKey, true, now()->addMinutes(5));
+    }
+
+    public function clearDueTagihanCache(): void
+    {
+        Cache::forget('tagihan_check_'.auth()->id());
+        Cache::forget('approval_check_'.auth()->id());
     }
 
     public function markRead(Request $request)

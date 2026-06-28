@@ -33,8 +33,8 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
-        // Share notification data dengan semua views
-        View::composer('*', function ($view) {
+        // Share notification data hanya untuk layout utama (bukan partials/ajax)
+        View::composer('layouts.app', function ($view) {
             if (auth()->check()) {
                 // Jadwal meeting terdekat
                 $upcomingMeetings = Meeting::with(['requester', 'team', 'room'])
@@ -42,13 +42,6 @@ class AppServiceProvider extends ServiceProvider
                     ->where('meeting_date', '>=', today())
                     ->orderBy('meeting_date')
                     ->orderBy('start_time')
-                    ->take(3)
-                    ->get();
-
-                // Pembayaran Mendatang
-                $upcomingPayments = Meeting::with(['requester', 'room'])
-                    ->where('status', 'pending')
-                    ->orderBy('meeting_date')
                     ->take(3)
                     ->get();
 
@@ -61,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
                 // Pengajuan Pajak Pending (untuk approver)
                 $pendingPajakApprovalsCount = VehiclePajakRequest::where('status', 'pending')->count();
 
-                $view->with(compact('upcomingMeetings', 'upcomingPayments', 'upcomingAlerts', 'pendingPajakApprovalsCount'));
+                $view->with(compact('upcomingMeetings', 'upcomingAlerts', 'pendingPajakApprovalsCount'));
             }
         });
     }

@@ -177,25 +177,42 @@
 
 {{-- Detail Modal --}}
 <div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Peralatan</h3>
-            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+    <div class="w-full max-w-5xl rounded-[22px] shadow-2xl flex flex-col" style="max-height:90vh;background:#15172b;border:1px solid rgba(255,255,255,0.08);" onclick="event.stopPropagation()">
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid rgba(255,255,255,0.08);">
+            <button onclick="closeDetail()" style="color:#7f849c;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:10px;display:flex;align-items:center;gap:6px;font-size:13px;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m7 7l-7-7 7-7"/></svg>
+                Kembali
             </button>
+            <div class="flex items-center gap-2">
+                <button id="detail-edit-btn" onclick="openEditModal(currentDetailId)" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;cursor:pointer;">Edit</button>
+                <form id="detail-delete-form" method="POST" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" data-action="{{ url('admin/peralatan-kantor') }}/" style="margin:0;">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);cursor:pointer;">Hapus</button>
+                </form>
+                <button onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:#7f849c;background:none;border:none;cursor:pointer;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
         </div>
-        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
-        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        {{-- Title + Badge --}}
+        <div class="px-6 pt-5 pb-2 flex-shrink-0">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold" style="color:#f4f6ff;" id="detail-title"></h3>
+                    <p class="text-sm mt-1" style="color:#7f849c;">Detail lengkap peralatan kantor</p>
+                </div>
+                <span id="detail-badge" class="badge" style="font-size:0.75rem;padding:4px 14px;"></span>
+            </div>
         </div>
+        {{-- Body --}}
+        <div class="px-6 py-4 overflow-y-auto flex-1" id="detail-body" style="scrollbar-width:thin;"></div>
     </div>
 </div>
 
 {{-- Modal Tambah / Edit Peralatan Kantor (6 Step) --}}
 <div id="item-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:95vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -488,6 +505,7 @@
 const itemsData = @json($itemsJson);
 let currentStep = 1;
 const totalSteps = 6;
+let currentDetailId = null;
 
 function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah Peralatan';
@@ -518,6 +536,8 @@ function openCreateModal() {
 function showDetail(id) {
     const i = itemsData.find(x => x.id === id);
     if (!i) return;
+    currentDetailId = id;
+
     document.getElementById('detail-title').textContent = i.nama_barang;
 
     const kondisiMap = {
@@ -526,58 +546,85 @@ function showDetail(id) {
         rusak: { label: 'Rusak', bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
     };
     const k = kondisiMap[i.kondisi] || kondisiMap.baik;
-    const rp = i.nilai ? 'Rp ' + Number(i.nilai).toLocaleString('id-ID') : '-';
+    const badgeEl = document.getElementById('detail-badge');
+    badgeEl.textContent = k.label;
+    badgeEl.style.background = k.bg;
+    badgeEl.style.color = k.text;
+    badgeEl.style.border = '1px solid ' + k.border;
 
-    const rows = [
-        { label: 'Nama Barang', value: i.nama_barang },
-        { label: 'Jumlah', value: i.jumlah },
-        { label: 'Sub Kategori', value: i.sub_kategori },
-        { label: 'Detail', value: i.detail || '-' },
-        { label: 'Keterangan', value: i.keterangan || '-' },
-        { label: 'Lokasi Unit', value: i.lokasi_unit },
-        { label: 'Ruangan', value: i.ruangan },
-        { label: 'Milik', value: i.milik },
-        { label: 'Tahun Pengadaan', value: i.pengadaan_tahun },
-        { label: 'Tanggal Pembelian', value: i.tanggal_pembelian },
-        { label: 'Kategori Nilai', value: i.kategori_nilai },
-        { label: 'Kategori Ukuran', value: i.kategori_ukuran },
-        { label: 'Nilai', value: rp },
-        { label: 'Waktu Pakai/Hari', value: i.waktu_pakai_per_hari },
-        { label: 'Estimasi Waktu', value: i.estimasi_waktu_barang },
-        { label: 'PIC', value: i.pic },
-        { label: 'Jabatan', value: i.jabatan },
-        { label: 'Atasan', value: i.atasan },
-        { label: 'Jabatan Atasan', value: i.jabatan_atasan },
+    const delForm = document.getElementById('detail-delete-form');
+    delForm.action = delForm.dataset.action + id;
+
+    const fmtRp = (v) => v ? 'Rp ' + Number(v).toLocaleString('id-ID') : '-';
+    const fmtTgl = (v) => v || '-';
+
+    const cards = [
+        {
+            title: 'Informasi Umum',
+            rows: [
+                { label: 'Nama Barang', value: i.nama_barang },
+                { label: 'Jumlah', value: i.jumlah },
+                { label: 'Detail', value: i.detail || '-' },
+                { label: 'Sub Kategori', value: i.sub_kategori },
+                { label: 'Keterangan', value: i.keterangan || '-' },
+            ]
+        },
+        {
+            title: 'Lokasi & Kepemilikan',
+            rows: [
+                { label: 'Lokasi Unit', value: i.lokasi_unit },
+                { label: 'Ruangan', value: i.ruangan },
+                { label: 'Milik', value: i.milik },
+            ]
+        },
+        {
+            title: 'Pengadaan & Nilai',
+            rows: [
+                { label: 'Pengadaan', value: i.pengadaan_tahun },
+                { label: 'Tgl Pembelian', value: fmtTgl(i.tanggal_pembelian) },
+                { label: 'Kategori Nilai', value: i.kategori_nilai },
+                { label: 'Kategori Ukuran', value: i.kategori_ukuran },
+                { label: 'Nilai', value: fmtRp(i.nilai) },
+            ]
+        },
+        {
+            title: 'Penyusutan Umur Aset',
+            rows: [
+                { label: 'Waktu Pakai/Hari', value: (i.waktu_pakai_per_hari || 0) + ' Jam' },
+                { label: 'Estimasi Waktu', value: (i.estimasi_waktu_barang || 0) + ' Hari' },
+                { label: 'Pengurangan/Hari', value: fmtRp(i.pengurangan_harga_per_hari) },
+                { label: 'Harga/Hari Ini', value: fmtRp(i.harga_per_hari_ini) },
+            ]
+        },
+        {
+            title: 'Penanggung Jawab',
+            rows: [
+                { label: 'PIC', value: i.pic },
+                { label: 'Jabatan', value: i.jabatan },
+                { label: 'Atasan', value: i.atasan || '-' },
+                { label: 'Jab Atasan', value: i.jabatan_atasan || '-' },
+            ]
+        },
     ];
 
-    const leftItems = rows.slice(0, 10);
-    const rightItems = rows.slice(10);
+    let html = '<div class="grid grid-cols-1 lg:grid-cols-2 gap-3">';
+    cards.forEach(function (card) {
+        html += '<div style="background:#15172b;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;">';
+        html += '<p style="color:#6c5cff;font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">' + card.title + '</p>';
+        html += '<div>';
+        for (var r = 0; r < card.rows.length; r++) {
+            var row = card.rows[r];
+            var borderStyle = r < card.rows.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.06);' : '';
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;' + borderStyle + '">';
+            html += '<span style="color:#7f849c;font-size:0.75rem;">' + row.label + '</span>';
+            html += '<span style="color:#f4f6ff;font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;">' + row.value + '</span>';
+            html += '</div>';
+        }
+        html += '</div></div>';
+    });
+    html += '</div>';
 
-    const gridCell = (r) => `
-        <div class="flex flex-col gap-0.5 px-3 py-2.5" style="border:1px solid var(--border-color);border-radius:10px;background:var(--bg-surface-2);">
-            <p class="text-xs" style="color:var(--text-muted);">${r.label}</p>
-            <p class="text-sm font-semibold" style="color:var(--text-primary);">${r.value}</p>
-        </div>
-    `;
-
-    const maxLen = Math.max(leftItems.length, rightItems.length);
-    let gridRows = '';
-    for (let i = 0; i < maxLen; i++) {
-        const left = leftItems[i] ? gridCell(leftItems[i]) : '<div></div>';
-        const right = rightItems[i] ? gridCell(rightItems[i]) : '<div></div>';
-        gridRows += `<div class="grid grid-cols-2 gap-3">${left}${right}</div>`;
-    }
-
-    const detailBody = document.getElementById('detail-body');
-    detailBody.innerHTML = `
-        <div class="space-y-3">
-            ${gridRows}
-            <div class="flex items-center justify-between px-4 py-3" style="border:1px solid ${k.border};border-radius:10px;background:${k.bg};">
-                    <p class="text-sm font-semibold" style="color:${k.text};">Kondisi Barang</p>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold" style="background:${k.bg};color:${k.text};border:1px solid ${k.border};">${k.label}</span>
-            </div>
-        </div>
-    `;
+    document.getElementById('detail-body').innerHTML = html;
     openModal('detail-modal');
 }
 

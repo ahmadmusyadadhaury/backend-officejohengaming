@@ -269,6 +269,8 @@
                     <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
                     <button type="button" data-value="lunas" onclick="setFilter('lunas')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lunas</button>
                     <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
+                    <button type="button" data-value="pending" onclick="setFilter('pending')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Menunggu</button>
+                    <button type="button" data-value="rejected" onclick="setFilter('rejected')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ditolak</button>
                 </div>
             </div>
             </div>
@@ -304,6 +306,12 @@
                         if ($item->status === 'lunas') {
                             $badgeClass = 'badge-green';
                             $badgeLabel = 'Lunas';
+                        } elseif ($item->status === 'pending') {
+                            $badgeClass = 'badge-blue';
+                            $badgeLabel = 'Menunggu';
+                        } elseif ($item->status === 'rejected') {
+                            $badgeClass = 'badge-red';
+                            $badgeLabel = 'Ditolak';
                         } elseif ($dueDate) {
                             $dueStart = $dueDate->copy()->startOfDay();
                             if ($dueStart->lt($today)) {
@@ -762,6 +770,8 @@
                         <select name="status" id="f-status" required class="gaming-input" onchange="toggleTanggalBayar()">
                             <option value="jatuh_tempo">Jatuh Tempo</option>
                             <option value="lunas">Lunas</option>
+                            <option value="pending">Menunggu</option>
+                            <option value="rejected">Ditolak</option>
                         </select>
                     </div>
                     <div class="field-group" id="f-tanggal_bayar-group">
@@ -1017,7 +1027,7 @@ function toggleTanggalBayar() {
     const status = document.getElementById('f-status').value;
     const group = document.getElementById('f-tanggal_bayar-group');
     const input = document.getElementById('f-tanggal_bayar');
-    if (status === 'lunas') {
+    if (status === 'lunas' || status === 'pending') {
         group.style.display = '';
         if (!input.value) {
             input.value = new Date().toISOString().split('T')[0];
@@ -1063,6 +1073,10 @@ function showDetail(id) {
     let computedLabel, computedBg, computedText, computedBorder;
     if (i.status === 'lunas') {
         computedLabel = 'Lunas'; computedBg = '#ecfdf5'; computedText = '#059669'; computedBorder = '#a7f3d0';
+    } else if (i.status === 'pending') {
+        computedLabel = 'Menunggu'; computedBg = '#eff6ff'; computedText = '#3b82f6'; computedBorder = '#bfdbfe';
+    } else if (i.status === 'rejected') {
+        computedLabel = 'Ditolak'; computedBg = '#fef2f2'; computedText = '#dc2626'; computedBorder = '#fecaca';
     } else if (dueDate && dueDate < today) {
         computedLabel = 'Terlambat'; computedBg = '#fef2f2'; computedText = '#dc2626'; computedBorder = '#fecaca';
     } else if (dueDate && dueDate <= new Date(today.getTime() + 3*86400000)) {
@@ -1097,7 +1111,7 @@ function showDetail(id) {
     @endif
 
     const bayarBtn = document.getElementById('detail-bayar-btn');
-    if (i.status === 'jatuh_tempo') {
+    if (i.status === 'jatuh_tempo' || i.status === 'pending') {
         bayarBtn.style.display = '';
     } else {
         bayarBtn.style.display = 'none';
@@ -1215,7 +1229,7 @@ function openEditModal(id) {
     @endif
 
     document.getElementById('f-status').value = i.status;
-    if (i.status === 'lunas') {
+    if (i.status === 'lunas' || i.status === 'pending') {
         document.getElementById('f-tanggal_bayar').value = i.tanggal_bayar || new Date().toISOString().split('T')[0];
         document.getElementById('f-tanggal_bayar-group').style.display = '';
     } else {

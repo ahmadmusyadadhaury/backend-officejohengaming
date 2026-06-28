@@ -52,6 +52,7 @@ class DashboardController extends Controller
             // Payment stats — dari semua tabel pembayaran
             'total_payments' => Payment::where('jenis', 'listrik')->count() + PembayaranAsetDigital::count() + PembayaranIplRuko::count() + WifiPayment::count() + TokenPayment::count(),
             'pending_payments' => Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')->count() + PembayaranAsetDigital::where('status', 'jatuh_tempo')->count() + PembayaranIplRuko::where('status', 'jatuh_tempo')->count() + WifiPayment::where('status', 'jatuh_tempo')->count(),
+            'approval_pending_payments' => Payment::where('jenis', 'listrik')->where('status', 'pending')->count() + PembayaranAsetDigital::where('status', 'pending')->count() + PembayaranIplRuko::where('status', 'pending')->count() + WifiPayment::where('status', 'pending')->count(),
         ];
 
         // Data untuk tampilan

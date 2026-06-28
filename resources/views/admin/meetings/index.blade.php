@@ -115,17 +115,28 @@
         </div>
         <div class="table-responsive">
             <table class="gaming-table" id="meetings-table" style="width:100%;min-width:700px;">
+                <colgroup>
+                    <col style="width:50px">
+                    <col>
+                    <col class="hidden sm:table-cell" style="width:170px">
+                    <col class="hidden lg:table-cell" style="width:130px">
+                    <col style="width:120px">
+                    <col class="hidden sm:table-cell" style="width:100px">
+                    <col style="width:90px">
+                    <col class="hidden md:table-cell" style="width:90px">
+                    <col style="width:70px">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th style="width:50px">No</th>
                         <th>Judul</th>
-                        <th class="hidden sm:table-cell">Pemohon</th>
-                        <th class="hidden lg:table-cell">Tim</th>
-                        <th>Tanggal</th>
-                        <th class="hidden sm:table-cell">Waktu</th>
-                        <th>Status</th>
-                        <th class="hidden md:table-cell">Antrian</th>
-                        <th>Aksi</th>
+                        <th class="hidden sm:table-cell" style="width:170px">Pemohon</th>
+                        <th class="hidden lg:table-cell" style="width:130px">Tim</th>
+                        <th style="width:120px">Tanggal</th>
+                        <th class="hidden sm:table-cell" style="width:100px">Waktu</th>
+                        <th style="width:90px">Status</th>
+                        <th class="hidden md:table-cell" style="width:90px">Antrian</th>
+                        <th style="width:70px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="meetings-tbody">
