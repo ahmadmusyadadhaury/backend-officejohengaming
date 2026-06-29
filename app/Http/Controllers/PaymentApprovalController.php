@@ -12,8 +12,11 @@ use App\Models\SimCard;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WifiPayment;
+use App\Exports\DataExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentApprovalController extends Controller
 {
@@ -65,7 +68,7 @@ class PaymentApprovalController extends Controller
             ],
             default => abort(400, 'Jenis tidak valid'),
         };
-        $rules['bukti_bayar'] = 'required|image|mimes:jpeg,png,jpg|max:2048';
+        $rules['bukti_bayar'] = 'required|image|mimes:jpeg,png,jpg|max:200';
         $rules['tanggal_bayar'] = 'required|date';
 
         $data = $request->validate($rules);
@@ -75,6 +78,7 @@ class PaymentApprovalController extends Controller
 
         if ($request->hasFile('bukti_bayar')) {
             $data['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
+            $this->compressBukti($data['bukti_bayar']);
         }
 
         $model = $this->getModel($jenis);
@@ -132,7 +136,7 @@ class PaymentApprovalController extends Controller
                     'pic' => $r->pic,
                     'jabatan' => $r->jabatan,
                     'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
-                    'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
+                    'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
                     'approver_name' => $r->approver?->name,
                     'approved_at' => $r->approved_at?->format('d/m/Y H:i'),
                     'notes' => $r->notes,
@@ -197,7 +201,7 @@ class PaymentApprovalController extends Controller
         $jenis = $request->input('jenis');
 
         $request->validate([
-            'bukti_bayar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'bukti_bayar' => 'required|image|mimes:jpeg,png,jpg|max:200',
             'tanggal_bayar' => 'required|date',
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
@@ -212,6 +216,7 @@ class PaymentApprovalController extends Controller
         }
 
         $buktiPath = $request->file('bukti_bayar')->store('payment-bukti', 'public');
+        $this->compressBukti($buktiPath);
 
         $record->update([
             'status' => 'pending',
@@ -271,7 +276,7 @@ class PaymentApprovalController extends Controller
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
                     'status' => $r->status,
                     'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
-                    'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
+                    'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
                     'requester_name' => $r->requester?->name ?? '-',
                     'pic' => $r->pic,
                     'jabatan' => $r->jabatan,
@@ -365,5 +370,90 @@ class PaymentApprovalController extends Controller
         Cache::forget('approval_check_'.auth()->id());
 
         return response()->json(['success' => true]);
+    }
+
+    public function exportStatus()
+    {
+        $userId = auth()->id();
+        $all = collect();
+
+        foreach ([
+            'internet' => WifiPayment::class,
+            'listrik' => Payment::class,
+            'aset_digital' => PembayaranAsetDigital::class,
+            'ipl_ruko' => PembayaranIplRuko::class,
+        ] as $jenis => $class) {
+            $records = $class::with('requester', 'approver')
+                ->where('requested_by', $userId)
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(fn ($r) => [
+                    'No' => null,
+                    'Jenis' => match ($jenis) {
+                        'internet' => 'Internet',
+                        'listrik' => 'Listrik',
+                        'aset_digital' => 'Aset Digital',
+                        'ipl_ruko' => 'IPL Ruko',
+                    },
+                    'Detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
+                    'Nominal' => 'Rp '.number_format((int) ($r->biaya ?? $r->nominal), 0, ',', '.'),
+                    'Tgl Bayar' => $r->tanggal_bayar?->format('d/m/Y') ?? '-',
+                    'Status' => match ($r->status) {
+                        'lunas' => 'Disetujui',
+                        'pending' => 'Menunggu',
+                        'rejected' => 'Ditolak',
+                        default => ucfirst($r->status),
+                    },
+                    'Bukti' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : '-',
+                ]);
+            $all = $all->merge($records);
+        }
+
+        $data = $all->sortByDesc(fn ($r) => $r['Tgl Bayar'])->values();
+
+        $headings = ['No', 'Jenis', 'Detail', 'Nominal', 'Tgl Bayar', 'Status', 'Bukti'];
+        $numbered = $data->map(fn ($r, $i) => array_merge(['No' => $i + 1], array_slice($r, 1)));
+
+        return Excel::download(
+            new DataExport($numbered, $headings, 'Status Pengajuan Pembayaran', 'Status', ['Bukti']),
+            'Status_Pengajuan_Pembayaran.xlsx'
+        );
+    }
+
+    private function compressBukti(string $path): void
+    {
+        $fullPath = Storage::disk('public')->path($path);
+        if (!file_exists($fullPath)) return;
+
+        $info = getimagesize($fullPath);
+        if (!$info) return;
+
+        [$width, $height] = $info;
+        $maxWidth = 1200;
+
+        if ($width <= $maxWidth && filesize($fullPath) <= 204800) return;
+
+        if ($width > $maxWidth) {
+            $ratio = $maxWidth / $width;
+            $newWidth = $maxWidth;
+            $newHeight = (int) ($height * $ratio);
+        } else {
+            $newWidth = $width;
+            $newHeight = $height;
+        }
+
+        $src = match ($info['mime']) {
+            'image/jpeg' => @imagecreatefromjpeg($fullPath),
+            'image/png' => @imagecreatefrompng($fullPath),
+            default => null,
+        };
+
+        if (!$src) return;
+
+        $dst = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        imagejpeg($dst, $fullPath, 70);
+        imagedestroy($src);
+        imagedestroy($dst);
     }
 }

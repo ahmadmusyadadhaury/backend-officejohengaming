@@ -10,6 +10,7 @@ use App\Models\Vehicle;
 use App\Models\VehiclePajakRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class VehiclePajakRequestController extends Controller
 {
@@ -18,13 +19,15 @@ class VehiclePajakRequestController extends Controller
         $data = $request->validate([
             'jenis' => 'required|in:tahunan,5_tahunan',
             'nominal' => 'required|numeric|min:0',
-            'bukti_bayar' => 'required|image|mimes:jpeg,png|max:2048',
+            'bukti_bayar' => 'required|image|mimes:jpeg,png|max:200',
         ]);
 
         $data['vehicle_id'] = $vehicle->id;
         $data['requested_by'] = auth()->id();
         $data['status'] = 'pending';
-        $data['bukti_bayar'] = $request->file('bukti_bayar')->store('vehicle-pajak-bukti', 'public');
+        $path = $request->file('bukti_bayar')->store('vehicle-pajak-bukti', 'public');
+        $this->compressBukti($path);
+        $data['bukti_bayar'] = $path;
 
         $pajakRequest = VehiclePajakRequest::create($data);
 
@@ -62,7 +65,7 @@ class VehiclePajakRequestController extends Controller
                 'requester_name' => $r->requester->name,
                 'jenis' => $r->jenis,
                 'nominal' => (int) $r->nominal,
-                'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
+                'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
                 'created_at' => $r->created_at->format('d/m/Y H:i'),
             ]);
 
@@ -125,5 +128,42 @@ class VehiclePajakRequestController extends Controller
         Notification::send($pajakRequest->requested_by, 'activity', 'Pajak Ditolak', $message, route('admin.vehicles.index'));
 
         return response()->json(['success' => true]);
+    }
+
+    private function compressBukti(string $path): void
+    {
+        $fullPath = Storage::disk('public')->path($path);
+        if (!file_exists($fullPath)) return;
+
+        $info = getimagesize($fullPath);
+        if (!$info) return;
+
+        [$width, $height] = $info;
+        $maxWidth = 1200;
+
+        if ($width <= $maxWidth && filesize($fullPath) <= 204800) return;
+
+        if ($width > $maxWidth) {
+            $ratio = $maxWidth / $width;
+            $newWidth = $maxWidth;
+            $newHeight = (int) ($height * $ratio);
+        } else {
+            $newWidth = $width;
+            $newHeight = $height;
+        }
+
+        $src = match ($info['mime']) {
+            'image/jpeg' => @imagecreatefromjpeg($fullPath),
+            'image/png' => @imagecreatefrompng($fullPath),
+            default => null,
+        };
+
+        if (!$src) return;
+
+        $dst = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        imagejpeg($dst, $fullPath, 70);
+        imagedestroy($src);
+        imagedestroy($dst);
     }
 }

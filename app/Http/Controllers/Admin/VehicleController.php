@@ -42,7 +42,7 @@ class VehicleController extends Controller
                 'warna' => $v->warna,
                 'nomor_rangka' => $v->nomor_rangka,
                 'nomor_mesin' => $v->nomor_mesin,
-                'foto' => $v->foto ? asset('storage/'.$v->foto) : null,
+                'foto' => $v->foto ? url('storage/'.$v->foto) : null,
                 'pajak_tahunan' => $v->pajak_tahunan?->format('d/m/Y'),
                 'pajak_5_tahun' => $v->pajak_5_tahun?->format('d/m/Y'),
                 'kepemilikan_status' => $v->kepemilikan_status,
@@ -78,7 +78,7 @@ class VehicleController extends Controller
             'requester_name' => $r->requester->name,
             'jenis' => $r->jenis,
             'nominal' => (int) $r->nominal,
-            'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
+            'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
             'created_at' => $r->created_at->format('d/m/Y H:i'),
         ]);
 

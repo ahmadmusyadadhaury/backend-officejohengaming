@@ -10,15 +10,6 @@
 
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
-    <div class="flex justify-between items-center">
-        <div></div>
-        <a href="{{ route('payment-approval.create') }}" class="btn btn-primary btn-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Ajukan Baru
-        </a>
-    </div>
 
     @if($requests->isEmpty())
     <div class="gaming-card p-8 text-center">
@@ -29,24 +20,68 @@
         <a href="{{ route('payment-approval.create') }}" class="btn btn-primary btn-sm mt-4 inline-flex items-center gap-1.5">Ajukan Pembayaran</a>
     </div>
     @else
-    <div class="gaming-card">
+    <div class="gaming-card" style="overflow:hidden;">
+        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Status Pengajuan Pembayaran</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Riwayat pengajuan pembayaran kamu</div>
+            </div>
+        </div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-0 max-w-full sm:min-w-[200px] sm:max-w-[260px]">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="search-status" placeholder="Cari..." oninput="filterTable()"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+            </div>
+            <div class="flex items-center gap-2" style="margin-left:auto;">
+                <a href="{{ route('payment-approval.export') }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">Download Excel</a>
+                <div class="filter-dropdown-wrap" style="position:relative;">
+                <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
+                    style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                    <span id="filter-label">Semua Status</span>
+                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                    <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
+                    <button type="button" data-value="lunas" onclick="setFilter('lunas')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Disetujui</button>
+                    <button type="button" data-value="pending" onclick="setFilter('pending')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Menunggu</button>
+                    <button type="button" data-value="rejected" onclick="setFilter('rejected')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ditolak</button>
+                </div>
+            </div>
+            </div>
+        </div>
         <div class="table-responsive">
-            <table class="gaming-table min-w-[700px]">
+            <table class="gaming-table" style="width:100%;min-width:700px;">
+                <colgroup>
+                    <col style="width:50px">
+                    <col style="width:100px">
+                    <col>
+                    <col style="width:130px">
+                    <col style="width:110px">
+                    <col style="width:100px">
+                    <col style="width:70px">
+                    <col class="hidden md:table-cell" style="width:140px">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Jenis</th>
+                        <th style="width:50px">No</th>
+                        <th style="width:100px">Jenis</th>
                         <th>Detail</th>
-                        <th>Nominal</th>
-                        <th>Tgl Bayar</th>
-                        <th>Status</th>
-                        <th>Bukti</th>
-                        <th>Approval</th>
+                        <th style="width:130px">Nominal</th>
+                        <th style="width:110px">Tgl Bayar</th>
+                        <th style="width:100px">Status</th>
+                        <th style="width:70px">Bukti</th>
+                        <th class="hidden md:table-cell" style="width:140px">Approval</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="status-tbody">
                     @foreach($requests as $i => $r)
-                    <tr>
+                    <tr data-status="{{ $r['status'] }}">
                         <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
                         <td><span class="text-xs font-semibold" style="color:var(--text-secondary);">{{ $r['jenis_label'] }}</span></td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $r['detail'] }}</td>
@@ -70,7 +105,7 @@
                             <span class="text-xs" style="color:var(--text-muted);">-</span>
                             @endif
                         </td>
-                        <td style="font-size:12px;color:var(--text-secondary);">
+                        <td class="hidden md:table-cell" style="font-size:12px;color:var(--text-secondary);">
                             @if($r['status'] === 'lunas')
                                 {{ $r['approver_name'] ?? '-' }}<br><span style="font-size:11px;">{{ $r['approved_at'] }}</span>
                             @elseif($r['status'] === 'rejected' && $r['notes'])
@@ -88,3 +123,42 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+let currentFilter = 'all';
+
+function toggleFilterMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('filter-menu');
+    document.querySelectorAll('.filter-menu').forEach(m => { if (m.id !== 'filter-menu') m.style.display = 'none'; });
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function setFilter(value) {
+    currentFilter = value;
+    const label = document.querySelector(`.filter-menu button[data-value="${value}"]`).textContent;
+    document.getElementById('filter-label').textContent = label;
+    document.getElementById('filter-menu').style.display = 'none';
+    filterTable();
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.getElementById('filter-menu').style.display = 'none';
+    }
+});
+
+function filterTable() {
+    const search = (document.getElementById('search-status')?.value || '').toLowerCase();
+    const rows = document.querySelectorAll('#status-tbody tr');
+    rows.forEach(row => {
+        const rowStatus = row.dataset.status;
+        const text = row.textContent.toLowerCase();
+        const matchStatus = currentFilter === 'all' || rowStatus === currentFilter;
+        const matchSearch = !search || text.includes(search);
+        row.style.display = matchStatus && matchSearch ? '' : 'none';
+    });
+}
+</script>
+@endpush

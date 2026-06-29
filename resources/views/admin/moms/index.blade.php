@@ -98,16 +98,25 @@
             </div>
         </div>
         <div class="overflow-x-auto">
-            <table class="gaming-table min-w-[900px]">
+            <table class="gaming-table" style="width:100%;min-width:900px;">
+                <colgroup>
+                    <col style="width:50px">
+                    <col>
+                    <col style="width:130px">
+                    <col class="hidden sm:table-cell" style="width:140px">
+                    <col style="width:120px">
+                    <col class="hidden md:table-cell" style="width:140px">
+                    <col style="width:100px">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th style="width:50px">No</th>
                         <th>Judul Meeting</th>
-                        <th>PIC</th>
-                        <th>Dibuat Oleh</th>
-                        <th>Tanggal Meeting</th>
-                        <th>Dikirim</th>
-                        <th>Aksi</th>
+                        <th style="width:130px">PIC</th>
+                        <th class="hidden sm:table-cell" style="width:140px">Dibuat Oleh</th>
+                        <th style="width:120px">Tanggal Meeting</th>
+                        <th class="hidden md:table-cell" style="width:140px">Dikirim</th>
+                        <th style="width:100px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,9 +125,9 @@
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $mom->meeting->title ?? '—' }}</td>
                         <td style="color:var(--text-secondary);">{{ $mom->pic }}</td>
-                        <td style="color:var(--text-muted);">{{ $mom->creator->name ?? '—' }}</td>
+                        <td class="hidden sm:table-cell" style="color:var(--text-muted);">{{ $mom->creator->name ?? '—' }}</td>
                         <td style="color:var(--text-muted);">{{ $mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : '—' }}</td>
-                        <td style="color:var(--text-muted);">{{ $mom->sent_at ? $mom->sent_at->format('d M Y H:i') : '—' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $mom->sent_at ? $mom->sent_at->format('d M Y H:i') : '—' }}</td>
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
                                 <button type="button" onclick="showMomDetail({{ $mom->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
@@ -135,7 +144,7 @@
                                             Export Excel
                                         </a>
                                         @if($mom->file_path)
-                                        <a href="{{ asset('storage/' . $mom->file_path) }}" target="_blank" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                        <a href="{{ url('storage/' . $mom->file_path) }}" target="_blank" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                             Download Lampiran
                                         </a>

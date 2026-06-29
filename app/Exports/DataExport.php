@@ -25,12 +25,15 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
 
     protected string $sheetTitle;
 
-    public function __construct(Collection $data, array $headings, string $title, string $sheetTitle = 'Data')
+    protected array $hyperlinkColumns;
+
+    public function __construct(Collection $data, array $headings, string $title, string $sheetTitle = 'Data', array $hyperlinkColumns = [])
     {
         $this->data = $data;
         $this->headings = $headings;
         $this->title = $title;
         $this->sheetTitle = $sheetTitle;
+        $this->hyperlinkColumns = $hyperlinkColumns;
     }
 
     public function collection(): Collection
@@ -90,6 +93,24 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
 
                 foreach (range('A', $sheet->getHighestColumn()) as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
+                }
+
+                if (!empty($this->hyperlinkColumns)) {
+                    $headings = $this->headings();
+                    foreach ($this->hyperlinkColumns as $colName) {
+                        $colIndex = array_search($colName, $headings);
+                        if ($colIndex === false) continue;
+                        $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
+                        for ($row = 4; $row <= $sheet->getHighestRow(); $row++) {
+                            $cell = "{$colLetter}{$row}";
+                            $url = $sheet->getCell($cell)->getValue();
+                            if ($url && filter_var($url, FILTER_VALIDATE_URL)) {
+                                $sheet->getCell($cell)->getHyperlink()->setUrl($url);
+                                $sheet->getStyle($cell)->getFont()->getColor()->setRGB('6C5CFF');
+                                $sheet->getStyle($cell)->getFont()->setUnderline(true);
+                            }
+                        }
+                    }
                 }
             },
         ];

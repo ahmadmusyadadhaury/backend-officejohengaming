@@ -133,6 +133,7 @@ Route::middleware(['auth', 'role:user,koordinator,hr,admin'])->prefix('payment-a
     Route::get('/', [PaymentApprovalController::class, 'myRequests'])->name('status');
     Route::get('tagihan', [PaymentApprovalController::class, 'tagihan'])->name('tagihan');
     Route::post('tagihan/{id}/bayar', [PaymentApprovalController::class, 'bayar'])->name('tagihan.bayar');
+    Route::get('export', [PaymentApprovalController::class, 'exportStatus'])->name('export');
 });
 
 // Calendar & Invitation (semua role)

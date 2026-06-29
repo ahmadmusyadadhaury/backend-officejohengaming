@@ -27,7 +27,7 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar && \Storage::disk('public')->exists($this->avatar)) {
-            return asset('storage/'.$this->avatar);
+            return url('storage/'.$this->avatar);
         }
 
         // Default avatar pakai inisial
