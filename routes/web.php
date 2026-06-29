@@ -34,6 +34,15 @@ use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\WeeklySessionController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+
+Route::get('storage/{path}', function (string $path) {
+    $fullPath = Storage::disk('public')->path($path);
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    return response()->file($fullPath);
+})->where('path', '.*');
 
 Route::get('/', function () {
     if (auth()->check()) {
