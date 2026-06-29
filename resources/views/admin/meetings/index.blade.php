@@ -74,7 +74,7 @@
     </div>
 
     {{-- Tabel --}}
-    <div class="gaming-card overflow-hidden">
+    <div class="gaming-card" style="overflow:visible;">
         <div class="px-5 py-4" style="border-bottom:1px solid var(--border-color);">
             <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Permintaan Meeting</div>
             <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Tinjau dan kelola permintaan meeting dari seluruh tim.</div>
@@ -112,6 +112,7 @@
                 </div>
             </div>
 
+        </div>
         </div>
         <div class="table-responsive">
             <table class="gaming-table" id="meetings-table" style="width:100%;min-width:700px;">

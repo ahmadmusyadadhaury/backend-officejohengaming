@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PeralatanKantor;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PeralatanKantorController extends Controller
@@ -20,6 +21,11 @@ class PeralatanKantorController extends Controller
         ];
 
         $itemsJson = $items->values()->map(function ($i) {
+            $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
+            $penyusutanPerHari = $i->nilai / $masaBarang;
+            $hariTerpakai = $i->tanggal_pembelian ? max(abs(now()->diffInDays($i->tanggal_pembelian)), 0) : 0;
+            $nilaiSekarang = max($i->nilai - ($penyusutanPerHari * $hariTerpakai), 0);
+
             return [
                 'id' => $i->id,
                 'nama_barang' => $i->nama_barang,
@@ -37,8 +43,11 @@ class PeralatanKantorController extends Controller
                 'nilai' => (int) $i->nilai,
                 'waktu_pakai_per_hari' => $i->waktu_pakai_per_hari,
                 'estimasi_waktu_barang' => $i->estimasi_waktu_barang,
-                'pengurangan_harga_per_hari' => (int) $i->pengurangan_harga_per_hari,
-                'harga_per_hari_ini' => (int) $i->harga_per_hari_ini,
+                'pengurangan_harga_per_hari' => round($penyusutanPerHari, 2),
+                'harga_per_hari_ini' => round($nilaiSekarang, 2),
+                'hari_terpakai' => $hariTerpakai,
+                'penyusutan_per_hari' => round($penyusutanPerHari, 2),
+                'nilai_sekarang' => round($nilaiSekarang, 2),
                 'pic' => $i->pic,
                 'jabatan' => $i->jabatan,
                 'atasan' => $i->atasan,
@@ -72,14 +81,17 @@ class PeralatanKantorController extends Controller
             'nilai' => 'required|numeric|min:0',
             'waktu_pakai_per_hari' => 'required|integer|min:0',
             'estimasi_waktu_barang' => 'required|integer|min:0',
-            'pengurangan_harga_per_hari' => 'required|numeric|min:0',
-            'harga_per_hari_ini' => 'required|numeric|min:0',
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'atasan' => 'required|string|max:255',
             'jabatan_atasan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'kondisi' => 'required|string|in:baik,perlu_servis,rusak',
         ]);
+
+        $masaBarang = max($data['estimasi_waktu_barang'], 1);
+        $data['pengurangan_harga_per_hari'] = $data['nilai'] / $masaBarang;
+        $hariTerpakai = max(abs(now()->diffInDays(Carbon::parse($data['tanggal_pembelian']))), 0);
+        $data['harga_per_hari_ini'] = max($data['nilai'] - ($data['pengurangan_harga_per_hari'] * $hariTerpakai), 0);
 
         PeralatanKantor::create($data);
 
@@ -108,14 +120,17 @@ class PeralatanKantorController extends Controller
             'nilai' => 'required|numeric|min:0',
             'waktu_pakai_per_hari' => 'required|integer|min:0',
             'estimasi_waktu_barang' => 'required|integer|min:0',
-            'pengurangan_harga_per_hari' => 'required|numeric|min:0',
-            'harga_per_hari_ini' => 'required|numeric|min:0',
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'atasan' => 'required|string|max:255',
             'jabatan_atasan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'kondisi' => 'required|string|in:baik,perlu_servis,rusak',
         ]);
+
+        $masaBarang = max($data['estimasi_waktu_barang'], 1);
+        $data['pengurangan_harga_per_hari'] = $data['nilai'] / $masaBarang;
+        $hariTerpakai = max(abs(now()->diffInDays(Carbon::parse($data['tanggal_pembelian']))), 0);
+        $data['harga_per_hari_ini'] = max($data['nilai'] - ($data['pengurangan_harga_per_hari'] * $hariTerpakai), 0);
 
         $peralatanKantor->update($data);
 

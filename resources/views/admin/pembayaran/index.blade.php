@@ -414,6 +414,7 @@
                         <th>Tanggal Bayar</th>
                         <th>Periode</th>
                         <th>Jumlah KWH</th>
+                        <th>Nominal</th>
                         <th>Oleh</th>
                         <th>Catatan</th>
                         <th>Aksi</th>
@@ -426,6 +427,7 @@
                         <td style="color:var(--text-primary);">{{ $t->payment_date->format('d M Y') }}</td>
                         <td style="color:var(--text-muted);">{{ $t->period }}</td>
                         <td style="font-weight:600;color:var(--text-primary);">{{ number_format($t->amount_kwh, 0) }} KWH</td>
+                        <td style="color:var(--text-primary);">Rp {{ number_format($t->nominal, 0) }}</td>
                         <td style="color:var(--text-primary);">{{ $t->creator?->name ?? '-' }}</td>
                         <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $t->notes ?: 'Tidak ada catatan' }}</td>
                         <td>
@@ -437,7 +439,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
+                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -456,6 +458,7 @@
             <div class="min-w-0 flex-1">
                 <div class="text-xs font-semibold" style="color:var(--text-muted);">Top Up Terakhir</div>
                 <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);">{{ $latestPayment ? number_format($latestPayment->amount_kwh, 0) : '7.000' }} KWH</div>
+                <div class="text-xs font-medium" style="color:var(--text-muted);">{{ $latestPayment && $latestPayment->nominal ? 'Rp '.number_format($latestPayment->nominal, 0) : '' }}</div>
                 <div class="text-xs" style="color:var(--text-muted);">{{ $latestPayment ? $latestPayment->payment_date->format('d M Y') : '-' }} · {{ $latestPayment?->creator?->name ?? '-' }}</div>
             </div>
             <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-xs flex-shrink-0" style="font-size:11px;padding:4px 10px;">
@@ -483,7 +486,7 @@
             <div class="min-w-0">
                 <div class="text-xs font-semibold" style="color:var(--text-muted);">Sisa Token</div>
                 <div class="text-lg font-gaming font-bold" style="color:{{ $latestReading && $latestReading->remaining_kwh < 500 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 1000 ? '#f59e0b' : 'var(--text-primary)') }};">
-                    {{ $latestReading ? number_format($latestReading->remaining_kwh, 1) : number_format($capacityKwh, 0) }} KWH
+                    {{ $latestReading ? number_format($latestReading->remaining_kwh, 1) : '0' }} KWH
                 </div>
             </div>
         </div>
@@ -639,6 +642,11 @@
                             <label class="gaming-label">Jumlah KWH <span class="field-req">*</span></label>
                             <input type="number" name="amount_kwh" id="f-amount_kwh" required step="0.01" min="1" placeholder="Contoh: 7000" class="gaming-input">
                             <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan jumlah KWH yang dibeli.</div>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Nominal (Rp) <span class="field-req">*</span></label>
+                            <input type="number" name="nominal" id="f-nominal" required step="0.01" min="0" placeholder="Contoh: 1500000" class="gaming-input">
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan nominal harga token.</div>
                         </div>
                         <div class="field-group">
                             <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>

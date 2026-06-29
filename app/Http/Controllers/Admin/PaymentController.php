@@ -176,8 +176,8 @@ class PaymentController extends Controller
             $latestReadingAfterTopup = null;
             if ($latestPayment) {
                 $latestReadingAfterTopup = ElectricityTokenReading::with('checker')
-                    ->where('checked_date', '>=', $latestPayment->payment_date)
-                    ->orderBy('checked_date', 'desc')
+                    ->where('created_at', '>=', $latestPayment->created_at)
+                    ->orderBy('created_at', 'desc')
                     ->orderBy('id', 'desc')
                     ->first();
             }
@@ -454,6 +454,7 @@ class PaymentController extends Controller
     {
         $data = $request->validate([
             'amount_kwh' => 'required|numeric|min:1',
+            'nominal' => 'required|numeric|min:0',
             'payment_date' => 'required|date',
             'notes' => 'nullable|string|max:500',
         ]);

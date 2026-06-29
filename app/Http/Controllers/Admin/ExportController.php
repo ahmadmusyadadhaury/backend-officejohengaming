@@ -395,6 +395,7 @@ class ExportController extends Controller
                 'Tanggal Bayar' => $t->payment_date->format('d/m/Y'),
                 'Periode' => $t->period,
                 'Jumlah KWH' => $t->amount_kwh,
+                'Nominal' => $t->nominal,
                 'Oleh' => $t->creator?->name ?? '-',
                 'Catatan' => $t->notes ?: 'Tidak ada catatan',
             ]);
