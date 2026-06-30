@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PeralatanKantorController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SosialMediaController;
 use App\Http\Controllers\Admin\SimCardController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\UserController;
@@ -72,6 +73,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('digital-assets', DigitalAssetController::class)->except(['create', 'show', 'edit']);
     Route::resource('sim-cards', SimCardController::class)->except(['create', 'show', 'edit']);
     Route::resource('peralatan-kantor', PeralatanKantorController::class)->except(['create', 'show', 'edit']);
+    Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
     Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
     Route::post('pembayaran', [PaymentController::class, 'store'])->name('pembayaran.store');
