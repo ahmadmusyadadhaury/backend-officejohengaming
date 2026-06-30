@@ -170,6 +170,7 @@
     <a href="{{ route('admin.assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.assets.*') ? 'active' : '' }}"><span class="truncate">Kelola Aset Meeting</span></a>
     <a href="{{ route('admin.teams.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.teams.*') ? 'active' : '' }}"><span class="truncate">Kelola Tim</span></a>
     <a href="{{ route('admin.rooms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}"><span class="truncate">Kelola Ruangan</span></a>
+    <a href="{{ route('admin.settings.email') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.settings.email') ? 'active' : '' }}"><span class="truncate">Pengaturan Email</span></a>
 </div>
 
 @else

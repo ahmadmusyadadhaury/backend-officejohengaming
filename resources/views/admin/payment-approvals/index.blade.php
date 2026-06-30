@@ -50,29 +50,29 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table class="gaming-table" style="width:100%;min-width:800px;">
+            <table class="gaming-table" style="width:100%;min-width:900px;">
                 <colgroup>
-                    <col style="width:50px">
+                    <col style="width:40px">
                     <col style="width:80px">
                     <col style="width:100px">
-                    <col style="width:80px">
-                    <col>
+                    <col style="width:70px">
+                    <col style="width:260px">
                     <col style="width:110px">
-                    <col style="width:80px">
-                    <col style="width:60px">
-                    <col style="width:140px">
+                    <col style="width:75px">
+                    <col style="width:50px">
+                    <col style="width:115px">
                 </colgroup>
                 <thead>
                     <tr>
-                        <th style="width:50px">No</th>
+                        <th style="width:40px">No</th>
                         <th style="width:80px">Tanggal</th>
                         <th style="width:100px">Pengaju</th>
-                        <th style="width:80px">Jenis</th>
-                        <th>Detail</th>
+                        <th style="width:70px">Jenis</th>
+                        <th style="width:260px">Detail</th>
                         <th style="width:110px">Nominal</th>
-                        <th style="width:80px">Tgl Bayar</th>
-                        <th style="width:60px">Bukti</th>
-                        <th style="width:140px">Aksi</th>
+                        <th style="width:75px">Tgl Bayar</th>
+                        <th style="width:50px">Bukti</th>
+                        <th style="width:115px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="approval-tbody">
@@ -83,7 +83,7 @@
                         <td style="color:var(--text-primary);font-weight:500;">{{ $r['requester_name'] }}</td>
                         <td><span class="text-xs font-semibold" style="color:var(--text-secondary);">{{ $r['jenis_label'] }}</span></td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $r['detail'] }}</td>
-                        <td style="color:var(--text-primary);">Rp {{ number_format($r['nominal'], 0, ',', '.') }}</td>
+                        <td style="color:var(--text-primary);white-space:nowrap;">Rp {{ number_format($r['nominal'], 0, ',', '.') }}</td>
                         <td style="font-size:13px;color:var(--text-secondary);">{{ $r['tanggal_bayar'] }}</td>
                         <td>
                             @if($r['bukti_url'])

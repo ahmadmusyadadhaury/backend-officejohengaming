@@ -4,11 +4,7 @@
 <body style="font-family:sans-serif;background:#f4f4f4;padding:40px;">
     <div style="max-width:520px;margin:auto;background:#fff;border-radius:12px;padding:32px;">
         <div style="text-align:center;margin-bottom:24px;">
-            <div style="width:56px;height:56px;background:{{ $level === 'danger' ? '#fef2f2' : '#fffbeb' }};border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{{ $level === 'danger' ? '#dc2626' : '#d97706' }}" stroke-width="2">
-                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-            </div>
+            <img src="{{ asset('images/logo/logo_web.png') }}" alt="Johen Office" style="height:48px;width:auto;">
         </div>
         <p style="margin:0 0 12px;font-size:14px;color:#333;">Yth. Pengguna,</p>
         <p style="margin:0 0 12px;font-size:14px;color:#555;">

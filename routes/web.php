@@ -93,6 +93,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Route::get('/chat/messages', [ChatController::class, 'messages'])->name('chat.messages');
     // Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     // Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
+
+    Route::get('settings/email', [App\Http\Controllers\Admin\EmailSettingsController::class, 'index'])->name('settings.email');
+    Route::put('settings/email', [App\Http\Controllers\Admin\EmailSettingsController::class, 'update'])->name('settings.email.update');
 });
 
 // Hanya Admin & HR

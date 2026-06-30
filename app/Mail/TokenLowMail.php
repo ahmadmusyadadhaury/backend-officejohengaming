@@ -32,7 +32,7 @@ class TokenLowMail extends Mailable
                 'usedKwh' => 7000 - $this->remainingKwh,
                 'capacityKwh' => 7000,
                 'level' => $this->level,
-                'url' => 'https://meetingroom.johengaming.store/login',
+                'url' => 'https://office.johengaming.store/',
             ],
         );
     }
