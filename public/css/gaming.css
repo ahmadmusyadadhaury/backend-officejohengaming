@@ -498,7 +498,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .gaming-table thead th {
-    padding: 0.875rem 1rem;
+    padding: 1.125rem 1rem;
     text-align: left;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
@@ -517,7 +517,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .gaming-table tbody td {
-    padding: 0.875rem 1rem;
+    padding: 1.125rem 1rem;
     color: var(--text-secondary);
 }
 
@@ -1023,8 +1023,8 @@ body.light .badge-orange {
     .gaming-sidebar .sidebar-item .flex-1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 
     /* ── Compact table ── */
-    .gaming-table thead th { padding: 0.35rem 0.4rem; font-size: 0.55rem; }
-    .gaming-table tbody td { padding: 0.35rem 0.4rem; font-size: 0.7rem; }
+    .gaming-table thead th { padding: 0.5rem 0.4rem; font-size: 0.55rem; }
+    .gaming-table tbody td { padding: 0.5rem 0.4rem; font-size: 0.7rem; }
     .gaming-table { font-size: 0.7rem; }
 
     /* ── Compact topbar ── */
@@ -1116,8 +1116,8 @@ body.light .badge-orange {
     .gaming-sidebar .px-3 { padding-left: 0.4rem; padding-right: 0.4rem; }
     .gaming-sidebar .py-4 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
 
-    .gaming-table thead th { padding: 0.25rem 0.3rem; font-size: 0.5rem; }
-    .gaming-table tbody td { padding: 0.25rem 0.3rem; font-size: 0.65rem; }
+    .gaming-table thead th { padding: 0.35rem 0.3rem; font-size: 0.5rem; }
+    .gaming-table tbody td { padding: 0.35rem 0.3rem; font-size: 0.65rem; }
 
     .page-content { padding-left: 0.4rem; padding-right: 0.4rem; }
     .gaming-topbar { padding-left: 0.4rem !important; padding-right: 0.4rem !important; }
@@ -1135,8 +1135,8 @@ body.light .badge-orange {
     .btn { padding: 0.25rem 0.65rem; font-size: 0.65rem; }
     .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.55rem; }
     .btn-sm svg { width: 0.65rem; height: 0.65rem; }
-    .gaming-table thead th { padding: 0.2rem 0.25rem; font-size: 0.45rem; }
-    .gaming-table tbody td { padding: 0.2rem 0.25rem; font-size: 0.6rem; }
+    .gaming-table thead th { padding: 0.3rem 0.25rem; font-size: 0.45rem; }
+    .gaming-table tbody td { padding: 0.3rem 0.25rem; font-size: 0.6rem; }
     td .btn-sm { padding: 1px 4px; font-size: 0.5rem; }
     td .btn-sm svg { width: 0.55rem; height: 0.55rem; }
 }
@@ -1150,8 +1150,8 @@ body.light .badge-orange {
     .sidebar-submenu-item { padding: 0.45rem 0.75rem; padding-left: 1rem; font-size: 0.8rem; }
     .sidebar-section-toggle { font-size: 0.8rem; }
     .sidebar-section-label { font-size: 0.6rem; }
-    .gaming-table thead th { padding: 0.6rem 0.75rem; }
-    .gaming-table tbody td { padding: 0.6rem 0.75rem; }
+    .gaming-table thead th { padding: 0.8rem 0.75rem; }
+    .gaming-table tbody td { padding: 0.8rem 0.75rem; }
 }
 
 /* ============================================
@@ -1220,8 +1220,8 @@ body.light .badge-orange {
 
     .page-content { padding-left: 3rem; padding-right: 3rem; padding-top: 0.75rem; padding-bottom: 1.25rem; }
 
-    .gaming-table thead th { padding: 0.35rem 0.45rem; font-size: 0.6rem; }
-    .gaming-table tbody td { padding: 0.35rem 0.45rem; font-size: 0.7rem; }
+    .gaming-table thead th { padding: 0.5rem 0.45rem; font-size: 0.6rem; }
+    .gaming-table tbody td { padding: 0.5rem 0.45rem; font-size: 0.7rem; }
 
     .btn { padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 8px; }
     .btn-sm { padding: 0.25rem 0.6rem; font-size: 0.65rem; border-radius: 6px; }

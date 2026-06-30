@@ -193,8 +193,10 @@
                                 </button>
                                 <div class="relative dropdown-actions">
                                     <button type="button" onclick="toggleActionMenu(event, {{ $meeting->id }})" class="btn btn-secondary btn-sm" style="padding:4px 6px;line-height:1;font-size:0.7rem;" title="Aksi">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/>
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="5" r="2" fill="currentColor"/>
+                                            <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                                            <circle cx="12" cy="19" r="2" fill="currentColor"/>
                                         </svg>
                                     </button>
                                     <div id="action-menu-{{ $meeting->id }}" style="display:none;position:absolute;top:100%;right:0;min-width:160px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;margin-top:4px;">

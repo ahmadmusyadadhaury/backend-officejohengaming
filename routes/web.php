@@ -86,11 +86,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('payment-approvals/{id}/reject', [PaymentApprovalController::class, 'reject'])->name('payment-approvals.reject');
     Route::get('export', [ExportController::class, 'export'])->name('export');
 
-    // Chat
-    Route::get('/chat/conversations', [ChatController::class, 'conversations'])->name('chat.conversations');
-    Route::get('/chat/messages', [ChatController::class, 'messages'])->name('chat.messages');
-    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
-    Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
+    // // Chat — hidden
+    // Route::get('/chat/conversations', [ChatController::class, 'conversations'])->name('chat.conversations');
+    // Route::get('/chat/messages', [ChatController::class, 'messages'])->name('chat.messages');
+    // Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+    // Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
 });
 
 // Hanya Admin & HR
