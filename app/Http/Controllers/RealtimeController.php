@@ -296,11 +296,12 @@ class RealtimeController extends Controller
         $inserts = [];
 
         foreach ($models as $table => $cfg) {
-            $q = $cfg['class']::where(function ($q) use ($today, $threeDays) {
+            $dueColumn = $table === 'wifi_payments' ? 'masa_tenggang' : 'jatuh_tempo';
+            $q = $cfg['class']::where(function ($q) use ($today, $threeDays, $dueColumn) {
                 $q->where('status', 'jatuh_tempo')
-                    ->orWhere(function ($q2) use ($today, $threeDays) {
-                        $q2->where('jatuh_tempo', '>=', $today)
-                            ->where('jatuh_tempo', '<=', $threeDays)
+                    ->orWhere(function ($q2) use ($today, $threeDays, $dueColumn) {
+                        $q2->where($dueColumn, '>=', $today)
+                            ->where($dueColumn, '<=', $threeDays)
                             ->where('status', '!=', 'lunas')
                             ->where('status', '!=', 'pending');
                     });

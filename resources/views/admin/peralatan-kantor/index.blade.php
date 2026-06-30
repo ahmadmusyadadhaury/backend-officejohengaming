@@ -89,6 +89,12 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
+                <button type="button" onclick="openImportModal()" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Import Excel
+                </button>
                 <a href="{{ route('admin.export', ['type' => 'peralatan-kantor', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">Download Excel</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
@@ -574,6 +580,73 @@
 
     </div>
 </div>
+
+{{-- Modal Import Excel --}}
+<div id="import-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[480px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Import Excel Peralatan Kantor</h3>
+            <button type="button" onclick="closeModal('import-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5">
+            <p class="text-sm mb-3" style="color:var(--text-muted);">Download template terlebih dahulu, lalu isi data sesuai format.</p>
+            <a href="{{ route('admin.peralatan-kantor.template') }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5 mb-4">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                Download Template
+            </a>
+            <form method="POST" action="{{ route('admin.peralatan-kantor.import') }}" enctype="multipart/form-data">
+                @csrf
+                <div class="field-group" style="margin-bottom:16px;">
+                    <label class="gaming-label">Pilih File Excel <span class="field-req">*</span></label>
+                    <input type="file" name="file" id="import-file" accept=".xlsx,.xls,.csv" required
+                        class="gaming-input" style="padding:8px 12px;">
+                    <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Format: xlsx, xls, csv. Maksimal 5 MB.</p>
+                </div>
+                <div class="form-footer" style="padding-top:0;border:none;">
+                    <button type="button" onclick="closeModal('import-modal')" class="btn-form btn-form-batal">Batal</button>
+                    <button type="submit" class="btn-form btn-form-simpan" id="import-submit-btn">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if(session('import_errors'))
+<div class="pt-2">
+    <div class="gaming-card p-4" style="border-left:4px solid #f59e0b;">
+        <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <p class="text-sm font-semibold" style="color:var(--text-primary);">
+                    Import Selesai: {{ session('import_success_count') }} berhasil, {{ session('import_error_count') }} gagal.
+                </p>
+                @if(session('import_errors'))
+                <div class="mt-2 max-h-[200px] overflow-y-auto" style="scrollbar-width:thin;">
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        @foreach(session('import_errors') as $error)
+                        <li style="font-size:12px;color:#ef4444;padding:2px 0;">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+            </div>
+            <button type="button" onclick="this.closest('.gaming-card').remove()" class="ml-auto p-1" style="background:none;border:none;cursor:pointer;color:var(--text-muted);">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+@endif
 @endsection
 
 @push('styles')
@@ -601,6 +674,41 @@
 }
 .step-line.done { background: #10b981; }
 #step-indicator { display: flex; align-items: center; }
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 16px;
+    margin-top: 8px;
+    border-top: 1px solid var(--border-color);
+}
+.btn-form {
+    padding: 8px 22px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+.btn-form-batal {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+}
+.btn-form-batal:hover {
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+}
+.btn-form-simpan {
+    background: linear-gradient(135deg, #6c5cff, #8b7bff);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(108,92,255,0.3);
+}
+.btn-form-simpan:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(108,92,255,0.4);
+}
 </style>
 @endpush
 
@@ -973,6 +1081,22 @@ function showToast(type, message) {
     requestAnimationFrame(() => toast.style.transform = 'translateX(0)');
     setTimeout(() => { toast.style.transform = 'translateX(120%)'; setTimeout(() => toast.remove(), 350); }, 4000);
 }
+
+function openImportModal() {
+    document.getElementById('import-file').value = '';
+    document.getElementById('import-submit-btn').disabled = false;
+    document.getElementById('import-submit-btn').textContent = 'Import';
+    openModal('import-modal');
+}
+
+document.getElementById('import-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeModal('import-modal');
+});
+
+document.getElementById('import-file')?.addEventListener('change', function() {
+    const btn = document.getElementById('import-submit-btn');
+    btn.disabled = !this.files.length;
+});
 
 let currentFilter = 'all';
 

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\PeralatanKantorTemplateExport;
 use App\Http\Controllers\Controller;
+use App\Imports\PeralatanKantorImport;
 use App\Models\PeralatanKantor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PeralatanKantorController extends Controller
 {
@@ -146,5 +149,51 @@ class PeralatanKantorController extends Controller
         $peralatanKantor->delete();
 
         return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Peralatan kantor berhasil dihapus.');
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(
+            new PeralatanKantorTemplateExport,
+            'Template_Import_Peralatan_Kantor.xlsx'
+        );
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        $import = new PeralatanKantorImport;
+        Excel::import($import, $request->file('file'));
+
+        $successCount = $import->getSuccessCount();
+        $failures = $import->failures();
+
+        $totalErrors = count($failures);
+        $errorMessages = [];
+
+        foreach ($failures as $failure) {
+            $row = $failure->row();
+            $errors = $failure->errors();
+            $values = $failure->values();
+            $nama = $values['Nama Barang'] ?? '-';
+            $errorMessages[] = "Baris {$row} ({$nama}): " . implode(', ', $errors);
+        }
+
+        if ($totalErrors > 0) {
+            $message = "Berhasil import {$successCount} data.";
+            $message .= " {$totalErrors} baris gagal.";
+            session()->flash('import_errors', $errorMessages);
+            session()->flash('import_success_count', $successCount);
+            session()->flash('import_error_count', $totalErrors);
+
+            return redirect()->route('admin.peralatan-kantor.index')
+                ->with('warning', $message);
+        }
+
+        return redirect()->route('admin.peralatan-kantor.index')
+            ->with('success', "Berhasil import {$successCount} data peralatan kantor.");
     }
 }

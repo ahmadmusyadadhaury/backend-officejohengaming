@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\TokenLowMail;
 use App\Models\ElectricityTokenReading;
+use App\Models\InternetUsageCheck;
 use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
@@ -20,6 +21,10 @@ class PaymentController extends Controller
     public function index(Request $request)
     {
         $jenis = $request->get('jenis', 'internet');
+
+        $internetUsages = collect();
+        $internetUsagesJson = '[]';
+        $internetUsageDate = now()->format('Y-m');
 
         if ($jenis === 'internet') {
             $items = WifiPayment::orderBy('created_at', 'desc')->get();
@@ -51,6 +56,26 @@ class PaymentController extends Controller
             });
 
             $alertItems = $all->filter(fn ($w) => $w->status === 'jatuh_tempo')->values();
+
+            $internetUsageDate = $request->get('internet_usage_date', now()->format('Y-m'));
+            $usageStart = Carbon::parse($internetUsageDate . '-01')->startOfMonth();
+            $usageEnd = $usageStart->copy()->endOfMonth();
+            $internetUsages = InternetUsageCheck::with('checker')
+                ->whereBetween('tanggal', [$usageStart, $usageEnd])
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('id', 'desc')
+                ->get();
+
+            $internetUsagesJson = $internetUsages->values()->map(fn ($u) => [
+                'id' => $u->id,
+                'ruangan' => $u->ruangan,
+                'hari' => $u->hari,
+                'tanggal' => $u->tanggal?->format('Y-m-d'),
+                'penggunaan_wifi' => (float) $u->penggunaan_wifi,
+                'penggunaan_ethernet' => (float) $u->penggunaan_ethernet,
+                'keterangan' => $u->keterangan,
+                'checker' => $u->checker?->name,
+            ]);
         } elseif ($jenis === 'aset_digital') {
             $items = PembayaranAsetDigital::orderBy('created_at', 'desc')->get();
             $all = PembayaranAsetDigital::all();
@@ -240,7 +265,7 @@ class PaymentController extends Controller
             'jenisLabels', 'jenisIcons', 'tokenReadings', 'latestReading',
             'tokenAlert', 'capacityKwh', 'usedKwh', 'tokenMonth',
             'latestPayment', 'topupHistory', 'topupRange', 'readingRange',
-            'users'
+            'users', 'internetUsages', 'internetUsagesJson', 'internetUsageDate'
         ));
     }
 
@@ -530,5 +555,33 @@ class PaymentController extends Controller
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => 'ipl_ruko'])
             ->with('success', $msg);
+    }
+
+    public function storeInternetUsage(Request $request)
+    {
+        $data = $request->validate([
+            'ruangan' => 'required|string|max:255',
+            'hari' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'penggunaan_wifi' => 'required|numeric|min:0',
+            'penggunaan_ethernet' => 'required|numeric|min:0',
+            'keterangan' => 'nullable|string|max:500',
+        ]);
+
+        $data['checked_by'] = auth()->id();
+
+        InternetUsageCheck::create($data);
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
+            ->with('success', 'Data usage internet berhasil disimpan.');
+    }
+
+    public function destroyInternetUsage($id)
+    {
+        $check = InternetUsageCheck::findOrFail($id);
+        $check->delete();
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
+            ->with('success', 'Data usage internet berhasil dihapus.');
     }
 }

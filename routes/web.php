@@ -73,6 +73,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('digital-assets', DigitalAssetController::class)->except(['create', 'show', 'edit']);
     Route::resource('sim-cards', SimCardController::class)->except(['create', 'show', 'edit']);
     Route::resource('peralatan-kantor', PeralatanKantorController::class)->except(['create', 'show', 'edit']);
+    Route::post('peralatan-kantor/import', [PeralatanKantorController::class, 'import'])->name('peralatan-kantor.import');
+    Route::get('peralatan-kantor/template', [PeralatanKantorController::class, 'downloadTemplate'])->name('peralatan-kantor.template');
     Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
     Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
@@ -84,6 +86,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('token-reading/{id}', [PaymentController::class, 'destroyTokenReading'])->name('pembayaran.token-reading.destroy');
     Route::post('token-topup', [PaymentController::class, 'storeTokenPayment'])->name('pembayaran.token-topup.store');
     Route::delete('token-topup/{id}', [PaymentController::class, 'destroyTokenPayment'])->name('pembayaran.token-topup.destroy');
+    Route::post('internet-usage', [PaymentController::class, 'storeInternetUsage'])->name('pembayaran.internet-usage.store');
+    Route::delete('internet-usage/{id}', [PaymentController::class, 'destroyInternetUsage'])->name('pembayaran.internet-usage.destroy');
     Route::get('payment-approvals', [PaymentApprovalController::class, 'index'])->name('payment-approvals.index');
     Route::post('payment-approvals/{id}/approve', [PaymentApprovalController::class, 'approve'])->name('payment-approvals.approve');
     Route::post('payment-approvals/{id}/reject', [PaymentApprovalController::class, 'reject'])->name('payment-approvals.reject');

@@ -397,6 +397,85 @@
     </div>
     @endif
 
+    {{-- Pengecekan Usage Internet --}}
+    @if($jenis === 'internet')
+    <div class="gaming-card" style="overflow:visible;">
+        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Usage Internet</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
+                    Lakukan pengecekan usage internet per ruangan setiap hari.
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                    <input type="hidden" name="jenis" value="internet">
+                    <input type="month" name="internet_usage_date" value="{{ $internetUsageDate }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                </form>
+                <button type="button" onclick="openInternetUsageModal()" class="btn btn-primary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Input Usage
+                </button>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="gaming-table w-full">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Ruangan</th>
+                        <th>Hari</th>
+                        <th>Tanggal</th>
+                        <th>Penggunaan Wifi/Hari</th>
+                        <th>Penggunaan Ethernet/Hari</th>
+                        <th>Pengecek</th>
+                        <th>Keterangan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($internetUsages as $i => $u)
+                    <tr>
+                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $u->ruangan }}</td>
+                        <td style="color:var(--text-muted);">{{ $u->hari }}</td>
+                        <td style="color:var(--text-primary);">{{ $u->tanggal->format('d M Y') }}</td>
+                        <td style="color:var(--text-muted);">{{ number_format($u->penggunaan_wifi, 2) }} GB</td>
+                        <td style="color:var(--text-muted);">{{ number_format($u->penggunaan_ethernet, 2) }} GB</td>
+                        <td style="color:var(--text-primary);">{{ $u->checker?->name ?? '-' }}</td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $u->keterangan ?: '-' }}</td>
+                        <td>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showInternetUsageDetail({{ $u->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, {{ $u->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-{{ $u->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showInternetUsageDetail({{ $u->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <form method="POST" action="{{ route('admin.pembayaran.internet-usage.destroy', $u->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data usage ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data usage internet.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     {{-- Riwayat Top Up Token --}}
     @if($jenis === 'listrik')
     <div class="gaming-card" style="overflow:visible;">
@@ -701,7 +780,7 @@
         <div class="px-6 py-4 flex-shrink-0 flex items-center gap-2" style="border-top:1px solid var(--border-color);">
             <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
             <button type="button" id="detail-bayar-btn" onclick="markAsLunas()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="display:none;background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Bayar / Lunaskan</button>
-            <button type="button" onclick="editFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Edit</button>
+            <button type="button" id="detail-edit-btn" onclick="editFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Edit</button>
         </div>
     </div>
 </div>
@@ -898,6 +977,80 @@
         </div>
     </div>
 </div>
+
+@if($jenis === 'internet')
+    {{-- Internet Usage Modal --}}
+    <div id="internet-usage-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[480px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);">Input Usage Internet</h3>
+                <button type="button" onclick="closeInternetUsageModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-5 overflow-y-auto flex-1">
+                <form method="POST" action="{{ route('admin.pembayaran.internet-usage.store') }}">
+                    @csrf
+                    <div class="space-y-4">
+                        <div class="field-group">
+                            <label class="gaming-label">Ruangan <span class="field-req">*</span></label>
+                            <select name="ruangan" required class="gaming-input">
+                                <option value="">Pilih ruangan</option>
+                                <option value="Johen MLBB">Johen MLBB</option>
+                                <option value="Johen PUBG">Johen PUBG</option>
+                                <option value="Johen Free Fire">Johen Free Fire</option>
+                                <option value="Johen Roblox">Johen Roblox</option>
+                                <option value="Johen Valorant">Johen Valorant</option>
+                                <option value="Johen E-Football">Johen E-Football</option>
+                                <option value="Monkey PUBG">Monkey PUBG</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="field-group">
+                                <label class="gaming-label">Hari <span class="field-req">*</span></label>
+                                <select name="hari" required class="gaming-input">
+                                    <option value="">Pilih hari</option>
+                                    <option value="Senin">Senin</option>
+                                    <option value="Selasa">Selasa</option>
+                                    <option value="Rabu">Rabu</option>
+                                    <option value="Kamis">Kamis</option>
+                                    <option value="Jumat">Jumat</option>
+                                    <option value="Sabtu">Sabtu</option>
+                                    <option value="Minggu">Minggu</option>
+                                </select>
+                            </div>
+                            <div class="field-group">
+                                <label class="gaming-label">Tanggal <span class="field-req">*</span></label>
+                                <input type="date" name="tanggal" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="field-group">
+                                <label class="gaming-label">Penggunaan Wifi (GB) <span class="field-req">*</span></label>
+                                <input type="number" name="penggunaan_wifi" required step="0.01" min="0" placeholder="0.00" class="gaming-input">
+                            </div>
+                            <div class="field-group">
+                                <label class="gaming-label">Penggunaan Ethernet (GB) <span class="field-req">*</span></label>
+                                <input type="number" name="penggunaan_ethernet" required step="0.01" min="0" placeholder="0.00" class="gaming-input">
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Keterangan</label>
+                            <textarea name="keterangan" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-3 pt-5 mt-5" style="border-top:1px solid var(--border-color);">
+                        <button type="button" onclick="closeInternetUsageModal()" class="btn-form btn-form-batal">Batal</button>
+                        <button type="submit" class="btn-form btn-form-simpan">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endif
+
 @endsection
 
 @push('styles')
@@ -958,6 +1111,7 @@
 @push('scripts')
 <script>
 const paymentData = @json($itemsJson);
+const internetUsageData = @json($internetUsagesJson);
 const currentJenis = '{{ $jenis }}';
 const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
 const jenisLabel = @json($jenisLabels[$jenis] ?? $jenis);
@@ -1235,6 +1389,40 @@ function closeDetail() {
     document.body.style.overflow = '';
 }
 
+function showInternetUsageDetail(id) {
+    const u = internetUsageData.find(x => x.id === id);
+    if (!u) return;
+
+    document.getElementById('detail-title').textContent = u.ruangan + ' - ' + u.hari;
+
+    const fmt = (d) => d ? new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
+
+    const rows = [
+        { label: 'Ruangan', value: u.ruangan },
+        { label: 'Hari', value: u.hari },
+        { label: 'Tanggal', value: fmt(u.tanggal) },
+        { label: 'Penggunaan Wifi', value: Number(u.penggunaan_wifi).toFixed(2) + ' GB' },
+        { label: 'Penggunaan Ethernet', value: Number(u.penggunaan_ethernet).toFixed(2) + ' GB' },
+        { label: 'Pengecek', value: u.checker || '-' },
+        { label: 'Keterangan', value: u.keterangan || '-' },
+    ];
+
+    const body = document.getElementById('detail-body');
+    body.innerHTML = '';
+    rows.forEach(function(r, i) {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 0;' + (i < rows.length - 1 ? 'border-bottom:1px solid var(--border-color);' : '');
+        div.innerHTML = '<span style="color:var(--text-muted);font-size:13px;">' + r.label + '</span><span style="color:var(--text-primary);font-size:13px;font-weight:600;text-align:right;max-width:55%;">' + r.value + '</span>';
+        body.appendChild(div);
+    });
+
+    document.getElementById('detail-bayar-btn').style.display = 'none';
+    document.getElementById('detail-edit-btn')?.style.display = 'none';
+
+    document.getElementById('detail-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
 function editFromDetail() {
     const id = detailId;
     closeDetail();
@@ -1349,7 +1537,18 @@ function closeTokenModal() {
     document.body.style.overflow = '';
 }
 
+function openInternetUsageModal() {
+    document.getElementById('internet-usage-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeInternetUsageModal() {
+    document.getElementById('internet-usage-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
 document.getElementById('token-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTokenModal(); });
+document.getElementById('internet-usage-modal')?.addEventListener('click', function(e) { if (e.target === this) closeInternetUsageModal(); });
 document.getElementById('topup-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTopupModal(); });
 
 function openTopupModal() {
