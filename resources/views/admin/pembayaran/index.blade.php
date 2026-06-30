@@ -202,13 +202,20 @@
     @endif
 
     {{-- Popup Detail Alert --}}
-    <div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
-        <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:460px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);">Detail Tagihan</div>
-                <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
+    <div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeAlertPopup()">
+        <div class="w-full max-w-[460px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);" id="alert-popup-title">Detail Tagihan</h3>
+                <button type="button" onclick="closeAlertPopup()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
-            <div id="alert-popup-body"></div>
+            <div class="px-6 py-5 overflow-y-auto flex-1" id="alert-popup-body"></div>
+            <div class="px-6 py-4 flex-shrink-0 flex justify-end items-center" style="border-top:1px solid var(--border-color);">
+                <button type="button" onclick="closeAlertPopup()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+            </div>
         </div>
     </div>
 
@@ -239,12 +246,22 @@
                     @endif
                 </div>
             </div>
-            <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Tambah Tagihan
-            </button>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Tambah Tagihan
+                </button>
+                @if($jenis === 'ipl_ruko')
+                <button type="button" onclick="openBulkIplModal()" class="btn btn-secondary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Generate 1 Tahun
+                </button>
+                @endif
+            </div>
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-0 max-w-full sm:min-w-[200px] sm:max-w-[260px]">
@@ -681,12 +698,10 @@
             </button>
         </div>
         <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
-        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
+        <div class="px-6 py-4 flex-shrink-0 flex items-center gap-2" style="border-top:1px solid var(--border-color);">
             <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
-            <div class="flex gap-2">
-                <button type="button" id="detail-bayar-btn" onclick="markAsLunas()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="display:none;background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Bayar / Lunaskan</button>
-                <button type="button" onclick="editFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Edit</button>
-            </div>
+            <button type="button" id="detail-bayar-btn" onclick="markAsLunas()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="display:none;background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Bayar / Lunaskan</button>
+            <button type="button" onclick="editFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Edit</button>
         </div>
     </div>
 </div>
@@ -848,6 +863,41 @@
         </div>
     </div>
 </div>
+
+{{-- Bulk IPL Modal --}}
+<div id="bulk-ipl-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Generate Tagihan IPL 1 Tahun</h3>
+            <button type="button" onclick="closeBulkIplModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1">
+            <form method="POST" action="{{ route('admin.pembayaran.ipl-bulk') }}">
+                @csrf
+                <div class="space-y-4">
+                    <div class="field-group">
+                        <label class="gaming-label">Tahun <span class="field-req">*</span></label>
+                        <input type="number" name="year" id="f-bulk-year" required min="2020" max="2035" value="{{ date('Y') }}" class="gaming-input">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan tahun tagihan yang akan digenerate (12 bulan).</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Nominal per Bulan (Rp) <span class="field-req">*</span></label>
+                        <input type="number" name="nominal" id="f-bulk-nominal" required min="0" placeholder="Contoh: 500000" class="gaming-input">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nominal tagihan untuk setiap bulan. Seragam untuk 12 bulan.</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-color);">
+                    <button type="button" onclick="closeBulkIplModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onclick="return confirm('Generate 12 tagihan IPL untuk tahun '+document.getElementById('f-bulk-year').value+'?')">Generate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('styles')
@@ -939,7 +989,7 @@ function showAlertPopup(type) {
     if (items.length === 0) {
         body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada data.</div>';
     } else {
-        items.forEach(function(item) {
+        items.forEach(function(item, idx) {
             const due = new Date(item[dueField]); due.setHours(0,0,0,0);
             const diffDays = Math.round((today - due) / (1000 * 60 * 60 * 24));
             let badgeText = '';
@@ -951,27 +1001,24 @@ function showAlertPopup(type) {
             const name = currentJenis === 'internet' ? (item.nama_internet + ' (' + item.provider + ')') : item.periode;
             const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.nominal);
 
-            var card = document.createElement('div');
-            card.setAttribute('data-id', item.id);
-            card.style.cssText = 'padding:12px;margin-bottom:8px;border-radius:10px;background:' + bgColor + ';border:1px solid ' + borderColor + ';cursor:pointer;transition:all 0.15s;';
+            var row = document.createElement('div');
+            row.setAttribute('data-id', item.id);
+            row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 0;cursor:pointer;transition:background 0.15s;' + (idx < items.length - 1 ? 'border-bottom:1px solid var(--border-color);' : '');
+            row.onmouseover = function() { this.style.background = 'rgba(255,255,255,0.02)'; };
+            row.onmouseout = function() { this.style.background = 'none'; };
+            row.onclick = function() { goToEdit(item.id); };
 
-            card.onmouseover = function() { this.style.transform = 'translateY(-1px)'; this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'; };
-            card.onmouseout = function() { this.style.transform = ''; this.style.boxShadow = ''; };
-            card.onclick = function() { goToEdit(item.id); };
-
-            card.innerHTML =
-                '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-                    '<div>' +
-                        '<div style="font-weight:600;font-size:13px;color:var(--text-primary);">' + name + '</div>' +
-                        '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + label + ': ' + badgeText + ' &middot; ' + nominal + '</div>' +
-                    '</div>' +
-                    '<div style="display:flex;align-items:center;gap:6px;">' +
-                        '<span style="padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:' + bgColor + ';color:' + color + ';border:1px solid ' + borderColor + ';">' + badgeText + '</span>' +
-                        '<svg style="width:14px;height:14px;color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' +
-                    '</div>' +
+            row.innerHTML =
+                '<div class="min-w-0" style="flex:1;">' +
+                    '<div style="font-weight:600;font-size:13px;color:var(--text-primary);">' + name + '</div>' +
+                    '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + label + ': ' + badgeText + ' &middot; ' + nominal + '</div>' +
+                '</div>' +
+                '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:12px;">' +
+                    '<span style="padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:' + (type === 'danger' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)') + ';color:' + color + ';border:1px solid ' + (type === 'danger' ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)') + ';">' + badgeText + '</span>' +
+                    '<svg style="width:14px;height:14px;color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' +
                 '</div>';
 
-            body.appendChild(card);
+            body.appendChild(row);
         });
     }
     overlay.style.display = 'flex';
@@ -1330,10 +1377,24 @@ function setReadingRange(range) {
     window.location.search = params.toString();
 }
 
+function openBulkIplModal() {
+    document.getElementById('bulk-ipl-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-bulk-nominal').focus();
+}
+
+function closeBulkIplModal() {
+    document.getElementById('bulk-ipl-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+document.getElementById('bulk-ipl-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBulkIplModal(); });
+
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeTokenModal();
         closeTopupModal();
+        closeBulkIplModal();
         closeAlertPopup();
         closeBayarModal();
         document.body.style.overflow = '';

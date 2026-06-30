@@ -420,6 +420,88 @@ class PaymentApprovalController extends Controller
         );
     }
 
+    public function exportTagihan()
+    {
+        $all = collect();
+
+        foreach ([
+            'internet' => WifiPayment::class,
+            'listrik' => Payment::class,
+            'aset_digital' => PembayaranAsetDigital::class,
+            'ipl_ruko' => PembayaranIplRuko::class,
+        ] as $jenis => $class) {
+            $records = $class::with('requester')
+                ->where('status', 'jatuh_tempo')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(fn ($r) => [
+                    'No' => null,
+                    'Jenis' => match ($jenis) {
+                        'internet' => 'Internet',
+                        'listrik' => 'Listrik',
+                        'aset_digital' => 'Aset Digital',
+                        'ipl_ruko' => 'IPL Ruko',
+                    },
+                    'Detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
+                    'Nominal' => 'Rp '.number_format((int) ($r->biaya ?? $r->nominal), 0, ',', '.'),
+                    'Status' => 'Jatuh Tempo',
+                ]);
+            $all = $all->merge($records);
+        }
+
+        $data = $all->sortByDesc(fn ($r) => $r['Detail'])->values();
+
+        $headings = ['No', 'Jenis', 'Detail', 'Nominal', 'Status'];
+        $numbered = $data->map(fn ($r, $i) => array_merge(['No' => $i + 1], array_slice($r, 1)));
+
+        return Excel::download(
+            new DataExport($numbered, $headings, 'Tagihan Pembayaran', 'Tagihan'),
+            'Tagihan_Pembayaran.xlsx'
+        );
+    }
+
+    public function exportApprovals()
+    {
+        $all = collect();
+
+        foreach ([
+            'internet' => WifiPayment::class,
+            'listrik' => Payment::class,
+            'aset_digital' => PembayaranAsetDigital::class,
+            'ipl_ruko' => PembayaranIplRuko::class,
+        ] as $jenis => $class) {
+            $records = $class::with('requester')
+                ->where('status', 'pending')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(fn ($r) => [
+                    'No' => null,
+                    'Tanggal' => $r->created_at->format('d/m/Y H:i'),
+                    'Pengaju' => $r->requester?->name ?? '-',
+                    'Jenis' => match ($jenis) {
+                        'internet' => 'Internet',
+                        'listrik' => 'Listrik',
+                        'aset_digital' => 'Aset Digital',
+                        'ipl_ruko' => 'IPL Ruko',
+                    },
+                    'Detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
+                    'Nominal' => 'Rp '.number_format((int) ($r->biaya ?? $r->nominal), 0, ',', '.'),
+                    'Tgl Bayar' => $r->tanggal_bayar?->format('d/m/Y') ?? '-',
+                ]);
+            $all = $all->merge($records);
+        }
+
+        $data = $all->sortByDesc(fn ($r) => $r['Tanggal'])->values();
+
+        $headings = ['No', 'Tanggal', 'Pengaju', 'Jenis', 'Detail', 'Nominal', 'Tgl Bayar'];
+        $numbered = $data->map(fn ($r, $i) => array_merge(['No' => $i + 1], array_slice($r, 1)));
+
+        return Excel::download(
+            new DataExport($numbered, $headings, 'Persetujuan Pembayaran', 'Persetujuan'),
+            'Persetujuan_Pembayaran.xlsx'
+        );
+    }
+
     private function compressBukti(string $path): void
     {
         $fullPath = Storage::disk('public')->path($path);

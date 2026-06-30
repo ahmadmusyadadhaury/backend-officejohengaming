@@ -476,4 +476,59 @@ class PaymentController extends Controller
         return redirect()->route('admin.pembayaran.index', ['jenis' => 'listrik'])
             ->with('success', 'Riwayat top up token berhasil dihapus.');
     }
+
+    public function bulkIpl(Request $request)
+    {
+        $data = $request->validate([
+            'year' => 'required|integer|min:2020|max:2035',
+            'nominal' => 'required|numeric|min:0',
+        ]);
+
+        $year = (int) $data['year'];
+        $nominal = (float) $data['nominal'];
+        $now = now();
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        $created = 0;
+        $skipped = 0;
+
+        foreach ($months as $month => $monthName) {
+            $periode = $monthName . ' ' . $year;
+
+            if (PembayaranIplRuko::where('periode', $periode)->exists()) {
+                $skipped++;
+                continue;
+            }
+
+            $lastDay = Carbon::create($year, $month)->daysInMonth;
+            $tglTagihan = Carbon::create($year, $month, min(30, $lastDay));
+            $tglJatuhTempo = Carbon::create($year, $month, min(22, $lastDay));
+
+            // Status: pending untuk bulan depan & seterusnya, jatuh_tempo untuk bulan berjalan & sebelumnya
+            $isFuture = $year > $now->year || ($year === $now->year && $month > $now->month);
+            $status = $isFuture ? 'pending' : 'jatuh_tempo';
+
+            PembayaranIplRuko::create([
+                'periode' => $periode,
+                'tanggal_tagihan' => $tglTagihan,
+                'jatuh_tempo' => $tglJatuhTempo,
+                'nominal' => $nominal,
+                'status' => $status,
+            ]);
+
+            $created++;
+        }
+
+        $msg = "Berhasil membuat {$created} tagihan IPL untuk tahun {$year}.";
+        if ($skipped > 0) {
+            $msg .= " {$skipped} periode sudah ada dan dilewati.";
+        }
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'ipl_ruko'])
+            ->with('success', $msg);
+    }
 }

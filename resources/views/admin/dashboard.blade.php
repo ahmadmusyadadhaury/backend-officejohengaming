@@ -356,12 +356,13 @@
                 <div style="position:relative;width:150px;height:150px;">
                     <canvas id="summaryDonut"></canvas>
                 </div>
-                <div class="mt-2 text-center">
-                    <span class="text-2xl font-gaming font-bold" style="color:var(--text-primary);">Rp {{ number_format($sumTagihan, 0, ',', '.') }}</span>
-                    <div class="text-xs font-semibold mt-0.5" style="color:var(--text-muted);">Total Tagihan 6 Bulan</div>
-                </div>
             </div>
-            <div class="grid grid-cols-2 gap-2 mt-3">
+            <div class="grid grid-cols-3 gap-2 mt-3">
+                <div class="text-center px-2 py-2 rounded-xl" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.12);">
+                    <div class="text-xs font-semibold" style="color:#818cf8;">Tagihan</div>
+                    <div class="text-sm font-bold" style="color:#6366f1;">Rp {{ number_format($sumTagihan, 0, ',', '.') }}</div>
+                    <div class="text-[10px] font-semibold mt-0.5" style="color:var(--text-muted);">100%</div>
+                </div>
                 <div class="text-center px-2 py-2 rounded-xl" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.12);">
                     <div class="text-xs font-semibold" style="color:#6ee7b7;">Dibayar</div>
                     <div class="text-sm font-bold" style="color:#34d399;">Rp {{ number_format($sumBayar, 0, ',', '.') }}</div>
@@ -481,6 +482,11 @@
                 el.style.opacity = '1';
                 el.style.transform = 'translateX(0)';
             });
+            setTimeout(function() {
+                el.style.opacity = '0';
+                el.style.transform = 'translateX(40px)';
+                setTimeout(function() { if (el.parentElement) el.remove(); }, 400);
+            }, 4000);
         }, alert.delay + (index * 200));
     }
 
@@ -825,8 +831,6 @@
                 datasets: [{
                     data: [{{ $sumBayar }}, {{ $sisa }}],
                     backgroundColor: ['#10b981', '#fb923c'],
-                    borderColor: ['#059669', '#f97316'],
-                    borderWidth: 2,
                     hoverOffset: 6,
                 }],
             },

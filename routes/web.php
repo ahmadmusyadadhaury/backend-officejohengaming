@@ -77,6 +77,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('pembayaran', [PaymentController::class, 'store'])->name('pembayaran.store');
     Route::put('pembayaran/{id}', [PaymentController::class, 'update'])->name('pembayaran.update');
     Route::delete('pembayaran/{id}', [PaymentController::class, 'destroy'])->name('pembayaran.destroy');
+    Route::post('pembayaran/ipl-bulk', [PaymentController::class, 'bulkIpl'])->name('pembayaran.ipl-bulk');
     Route::post('token-reading', [PaymentController::class, 'storeTokenReading'])->name('pembayaran.token-reading.store');
     Route::delete('token-reading/{id}', [PaymentController::class, 'destroyTokenReading'])->name('pembayaran.token-reading.destroy');
     Route::post('token-topup', [PaymentController::class, 'storeTokenPayment'])->name('pembayaran.token-topup.store');
@@ -84,6 +85,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('payment-approvals', [PaymentApprovalController::class, 'index'])->name('payment-approvals.index');
     Route::post('payment-approvals/{id}/approve', [PaymentApprovalController::class, 'approve'])->name('payment-approvals.approve');
     Route::post('payment-approvals/{id}/reject', [PaymentApprovalController::class, 'reject'])->name('payment-approvals.reject');
+    Route::get('payment-approvals/export', [PaymentApprovalController::class, 'exportApprovals'])->name('payment-approvals.export');
     Route::get('export', [ExportController::class, 'export'])->name('export');
 
     // // Chat — hidden
@@ -134,6 +136,7 @@ Route::middleware(['auth', 'role:user,koordinator,hr,admin'])->prefix('payment-a
     Route::get('tagihan', [PaymentApprovalController::class, 'tagihan'])->name('tagihan');
     Route::post('tagihan/{id}/bayar', [PaymentApprovalController::class, 'bayar'])->name('tagihan.bayar');
     Route::get('export', [PaymentApprovalController::class, 'exportStatus'])->name('export');
+    Route::get('export-tagihan', [PaymentApprovalController::class, 'exportTagihan'])->name('export-tagihan');
 });
 
 // Calendar & Invitation (semua role)
