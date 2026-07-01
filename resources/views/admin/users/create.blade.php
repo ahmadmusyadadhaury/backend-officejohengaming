@@ -25,6 +25,7 @@
                     <option value="">Pilih Role</option>
                     <option value="koordinator" {{ old('role') === 'koordinator' ? 'selected' : '' }}>Koordinator</option>
                     <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>Karyawan</option>
+                    <option value="admin_ga" {{ old('role') === 'admin_ga' ? 'selected' : '' }}>Admin General Affairs</option>
                 </select>
             </div>
             <div id="team-field" class="{{ in_array(old('role'), ['koordinator','user']) ? '' : 'hidden' }}">

@@ -54,7 +54,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:koordinator,user',
+            'role' => 'required|in:koordinator,user,admin_ga',
             'team_id' => 'required_if:role,koordinator,user|nullable|exists:teams,id',
         ]);
 
@@ -82,7 +82,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,'.$user->id,
-            'role' => 'required|in:koordinator,user',
+            'role' => 'required|in:koordinator,user,admin_ga',
             'team_id' => 'required_if:role,koordinator,user|nullable|exists:teams,id',
         ]);
 

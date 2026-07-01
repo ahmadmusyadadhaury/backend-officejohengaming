@@ -122,6 +122,7 @@
                 <select name="role" id="edit-role" onchange="toggleEditTeam(this.value)" class="gaming-input gaming-select">
                     <option value="koordinator">Koordinator</option>
                     <option value="user">Karyawan</option>
+                    <option value="admin_ga">Admin General Affairs</option>
                 </select>
             </div>
             <div id="edit-team-field">
@@ -173,6 +174,7 @@
                     <option value="">Pilih Role</option>
                     <option value="koordinator">Koordinator</option>
                     <option value="user">Karyawan</option>
+                    <option value="admin_ga">Admin General Affairs</option>
                 </select>
             </div>
             <div id="create-team-field" style="display:none;">

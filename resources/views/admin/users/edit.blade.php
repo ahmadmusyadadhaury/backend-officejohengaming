@@ -24,6 +24,7 @@
                 <select name="role" id="role" onchange="toggleTeam(this.value)" class="gaming-input gaming-select">
                     <option value="koordinator" {{ $user->role === 'koordinator' ? 'selected' : '' }}>Koordinator</option>
                     <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Karyawan</option>
+                    <option value="admin_ga" {{ $user->role === 'admin_ga' ? 'selected' : '' }}>Admin General Affairs</option>
                 </select>
             </div>
             <div id="team-field" class="{{ in_array($user->role, ['koordinator','user']) ? '' : 'hidden' }}">
