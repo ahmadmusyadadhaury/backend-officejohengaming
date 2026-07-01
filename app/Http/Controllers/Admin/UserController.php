@@ -13,7 +13,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::with('team')
-            ->where('role', 'koordinator');
+            ->whereIn('role', ['koordinator', 'admin_ga']);
 
         // Search by name, username, or team name
         if ($search = $request->input('search')) {

@@ -909,8 +909,8 @@
         const pushStatus = document.getElementById('push-status');
 
         function updatePushStatus(active, msg) {
-            pushDot.style.background   = active ? '#22c55e' : '#ef4444';
-            pushStatus.title           = msg;
+            if (pushDot) pushDot.style.background = active ? '#22c55e' : '#ef4444';
+            if (pushStatus) pushStatus.title = msg;
             if (pushLabel) pushLabel.textContent = active ? 'PUSH ON' : 'PUSH OFF';
         }
 

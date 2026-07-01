@@ -23,7 +23,7 @@ class PaymentController extends Controller
         $jenis = $request->get('jenis', 'internet');
 
         $internetUsages = collect();
-        $internetUsagesJson = '[]';
+        $internetUsagesJson = collect();
         $internetUsageDate = now()->format('Y-m');
 
         if ($jenis === 'internet') {

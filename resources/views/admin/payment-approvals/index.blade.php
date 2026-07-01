@@ -111,6 +111,25 @@
     @endif
 </div>
 
+{{-- Modal Approve --}}
+<div id="approve-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[380px] rounded-2xl shadow-2xl flex flex-col p-6" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex flex-col items-center text-center mb-5">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background:rgba(16,185,129,0.15);">
+                <svg class="w-6 h-6" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <p class="text-base font-semibold" style="color:var(--text-primary);">Setujui Pembayaran</p>
+            <p class="text-sm mt-1" style="color:var(--text-muted);">Yakin ingin menyetujui pembayaran ini?</p>
+        </div>
+        <div class="flex gap-3">
+            <button type="button" onclick="closeApprove()" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition" style="background:var(--bg-surface-2);color:var(--text-primary);border:none;cursor:pointer;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='var(--bg-surface-2)'">Batal</button>
+            <button type="button" onclick="executeApprove()" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition" style="background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Ya, Setujui</button>
+        </div>
+    </div>
+</div>
+
 {{-- Modal Reject --}}
 <div id="reject-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
@@ -139,6 +158,8 @@
 @push('scripts')
 <script>
 let currentFilter = 'all';
+let approveId = null;
+let approveJenis = null;
 let rejectId = null;
 let rejectJenis = null;
 
@@ -175,8 +196,39 @@ function filterTable() {
     });
 }
 
+function showToast(message, type) {
+    const isSuccess = type === 'success';
+    const bg = isSuccess ? '#10b981' : '#ef4444';
+    const existing = document.querySelector('.payment-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = 'payment-toast';
+    toast.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;padding:14px 22px;border-radius:12px;font-size:14px;font-weight:500;color:#fff;background:' + bg + ';border:1px solid ' + (isSuccess ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)') + ';box-shadow:0 8px 32px rgba(0,0,0,0.25);display:flex;align-items:center;gap:10px;transform:translateX(120%);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);max-width:400px;';
+    toast.innerHTML = (isSuccess
+        ? '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+        : '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>')
+        + '<span>' + message + '</span>';
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.style.transform = 'translateX(0)');
+    setTimeout(() => { toast.style.transform = 'translateX(120%)'; setTimeout(() => toast.remove(), 350); }, 4000);
+}
+
 function approve(id, jenis) {
-    if (!confirm('Setujui pembayaran ini?')) return;
+    approveId = id;
+    approveJenis = jenis;
+    openModal('approve-modal');
+}
+
+function closeApprove() {
+    approveId = null;
+    approveJenis = null;
+    closeModal('approve-modal');
+}
+
+function executeApprove() {
+    const id = approveId;
+    const jenis = approveJenis;
+    closeApprove();
 
     const form = new FormData();
     form.append('_token', '{{ csrf_token() }}');
@@ -187,45 +239,69 @@ function approve(id, jenis) {
         headers: { 'Accept': 'application/json' },
         body: form,
     }).then(r => {
-        if (r.ok) { location.reload(); }
-        else { r.json().then(e => { alert('Gagal: ' + (e.error || JSON.stringify(e))); }); }
-    }).catch(() => { location.reload(); });
+        if (r.ok) {
+            showSuccessModal('Pembayaran berhasil disetujui.');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            r.json().then(e => {
+                showToast(e.error || 'Gagal menyetujui pembayaran', 'error');
+            });
+        }
+    }).catch(() => {
+        location.reload();
+    });
 }
 
 function openReject(id, jenis) {
     rejectId = id;
     rejectJenis = jenis;
     document.getElementById('reject-notes').value = '';
-    document.getElementById('reject-modal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    openModal('reject-modal');
 }
 
 function closeReject() {
     rejectId = null;
     rejectJenis = null;
-    document.getElementById('reject-modal').style.display = 'none';
-    document.body.style.overflow = '';
+    closeModal('reject-modal');
 }
 
 function reject() {
     const notes = document.getElementById('reject-notes').value.trim();
-    if (!notes) { alert('Alasan penolakan harus diisi.'); return; }
+    if (!notes) {
+        showToast('Alasan penolakan harus diisi.', 'error');
+        return;
+    }
+
+    const id = rejectId;
+    const jenis = rejectJenis;
+    closeReject();
 
     const form = new FormData();
     form.append('_token', '{{ csrf_token() }}');
-    form.append('jenis', rejectJenis);
+    form.append('jenis', jenis);
     form.append('notes', notes);
 
-    fetch('{{ url('admin/payment-approvals') }}/' + rejectId + '/reject', {
+    fetch('{{ url('admin/payment-approvals') }}/' + id + '/reject', {
         method: 'POST',
         headers: { 'Accept': 'application/json' },
         body: form,
     }).then(r => {
-        if (r.ok) { location.reload(); }
-        else { r.json().then(e => { alert('Gagal: ' + (e.error || JSON.stringify(e))); }); }
-    }).catch(() => { location.reload(); });
+        if (r.ok) {
+            showSuccessModal('Pembayaran berhasil ditolak.');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            r.json().then(e => {
+                showToast(e.error || 'Gagal menolak pembayaran', 'error');
+            });
+        }
+    }).catch(() => {
+        location.reload();
+    });
 }
 
+document.getElementById('approve-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeApprove();
+});
 document.getElementById('reject-modal')?.addEventListener('click', function(e) {
     if (e.target === this) closeReject();
 });
