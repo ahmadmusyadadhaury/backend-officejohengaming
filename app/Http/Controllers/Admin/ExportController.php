@@ -8,6 +8,7 @@ use App\Models\AsetRuko;
 use App\Models\Asset;
 use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
+use App\Models\InternetUsageCheck;
 use App\Models\Meeting;
 use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
@@ -47,6 +48,7 @@ class ExportController extends Controller
             'pembayaran' => fn () => $this->pembayaranExport($jenis, $filter),
             'token-readings' => fn () => $this->tokenReadingsExport($request),
             'token-topups' => fn () => $this->tokenTopupsExport($request),
+            'internet-usage' => fn () => $this->internetUsageExport($request),
         ];
 
         if (! isset($exports[$type])) {
@@ -403,6 +405,32 @@ class ExportController extends Controller
         return Excel::download(
             new DataExport(collect($data), array_keys($data->first() ?? []), 'Riwayat Top Up Token', 'Top Up Token'),
             'Riwayat_TopUp_Token.xlsx'
+        );
+    }
+
+    protected function internetUsageExport($request)
+    {
+        $internetUsageDate = $request->get('internet_usage_date', now()->format('Y-m'));
+        $startDate = Carbon::parse($internetUsageDate.'-01')->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+
+        $data = InternetUsageCheck::with('checker')
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->orderBy('tanggal', 'desc')
+            ->get()
+            ->map(fn ($u) => [
+                'Ruangan' => $u->ruangan,
+                'Hari' => $u->hari,
+                'Tanggal' => $u->tanggal->format('d/m/Y'),
+                'Penggunaan Wifi (GB)' => number_format((float) $u->penggunaan_wifi, 2),
+                'Penggunaan Ethernet (GB)' => number_format((float) $u->penggunaan_ethernet, 2),
+                'Pengecek' => $u->checker?->name ?? '-',
+                'Keterangan' => $u->keterangan ?: 'Tidak ada catatan',
+            ]);
+
+        return Excel::download(
+            new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Pengecekan Usage Internet', 'Usage Internet'),
+            'Data_Usage_Internet.xlsx'
         );
     }
 }

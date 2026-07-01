@@ -378,10 +378,10 @@ function openEditModal(id) {
 
 function closeAllDropdowns() { document.querySelectorAll('.dropdown-menu').forEach(function(el) { el.style.display = 'none'; }); }
 function showModal() { closeAllDropdowns(); document.getElementById('payment-modal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-function closeModal() { document.getElementById('payment-modal').style.display = 'none'; document.body.style.overflow = ''; }
+function closePaymentModal() { document.getElementById('payment-modal').style.display = 'none'; document.body.style.overflow = ''; }
 
-document.getElementById('payment-modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeDetail(); closeModal(); } });
+document.getElementById('payment-modal')?.addEventListener('click', function(e) { if (e.target === this) closePaymentModal(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeDetail(); closePaymentModal(); } });
 
 let currentFilter = 'all';
 

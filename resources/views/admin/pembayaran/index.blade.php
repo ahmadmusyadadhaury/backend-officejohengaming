@@ -1,7 +1,7 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', $jenisLabels[$jenis])
 @section('page-title', 'Pembayaran')
-@section('page-subtitle', $jenis === 'internet' ? 'Data WiFi prabayar â€” Indosat billing tgl 5, IndiHome billing tgl 20. Input setelah bayar.' : 'Kelola tagihan '.$jenisLabels[$jenis])
+@section('page-subtitle', $jenis === 'internet' ? 'Kelola WiFi' : 'Kelola tagihan '.$jenisLabels[$jenis])
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 
 @section('content')
@@ -240,7 +240,7 @@
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pembayaran {{ $jenisLabels[$jenis] }}</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
                     @if($jenis === 'internet')
-                        Data WiFi prabayar â€” Indosat billing tgl 5, IndiHome billing tgl 20. Input setelah bayar.
+                        Kelola WiFi
                     @else
                         Data tagihan {{ $jenisLabels[$jenis] }}.
                     @endif
@@ -400,18 +400,14 @@
     {{-- Pengecekan Usage Internet --}}
     @if($jenis === 'internet')
     <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Usage Internet</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
                     Lakukan pengecekan usage internet per ruangan setiap hari.
                 </div>
             </div>
-            <div class="flex items-center gap-2 flex-wrap">
-                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
-                    <input type="hidden" name="jenis" value="internet">
-                    <input type="month" name="internet_usage_date" value="{{ $internetUsageDate }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
-                </form>
+            <div class="flex items-center gap-2">
                 <button type="button" onclick="openInternetUsageModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -420,32 +416,46 @@
                 </button>
             </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="gaming-table w-full">
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);justify-content:flex-end;">
+            <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                <input type="hidden" name="jenis" value="internet">
+                <input type="month" name="internet_usage_date" value="{{ $internetUsageDate }}" style="padding:0.35rem 0.875rem;font-size:0.8rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:var(--radius-md);background:var(--bg-surface-2);border:1px solid var(--border-color);color:var(--text-primary);cursor:pointer;outline:none;line-height:1.4;height:36px;box-sizing:border-box;" onchange="this.form.submit()">
+            </form>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.export', ['type' => 'internet-usage', 'internet_usage_date' => $internetUsageDate]) }}" class="btn btn-secondary btn-sm" title="Download Excel Usage Internet">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.293.707l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download Excel
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="gaming-table min-w-[900px]">
                 <thead>
                     <tr>
                         <th>No</th>
                         <th>Ruangan</th>
                         <th>Hari</th>
                         <th>Tanggal</th>
-                        <th>Penggunaan Wifi/Hari</th>
-                        <th>Penggunaan Ethernet/Hari</th>
-                        <th>Pengecek</th>
-                        <th>Keterangan</th>
+                        <th class="hidden md:table-cell">Penggunaan Wifi/Hari</th>
+                        <th class="hidden md:table-cell">Penggunaan Ethernet/Hari</th>
+                        <th class="hidden lg:table-cell">Pengecek</th>
+                        <th class="hidden md:table-cell">Keterangan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($internetUsages as $i => $u)
+                    @forelse($internetUsages as $u)
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
+                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $u->ruangan }}</td>
                         <td style="color:var(--text-muted);">{{ $u->hari }}</td>
                         <td style="color:var(--text-primary);">{{ $u->tanggal->format('d M Y') }}</td>
-                        <td style="color:var(--text-muted);">{{ number_format($u->penggunaan_wifi, 2) }} GB</td>
-                        <td style="color:var(--text-muted);">{{ number_format($u->penggunaan_ethernet, 2) }} GB</td>
-                        <td style="color:var(--text-primary);">{{ $u->checker?->name ?? '-' }}</td>
-                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $u->keterangan ?: '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ number_format($u->penggunaan_wifi, 2) }} GB</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ number_format($u->penggunaan_ethernet, 2) }} GB</td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-primary);">{{ $u->checker?->name ?? '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $u->keterangan ?: '-' }}</td>
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showInternetUsageDetail({{ $u->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -606,7 +616,7 @@
                 </div>
                 <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
                     <input type="hidden" name="jenis" value="listrik">
-                    <input type="month" name="token_month" value="{{ $tokenMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                    <input type="month" name="token_month" value="{{ $tokenMonth }}" style="padding:0.35rem 0.875rem;font-size:0.8rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:var(--radius-md);background:var(--bg-surface-2);border:1px solid var(--border-color);color:var(--text-primary);cursor:pointer;outline:none;line-height:1.4;height:36px;box-sizing:border-box;" onchange="this.form.submit()">
                 </form>
                 <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Download Excel Pengecekan Token">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -791,7 +801,7 @@
 
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);" id="modal-title">Tambah Tagihan</h3>
-            <button type="button" onclick="closeModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <button type="button" onclick="closePaymentModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -883,7 +893,7 @@
                 </div>
 
                 <div class="form-footer">
-                    <button type="button" onclick="closeModal()" class="btn-form btn-form-batal">Batal</button>
+                    <button type="button" onclick="closePaymentModal()" class="btn-form btn-form-batal">Batal</button>
                     <button type="submit" class="btn-form btn-form-simpan" id="form-submit-btn">Tambah</button>
                 </div>
             </form>
