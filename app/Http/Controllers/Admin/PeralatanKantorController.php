@@ -179,7 +179,7 @@ class PeralatanKantorController extends Controller
             $errors = $failure->errors();
             $values = $failure->values();
             $nama = $values['Nama Barang'] ?? '-';
-            $errorMessages[] = "Baris {$row} ({$nama}): " . implode(', ', $errors);
+            $errorMessages[] = "Baris {$row} ({$nama}): ".implode(', ', $errors);
         }
 
         if ($totalErrors > 0) {

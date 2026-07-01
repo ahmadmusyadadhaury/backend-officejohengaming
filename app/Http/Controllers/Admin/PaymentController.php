@@ -58,7 +58,7 @@ class PaymentController extends Controller
             $alertItems = $all->filter(fn ($w) => $w->status === 'jatuh_tempo')->values();
 
             $internetUsageDate = $request->get('internet_usage_date', now()->format('Y-m'));
-            $usageStart = Carbon::parse($internetUsageDate . '-01')->startOfMonth();
+            $usageStart = Carbon::parse($internetUsageDate.'-01')->startOfMonth();
             $usageEnd = $usageStart->copy()->endOfMonth();
             $internetUsages = InternetUsageCheck::with('checker')
                 ->whereBetween('tanggal', [$usageStart, $usageEnd])
@@ -522,10 +522,11 @@ class PaymentController extends Controller
         $skipped = 0;
 
         foreach ($months as $month => $monthName) {
-            $periode = $monthName . ' ' . $year;
+            $periode = $monthName.' '.$year;
 
             if (PembayaranIplRuko::where('periode', $periode)->exists()) {
                 $skipped++;
+
                 continue;
             }
 

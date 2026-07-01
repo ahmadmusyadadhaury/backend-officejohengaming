@@ -448,8 +448,8 @@
             'delay' => 4500,
         ];
     }
-    $isGmCeo = in_array(auth()->user()->role, ['gm', 'ceo']);
-    if ($isGmCeo && ($stats['approval_pending_payments'] ?? 0) > 0) {
+    $approverRoles = ['admin', 'head_of_store', 'hr', 'gm', 'ceo'];
+    if (in_array(auth()->user()->role, $approverRoles) && ($stats['approval_pending_payments'] ?? 0) > 0) {
         $dismissibleAlerts[] = [
             'id' => 'payment-approval',
             'title' => $stats['approval_pending_payments'] . ' Pembayaran Perlu Disetujui',

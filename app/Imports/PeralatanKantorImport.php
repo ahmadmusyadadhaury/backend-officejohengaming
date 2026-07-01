@@ -4,21 +4,23 @@ namespace App\Imports;
 
 use App\Models\PeralatanKantor;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
 HeadingRowFormatter::default('none');
 
-class PeralatanKantorImport implements ToModel, WithHeadingRow, WithValidation, WithBatchInserts, WithChunkReading, SkipsOnFailure
+class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts, WithChunkReading, WithHeadingRow, WithValidation
 {
-    use \Maatwebsite\Excel\Concerns\SkipsFailures;
+    use SkipsFailures;
 
     private int $successCount = 0;
+
     private int $rowNumber = 1;
 
     public function model(array $row)
@@ -33,7 +35,7 @@ class PeralatanKantorImport implements ToModel, WithHeadingRow, WithValidation, 
         $nilai = (float) ($row['Nilai'] ?? 0);
         $penguranganPerHari = $nilai / $masaBarang;
 
-        $tanggalPembelian = !empty($row['Tanggal Pembelian']) ? $row['Tanggal Pembelian'] : null;
+        $tanggalPembelian = ! empty($row['Tanggal Pembelian']) ? $row['Tanggal Pembelian'] : null;
         $hariTerpakai = $tanggalPembelian ? max(abs(now()->diffInDays(Carbon::parse($tanggalPembelian))), 0) : 0;
         $hargaPerHariIni = max($nilai - ($penguranganPerHari * $hariTerpakai), 0);
 
@@ -66,6 +68,7 @@ class PeralatanKantorImport implements ToModel, WithHeadingRow, WithValidation, 
     public function rules(): array
     {
         $maxYear = now()->year + 1;
+
         return [
             'Nama Barang' => 'required|string|max:255',
             'Jumlah' => 'required|integer|min:1',
@@ -73,7 +76,7 @@ class PeralatanKantorImport implements ToModel, WithHeadingRow, WithValidation, 
             'Lokasi Unit' => 'required|string|max:255',
             'Ruangan' => 'required|string|max:255',
             'Milik' => 'required|string|max:255',
-            'Pengadaan Tahun' => 'required|integer|min:1900|max:' . $maxYear,
+            'Pengadaan Tahun' => 'required|integer|min:1900|max:'.$maxYear,
             'Tanggal Pembelian' => 'required',
             'Kategori Nilai' => 'required|string|max:255',
             'Kategori Ukuran' => 'required|string|max:255',

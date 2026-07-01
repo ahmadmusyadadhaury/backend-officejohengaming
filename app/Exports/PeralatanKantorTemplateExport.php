@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class PeralatanKantorTemplateExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithTitle
+class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths, WithHeadings, WithStyles, WithTitle
 {
     public function collection(): Collection
     {

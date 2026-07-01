@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\DigitalAssetController;
+use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\MeetingController as AdminMeetingController;
 use App\Http\Controllers\Admin\MomController as AdminMomController;
@@ -13,8 +14,8 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PeralatanKantorController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\SettingsController;
-use App\Http\Controllers\Admin\SosialMediaController;
 use App\Http\Controllers\Admin\SimCardController;
+use App\Http\Controllers\Admin\SosialMediaController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VehicleController;
@@ -39,9 +40,10 @@ use Illuminate\Support\Facades\Storage;
 
 Route::get('storage/{path}', function (string $path) {
     $fullPath = Storage::disk('public')->path($path);
-    if (!file_exists($fullPath)) {
+    if (! file_exists($fullPath)) {
         abort(404);
     }
+
     return response()->file($fullPath);
 })->where('path', '.*');
 
@@ -100,8 +102,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     // Route::get('/chat/unread', [ChatController::class, 'unreadCount'])->name('chat.unread');
 
-    Route::get('settings/email', [App\Http\Controllers\Admin\EmailSettingsController::class, 'index'])->name('settings.email');
-    Route::put('settings/email', [App\Http\Controllers\Admin\EmailSettingsController::class, 'update'])->name('settings.email.update');
+    Route::get('settings/email', [EmailSettingsController::class, 'index'])->name('settings.email');
+    Route::put('settings/email', [EmailSettingsController::class, 'update'])->name('settings.email.update');
 });
 
 // Hanya Admin & HR
@@ -138,7 +140,7 @@ Route::middleware(['auth', 'role:user,koordinator,admin,head_of_store,gm,hr,ceo'
 });
 
 // Payment Approval — Staff, Koordinator, HR, Admin submit
-Route::middleware(['auth', 'role:user,koordinator,hr,admin'])->prefix('payment-approval')->name('payment-approval.')->group(function () {
+Route::middleware(['auth', 'role:user,koordinator,hr,admin,admin_ga'])->prefix('payment-approval')->name('payment-approval.')->group(function () {
     Route::get('create', [PaymentApprovalController::class, 'create'])->name('create');
     Route::post('/', [PaymentApprovalController::class, 'store'])->name('store');
     Route::get('/', [PaymentApprovalController::class, 'myRequests'])->name('status');

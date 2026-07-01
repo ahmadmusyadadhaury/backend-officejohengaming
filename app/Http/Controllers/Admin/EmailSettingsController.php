@@ -27,7 +27,7 @@ class EmailSettingsController extends Controller
 
         $recipients = array_map('trim', explode(',', $validated['token_low_recipients']));
         foreach ($recipients as $email) {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return back()->withErrors(['token_low_recipients' => "Email '$email' tidak valid."])->withInput();
             }
         }
@@ -46,21 +46,21 @@ class EmailSettingsController extends Controller
     private function saveToEnv(array $replacements): void
     {
         $envPath = base_path('.env');
-        if (!file_exists($envPath)) {
+        if (! file_exists($envPath)) {
             return;
         }
 
         $content = file_get_contents($envPath);
 
         foreach ($replacements as $key => $value) {
-            $escapedValue = (strpbrk($value, ' "#') !== false || str_contains($value, "'")) 
-                ? '"' . str_replace(['\\', '"'], ['\\\\', '\\"'], $value) . '"' 
+            $escapedValue = (strpbrk($value, ' "#') !== false || str_contains($value, "'"))
+                ? '"'.str_replace(['\\', '"'], ['\\\\', '\\"'], $value).'"'
                 : $value;
-            $pattern = '/^' . preg_quote($key, '/') . '=.*/m';
+            $pattern = '/^'.preg_quote($key, '/').'=.*/m';
             if (preg_match($pattern, $content)) {
-                $content = preg_replace($pattern, $key . '=' . $escapedValue, $content);
+                $content = preg_replace($pattern, $key.'='.$escapedValue, $content);
             } else {
-                $content .= "\n" . $key . '=' . $escapedValue;
+                $content .= "\n".$key.'='.$escapedValue;
             }
         }
 

@@ -92,6 +92,7 @@ class User extends Authenticatable
             'ceo' => 'Chief Executive Officer',
             'hr' => 'HR',
             'koordinator' => 'Koordinator',
+            'admin_ga' => 'Admin General Affairs',
             'user' => 'Karyawan',
             default => ucfirst($this->role),
         };

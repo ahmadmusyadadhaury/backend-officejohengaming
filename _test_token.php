@@ -1,13 +1,18 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
-$app = require_once __DIR__ . '/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-$kernel->handle(Illuminate\Http\Request::capture());
 
-$jobs = Illuminate\Support\Facades\DB::table('jobs')->count();
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+require __DIR__.'/vendor/autoload.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
+$kernel->handle(Request::capture());
+
+$jobs = DB::table('jobs')->count();
 echo "Queue jobs: {$jobs}\n";
 
-$readings = Illuminate\Support\Facades\DB::table('electricity_token_readings')
+$readings = DB::table('electricity_token_readings')
     ->orderBy('checked_date', 'desc')
     ->limit(5)
     ->get();

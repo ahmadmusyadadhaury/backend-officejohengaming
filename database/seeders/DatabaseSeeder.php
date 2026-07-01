@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
         User::create(['name' => 'HR Manager',      'username' => 'hr',       'email' => 'hr@johen.com',       'password' => Hash::make('password'), 'role' => 'hr']);
         // CEO
         User::create(['name' => 'Chief Executive Officer', 'username' => 'ceo', 'email' => 'ceo@johen.com', 'password' => Hash::make('password'), 'role' => 'ceo']);
+        // Admin General Affairs
+        User::create(['name' => 'Admin General Affairs', 'username' => 'admin_ga', 'email' => 'admin_ga@johen.com', 'password' => Hash::make('password'), 'role' => 'admin_ga']);
         // Koordinator
         User::create(['name' => 'Koordinator Konten', 'username' => 'koordinator1', 'email' => 'koordinator1@johen.com', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 1]);
         // User

@@ -28,6 +28,7 @@
                     <option value="gm"            {{ old('role') === 'gm'            ? 'selected' : '' }}>General Manager (GM)</option>
                     <option value="ceo"           {{ old('role') === 'ceo'           ? 'selected' : '' }}>Chief Executive Officer (CEO)</option>
                     <option value="hr"            {{ old('role') === 'hr'            ? 'selected' : '' }}>HR (Human Resources)</option>
+                    <option value="admin_ga"      {{ old('role') === 'admin_ga'      ? 'selected' : '' }}>Admin General Affairs</option>
                 </select>
             </div>
             <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">

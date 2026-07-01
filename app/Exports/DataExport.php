@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -95,12 +96,14 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }
 
-                if (!empty($this->hyperlinkColumns)) {
+                if (! empty($this->hyperlinkColumns)) {
                     $headings = $this->headings();
                     foreach ($this->hyperlinkColumns as $colName) {
                         $colIndex = array_search($colName, $headings);
-                        if ($colIndex === false) continue;
-                        $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1);
+                        if ($colIndex === false) {
+                            continue;
+                        }
+                        $colLetter = Coordinate::stringFromColumnIndex($colIndex + 1);
                         for ($row = 4; $row <= $sheet->getHighestRow(); $row++) {
                             $cell = "{$colLetter}{$row}";
                             $url = $sheet->getCell($cell)->getValue();

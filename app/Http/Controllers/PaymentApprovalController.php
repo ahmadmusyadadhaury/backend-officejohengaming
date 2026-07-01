@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DataExport;
 use App\Models\DigitalAsset;
 use App\Models\Notification;
 use App\Models\Payment;
@@ -12,7 +13,6 @@ use App\Models\SimCard;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WifiPayment;
-use App\Exports\DataExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -20,6 +20,8 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentApprovalController extends Controller
 {
+    private const APPROVER_ROLES = ['admin', 'head_of_store', 'hr', 'gm', 'ceo'];
+
     private function getModel(string $jenis)
     {
         return match ($jenis) {
@@ -90,8 +92,8 @@ class PaymentApprovalController extends Controller
 
         $model->save();
 
-        // Notifikasi ke GM dan CEO
-        $approvers = User::whereIn('role', ['gm', 'ceo'])->get();
+        // Notifikasi ke approvers
+        $approvers = User::whereIn('role', self::APPROVER_ROLES)->get();
         $detail = $jenis === 'internet' ? $data['nama_internet'] : ($data['periode'] ?? '');
         $message = "Pengajuan pembayaran {$jenis}: {$detail} menunggu approval.";
 
@@ -236,7 +238,7 @@ class PaymentApprovalController extends Controller
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) menunggu approval.";
 
-        $approvers = User::whereIn('role', ['gm', 'ceo'])->get();
+        $approvers = User::whereIn('role', self::APPROVER_ROLES)->get();
         foreach ($approvers as $approver) {
             Notification::send($approver->id, 'activity', 'Pengajuan Pembayaran', $message, route('admin.payment-approvals.index'));
             Cache::forget('approval_check_'.$approver->id);
@@ -245,7 +247,7 @@ class PaymentApprovalController extends Controller
         Cache::forget('tagihan_check_'.auth()->id());
 
         return redirect()->route('payment-approval.status')
-            ->with('success', 'Bukti bayar berhasil dikirim. Menunggu persetujuan GM/CEO.');
+            ->with('success', 'Bukti bayar berhasil dikirim. Menunggu persetujuan.');
     }
 
     public function index()
@@ -286,7 +288,7 @@ class PaymentApprovalController extends Controller
         }
 
         $requests = $all->sortByDesc('created_at')->values();
-        $isApprover = in_array(auth()->user()->role, ['gm', 'ceo']);
+        $isApprover = in_array(auth()->user()->role, self::APPROVER_ROLES);
 
         return view('admin.payment-approvals.index', compact('requests', 'isApprover'));
     }
@@ -294,8 +296,8 @@ class PaymentApprovalController extends Controller
     public function approve($id, Request $request)
     {
         $jenis = $request->input('jenis');
-        if (! in_array(auth()->user()->role, ['gm', 'ceo'])) {
-            return response()->json(['error' => 'Hanya GM dan CEO yang bisa approve.'], 403);
+        if (! in_array(auth()->user()->role, self::APPROVER_ROLES)) {
+            return response()->json(['error' => 'Anda tidak memiliki hak akses untuk approve.'], 403);
         }
 
         $class = $this->getModelClass($jenis);
@@ -303,6 +305,10 @@ class PaymentApprovalController extends Controller
 
         if ($record->status !== 'pending') {
             return response()->json(['error' => 'Request sudah diproses.'], 422);
+        }
+
+        if ($record->requested_by === auth()->id()) {
+            return response()->json(['error' => 'Anda tidak bisa menyetujui pengajuan Anda sendiri.'], 403);
         }
 
         $record->update([
@@ -333,8 +339,8 @@ class PaymentApprovalController extends Controller
     public function reject($id, Request $request)
     {
         $jenis = $request->input('jenis');
-        if (! in_array(auth()->user()->role, ['gm', 'ceo'])) {
-            return response()->json(['error' => 'Hanya GM dan CEO yang bisa reject.'], 403);
+        if (! in_array(auth()->user()->role, self::APPROVER_ROLES)) {
+            return response()->json(['error' => 'Anda tidak memiliki hak akses untuk reject.'], 403);
         }
 
         $data = $request->validate(['notes' => 'required|string|max:1000']);
@@ -344,6 +350,10 @@ class PaymentApprovalController extends Controller
 
         if ($record->status !== 'pending') {
             return response()->json(['error' => 'Request sudah diproses.'], 422);
+        }
+
+        if ($record->requested_by === auth()->id()) {
+            return response()->json(['error' => 'Anda tidak bisa menolak pengajuan Anda sendiri.'], 403);
         }
 
         $record->update([
@@ -505,15 +515,21 @@ class PaymentApprovalController extends Controller
     private function compressBukti(string $path): void
     {
         $fullPath = Storage::disk('public')->path($path);
-        if (!file_exists($fullPath)) return;
+        if (! file_exists($fullPath)) {
+            return;
+        }
 
         $info = getimagesize($fullPath);
-        if (!$info) return;
+        if (! $info) {
+            return;
+        }
 
         [$width, $height] = $info;
         $maxWidth = 1200;
 
-        if ($width <= $maxWidth && filesize($fullPath) <= 204800) return;
+        if ($width <= $maxWidth && filesize($fullPath) <= 204800) {
+            return;
+        }
 
         if ($width > $maxWidth) {
             $ratio = $maxWidth / $width;
@@ -530,7 +546,9 @@ class PaymentApprovalController extends Controller
             default => null,
         };
 
-        if (!$src) return;
+        if (! $src) {
+            return;
+        }
 
         $dst = imagecreatetruecolor($newWidth, $newHeight);
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);

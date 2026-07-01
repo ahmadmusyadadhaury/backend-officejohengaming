@@ -11,7 +11,7 @@ class AdminAccountController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo']);
+        $query = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo', 'admin_ga']);
 
         // Search by name or username
         if ($search = $request->input('search')) {
@@ -46,7 +46,7 @@ class AdminAccountController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,head_of_store,gm,hr,ceo',
+            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga',
         ]);
 
         if ($request->role === 'ceo' && User::where('role', 'ceo')->exists()) {
@@ -74,7 +74,7 @@ class AdminAccountController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,'.$admin->id,
-            'role' => 'required|in:admin,head_of_store,gm,hr,ceo',
+            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga',
         ]);
 
         if ($request->role === 'ceo' && $admin->role !== 'ceo' && User::where('role', 'ceo')->exists()) {

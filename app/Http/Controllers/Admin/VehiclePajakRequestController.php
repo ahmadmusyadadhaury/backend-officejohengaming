@@ -133,15 +133,21 @@ class VehiclePajakRequestController extends Controller
     private function compressBukti(string $path): void
     {
         $fullPath = Storage::disk('public')->path($path);
-        if (!file_exists($fullPath)) return;
+        if (! file_exists($fullPath)) {
+            return;
+        }
 
         $info = getimagesize($fullPath);
-        if (!$info) return;
+        if (! $info) {
+            return;
+        }
 
         [$width, $height] = $info;
         $maxWidth = 1200;
 
-        if ($width <= $maxWidth && filesize($fullPath) <= 204800) return;
+        if ($width <= $maxWidth && filesize($fullPath) <= 204800) {
+            return;
+        }
 
         if ($width > $maxWidth) {
             $ratio = $maxWidth / $width;
@@ -158,7 +164,9 @@ class VehiclePajakRequestController extends Controller
             default => null,
         };
 
-        if (!$src) return;
+        if (! $src) {
+            return;
+        }
 
         $dst = imagecreatetruecolor($newWidth, $newHeight);
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
