@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
 use App\Models\Notification;
+use App\Models\Room;
 use App\Models\User;
 use App\Services\MeetingQueueService;
 use Carbon\Carbon;
@@ -39,8 +40,8 @@ class MeetingController extends Controller
             'what' => $m->what,
             'how_expected' => $m->how_expected,
             'requester' => $m->requester ? ['name' => $m->requester->name] : null,
-            'team' => $m->team ? ['name' => $m->team->name] : null,
-            'room' => $m->room ? ['name' => $m->room->name] : null,
+            'team' => $m->team ? ['name' => $m->team->name, 'id' => $m->team->id] : null,
+            'room' => $m->room ? ['name' => $m->room->name, 'id' => $m->room->id] : null,
             'meeting_date' => $m->meeting_date?->format('d M Y'),
             'meeting_date_raw' => $m->meeting_date?->format('Y-m-d'),
             'start_time' => $m->start_time,
@@ -71,7 +72,9 @@ class MeetingController extends Controller
         $disetujuiMeeting = Meeting::whereIn('status', ['approved', 'confirmed', 'in_progress', 'completed'])->count();
         $ditolakMeeting = Meeting::where('status', 'rejected')->count();
 
-        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'meetingMonth'));
+        $rooms = Room::orderBy('name')->get();
+
+        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'meetingMonth', 'rooms'));
     }
 
     public function show(Meeting $meeting)
@@ -136,6 +139,22 @@ class MeetingController extends Controller
         );
 
         return back()->with('success', 'Meeting ditolak.');
+    }
+
+    public function update(Request $request, Meeting $meeting)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'meeting_date' => 'required|date',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
+            'room_id' => 'required|exists:rooms,id',
+        ]);
+
+        $meeting->update($validated);
+
+        return redirect()->route('admin.meetings.index')
+            ->with('success', 'Meeting berhasil diperbarui.');
     }
 
     public function destroy(Meeting $meeting)

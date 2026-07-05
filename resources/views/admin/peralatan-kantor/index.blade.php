@@ -9,55 +9,55 @@
 
     {{-- 4 Stat Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
-                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
+                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Peralatan</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total Peralatan</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh peralatan kantor</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
+                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['kondisi_baik'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Kondisi Baik</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['kondisi_baik'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Kondisi Baik</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Peralatan dalam kondisi baik</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
-                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
+                <svg class="w-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['perlu_servis'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Perlu Servis</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['perlu_servis'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Perlu Servis</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Peralatan perlu perbaikan</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
-                <svg class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);box-shadow:none rgba(239,68,68,0.2);">
+                <svg class="w-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['rusak'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Rusak</div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['rusak'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Rusak</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Peralatan dalam kondisi rusak</div>
             </div>
         </div>
@@ -65,10 +65,10 @@
 
     {{-- Tabel --}}
     <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
-                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Peralatan Kantor</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Inventaris peralatan kantor milik perusahaan.</div>
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Peralatan Kantor</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Inventaris peralatan kantor milik perusahaan.</div>
             </div>
             <div class="flex items-center gap-2">
                 <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
@@ -709,6 +709,8 @@
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(108,92,255,0.4);
 }
+.gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
+.gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>
 @endpush
 
@@ -984,7 +986,7 @@ function validateStep(step) {
         }
     });
     if (!valid) {
-        alert('Harap isi semua field yang wajib diisi.');
+        showAlertModal('Harap isi semua field yang wajib diisi.');
     }
     return valid;
 }

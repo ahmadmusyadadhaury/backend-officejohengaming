@@ -63,7 +63,7 @@
                 </select>
                 <button class="btn btn-sm" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);color:white;">Perpanjang</button>
             </form>
-            <form method="POST" action="{{ route('weekly.complete', $session) }}" onsubmit="return confirm('Selesaikan meeting mingguan sekarang?')">
+            <form method="POST" action="{{ route('weekly.complete', $session) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Selesaikan meeting mingguan sekarang?">
                 @csrf
                 <button class="btn btn-success btn-sm">✓ Selesaikan Meeting</button>
             </form>

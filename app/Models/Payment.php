@@ -21,6 +21,7 @@ class Payment extends Model
         'approved_at',
         'bukti_bayar',
         'notes',
+        'period',
     ];
 
     protected function casts(): array

@@ -5,139 +5,141 @@
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 
 @section('content')
-<div class="pt-2 space-y-4 animate-fade-in">
+<div class="pt-2 space-y-5 animate-fade-in">
 
-    {{-- 4 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    {{-- Stat Cards --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
 
-        {{-- Total Permintaan --}}
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
-                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.12);">
+                <svg class="w-[18px] h-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $totalMeeting }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Permintaan</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh daftar permintaan meeting yang masuk.</div>
+            <div class="min-w-0 flex-1">
+                <div class="text-xl font-bold" style="color:var(--text-primary);">{{ $totalMeeting }}</div>
+                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Total Permintaan</div>
             </div>
         </div>
 
-        {{-- Menunggu Review --}}
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
-                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.12);">
+                <svg class="w-[18px] h-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $menungguMeeting }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Menunggu Review</div>
+            <div class="min-w-0 flex-1">
+                <div class="text-xl font-bold" style="color:#fbbf24;">{{ $menungguMeeting }}</div>
+                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Menunggu Review</div>
             </div>
         </div>
 
-        {{-- Disetujui --}}
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.12);">
+                <svg class="w-[18px] h-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $disetujuiMeeting }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Disetujui</div>
+            <div class="min-w-0 flex-1">
+                <div class="text-xl font-bold" style="color:#34d399;">{{ $disetujuiMeeting }}</div>
+                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Disetujui</div>
             </div>
         </div>
 
-        {{-- Ditolak --}}
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
-                <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.12);">
+                <svg class="w-[18px] h-[18px]" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#f87171;">{{ $ditolakMeeting }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Ditolak</div>
+            <div class="min-w-0 flex-1">
+                <div class="text-xl font-bold" style="color:#f87171;">{{ $ditolakMeeting }}</div>
+                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Ditolak</div>
             </div>
         </div>
 
     </div>
 
-    {{-- Tabel --}}
+    {{-- Table --}}
     <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4" style="border-bottom:1px solid var(--border-color);">
-            <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Permintaan Meeting</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Tinjau dan kelola permintaan meeting dari seluruh tim.</div>
+        <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Daftar Permintaan</div>
+                <div style="font-size:0.7rem;margin-top:2px;color:var(--text-muted);">Tinjau dan kelola permintaan meeting dari seluruh tim.</div>
+            </div>
         </div>
-        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div class="relative flex-1 min-w-0">
+
+        <div class="px-6 py-3 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-0 max-w-xs">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-meeting" placeholder="Cari berdasarkan nama pemohon" oninput="filterMeetings()"
+                <input type="text" id="search-meeting" placeholder="Cari pemohon..." oninput="filterMeetings()"
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
-                <div class="flex items-center gap-2 ml-auto">
-                <div id="meeting-month-wrap">
-                    <input type="month" id="meeting-month-input" value="{{ $meetingMonth ?? now()->format('Y-m') }}" onchange="setMeetingMonth()" class="gaming-input" style="padding:6px 10px;font-size:13px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;">
+            <div class="flex items-center gap-2 ml-auto">
+                <div>
+                    <input type="month" id="meeting-month-input" value="{{ $meetingMonth ?? now()->format('Y-m') }}" onchange="setMeetingMonth()"
+                        class="" style="padding:6px 10px;font-size:13px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;">
                 </div>
-                <a href="{{ route('admin.export', ['type' => 'meetings', 'meeting_month' => $meetingMonth ?? now()->format('Y-m')]) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" title="Download Excel" id="meeting-export-link">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <a href="{{ route('admin.export', ['type' => 'meetings', 'meeting_month' => $meetingMonth ?? now()->format('Y-m')]) }}"
+                    class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" title="Download Excel" id="meeting-export-link">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
                     Excel
                 </a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
-                <button type="button" onclick="toggleMeetingFilter(event)" class="filter-btn"
-                    style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <span id="meeting-filter-label" data-value="all">Semua Status</span>
-                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                <div id="meeting-filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                    <button type="button" data-value="all" onclick="setMeetingFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
-                    <button type="button" data-value="pending" onclick="setMeetingFilter('pending')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Menunggu Review</button>
-                    <button type="button" data-value="approved" onclick="setMeetingFilter('approved')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Disetujui</button>
-                    <button type="button" data-value="rejected" onclick="setMeetingFilter('rejected')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ditolak</button>
+                    <button type="button" onclick="toggleMeetingFilter(event)" class="filter-btn"
+                        style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                        <span id="meeting-filter-label" data-value="all">Semua Status</span>
+                        <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="meeting-filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                        <button type="button" data-value="all" onclick="setMeetingFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
+                        <button type="button" data-value="pending" onclick="setMeetingFilter('pending')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Menunggu Review</button>
+                        <button type="button" data-value="approved" onclick="setMeetingFilter('approved')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Disetujui</button>
+                        <button type="button" data-value="rejected" onclick="setMeetingFilter('rejected')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ditolak</button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-        </div>
-        </div>
         <div class="table-responsive">
-            <table class="gaming-table" id="meetings-table" style="width:100%;min-width:700px;">
+            <table class="gaming-table" id="meetings-table" style="width:100%;min-width:750px;">
                 <colgroup>
-                    <col style="width:50px">
+                    <col style="width:44px">
                     <col>
-                    <col class="hidden sm:table-cell" style="width:170px">
-                    <col class="hidden lg:table-cell" style="width:130px">
-                    <col style="width:120px">
-                    <col class="hidden sm:table-cell" style="width:100px">
-                    <col style="width:90px">
-                    <col class="hidden md:table-cell" style="width:90px">
-                    <col style="width:70px">
+                    <col class="hidden sm:table-cell" style="width:160px">
+                    <col class="hidden lg:table-cell" style="width:120px">
+                    <col style="width:115px">
+                    <col class="hidden sm:table-cell" style="width:95px">
+                    <col style="width:85px">
+                    <col class="hidden md:table-cell" style="width:85px">
+                    <col style="width:80px">
                 </colgroup>
                 <thead>
                     <tr>
-                        <th style="width:50px">No</th>
+                        <th style="width:44px">No</th>
                         <th>Judul</th>
-                        <th class="hidden sm:table-cell" style="width:170px">Pemohon</th>
-                        <th class="hidden lg:table-cell" style="width:130px">Tim</th>
-                        <th style="width:120px">Tanggal</th>
-                        <th class="hidden sm:table-cell" style="width:100px">Waktu</th>
-                        <th style="width:90px">Status</th>
-                        <th class="hidden md:table-cell" style="width:90px">Antrian</th>
-                        <th style="width:70px">Aksi</th>
+                        <th class="hidden sm:table-cell" style="width:160px">Pemohon</th>
+                        <th class="hidden lg:table-cell" style="width:120px">Tim</th>
+                        <th style="width:115px">Tanggal</th>
+                        <th class="hidden sm:table-cell" style="width:95px">Waktu</th>
+                        <th style="width:85px">Status</th>
+                        <th class="hidden md:table-cell" style="width:85px">Antrian</th>
+                        <th style="width:80px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="meetings-tbody">
@@ -163,60 +165,68 @@
                             default                                   => 'badge-gray',
                         };
                     @endphp
-                    <tr data-status="{{ $meeting->status }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;max-width:200px;" class="truncate">{{ $meeting->title }}</td>
-                        <td style="color:var(--text-muted);" class="meeting-pemohon hidden sm:table-cell">{{ $meeting->requester->name }}</td>
-                        <td style="color:var(--text-muted);" class="hidden lg:table-cell">{{ $meeting->team->name }}</td>
-                        <td style="color:var(--text-muted);white-space:nowrap;">
-                            <span class="sm:hidden">{{ $meeting->meeting_date->format('d/m') }}</span>
-                            <span class="hidden sm:inline">{{ $meeting->meeting_date->format('d M Y') }}</span>
-                            <span class="sm:hidden text-[10px]" style="color:var(--text-muted);"> {{ substr($meeting->start_time,0,5) }}</span>
+                    <tr data-status="{{ $meeting->status }}" class="meeting-row">
+                        <td style="color:var(--text-muted);font-size:0.8rem;">{{ $loop->iteration }}</td>
+                        <td>
+                            <span class="font-medium" style="color:var(--text-primary);font-size:0.8rem;">{{ $meeting->title }}</span>
                         </td>
-                        <td style="color:var(--text-muted);" class="hidden sm:table-cell">{{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }}</td>
-                        <td><span class="badge {{ $statusStyle }}" style="white-space:nowrap;">{{ ucfirst($meeting->status) }}</span></td>
+                        <td class="meeting-pemohon hidden sm:table-cell">
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                                    style="background:rgba(124,58,237,0.1);color:var(--color-accent-light);">
+                                    {{ strtoupper(substr($meeting->requester->name, 0, 1)) }}
+                                </div>
+                                <span style="color:var(--text-secondary);font-size:0.8rem;">{{ $meeting->requester->name }}</span>
+                            </div>
+                        </td>
+                        <td class="hidden lg:table-cell"><span style="color:var(--text-secondary);font-size:0.8rem;">{{ $meeting->team->name }}</span></td>
+                        <td>
+                            <span style="color:var(--text-secondary);font-size:0.8rem;white-space:nowrap;">{{ $meeting->meeting_date->format('d M Y') }}</span>
+                        </td>
+                        <td class="hidden sm:table-cell"><span style="color:var(--text-secondary);font-size:0.8rem;">{{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }}</span></td>
+                        <td><span class="badge {{ $statusStyle }}" style="white-space:nowrap;font-size:0.65rem;">{{ ucfirst($meeting->status) }}</span></td>
                         <td class="hidden md:table-cell">
                             @if($meeting->queue_position !== null && !in_array($meeting->status, ['pending','rejected','cancelled']))
-                                <span class="badge {{ $queueBadge }}" style="white-space:nowrap;">{{ $rt['label'] }}</span>
+                                <span class="badge {{ $queueBadge }}" style="white-space:nowrap;font-size:0.65rem;">{{ $rt['label'] }}</span>
                             @else
-                                <span style="color:var(--text-muted);">—</span>
+                                <span style="color:var(--text-muted);font-size:0.8rem;">—</span>
                             @endif
                         </td>
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
-                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:3px;padding:3px 8px;font-size:0.7rem;" title="Lihat detail">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:2px;padding:3px 6px;font-size:0.65rem;" title="Lihat detail">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
-                                    Lihat detail
                                 </button>
                                 <div class="relative dropdown-actions">
-                                    <button type="button" onclick="toggleActionMenu(event, {{ $meeting->id }})" class="btn btn-secondary btn-sm" style="padding:4px 6px;line-height:1;font-size:0.7rem;" title="Aksi">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                            <circle cx="12" cy="5" r="2" fill="currentColor"/>
-                                            <circle cx="12" cy="12" r="2" fill="currentColor"/>
-                                            <circle cx="12" cy="19" r="2" fill="currentColor"/>
+                                    <button type="button" onclick="toggleActionMenu(event, {{ $meeting->id }})" class="btn btn-secondary btn-sm" style="padding:3px 5px;line-height:1;font-size:0.65rem;" title="Aksi">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/>
                                         </svg>
                                     </button>
-                                    <div id="action-menu-{{ $meeting->id }}" style="display:none;position:absolute;top:100%;right:0;min-width:160px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;margin-top:4px;">
-                                        <button type="button" onclick="showDetail({{ $meeting->id }})" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div id="action-menu-{{ $meeting->id }}" style="display:none;position:absolute;top:100%;right:0;min-width:155px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;z-index:99999;margin-top:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+                                        <button type="button" onclick="showDetail({{ $meeting->id }})" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
-                                            Lihat Detail
+                                            Detail
+                                        </button>
+                                        <button type="button" onclick="showEditModal({{ $meeting->id }})" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                            Edit
                                         </button>
                                         @if(in_array($meeting->status, ['cancelled','rejected']))
-                                        <form method="POST" action="{{ route('admin.meetings.destroy', $meeting) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus meeting ini?" class="w-full">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="w-full text-left px-3 py-2 text-sm rounded-lg transition" style="color:#f87171;display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                </svg>
-                                                Hapus
-                                            </button>
-                                        </form>
+                                        <button type="button" onclick="confirmDeleteMeeting({{ $meeting->id }})" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:#f87171;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                            Hapus
+                                        </button>
                                         @endif
                                     </div>
                                 </div>
@@ -225,62 +235,64 @@
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada permintaan meeting.</td>
+                        <td colspan="9" style="text-align:center;padding:2.5rem;color:var(--text-muted);font-size:0.9rem;">
+                            <div class="flex flex-col items-center gap-2">
+                                <svg class="w-10 h-10" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Belum ada permintaan meeting.</span>
+                            </div>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $meetings->links() }}</div>
+        <div class="px-6 py-3 flex items-center justify-end" style="border-top:1px solid var(--border-color);font-size:0.8rem;">
+            {{ $meetings->links() }}
+        </div>
     </div>
 
 </div>
-
 @endsection
 
 @push('modals')
-{{-- Modal Detail --}}
+{{-- Detail Modal --}}
 <div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
     <div class="w-full" style="max-width:640px;width:90vw;max-height:min(90vh,800px);background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between px-5 py-3 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.18);">
+        <div class="flex items-center justify-between px-5 py-3.5 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.15);">
                     <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                 </div>
-                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Detail Permintaan Meeting — <span id="detail-judul">Meeting</span></h3>
+                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Detail Meeting — <span id="detail-judul">Meeting</span></h3>
             </div>
-            <button type="button" onclick="closeDetail()" class="p-1 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
 
         {{-- Body --}}
-        <div class="p-4 flex-1 overflow-y-auto" id="detail-body" style="scrollbar-width:thin;scrollbar-color:rgba(129,140,248,0.25) transparent;">
+        <div class="p-5 flex-1 overflow-y-auto" id="detail-body" style="scrollbar-width:thin;scrollbar-color:rgba(129,140,248,0.25) transparent;">
 
-            {{-- 2-Column Grid: Left Info / Right Permohonan --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                {{-- Left: Meeting Info --}}
                 <div id="meeting-info-rows" class="space-y-0"></div>
-
-                {{-- Right: Detail Permohonan --}}
                 <div id="meeting-permohonan-section" class="hidden">
                     <div id="meeting-permohonan-content"></div>
                 </div>
             </div>
 
-            {{-- Aset Dibutuhkan --}}
             <div class="mt-3" id="meeting-assets-section" style="display:none;">
                 <div style="border:1px solid var(--border-color);background:var(--bg-surface-2);border-radius:12px;padding:10px;">
                     <div id="meeting-assets-content"></div>
                 </div>
             </div>
 
-            {{-- MOM --}}
             <div class="mt-3" id="meeting-mom-section" style="display:none;">
                 <div style="border:1px solid rgba(16,185,129,0.35);background:var(--bg-base);border-radius:12px;padding:12px;">
-                    <div class="flex items-center gap-2 mb-2">
+                    <div class="flex items-center gap-2 mb-2.5">
                         <svg class="w-4 h-4" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         <h4 class="text-xs font-bold" style="color:#10b981;">Minutes of Meeting (MOM)</h4>
                     </div>
@@ -295,16 +307,14 @@
             </div>
         </div>
 
-        {{-- Reject reason --}}
-        <div id="d-reject-section" class="hidden px-6 pb-3 flex-shrink-0">
+        <div id="d-reject-section" class="hidden px-5 pb-3.5 flex-shrink-0">
             <div class="p-3 rounded-xl" style="background:#fef2f2;border:1px solid #fecaca;">
                 <p class="text-xs font-semibold mb-0.5" style="color:#ef4444;">Alasan Penolakan</p>
                 <p class="text-xs" style="color:#f87171;" id="d-reject-reason"></p>
             </div>
         </div>
 
-        {{-- Actions --}}
-        <div id="d-actions-section" class="hidden px-6 pb-4 flex-shrink-0">
+        <div id="d-actions-section" class="hidden px-5 pb-4 flex-shrink-0">
             <div class="flex items-center justify-between gap-3" style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:10px 14px;">
                 <p class="text-[10px] font-bold tracking-[0.1em] flex-shrink-0" style="color:var(--text-muted);">UPDATE STATUS</p>
                 <div class="flex items-center gap-2">
@@ -325,10 +335,100 @@
             </div>
         </div>
 
-        {{-- Footer --}}
-        <div class="flex items-center justify-end px-5 py-3 flex-shrink-0" style="border-top:1px solid var(--border-color);">
+        <div class="flex items-center justify-end px-5 py-3.5 flex-shrink-0" style="border-top:1px solid var(--border-color);">
             <button type="button" onclick="closeDetail()" class="px-4 py-1.5 rounded-lg text-xs font-medium transition" style="color:var(--text-secondary);border:1px solid var(--border-color);background:var(--bg-surface-2);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
         </div>
+    </div>
+</div>
+
+{{-- Edit Modal --}}
+<div id="edit-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full" style="max-width:500px;width:90vw;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
+
+        <div class="flex items-center justify-between px-5 py-3.5 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.15);">
+                    <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </div>
+                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Edit Meeting</h3>
+            </div>
+            <button type="button" onclick="closeEditModal()" class="p-1.5 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <form id="edit-form" method="POST" class="p-5 space-y-4 overflow-y-auto" style="max-height:70vh;">
+            @csrf
+            @method('PATCH')
+            <input type="hidden" id="edit-meeting-id" name="meeting_id" value="">
+
+            <div>
+                <label class="gaming-label text-xs">Judul Meeting <span style="color:#f87171;">*</span></label>
+                <input type="text" id="edit-title" name="title" required class="gaming-input mt-1" placeholder="Judul meeting">
+            </div>
+
+            <div>
+                <label class="gaming-label text-xs">Ruangan <span style="color:#f87171;">*</span></label>
+                <select id="edit-room" name="room_id" required class="gaming-input gaming-select mt-1">
+                    <option value="">Pilih Ruangan</option>
+                    @foreach($rooms as $room)
+                        <option value="{{ $room->id }}">{{ $room->name }} ({{ $room->capacity }} orang)</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="gaming-label text-xs">Tanggal Meeting <span style="color:#f87171;">*</span></label>
+                <input type="date" id="edit-date" name="meeting_date" required class="gaming-input mt-1">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="gaming-label text-xs">Jam Mulai <span style="color:#f87171;">*</span></label>
+                    <input type="time" id="edit-start-time" name="start_time" required class="gaming-input mt-1">
+                </div>
+                <div>
+                    <label class="gaming-label text-xs">Jam Selesai <span style="color:#f87171;">*</span></label>
+                    <input type="time" id="edit-end-time" name="end_time" required class="gaming-input mt-1">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 pt-3" style="border-top:1px solid var(--border-color);">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Simpan Perubahan
+                </button>
+                <button type="button" onclick="closeEditModal()" class="btn btn-secondary btn-sm">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Delete Confirm Modal --}}
+<div id="delete-confirm-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full" style="max-width:380px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);padding:1.75rem;text-align:center;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
+        <div class="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style="background:rgba(239,68,68,0.12);">
+            <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+        </div>
+        <h3 class="text-base font-bold mb-2" style="color:var(--text-primary);">Hapus Meeting</h3>
+        <p class="text-sm mb-6" style="color:var(--text-secondary);">Apakah kamu yakin ingin menghapus meeting ini? Tindakan ini tidak dapat dibatalkan.</p>
+        <form id="delete-form" method="POST" style="display:inline;">
+            @csrf
+            @method('DELETE')
+            <div class="flex items-center gap-3 justify-center">
+                <button type="submit" class="btn btn-danger btn-sm px-5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Ya, Hapus
+                </button>
+                <button type="button" onclick="closeDeleteModal()" class="btn btn-secondary btn-sm">Batal</button>
+            </div>
+        </form>
     </div>
 </div>
 @endpush
@@ -336,6 +436,7 @@
 @push('scripts')
 <script>
 const meetingsData = @json($meetingsJson);
+const roomsData = @json($rooms);
 const csrfToken = '{{ csrf_token() }}';
 const statusMap = {
     pending:     { label: '● MENUNGGU',  bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
@@ -357,29 +458,29 @@ function showDetail(id) {
 
     const rows = document.getElementById('meeting-info-rows');
     rows.innerHTML = `
-        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+        <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
             <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Pemohon</span>
-            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.requester?.name || '-'}</span>
+            <span class="text-xs text-right font-semibold" style="color:var(--text-primary);">${m.requester?.name || '-'}</span>
         </div>
-        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+        <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
             <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Judul Meeting</span>
-            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.title}</span>
+            <span class="text-xs text-right font-semibold" style="color:var(--text-primary);">${m.title}</span>
         </div>
-        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+        <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
             <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Tanggal</span>
-            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.meeting_date || '-'}</span>
+            <span class="text-xs text-right font-semibold" style="color:var(--text-primary);">${m.meeting_date || '-'}</span>
         </div>
-        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+        <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
             <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Ruangan</span>
-            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.room?.name || '-'}</span>
+            <span class="text-xs text-right font-semibold" style="color:var(--text-primary);">${m.room?.name || '-'}</span>
         </div>
-        <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
+        <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
             <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Waktu</span>
-            <span class="text-xs text-right" style="color:var(--text-primary);font-weight:700;">${m.start_time || '-'}${m.end_time ? ' - ' + m.end_time : ''}</span>
+            <span class="text-xs text-right font-semibold" style="color:var(--text-primary);">${m.start_time || '-'}${m.end_time ? ' - ' + m.end_time : ''}</span>
         </div>
-        <div class="flex items-center justify-between py-2">
+        <div class="flex items-center justify-between py-2.5">
             <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Status</span>
-            <span class="text-[11px] font-bold px-2.5 py-1" style="background:${st.bg};color:${st.text};border-radius:6px;">${st.label}</span>
+            <span class="text-[11px] font-bold px-2.5 py-1 rounded-md" style="background:${st.bg};color:${st.text};">${st.label}</span>
         </div>
     `;
 
@@ -387,28 +488,28 @@ function showDetail(id) {
     const permohonanContent = document.getElementById('meeting-permohonan-content');
     let pHtml = '';
     if (m.why) pHtml += `
-        <div class="mb-2">
-            <div class="flex items-center gap-1.5 mb-1">
+        <div class="mb-2.5">
+            <div class="flex items-center gap-1.5 mb-1.5">
                 <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span class="text-[11px] font-bold" style="color:#8b5cf6;">Why — Kenapa meeting ini diadakan?</span>
             </div>
-            <div class="text-xs leading-relaxed p-2.5" style="background:var(--bg-surface-2);border-radius:8px;color:var(--text-secondary);line-height:1.5;">${m.why}</div>
+            <div class="text-xs leading-relaxed p-2.5 rounded-lg" style="background:var(--bg-surface-2);color:var(--text-secondary);line-height:1.5;border:1px solid var(--border-color);">${m.why}</div>
         </div>`;
     if (m.what) pHtml += `
-        <div class="mb-2">
-            <div class="flex items-center gap-1.5 mb-1">
+        <div class="mb-2.5">
+            <div class="flex items-center gap-1.5 mb-1.5">
                 <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                 <span class="text-[11px] font-bold" style="color:#8b5cf6;">What — Apa yang dibahas?</span>
             </div>
-            <div class="text-xs leading-relaxed p-2.5" style="background:var(--bg-surface-2);border-radius:8px;color:var(--text-secondary);line-height:1.5;">${m.what}</div>
+            <div class="text-xs leading-relaxed p-2.5 rounded-lg" style="background:var(--bg-surface-2);color:var(--text-secondary);line-height:1.5;border:1px solid var(--border-color);">${m.what}</div>
         </div>`;
     if (m.how_expected) pHtml += `
-        <div class="mb-2">
-            <div class="flex items-center gap-1.5 mb-1">
+        <div class="mb-2.5">
+            <div class="flex items-center gap-1.5 mb-1.5">
                 <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 <span class="text-[11px] font-bold" style="color:#8b5cf6;">How — Bagaimana hasil yang diharapkan?</span>
             </div>
-            <div class="text-xs leading-relaxed p-2.5" style="background:var(--bg-surface-2);border-radius:8px;color:var(--text-secondary);line-height:1.5;">${m.how_expected}</div>
+            <div class="text-xs leading-relaxed p-2.5 rounded-lg" style="background:var(--bg-surface-2);color:var(--text-secondary);line-height:1.5;border:1px solid var(--border-color);">${m.how_expected}</div>
         </div>`;
     if (pHtml) {
         permohonanContent.innerHTML = pHtml;
@@ -421,7 +522,7 @@ function showDetail(id) {
     const assetsContent = document.getElementById('meeting-assets-content');
     if (m.assets && m.assets.length) {
         assetsContent.innerHTML = `
-            <p class="text-[11px] font-bold tracking-wider mb-2" style="color:var(--color-accent-light);">ASET DIBUTUHKAN</p>
+            <p class="text-[11px] font-bold tracking-wider mb-2.5" style="color:var(--color-accent-light);">ASET DIBUTUHKAN</p>
             <div class="flex flex-wrap gap-2">${m.assets.map(a => `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" style="background:#e0e7ff;color:#4338ca;">${a.name} (${a.quantity})</span>`).join('')}</div>
         `;
         assetsSection.style.display = '';
@@ -440,7 +541,7 @@ function showDetail(id) {
         let ringkasanHtml = '';
         if (m.mom.status) {
             const isSent = m.mom.status === 'sent';
-            ringkasanHtml += '<div class="flex items-center gap-2 mb-2"><span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold" style="background:' + (isSent ? '#dcfce7' : '#fef3c7') + ';color:' + (isSent ? '#059669' : '#d97706') + ';">' + (isSent ? 'Terkirim' : 'Draft') + '</span></div>';
+            ringkasanHtml += '<div class="flex items-center gap-2 mb-2.5"><span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold" style="background:' + (isSent ? '#dcfce7' : '#fef3c7') + ';color:' + (isSent ? '#059669' : '#d97706') + ';">' + (isSent ? 'Terkirim' : 'Draft') + '</span></div>';
         }
         ringkasanHtml += momItem('Ringkasan Pembahasan', m.mom.summary, 'M7 4V2m17 2v2M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z');
         document.getElementById('mom-ringkasan').innerHTML = ringkasanHtml;
@@ -555,13 +656,11 @@ function setMeetingMonth() {
     window.location.href = url.toString();
 }
 
-// Auto-open detail modal from dashboard review link
 const reviewId = new URLSearchParams(window.location.search).get('review');
 if (reviewId) {
     showDetail(parseInt(reviewId));
 }
 
-// Dropdown titik tiga
 function toggleActionMenu(e, id) {
     e.stopPropagation();
     const menu = document.getElementById('action-menu-' + id);
@@ -577,26 +676,60 @@ document.addEventListener('click', function(e) {
         document.querySelectorAll('[id^="action-menu-"]').forEach(m => m.style.display = 'none');
     }
 });
+
+// ─── Edit Modal ───
+function showEditModal(id) {
+    const m = meetingsData.find(i => i.id === id);
+    if (!m) return;
+
+    document.getElementById('edit-meeting-id').value = m.id;
+    document.getElementById('edit-title').value = m.title || '';
+    document.getElementById('edit-room').value = m.room?.id || '';
+    document.getElementById('edit-date').value = m.meeting_date_raw || '';
+    document.getElementById('edit-start-time').value = m.start_time || '';
+    document.getElementById('edit-end-time').value = m.end_time || '';
+
+    document.getElementById('edit-form').action = '/admin/meetings/' + m.id;
+    openModal('edit-modal');
+}
+
+function closeEditModal() {
+    closeModal('edit-modal');
+}
+
+document.getElementById('edit-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+});
+
+// ─── Delete Modal ───
+function confirmDeleteMeeting(id) {
+    document.getElementById('delete-form').action = '/admin/meetings/' + id;
+    openModal('delete-confirm-modal');
+}
+
+function closeDeleteModal() {
+    closeModal('delete-confirm-modal');
+}
+
+document.getElementById('delete-confirm-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+});
 </script>
 @endpush
 
 @push('styles')
 <style>
-#detail-body::-webkit-scrollbar {
-    width: 5px;
-}
-#detail-body::-webkit-scrollbar-track {
-    background: transparent;
-}
-#detail-body::-webkit-scrollbar-thumb {
-    background: rgba(129,140,248,0.25);
-    border-radius: 4px;
-}
+#detail-body::-webkit-scrollbar { width: 5px; }
+#detail-body::-webkit-scrollbar-track { background: transparent; }
+#detail-body::-webkit-scrollbar-thumb { background: rgba(129,140,248,0.25); border-radius: 4px; }
 
 @keyframes momFadeIn {
     from { opacity: 0; transform: scale(0.96); }
     to { opacity: 1; transform: scale(1); }
 }
+
+.gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; }
+.gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
+.meeting-row + .meeting-row > td { padding-top: 0; }
 </style>
 @endpush
-

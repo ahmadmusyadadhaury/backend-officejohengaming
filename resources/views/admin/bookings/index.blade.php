@@ -56,4 +56,10 @@
         @endif
     </div>
 </div>
+@push('styles')
+<style>
+.gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
+.gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
+</style>
+@endpush
 @endsection

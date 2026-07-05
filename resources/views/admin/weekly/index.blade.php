@@ -16,7 +16,7 @@
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
         @forelse($weeklies as $weekly)
-        <div class="gaming-card p-5 animate-fade-in">
+        <div class="gaming-card p-4 animate-fade-in">
             <div class="flex items-start justify-between mb-3">
                 <div class="min-w-0">
                     <h3 class="font-gaming font-semibold truncate" style="color:var(--text-primary);">{{ $weekly->title }}</h3>

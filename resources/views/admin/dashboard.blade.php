@@ -5,383 +5,301 @@
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 
 @section('content')
-<style>
-    .dashboard-wrapper .gaming-card {
-        background: var(--bg-surface) !important;
-    }
-</style>
+@php
+    $totalTagihanDonut = array_sum($chartTagihan ?? []);
+    $totalBayarDonut = array_sum($chartBayar ?? []);
+    $sisaDonut = $totalTagihanDonut - $totalBayarDonut;
+@endphp
+<div class="dashboard-section stagger-children">
 
-<div>
-<div class="space-y-6 pt-2 stagger-children dashboard-wrapper">
-
-
-
-    {{-- Komposisi Tim (GM & CEO) --}}
+    {{-- Komposisi Tim (GM & CEO only) --}}
     @if(in_array(auth()->user()->role, ['gm', 'ceo']))
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 md:gap-4">
-
-        {{-- CEO --}}
-        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(250,204,21,0.2);background:linear-gradient(135deg,rgba(250,204,21,0.03),rgba(250,204,21,0.08));">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);box-shadow:0 4px 12px rgba(245,158,11,0.35);">
-                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+    <div class="dashboard-section">
+        <div class="section-label">Komposisi Tim</div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 md:gap-3">
+            @php
+                $teamRoles = [
+                    ['label' => 'CEO', 'count' => $stats['total_ceo'], 'color' => '#fbbf24', 'bg' => 'rgba(251,191,36,0.12)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                    ['label' => 'General Manager', 'count' => $stats['total_gm'], 'color' => '#a78bfa', 'bg' => 'rgba(167,139,250,0.12)', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
+                    ['label' => 'Head of Store', 'count' => $stats['total_head_store'], 'color' => '#34d399', 'bg' => 'rgba(52,211,153,0.12)', 'icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                    ['label' => 'HR', 'count' => $stats['total_hr'], 'color' => '#fb923c', 'bg' => 'rgba(251,146,60,0.12)', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'],
+                    ['label' => 'Koordinator', 'count' => $stats['total_koordinator'], 'color' => '#38bdf8', 'bg' => 'rgba(56,189,248,0.12)', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
+                    ['label' => 'Total Tim', 'count' => $stats['total_team'], 'color' => '#c084fc', 'bg' => 'rgba(192,132,252,0.12)', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
+                    ['label' => 'Karyawan', 'count' => $stats['total_karyawan'], 'color' => '#f87171', 'bg' => 'rgba(248,113,113,0.12)', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z'],
+                ];
+            @endphp
+            @foreach($teamRoles as $role)
+            <div class="stat-card-compact flex-col items-center text-center py-3" style="border-color:{{ $role['color'] }}20;">
+                <div class="stat-icon-box mb-1.5" style="background:{{ $role['bg'] }};box-shadow:0 0 12px {{ $role['color'] }}20;">
+                    <svg class="w-4 h-4" style="color:{{ $role['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $role['icon'] }}"/>
+                    </svg>
+                </div>
+                <div class="stat-num" style="color:{{ $role['color'] }};">{{ $role['count'] }}</div>
+                <div class="stat-label-text">{{ $role['label'] }}</div>
             </div>
-            <div>
-                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['total_ceo'] }}</div>
-                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Chief Executive Officer</div>
-            </div>
+            @endforeach
         </div>
-
-        {{-- GM --}}
-        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(139,92,246,0.2);background:linear-gradient(135deg,rgba(139,92,246,0.03),rgba(139,92,246,0.08));">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);box-shadow:0 4px 12px rgba(124,58,237,0.35);">
-                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#a78bfa;">{{ $stats['total_gm'] }}</div>
-                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">General Manager</div>
-            </div>
-        </div>
-
-        {{-- Head of Store --}}
-        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(52,211,153,0.2);background:linear-gradient(135deg,rgba(52,211,153,0.03),rgba(52,211,153,0.08));">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#34d399,#10b981);box-shadow:0 4px 12px rgba(16,185,129,0.35);">
-                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#34d399;">{{ $stats['total_head_store'] }}</div>
-                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Head of Store</div>
-            </div>
-        </div>
-
-        {{-- HR --}}
-        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(251,146,60,0.2);background:linear-gradient(135deg,rgba(251,146,60,0.03),rgba(251,146,60,0.08));">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#fb923c,#f97316);box-shadow:0 4px 12px rgba(249,115,22,0.35);">
-                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#fb923c;">{{ $stats['total_hr'] }}</div>
-                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Human Resources</div>
-            </div>
-        </div>
-
-        {{-- Koordinator --}}
-        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(56,189,248,0.2);background:linear-gradient(135deg,rgba(56,189,248,0.03),rgba(56,189,248,0.08));">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#38bdf8,#0ea5e9);box-shadow:0 4px 12px rgba(14,165,233,0.35);">
-                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                </svg>
-            </div>
-            <div>
-                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#38bdf8;">{{ $stats['total_koordinator'] }}</div>
-                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Koordinator</div>
-            </div>
-        </div>
-
-        {{-- Total Tim --}}
-        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(192,132,252,0.2);background:linear-gradient(135deg,rgba(192,132,252,0.03),rgba(192,132,252,0.08));">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#c084fc,#a855f7);box-shadow:0 4px 12px rgba(168,85,247,0.35);">
-                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#c084fc;">{{ $stats['total_team'] }}</div>
-                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Total Tim</div>
-            </div>
-        </div>
-
-        {{-- Karyawan --}}
-        <div class="gaming-card p-3 md:p-4 flex flex-col items-center gap-2 text-center" style="border:1px solid rgba(248,113,113,0.2);background:linear-gradient(135deg,rgba(248,113,113,0.03),rgba(248,113,113,0.08));">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#f87171,#ef4444);box-shadow:0 4px 12px rgba(239,68,68,0.35);">
-                <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="text-xl md:text-2xl font-gaming font-bold" style="color:#f87171;">{{ $stats['total_karyawan'] }}</div>
-                <div class="text-[10px] md:text-xs font-semibold mt-0.5 leading-tight" style="color:var(--text-secondary);">Karyawan</div>
-            </div>
-        </div>
-
     </div>
     @endif
 
     {{-- Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-
-        {{-- Total Meeting --}}
-        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(59,130,246,0.15);">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(59,130,246,0.12);box-shadow:0 0 16px rgba(59,130,246,0.2);">
-                <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#93c5fd;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
+    <div class="dashboard-section">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 md:gap-3">
+            @php
+                $statCards = [
+                    ['label' => 'Total Meeting', 'count' => $stats['total_meetings'], 'color' => '#60a5fa', 'bg' => 'rgba(59,130,246,0.12)', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                    ['label' => 'Total Asset', 'count' => $stats['total_assets'], 'color' => '#a78bfa', 'bg' => 'rgba(124,58,237,0.12)', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
+                    ['label' => 'Total Tagihan', 'count' => $stats['total_payments'], 'color' => '#34d399', 'bg' => 'rgba(16,185,129,0.12)', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
+                ];
+            @endphp
+            @foreach($statCards as $card)
+            <div class="stat-card-compact">
+                <div class="stat-icon-box" style="background:{{ $card['bg'] }};box-shadow:0 0 14px {{ $card['color'] }}20;">
+                    <svg style="color:{{ $card['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-num">{{ $card['count'] }}</div>
+                    <div class="stat-label-text" style="font-size:0.7rem;">{{ $card['label'] }}</div>
+                </div>
             </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total_meetings'] }}</div>
-                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Meeting</div>
-            </div>
+            @endforeach
         </div>
-
-        {{-- Total Asset --}}
-        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(124,58,237,0.15);">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.12);box-shadow:0 0 16px rgba(124,58,237,0.2);">
-                <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total_assets'] }}</div>
-                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Asset</div>
-            </div>
-        </div>
-
-        {{-- Total Tagihan --}}
-        <div class="gaming-card p-4 md:p-5 flex items-center gap-3 md:gap-4" style="border:1px solid rgba(16,185,129,0.15);">
-            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.12);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-5 h-5 md:w-6 md:h-6" style="color:#6ee7b7;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-2xl md:text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total_payments'] }}</div>
-                <div class="text-xs md:text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Tagihan</div>
-            </div>
-        </div>
-
     </div>
 
     {{-- Meeting Hari Ini + Pembayaran Mendatang --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
-        {{-- Meeting Hari Ini --}}
-        <div class="gaming-card overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
-                <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
-                    <svg class="w-5 h-5" style="color:#3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    MEETING HARI INI
-                </h3>
-                <span class="badge" style="background:rgba(59,130,246,0.2);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);font-size:0.7rem;">{{ today()->isoFormat('D MMM') }}</span>
-            </div>
-            <div class="divide-y" style="border-color:var(--border-color);">
-                @forelse($todayMeetings as $meeting)
-                <div class="px-5 py-3 flex items-center gap-3 transition hover:bg-slate-100/5">
-                    <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#60a5fa;box-shadow:0 0 6px rgba(96,165,250,0.6);"></span>
-                    <div class="min-w-0 flex-1">
-                        <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
-                        <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ substr($meeting->start_time,0,5) }} – {{ substr($meeting->end_time,0,5) }} · {{ $meeting->team->name }} · {{ $meeting->room->name }}</p>
+    <div class="dashboard-section">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-2.5 md:gap-3">
+            {{-- Meeting Hari Ini --}}
+            <div class="gaming-card overflow-hidden">
+                <div class="card-header">
+                    <span class="card-header-title">
+                        <svg style="color:#3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Meeting Hari Ini
+                    </span>
+                    <span class="badge badge-blue text-[0.6rem]">{{ today()->isoFormat('D MMM') }}</span>
+                </div>
+                <div>
+                    @forelse($todayMeetings as $meeting)
+                    <div class="card-list-item">
+                        <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#60a5fa;box-shadow:0 0 6px rgba(96,165,250,0.6);"></span>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $meeting->title }}</p>
+                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">{{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }} · {{ $meeting->team->name }} · {{ $meeting->room->name }}</p>
+                        </div>
                     </div>
+                    @empty
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p>Tidak ada meeting hari ini</p>
+                    </div>
+                    @endforelse
                 </div>
-                @empty
-                <div class="px-5 py-6 text-center">
-                    <p class="text-sm" style="color:var(--text-muted);">Tidak ada meeting hari ini</p>
-                </div>
-                @endforelse
             </div>
-        </div>
 
-        {{-- Pembayaran Mendatang --}}
-        @php
-            $hasOverdue = $overduePayments->isNotEmpty();
-            $hasToday   = $todayPayments->isNotEmpty();
-            $hasWarning = $warningPayments->isNotEmpty();
-        @endphp
-        @if($hasOverdue || $hasToday || $hasWarning)
-        <div class="gaming-card overflow-hidden flex flex-col">
-            <div class="flex items-center justify-between px-5 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
-                <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
-                    <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                    </svg>
-                    PEMBAYARAN MENDATANG
-                </h3>
-                <button type="button" onclick="openModal('semua-pembayaran-modal')" class="text-xs font-medium cursor-pointer" style="color:var(--color-accent);">Lihat Semua &rarr;</button>
-            </div>
+            {{-- Pembayaran Mendatang --}}
+            @php
+                $hasOverdue = $overduePayments->isNotEmpty();
+                $hasToday   = $todayPayments->isNotEmpty();
+                $hasWarning = $warningPayments->isNotEmpty();
+            @endphp
+            @if($hasOverdue || $hasToday || $hasWarning)
+            <div class="gaming-card overflow-hidden flex flex-col">
+                <div class="card-header flex-shrink-0">
+                    <span class="card-header-title">
+                        <svg style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        Pembayaran Mendatang
+                    </span>
+                    <button type="button" onclick="openModal('semua-pembayaran-modal')" class="text-[0.65rem] font-medium cursor-pointer" style="color:var(--color-accent);">Lihat Semua &rarr;</button>
+                </div>
                 @if($tokenAlertDashboard)
-                <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="block rounded-xl overflow-hidden transition" style="text-decoration:none;margin-bottom:8px;background:{{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.04)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.04)' : 'rgba(59,130,246,0.04)') }};border:1px solid {{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.15)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.15)' : 'rgba(59,130,246,0.15)') }};" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid {{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.08)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.08)' : 'rgba(59,130,246,0.08)') }};">
-                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:{{ $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : ($tokenAlertDashboard['level'] === 'warning' ? '#f59e0b' : '#3b82f6') }};">
+                <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="block mx-3 my-2.5 rounded-xl overflow-hidden transition" style="text-decoration:none;background:{{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.04)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.04)' : 'rgba(59,130,246,0.04)') }};border:1px solid {{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.15)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.15)' : 'rgba(59,130,246,0.15)') }};" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                    <div class="px-3 py-1.5 flex items-center justify-between" style="border-bottom:1px solid {{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.08)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.08)' : 'rgba(59,130,246,0.08)') }};">
+                        <span class="text-[0.6rem] font-bold uppercase tracking-wider" style="color:{{ $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : ($tokenAlertDashboard['level'] === 'warning' ? '#f59e0b' : '#3b82f6') }};">
                             Token Listrik
-                            @if($tokenAlertDashboard['level'] === 'danger')
-                                — Segera Isi
-                            @elseif($tokenAlertDashboard['level'] === 'warning')
-                                — Warning
-                            @else
-                                — Perhatian
+                            @if($tokenAlertDashboard['level'] === 'danger') — Segera Isi
+                            @elseif($tokenAlertDashboard['level'] === 'warning') — Warning
+                            @else — Perhatian
                             @endif
                         </span>
-                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:{{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.15)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.15)' : 'rgba(59,130,246,0.15)') }};color:{{ $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : ($tokenAlertDashboard['level'] === 'warning' ? '#f59e0b' : '#3b82f6') }};">{{ number_format($tokenAlertDashboard['kwh'], 0) }} KWH</span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold" style="background:{{ $tokenAlertDashboard['level'] === 'danger' ? 'rgba(239,68,68,0.15)' : ($tokenAlertDashboard['level'] === 'warning' ? 'rgba(245,158,11,0.15)' : 'rgba(59,130,246,0.15)') }};color:{{ $tokenAlertDashboard['level'] === 'danger' ? '#ef4444' : ($tokenAlertDashboard['level'] === 'warning' ? '#f59e0b' : '#3b82f6') }};">{{ number_format($tokenAlertDashboard['kwh'], 0) }} KWH</span>
                     </div>
-                    <div class="px-4 py-2.5 flex items-center justify-between">
-                        <span class="text-xs" style="color:var(--text-muted);">{{ $tokenAlertDashboard['message'] }}</span>
-                        <svg class="w-4 h-4 flex-shrink-0" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="px-3 py-1.5 flex items-center justify-between">
+                        <span class="text-[0.65rem]" style="color:var(--text-muted);">{{ $tokenAlertDashboard['message'] }}</span>
+                        <svg class="w-3 h-3 flex-shrink-0" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </div>
                 </a>
                 @endif
-            <div class="overflow-y-auto p-2.5 space-y-2.5" style="max-height:340px;">
-                @if($hasOverdue)
-                <div class="rounded-xl overflow-hidden" style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.1);">
-                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid rgba(239,68,68,0.08);">
-                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:#ef4444;">Terlewat</span>
-                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(239,68,68,0.15);color:#ef4444;">{{ $overduePayments->count() }}</span>
-                    </div>
-                    @foreach($overduePayments as $p)
-                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="cursor:pointer;{{ !$loop->last ? 'border-bottom:1px solid rgba(239,68,68,0.06);' : '' }}" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
-                        <div class="min-w-0 flex-1">
-                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
-                            <p class="text-xs mt-0.5" style="color:#ef4444;">Lewat {{ \Carbon\Carbon::parse($p['due_date'])->diffInDays() }} hari &middot; {{ $p['jenis'] }}</p>
+                <div class="overflow-y-auto" style="max-height:340px;">
+                    <div class="p-2 space-y-1.5">
+                        @if($hasOverdue)
+                        <div class="rounded-lg overflow-hidden" style="background:rgba(239,68,68,0.03);border:1px solid rgba(239,68,68,0.08);">
+                            <div class="px-3 py-1.5 flex items-center justify-between" style="border-bottom:1px solid rgba(239,68,68,0.06);">
+                                <span class="text-[0.6rem] font-bold uppercase tracking-wider" style="color:#ef4444;">Terlewat</span>
+                                <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold" style="background:rgba(239,68,68,0.15);color:#ef4444;">{{ $overduePayments->count() }}</span>
+                            </div>
+                            @foreach($overduePayments as $p)
+                            <div class="px-3 py-1.5 flex items-center justify-between gap-2 pembayaran-item" style="cursor:pointer;" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-xs font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
+                                    <p class="text-[0.6rem]" style="color:#ef4444;">Lewat {{ \Carbon\Carbon::parse($p['due_date'])->diffInDays() }} hari · {{ $p['jenis'] }}</p>
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <p class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
+                                    <span class="badge text-[9px]" style="background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">{{ ucfirst($p['status']) }}</span>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
-                        <div class="text-right flex-shrink-0">
-                            <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
-                            <span class="badge text-[10px] mt-0.5" style="background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);">{{ ucfirst($p['status']) }}</span>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                @endif
+                        @endif
 
-                @if($hasToday)
-                <div class="rounded-xl overflow-hidden" style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);">
-                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid rgba(245,158,11,0.08);">
-                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:#f59e0b;">Hari Ini</span>
-                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(245,158,11,0.15);color:#f59e0b;">{{ $todayPayments->count() }}</span>
-                    </div>
-                    @foreach($todayPayments as $p)
-                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="cursor:pointer;{{ !$loop->last ? 'border-bottom:1px solid rgba(245,158,11,0.06);' : '' }}" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
-                        <div class="min-w-0 flex-1">
-                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
-                            <p class="text-xs mt-0.5" style="color:#f59e0b;">Jatuh tempo hari ini &middot; {{ $p['jenis'] }}</p>
+                        @if($hasToday)
+                        <div class="rounded-lg overflow-hidden" style="background:rgba(245,158,11,0.03);border:1px solid rgba(245,158,11,0.08);">
+                            <div class="px-3 py-1.5 flex items-center justify-between" style="border-bottom:1px solid rgba(245,158,11,0.06);">
+                                <span class="text-[0.6rem] font-bold uppercase tracking-wider" style="color:#f59e0b;">Hari Ini</span>
+                                <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold" style="background:rgba(245,158,11,0.15);color:#f59e0b;">{{ $todayPayments->count() }}</span>
+                            </div>
+                            @foreach($todayPayments as $p)
+                            <div class="px-3 py-1.5 flex items-center justify-between gap-2 pembayaran-item" style="cursor:pointer;" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-xs font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
+                                    <p class="text-[0.6rem]" style="color:#f59e0b;">Jatuh tempo hari ini · {{ $p['jenis'] }}</p>
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <p class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
+                                    <span class="badge text-[9px]" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);">{{ ucfirst($p['status']) }}</span>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
-                        <div class="text-right flex-shrink-0">
-                            <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
-                            <span class="badge text-[10px] mt-0.5" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);">{{ ucfirst($p['status']) }}</span>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                @endif
+                        @endif
 
-                @if($hasWarning)
-                <div class="rounded-xl overflow-hidden" style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);">
-                    <div class="px-4 py-2.5 flex items-center justify-between" style="border-bottom:1px solid rgba(245,158,11,0.08);">
-                        <span class="text-xs font-gaming font-bold uppercase tracking-wider" style="color:#f59e0b;">Mendatang</span>
-                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(245,158,11,0.15);color:#fbbf24;">{{ $warningPayments->count() }}</span>
-                    </div>
-                    @foreach($warningPayments as $p)
-                    <div class="px-4 py-2.5 flex items-center justify-between gap-3 pembayaran-item" style="cursor:pointer;{{ !$loop->last ? 'border-bottom:1px solid rgba(245,158,11,0.06);' : '' }}" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
-                        <div class="min-w-0 flex-1">
-                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
-                            <p class="text-xs mt-0.5" style="color:var(--text-muted);">Jatuh tempo {{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }} &middot; {{ $p['jenis'] }}</p>
+                        @if($hasWarning)
+                        <div class="rounded-lg overflow-hidden" style="background:rgba(59,130,246,0.03);border:1px solid rgba(59,130,246,0.08);">
+                            <div class="px-3 py-1.5 flex items-center justify-between" style="border-bottom:1px solid rgba(59,130,246,0.06);">
+                                <span class="text-[0.6rem] font-bold uppercase tracking-wider" style="color:#3b82f6;">Mendatang</span>
+                                <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold" style="background:rgba(59,130,246,0.15);color:#60a5fa;">{{ $warningPayments->count() }}</span>
+                            </div>
+                            @foreach($warningPayments as $p)
+                            <div class="px-3 py-1.5 flex items-center justify-between gap-2 pembayaran-item" style="cursor:pointer;" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-xs font-medium truncate" style="color:var(--text-primary);">{{ $p['label'] }}</p>
+                                    <p class="text-[0.6rem]" style="color:var(--text-muted);">Jatuh tempo {{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }} · {{ $p['jenis'] }}</p>
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <p class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
+                                    <span class="badge text-[9px]" style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.2);">{{ ucfirst($p['status']) }}</span>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
-                        <div class="text-right flex-shrink-0">
-                            <p class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</p>
-                            <span class="badge text-[10px] mt-0.5" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);">{{ ucfirst($p['status']) }}</span>
-                        </div>
+                        @endif
                     </div>
-                    @endforeach
                 </div>
-                @endif
             </div>
+            @else
+            <div class="gaming-card overflow-hidden">
+                <div class="empty-state" style="min-height:6rem;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    <p>Tidak ada pembayaran mendatang</p>
+                </div>
+            </div>
+            @endif
         </div>
-        @else
-        <div class="gaming-card overflow-hidden flex items-center justify-center" style="min-height:120px;">
-            <p class="text-sm" style="color:var(--text-muted);">Tidak ada pembayaran mendatang</p>
-        </div>
-        @endif
     </div>
 
+    {{-- Pajak Approval Alert --}}
     @php
         $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin']);
     @endphp
     @if($isApprover && ($pendingPajakApprovalsCount ?? 0) > 0)
-    <a href="{{ route('admin.vehicles.index') }}#pending-approvals" style="text-decoration:none;display:block;">
-        <div class="gaming-card px-5 py-4 flex items-center gap-3" style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.15);transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(245,158,11,0.4)'" onmouseout="this.style.borderColor='rgba(245,158,11,0.15)'">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(245,158,11,0.12);">
-                <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+    <div class="dashboard-section">
+        <a href="{{ route('admin.vehicles.index') }}#pending-approvals" style="text-decoration:none;display:block;">
+            <div class="stat-card-compact gap-3" style="border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.03);">
+                <div class="stat-icon-box" style="background:rgba(245,158,11,0.12);width:2.5rem;height:2.5rem;">
+                    <svg class="w-4 h-4" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold" style="color:#f59e0b;">{{ $pendingPajakApprovalsCount }} Pengajuan Pajak Menunggu</p>
+                    <p class="text-xs" style="color:var(--text-muted);">Pengajuan pembayaran pajak kendaraan perlu persetujuan</p>
+                </div>
+                <svg class="w-4 h-4 flex-shrink-0" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
             </div>
-            <div class="flex-1 min-w-0">
-                <div style="font-weight:600;font-size:15px;color:#f59e0b;">{{ $pendingPajakApprovalsCount }} Pengajuan Pajak Menunggu</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Pengajuan pembayaran pajak kendaraan perlu persetujuan</div>
-            </div>
-            <svg class="w-4 h-4 flex-shrink-0" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </div>
-    </a>
+        </a>
+    </div>
     @endif
 
-    {{-- Grafik Pengeluaran & Tagihan + Ringkasan --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4">
-        <div class="gaming-card p-4 md:p-5 lg:col-span-2">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
-                    <svg class="w-5 h-5" style="color:#3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
-                    PENGELUARAN & TAGIHAN
-                </h3>
-                <span class="text-xs" style="color:var(--text-muted);">6 bulan terakhir</span>
-            </div>
-            <div style="position:relative;height:260px;"><canvas id="monthlyChart"></canvas></div>
-        </div>
-        @php
-            $sumTagihan = array_sum($chartTagihan);
-            $sumBayar = array_sum($chartBayar);
-            $sisa = $sumTagihan - $sumBayar;
-            $pctBayar = $sumTagihan > 0 ? round($sumBayar / $sumTagihan * 100) : 0;
-        @endphp
-        <div class="gaming-card p-4 md:p-5 flex flex-col">
-            <h3 class="font-gaming font-semibold flex items-center gap-2 mb-2" style="color:var(--text-primary);letter-spacing:0.05em;">
-                <svg class="w-4 h-4" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                RINGKASAN
-            </h3>
-            <div class="flex-1 flex flex-col items-center justify-center">
-                <div style="position:relative;width:150px;height:150px;">
-                    <canvas id="summaryDonut"></canvas>
+    {{-- Grafik Pengeluaran & Tagihan + Ringkasan Donut --}}
+    <div class="dashboard-section">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-2.5 md:gap-3">
+            {{-- Bar Chart --}}
+            <div class="gaming-card lg:col-span-3">
+                <div class="card-header">
+                    <span class="card-header-title">
+                        <svg style="color:#3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Pengeluaran & Tagihan
+                    </span>
+                    <span class="text-[0.65rem]" style="color:var(--text-muted);">6 bulan terakhir</span>
+                </div>
+                <div class="card-body">
+                    <div style="position:relative;height:240px;"><canvas id="monthlyChart"></canvas></div>
                 </div>
             </div>
-            <div class="grid grid-cols-3 gap-2 mt-3">
-                <div class="text-center px-2 py-2 rounded-xl" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.12);">
-                    <div class="text-xs font-semibold" style="color:#818cf8;">Tagihan</div>
-                    <div class="text-sm font-bold" style="color:#6366f1;">Rp {{ number_format($sumTagihan, 0, ',', '.') }}</div>
-                    <div class="text-[10px] font-semibold mt-0.5" style="color:var(--text-muted);">100%</div>
+
+            {{-- Donut Chart --}}
+            <div class="gaming-card lg:col-span-2 flex flex-col">
+                <div class="card-header flex-shrink-0">
+                    <span class="card-header-title">
+                        <svg style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Ringkasan
+                    </span>
                 </div>
-                <div class="text-center px-2 py-2 rounded-xl" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.12);">
-                    <div class="text-xs font-semibold" style="color:#6ee7b7;">Dibayar</div>
-                    <div class="text-sm font-bold" style="color:#34d399;">Rp {{ number_format($sumBayar, 0, ',', '.') }}</div>
-                    <div class="text-[10px] font-semibold mt-0.5" style="color:var(--text-muted);">{{ $pctBayar }}%</div>
+                <div class="flex-1 flex items-center justify-center p-4">
+                    <div style="position:relative;height:140px;width:140px;max-width:100%;"><canvas id="ringkasanChart"></canvas></div>
                 </div>
-                <div class="text-center px-2 py-2 rounded-xl" style="background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.12);">
-                    <div class="text-xs font-semibold" style="color:#fdba74;">Sisa</div>
-                    <div class="text-sm font-bold" style="color:#fb923c;">Rp {{ number_format($sisa, 0, ',', '.') }}</div>
-                    <div class="text-[10px] font-semibold mt-0.5" style="color:var(--text-muted);">{{ 100 - $pctBayar }}%</div>
+                <div class="grid grid-cols-3 gap-1.5 px-4 pb-4 flex-shrink-0">
+                    <div class="flex flex-col items-center gap-0.5 py-1.5 rounded-lg" style="background:rgba(59,130,246,0.06);">
+                        <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Tagihan</span>
+                        <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($totalTagihanDonut, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-0.5 py-1.5 rounded-lg" style="background:rgba(16,185,129,0.06);">
+                        <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Dibayar</span>
+                        <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($totalBayarDonut, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-0.5 py-1.5 rounded-lg" style="background:rgba(245,158,11,0.06);">
+                        <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Sisa</span>
+                        <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($sisaDonut, 0, ',', '.') }}</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
 </div>
-</div>
+
 
 {{-- Notifikasi Popup Container --}}
-<div id="notification-stack" style="position:fixed;top:16px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;max-width:380px;width:calc(100% - 48px);pointer-events:none;"></div>
+<div id="notification-stack" class="toast-stack"></div>
 
 @php
     $dismissibleAlerts = [];
@@ -498,90 +416,71 @@
 </script>
 
 {{-- Modal Semua Pembayaran --}}
-<div id="semua-pembayaran-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeModal('semua-pembayaran-modal')">
-    <div class="w-full" style="max-width:800px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.4);">
-        <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);background:var(--bg-surface);">
-            <h3 class="font-gaming font-semibold flex items-center gap-2" style="color:var(--text-primary);letter-spacing:0.05em;">
-                <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                </svg>
-                SEMUA PEMBAYARAN MENDATANG
-            </h3>
-            <button type="button" onclick="closeModal('semua-pembayaran-modal')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:4px;">&times;</button>
+<div id="semua-pembayaran-modal" class="modal-modern" onclick="if(event.target===this)closeModal('semua-pembayaran-modal')">
+    <div class="modal-modern-panel lg" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Semua Pembayaran Mendatang</h3>
+            <button type="button" onclick="closeModal('semua-pembayaran-modal')" class="modal-modern-close">&times;</button>
         </div>
         <div class="overflow-y-auto" style="max-height:65vh;">
-            <table class="w-full text-left" style="border-collapse:collapse;">
+            <table class="gaming-table">
                 <thead>
-                    <tr style="background:var(--bg-surface);position:sticky;top:0;z-index:1;">
-                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Status</th>
-                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Label</th>
-                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Jenis</th>
-                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Jatuh Tempo</th>
-                        <th class="px-5 py-3 text-xs font-gaming font-bold uppercase tracking-wider text-right" style="color:var(--text-muted);border-bottom:1px solid var(--border-color);">Nominal</th>
+                    <tr>
+                        <th>Status</th>
+                        <th>Label</th>
+                        <th>Jenis</th>
+                        <th>Jatuh Tempo</th>
+                        <th class="text-right">Nominal</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($allMerged->sortBy('due_date') as $p)
-                    <tr class="transition modal-row" style="border-bottom:1px solid var(--border-color);cursor:pointer;" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
-                        <td class="px-5 py-3">
+                    <tr style="cursor:pointer;" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
+                        <td>
                             @php
                                 $isOverdue = \Carbon\Carbon::parse($p['due_date'])->lt(today());
                                 $isToday = \Carbon\Carbon::parse($p['due_date'])->isToday();
                             @endphp
                             @if($isOverdue)
-                                <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.25);">Terlewat</span>
+                                <span class="badge badge-red" style="font-size:0.6rem;">Terlewat</span>
                             @elseif($isToday)
-                                <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">Hari Ini</span>
+                                <span class="badge badge-yellow" style="font-size:0.6rem;">Hari Ini</span>
                             @else
-                                <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold" style="background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);">Mendatang</span>
+                                <span class="badge badge-blue" style="font-size:0.6rem;">Mendatang</span>
                             @endif
                         </td>
-                        <td class="px-5 py-3">
-                            <p class="text-sm font-medium truncate" style="color:var(--text-primary);max-width:240px;">{{ $p['label'] }}</p>
-                        </td>
-                        <td class="px-5 py-3">
-                            <span class="text-xs" style="color:var(--text-muted);">{{ $p['jenis'] }}</span>
-                        </td>
-                        <td class="px-5 py-3">
-                            <span class="text-xs" style="color:var(--text-muted);">{{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }}</span>
-                        </td>
-                        <td class="px-5 py-3 text-right">
-                            <span class="text-sm font-semibold" style="color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</span>
-                        </td>
+                        <td><span style="font-weight:500;color:var(--text-primary);">{{ $p['label'] }}</span></td>
+                        <td><span style="color:var(--text-muted);">{{ $p['jenis'] }}</span></td>
+                        <td><span style="color:var(--text-muted);">{{ \Carbon\Carbon::parse($p['due_date'])->format('d M Y') }}</span></td>
+                        <td class="text-right"><span style="font-weight:600;color:var(--text-primary);">Rp {{ number_format($p['amount'], 0, ',', '.') }}</span></td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-5 py-8 text-center">
-                            <p class="text-sm" style="color:var(--text-muted);">Tidak ada data pembayaran</p>
-                        </td>
+                        <td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada data pembayaran</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="px-6 py-3 flex items-center justify-between" style="border-top:1px solid var(--border-color);background:var(--bg-surface);">
-            <span class="text-xs" style="color:var(--text-muted);">Total: {{ $allMerged->count() }} item &middot; Klik baris untuk bayar</span>
-            <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="text-xs font-medium" style="color:var(--color-accent);">Buka Halaman Pembayaran &rarr;</a>
+        <div class="modal-modern-footer">
+            <span class="text-[0.65rem]" style="color:var(--text-muted);">Total: {{ $allMerged->count() }} item · Klik baris untuk bayar</span>
+            <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="text-[0.65rem] font-medium" style="color:var(--color-accent);">Buka Halaman Pembayaran &rarr;</a>
         </div>
     </div>
 </div>
 
 {{-- Modal Bayar dari Dashboard --}}
-<div id="dashboard-bayar-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeDashboardBayar()">
-    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Bayar / Lunaskan</h3>
-            <button type="button" onclick="closeDashboardBayar()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px;">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+<div id="dashboard-bayar-modal" class="modal-modern" style="z-index:60;" onclick="if(event.target===this)closeDashboardBayar()">
+    <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Bayar / Lunaskan</h3>
+            <button type="button" onclick="closeDashboardBayar()" class="modal-modern-close">&times;</button>
         </div>
-        <div class="px-6 py-5 overflow-y-auto flex-1">
-            <div style="margin-bottom:16px;padding:12px;border-radius:10px;background:var(--bg-surface-2);border:1px solid var(--border-color);">
-                <div id="dbayar-name" style="font-weight:600;font-size:14px;color:var(--text-primary);"></div>
-                <div id="dbayar-nominal" style="font-size:13px;color:var(--text-muted);margin-top:4px;"></div>
-                <div id="dbayar-due" style="font-size:13px;color:var(--text-muted);margin-top:2px;"></div>
+        <div class="modal-modern-body">
+            <div class="p-3 rounded-xl mb-4" style="background:var(--bg-surface-2);border:1px solid var(--border-color);">
+                <div id="dbayar-name" style="font-weight:600;font-size:0.85rem;color:var(--text-primary);"></div>
+                <div id="dbayar-nominal" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+                <div id="dbayar-due" style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;"></div>
             </div>
             <form id="dashboard-bayar-form" method="POST" action="{{ url('admin/pembayaran') }}">
                 @csrf
@@ -589,29 +488,25 @@
                 <input type="hidden" name="jenis" id="dbayar-jenis" value="">
                 <input type="hidden" name="id" id="dbayar-id" value="">
                 <input type="hidden" name="status" value="lunas">
-                {{-- internet fields --}}
                 <input type="hidden" name="nama_internet" id="dbayar-nama_internet">
                 <input type="hidden" name="provider" id="dbayar-provider">
                 <input type="hidden" name="pic" id="dbayar-pic">
                 <input type="hidden" name="jabatan" id="dbayar-jabatan">
                 <input type="hidden" name="masa_tenggang" id="dbayar-masa_tenggang">
                 <input type="hidden" name="biaya" id="dbayar-biaya">
-                {{-- listrik fields --}}
                 <input type="hidden" name="periode" id="dbayar-periode">
                 <input type="hidden" name="tanggal_tagihan" id="dbayar-tanggal_tagihan">
                 <input type="hidden" name="jatuh_tempo" id="dbayar-jatuh_tempo_val">
                 <input type="hidden" name="nominal" id="dbayar-nominal_val">
-                <div class="space-y-4">
-                    <div>
-                        <label class="gaming-label">Tanggal Bayar <span style="color:#f87171;">*</span></label>
-                        <input type="date" name="tanggal_bayar" id="dbayar-tanggal_bayar" required value="{{ date('Y-m-d') }}" class="gaming-input">
-                    </div>
-                </div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
-                    <button type="button" onclick="closeDashboardBayar()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;border:none;box-shadow:0 4px 15px rgba(16,185,129,0.3);cursor:pointer;">Lunaskan</button>
+                <div>
+                    <label class="gaming-label">Tanggal Bayar <span style="color:#f87171;">*</span></label>
+                    <input type="date" name="tanggal_bayar" id="dbayar-tanggal_bayar" required value="{{ date('Y-m-d') }}" class="gaming-input">
                 </div>
             </form>
+        </div>
+        <div class="modal-modern-footer">
+            <button type="button" onclick="closeDashboardBayar()" class="btn btn-secondary btn-sm">Batal</button>
+            <button type="submit" form="dashboard-bayar-form" class="btn btn-success btn-sm" style="background:linear-gradient(135deg,#10b981,#059669);">Lunaskan</button>
         </div>
     </div>
 </div>
@@ -622,37 +517,11 @@
 
 @push('styles')
 <style>
-.card-hover-info .hover-info {
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-.card-hover-info:hover .hover-info {
-    opacity: 1;
-}
 .pembayaran-item {
     transition: background 0.15s ease;
 }
 .pembayaran-item:hover {
-    background: rgba(255,255,255,0.03);
-}
-.modal-row {
-    transition: background 0.15s ease;
-}
-.modal-row:hover {
-    background: rgba(255,255,255,0.02);
-}
-.overflow-y-auto::-webkit-scrollbar {
-    width: 4px;
-}
-.overflow-y-auto::-webkit-scrollbar-track {
-    background: transparent;
-}
-.overflow-y-auto::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
-}
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(124,58,237,0.03);
 }
 </style>
 @endpush
@@ -718,15 +587,11 @@
         }
 
         document.getElementById('dbayar-tanggal_bayar').value = new Date().toISOString().split('T')[0];
-        document.getElementById('dashboard-bayar-modal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+        openModal('dashboard-bayar-modal');
     }
 
     function closeDashboardBayar() {
-        document.getElementById('dashboard-bayar-modal').style.display = 'none';
-        if (!document.getElementById('semua-pembayaran-modal') || document.getElementById('semua-pembayaran-modal').style.display === 'none') {
-            document.body.style.overflow = '';
-        }
+        closeModal('dashboard-bayar-modal');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -756,6 +621,14 @@
 
     // Chart
     document.addEventListener('DOMContentLoaded', function() {
+    var labels = @json($chartLabels);
+    var tagihan = @json($chartTagihan);
+    var bayar = @json($chartBayar);
+
+    function formatChartCurrency(v) {
+        return 'Rp ' + v.toLocaleString('id-ID');
+    }
+
     var ctx = document.getElementById('monthlyChart');
     if (ctx) {
         var labels = @json($chartLabels);
@@ -817,44 +690,69 @@
         });
     }
 
+
     function formatChartCurrency(v) {
         return 'Rp ' + v.toLocaleString('id-ID');
     }
 
-    // Summary Donut
-    var donutCtx = document.getElementById('summaryDonut');
-    if (donutCtx) {
-        new Chart(donutCtx.getContext('2d'), {
+    // Ringkasan Donut Chart
+    var rc = document.getElementById('ringkasanChart');
+    if (rc) {
+        var totalTagihan = tagihan.reduce(function(a, b) { return a + b; }, 0);
+        var totalBayar = bayar.reduce(function(a, b) { return a + b; }, 0);
+        var sisa = totalTagihan - totalBayar;
+        var pctBayar = totalTagihan > 0 ? (totalBayar / totalTagihan * 100) : 0;
+        var pctSisa = totalTagihan > 0 ? (sisa / totalTagihan * 100) : 0;
+
+        new Chart(rc.getContext('2d'), {
             type: 'doughnut',
             data: {
-                labels: ['Sudah Dibayar', 'Sisa'],
+                labels: ['Dibayar', 'Sisa'],
                 datasets: [{
-                    data: [{{ $sumBayar }}, {{ $sisa }}],
-                    backgroundColor: ['#10b981', '#fb923c'],
-                    hoverOffset: 6,
+                    data: [totalBayar, sisa],
+                    backgroundColor: ['rgba(16,185,129,0.85)', 'rgba(245,158,11,0.85)'],
+                    borderColor: ['#10b981', '#f59e0b'],
+                    borderWidth: 2,
+                    hoverOffset: 8,
                 }],
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
                 cutout: '65%',
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label: function(c) {
-                                var total = c.dataset.data.reduce(function(a, b) { return a + b; }, 0);
-                                var pct = total > 0 ? ((c.raw / total) * 100).toFixed(1) : 0;
-                                return c.label + ': ' + formatChartCurrency(c.raw) + ' (' + pct + '%)';
+                                var total = totalTagihan;
+                                var pct = c.raw / total * 100;
+                                return c.label + ': ' + formatChartCurrency(c.raw) + ' (' + pct.toFixed(1) + '%)';
                             },
                         },
                     },
                 },
             },
+            plugins: [{
+                afterDraw: function(chart) {
+                    var ctx = chart.ctx;
+                    var w = chart.width;
+                    var h = chart.height;
+                    var cx = chart.chartArea.left + (chart.chartArea.right - chart.chartArea.left) / 2;
+                    var cy = chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.font = 'bold 18px Poppins, sans-serif';
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#e2e8f0';
+                    ctx.fillText(formatChartCurrency(totalTagihan), cx, cy - 8);
+                    ctx.font = '11px Poppins, sans-serif';
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim() || '#94a3b8';
+                    ctx.fillText('Total Tagihan', cx, cy + 16);
+                },
+            }],
         });
     }
-});
-
+    });
 </script>
 @endpush
 @endsection

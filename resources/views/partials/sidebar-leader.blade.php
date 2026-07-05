@@ -1,45 +1,5 @@
 @php
     $isMeetingActive = request()->routeIs('koordinator.meetings.*', 'koordinator.mom.*', 'calendar');
-
-    $now = \Carbon\Carbon::today();
-    $threeDays = $now->copy()->addDays(3);
-    $totalTagihan = \App\Models\Payment::where('jenis', 'listrik')
-            ->where(function ($q) use ($now, $threeDays) {
-                $q->where('status', 'jatuh_tempo')
-                  ->orWhere(function ($q2) use ($now, $threeDays) {
-                      $q2->where('jatuh_tempo', '>=', $now)
-                         ->where('jatuh_tempo', '<=', $threeDays)
-                         ->where('status', '!=', 'lunas')
-                         ->where('status', '!=', 'pending');
-                  });
-            })->count()
-        + \App\Models\WifiPayment::where(function ($q) use ($now, $threeDays) {
-            $q->where('status', 'jatuh_tempo')
-              ->orWhere(function ($q2) use ($now, $threeDays) {
-                  $q2->where('masa_tenggang', '>=', $now)
-                     ->where('masa_tenggang', '<=', $threeDays)
-                     ->where('status', '!=', 'lunas')
-                     ->where('status', '!=', 'pending');
-              });
-        })->count()
-        + \App\Models\PembayaranAsetDigital::where(function ($q) use ($now, $threeDays) {
-            $q->where('status', 'jatuh_tempo')
-              ->orWhere(function ($q2) use ($now, $threeDays) {
-                  $q2->where('jatuh_tempo', '>=', $now)
-                     ->where('jatuh_tempo', '<=', $threeDays)
-                     ->where('status', '!=', 'lunas')
-                     ->where('status', '!=', 'pending');
-              });
-        })->count()
-        + \App\Models\PembayaranIplRuko::where(function ($q) use ($now, $threeDays) {
-            $q->where('status', 'jatuh_tempo')
-              ->orWhere(function ($q2) use ($now, $threeDays) {
-                  $q2->where('jatuh_tempo', '>=', $now)
-                     ->where('jatuh_tempo', '<=', $threeDays)
-                     ->where('status', '!=', 'lunas')
-                     ->where('status', '!=', 'pending');
-              });
-        })->count();
 @endphp
 
 <p class="sidebar-section-label">Menu Utama</p>
@@ -68,32 +28,9 @@
         <span class="flex-1 truncate">Meeting Saya</span>
         <span class="notif-badge-activity ml-auto" style="display:none;background:#ef4444;color:white;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;"></span>
     </a>
+    <a href="{{ route('koordinator.mom.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.mom.index') ? 'active' : '' }}"><span class="truncate">Rekap MOM</span></a>
     <a href="{{ route('calendar') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('calendar') ? 'active' : '' }}"><span class="truncate">Jadwal Meeting</span></a>
 </div>
-
-<p class="sidebar-section-label">Pembayaran</p>
-<a href="{{ route('payment-approval.tagihan') }}"
-    class="sidebar-item {{ request()->routeIs('payment-approval.tagihan') ? 'active' : '' }}">
-    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-    </svg>
-    <span class="truncate">Tagihan</span>
-    <span class="sidebar-badge tagihan-badge" style="{{ $totalTagihan > 0 ? '' : 'display:none;' }}background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;line-height:1.4;">{{ $totalTagihan }}</span>
-</a>
-<a href="{{ route('payment-approval.create') }}"
-    class="sidebar-item {{ request()->routeIs('payment-approval.create') ? 'active' : '' }}">
-    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-    </svg>
-    <span class="truncate">Ajukan Pembayaran</span>
-</a>
-<a href="{{ route('payment-approval.status') }}"
-    class="sidebar-item {{ request()->routeIs('payment-approval.status') ? 'active' : '' }}">
-    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-    </svg>
-    <span class="truncate">Status Pengajuan</span>
-</a>
 
 <p class="sidebar-section-label">Akun</p>
 <a href="{{ route('profile.edit') }}"

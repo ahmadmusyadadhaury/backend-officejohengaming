@@ -22,6 +22,7 @@ class PembayaranIplRuko extends Model
         'approved_at',
         'bukti_bayar',
         'notes',
+        'period',
     ];
 
     protected function casts(): array
@@ -32,6 +33,7 @@ class PembayaranIplRuko extends Model
             'tanggal_bayar' => 'date:d/m/Y',
             'approved_at' => 'datetime',
             'nominal' => 'decimal:2',
+            'period' => 'string',
         ];
     }
 

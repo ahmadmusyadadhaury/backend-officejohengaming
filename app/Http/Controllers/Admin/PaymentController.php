@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\TokenLowMail;
 use App\Models\ElectricityTokenReading;
 use App\Models\InternetUsageCheck;
+use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
@@ -14,6 +15,7 @@ use App\Models\User;
 use App\Models\WifiPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
@@ -33,8 +35,8 @@ class PaymentController extends Controller
             $stats = [
                 'total' => $all->count(),
                 'aktif' => $all->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $all->filter(fn ($w) => $w->status === 'jatuh_tempo' && ($w->masa_tenggang >= today()))->count(),
-                'terlambat' => $all->filter(fn ($w) => $w->status === 'jatuh_tempo' && $w->masa_tenggang < today())->count(),
+                'jatuh_tempo' => $all->filter(fn ($w) => is_null($w->requested_by) && !in_array($w->status, ['lunas', 'rejected']) && $w->masa_tenggang && $w->masa_tenggang <= today()->addDays(7) && $w->masa_tenggang >= today())->count(),
+                'terlambat' => $all->filter(fn ($w) => is_null($w->requested_by) && !in_array($w->status, ['lunas', 'rejected']) && $w->masa_tenggang && $w->masa_tenggang < today())->count(),
             ];
 
             $itemsJson = $items->values()->map(function ($w) {
@@ -83,8 +85,8 @@ class PaymentController extends Controller
             $stats = [
                 'total' => $all->count(),
                 'aktif' => $all->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $all->filter(fn ($p) => $p->status === 'jatuh_tempo' && $p->jatuh_tempo >= today())->count(),
-                'terlambat' => $all->filter(fn ($p) => $p->status === 'jatuh_tempo' && $p->jatuh_tempo < today())->count(),
+                'jatuh_tempo' => $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
+                'terlambat' => $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
             ];
 
             $itemsJson = $items->values()->map(fn ($p) => [
@@ -102,16 +104,33 @@ class PaymentController extends Controller
                 'notes' => $p->notes,
             ]);
 
-            $alertItems = $all->filter(fn ($p) => $p->status === 'jatuh_tempo')->values();
+            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
         } elseif ($jenis === 'ipl_ruko') {
-            $items = PembayaranIplRuko::orderBy('created_at', 'desc')->get();
             $all = PembayaranIplRuko::all();
 
+            $availableYears = $all->pluck('tanggal_tagihan')
+                ->map(fn ($d) => $d?->year)
+                ->filter()
+                ->unique()
+                ->sort()
+                ->values()
+                ->toArray();
+
+            if (empty($tahun) && ! empty($availableYears)) {
+                $tahun = (string) max($availableYears);
+            }
+
+            $query = PembayaranIplRuko::orderBy('tanggal_tagihan', 'desc');
+            if ($tahun) {
+                $query->whereYear('tanggal_tagihan', $tahun);
+            }
+            $items = $query->get();
+
             $stats = [
-                'total' => $all->count(),
-                'aktif' => $all->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $all->filter(fn ($p) => $p->status === 'jatuh_tempo' && $p->jatuh_tempo >= today())->count(),
-                'terlambat' => $all->filter(fn ($p) => $p->status === 'jatuh_tempo' && $p->jatuh_tempo < today())->count(),
+                'total' => $items->count(),
+                'aktif' => $items->where('status', 'lunas')->count(),
+                'jatuh_tempo' => $items->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
+                'terlambat' => $items->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
             ];
 
             $itemsJson = $items->values()->map(fn ($p) => [
@@ -126,9 +145,11 @@ class PaymentController extends Controller
                 'approved_by' => $p->approved_by,
                 'bukti_bayar' => $p->bukti_bayar,
                 'notes' => $p->notes,
+                'pic' => $p->pic,
+                'jabatan' => $p->jabatan,
             ]);
 
-            $alertItems = $all->filter(fn ($p) => $p->status === 'jatuh_tempo')->values();
+            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
         } else {
             $items = Payment::where('jenis', 'listrik')->orderBy('created_at', 'desc')->get();
             $all = Payment::where('jenis', 'listrik')->get();
@@ -136,8 +157,8 @@ class PaymentController extends Controller
             $stats = [
                 'total' => $all->count(),
                 'aktif' => $all->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $all->filter(fn ($p) => $p->status === 'jatuh_tempo' && $p->jatuh_tempo >= today())->count(),
-                'terlambat' => $all->filter(fn ($p) => $p->status === 'jatuh_tempo' && $p->jatuh_tempo < today())->count(),
+                'jatuh_tempo' => $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
+                'terlambat' => $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
             ];
 
             $itemsJson = $items->values()->map(function ($p) {
@@ -156,7 +177,7 @@ class PaymentController extends Controller
                 ];
             });
 
-            $alertItems = $all->filter(fn ($p) => $p->status === 'jatuh_tempo')->values();
+            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
         }
 
         $tokenReadings = collect();
@@ -169,6 +190,8 @@ class PaymentController extends Controller
         $topupHistory = collect();
         $topupRange = $request->get('topup_range', 'bulanan');
         $readingRange = $request->get('reading_range', 'bulanan');
+        $tahun = $request->get('tahun');
+        $availableYears = [];
 
         if ($jenis === 'listrik') {
             $tokenMonth = $request->get('token_month', now()->format('Y-m'));
@@ -265,7 +288,7 @@ class PaymentController extends Controller
             'jenisLabels', 'jenisIcons', 'tokenReadings', 'latestReading',
             'tokenAlert', 'capacityKwh', 'usedKwh', 'tokenMonth',
             'latestPayment', 'topupHistory', 'topupRange', 'readingRange',
-            'users', 'internetUsages', 'internetUsagesJson', 'internetUsageDate'
+            'users', 'internetUsages', 'internetUsagesJson', 'internetUsageDate', 'tahun', 'availableYears'
         ));
     }
 
@@ -281,9 +304,9 @@ class PaymentController extends Controller
                 'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
                 'masa_tenggang' => 'required|date',
                 'biaya' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
-                'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
+                'tanggal_bayar' => 'nullable|date',
             ]);
+            $data['status'] = 'jatuh_tempo';
             WifiPayment::create($data);
         } elseif ($jenis === 'aset_digital') {
             $data = $request->validate([
@@ -291,9 +314,9 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
-                'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
+                'tanggal_bayar' => 'nullable|date',
             ]);
+            $data['status'] = 'jatuh_tempo';
             PembayaranAsetDigital::create($data);
         } elseif ($jenis === 'ipl_ruko') {
             $data = $request->validate([
@@ -301,9 +324,13 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
-                'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
+                'tanggal_bayar' => 'nullable|date',
+                'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
+            $data['status'] = 'jatuh_tempo';
+            if ($request->hasFile('bukti_bayar')) {
+                $data['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
+            }
             PembayaranIplRuko::create($data);
         } else {
             $data = $request->validate([
@@ -311,9 +338,9 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
-                'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
+                'tanggal_bayar' => 'nullable|date',
             ]);
+            $data['status'] = 'jatuh_tempo';
             $data['jenis'] = $jenis;
             Payment::create($data);
         }
@@ -334,8 +361,7 @@ class PaymentController extends Controller
                 'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
                 'masa_tenggang' => 'required|date',
                 'biaya' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
-                'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
+                'tanggal_bayar' => 'nullable|date',
             ]);
             if (! empty($data['masa_tenggang'])) {
                 $data['masa_tenggang'] = Carbon::parse($data['masa_tenggang'])->format('Y-m-d');
@@ -351,8 +377,7 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
-                'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
+                'tanggal_bayar' => 'nullable|date',
             ]);
             if (! empty($data['tanggal_tagihan'])) {
                 $data['tanggal_tagihan'] = Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
@@ -371,8 +396,8 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
-                'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
+                'tanggal_bayar' => 'nullable|date',
+                'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
             if (! empty($data['tanggal_tagihan'])) {
                 $data['tanggal_tagihan'] = Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
@@ -383,6 +408,9 @@ class PaymentController extends Controller
             if (! empty($data['tanggal_bayar'])) {
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
+            if ($request->hasFile('bukti_bayar')) {
+                $data['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
+            }
             $model = PembayaranIplRuko::findOrFail($id);
             $model->update($data);
         } else {
@@ -391,8 +419,7 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
-                'status' => 'required|in:lunas,jatuh_tempo,pending,rejected',
-                'tanggal_bayar' => 'nullable|date|required_if:status,lunas',
+                'tanggal_bayar' => 'nullable|date',
             ]);
             if (! empty($data['tanggal_tagihan'])) {
                 $data['tanggal_tagihan'] = Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
@@ -405,6 +432,50 @@ class PaymentController extends Controller
             }
             $model = Payment::findOrFail($id);
             $model->update($data);
+        }
+
+        // Jika Bayar/Lunaskan → masuk ke approval queue (pending)
+        if ($request->input('status') === 'lunas') {
+            $class = match ($jenis) {
+                'internet' => WifiPayment::class,
+                'aset_digital' => PembayaranAsetDigital::class,
+                'ipl_ruko' => PembayaranIplRuko::class,
+                default => Payment::class,
+            };
+            $record = $class::findOrFail($id);
+
+            $updateData = [
+                'status' => 'pending',
+                'requested_by' => auth()->id(),
+                'tanggal_bayar' => $request->input('tanggal_bayar', now()),
+                'period' => $request->input('period', 'bulanan'),
+            ];
+
+            if ($request->hasFile('bukti_bayar')) {
+                $updateData['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
+            }
+
+            $record->update($updateData);
+
+            $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
+            $jenisLabel = match ($jenis) {
+                'internet' => 'Internet',
+                'listrik' => 'Listrik',
+                'aset_digital' => 'Aset Digital',
+                'ipl_ruko' => 'IPL Ruko',
+            };
+            $message = "Pembayaran {$jenisLabel} ({$detail}) menunggu approval.";
+
+            $approvers = User::whereIn('role', ['gm', 'ceo'])->get();
+            foreach ($approvers as $approver) {
+                Notification::send($approver->id, 'activity', 'Pengajuan Pembayaran', $message, route('admin.payment-approvals.index'));
+                Cache::forget('approval_check_'.$approver->id);
+            }
+
+            Cache::forget('tagihan_check_'.auth()->id());
+
+            return redirect()->route('admin.payment-approvals.index')
+                ->with('success', 'Pembayaran berhasil diajukan. Menunggu persetujuan GM/CEO.');
         }
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
@@ -428,6 +499,58 @@ class PaymentController extends Controller
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
             ->with('success', 'Tagihan berhasil dihapus.');
+    }
+
+    public function storeBulkIplRuko(Request $request)
+    {
+        $data = $request->validate([
+            'tahun' => 'required|integer|min:2020|max:2040',
+            'nominal' => 'required|numeric|min:0',
+            'pic' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+        ]);
+
+        $tahun = (int) $data['tahun'];
+        $nominal = $data['nominal'];
+        $pic = $data['pic'];
+        $jabatan = $data['jabatan'];
+        $now = now();
+        $created = 0;
+
+        $bulanIndonesia = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        for ($bulan = 1; $bulan <= 12; $bulan++) {
+            $tanggalAkhir = Carbon::create($tahun, $bulan)->endOfMonth();
+            $jatuhTempo = $tanggalAkhir->copy();
+
+            $status = ($tahun < $now->year || ($tahun === $now->year && $bulan < $now->month))
+                ? 'jatuh_tempo'
+                : 'pending';
+
+            $existing = PembayaranIplRuko::whereYear('tanggal_tagihan', $tahun)
+                ->whereMonth('tanggal_tagihan', $bulan)
+                ->exists();
+
+            if (! $existing) {
+                PembayaranIplRuko::create([
+                    'periode' => $bulanIndonesia[$bulan].' '.$tahun,
+                    'tanggal_tagihan' => $tanggalAkhir,
+                    'jatuh_tempo' => $jatuhTempo,
+                    'nominal' => $nominal,
+                    'pic' => $pic,
+                    'jabatan' => $jabatan,
+                    'status' => $status,
+                ]);
+                $created++;
+            }
+        }
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'ipl_ruko', 'tahun' => $tahun])
+            ->with('success', "Berhasil menambahkan {$created} tagihan IPL Ruko tahun {$tahun}.");
     }
 
     public function storeTokenReading(Request $request)

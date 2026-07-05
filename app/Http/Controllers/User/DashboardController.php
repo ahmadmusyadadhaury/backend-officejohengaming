@@ -54,10 +54,10 @@ class DashboardController extends Controller
             ->where('meetings.status', 'completed')
             ->count();
 
-        $dueTagihanCount = Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')->count()
-            + WifiPayment::where('status', 'jatuh_tempo')->count()
-            + PembayaranAsetDigital::where('status', 'jatuh_tempo')->count()
-            + PembayaranIplRuko::where('status', 'jatuh_tempo')->count();
+        $dueTagihanCount = Payment::where('jenis', 'listrik')->whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count()
+            + WifiPayment::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('masa_tenggang', '<=', today()->addDays(7))->count()
+            + PembayaranAsetDigital::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count()
+            + PembayaranIplRuko::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count();
 
         $meetingsJson = $myMeetings->map(fn ($m) => [
             'id' => $m->id,

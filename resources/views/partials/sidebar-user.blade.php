@@ -2,44 +2,24 @@
     $isMeetingActive = request()->routeIs('user.*');
 
     $now = \Carbon\Carbon::today();
-    $threeDays = $now->copy()->addDays(3);
+    $sevenDays = $now->copy()->addDays(7);
     $totalTagihan = \App\Models\Payment::where('jenis', 'listrik')
-            ->where(function ($q) use ($now, $threeDays) {
-                $q->where('status', 'jatuh_tempo')
-                  ->orWhere(function ($q2) use ($now, $threeDays) {
-                      $q2->where('jatuh_tempo', '>=', $now)
-                         ->where('jatuh_tempo', '<=', $threeDays)
-                         ->where('status', '!=', 'lunas')
-                         ->where('status', '!=', 'pending');
-                  });
-            })->count()
-        + \App\Models\WifiPayment::where(function ($q) use ($now, $threeDays) {
-            $q->where('status', 'jatuh_tempo')
-              ->orWhere(function ($q2) use ($now, $threeDays) {
-                  $q2->where('masa_tenggang', '>=', $now)
-                     ->where('masa_tenggang', '<=', $threeDays)
-                     ->where('status', '!=', 'lunas')
-                     ->where('status', '!=', 'pending');
-              });
-        })->count()
-        + \App\Models\PembayaranAsetDigital::where(function ($q) use ($now, $threeDays) {
-            $q->where('status', 'jatuh_tempo')
-              ->orWhere(function ($q2) use ($now, $threeDays) {
-                  $q2->where('jatuh_tempo', '>=', $now)
-                     ->where('jatuh_tempo', '<=', $threeDays)
-                     ->where('status', '!=', 'lunas')
-                     ->where('status', '!=', 'pending');
-              });
-        })->count()
-        + \App\Models\PembayaranIplRuko::where(function ($q) use ($now, $threeDays) {
-            $q->where('status', 'jatuh_tempo')
-              ->orWhere(function ($q2) use ($now, $threeDays) {
-                  $q2->where('jatuh_tempo', '>=', $now)
-                     ->where('jatuh_tempo', '<=', $threeDays)
-                     ->where('status', '!=', 'lunas')
-                     ->where('status', '!=', 'pending');
-              });
-        })->count();
+            ->whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected'])
+            ->where('jatuh_tempo', '<=', $sevenDays)
+            ->count()
+        + \App\Models\WifiPayment::whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected'])
+            ->where('masa_tenggang', '<=', $sevenDays)
+            ->count()
+        + \App\Models\PembayaranAsetDigital::whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected'])
+            ->where('jatuh_tempo', '<=', $sevenDays)
+            ->count()
+        + \App\Models\PembayaranIplRuko::whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected'])
+            ->where('jatuh_tempo', '<=', $sevenDays)
+            ->count();
 @endphp
 
 <p class="sidebar-section-label">Menu Utama</p>

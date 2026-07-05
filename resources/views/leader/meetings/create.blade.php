@@ -6,7 +6,7 @@
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    <div class="gaming-card overflow-hidden">
+    <div class="gaming-card overflow-hidden max-w-lg mx-auto">
         <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Request Meeting Baru</div>
@@ -165,7 +165,7 @@
         const selected = [...container.querySelectorAll('select')].map(s => s.value);
         const options = teamsData.filter(t => !selected.includes(String(t.id)))
             .map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-        if (!options) { alert('Semua tim sudah ditambahkan.'); return; }
+        if (!options) { showAlertModal('Semua tim sudah ditambahkan.'); return; }
         const row = document.createElement('div');
         row.className = 'flex items-center gap-2 team-row';
         row.innerHTML = `

@@ -70,12 +70,12 @@
                 @csrf @method('PATCH')
                 <button class="btn btn-primary btn-sm">✓ Konfirmasi Hadir</button>
             </form>
-            <form method="POST" action="{{ route('koordinator.meetings.finish', $meeting) }}" class="flex items-center gap-2" onsubmit="return confirm('Selesaikan meeting sekarang?')">
+            <form method="POST" action="{{ route('koordinator.meetings.finish', $meeting) }}" class="flex items-center gap-2" onsubmit="confirmSubmit(event, this)" data-confirm="Selesaikan meeting sekarang?">
                 @csrf @method('PATCH')
                 <input type="text" name="actual_end_time" id="actual-end-time-1" value="{{ now()->format('H:i') }}" required class="gaming-input" style="width:130px;" autocomplete="off">
                 <button class="btn btn-success btn-sm">✓ Selesaikan</button>
             </form>
-            <form method="POST" action="{{ route('koordinator.meetings.cancel', $meeting) }}" onsubmit="return confirm('Batalkan meeting ini?')">
+            <form method="POST" action="{{ route('koordinator.meetings.cancel', $meeting) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Batalkan meeting ini?">
                 @csrf @method('PATCH')
                 <button class="btn btn-danger btn-sm">✗ Batalkan</button>
             </form>
@@ -87,7 +87,7 @@
     @if($meeting->status === 'confirmed')
     <div class="gaming-card p-5" style="border-color:rgba(99,102,241,0.3);background:rgba(99,102,241,0.05);">
         <p class="font-gaming font-semibold text-sm mb-3" style="color:#a5b4fc;letter-spacing:0.05em;">MEETING TERKONFIRMASI</p>
-            <form method="POST" action="{{ route('koordinator.meetings.finish', $meeting) }}" class="flex flex-wrap items-end gap-3" onsubmit="return confirm('Selesaikan meeting sekarang?')">
+            <form method="POST" action="{{ route('koordinator.meetings.finish', $meeting) }}" class="flex flex-wrap items-end gap-3" onsubmit="confirmSubmit(event, this)" data-confirm="Selesaikan meeting sekarang?">
                 @csrf @method('PATCH')
                 <div>
                     <label class="gaming-label">Jam Selesai Aktual</label>
@@ -95,7 +95,7 @@
                 </div>
             <button class="btn btn-success btn-sm">✓ Selesaikan Meeting</button>
         </form>
-        <form method="POST" action="{{ route('koordinator.meetings.cancel', $meeting) }}" onsubmit="return confirm('Batalkan meeting ini?')" class="mt-3">
+        <form method="POST" action="{{ route('koordinator.meetings.cancel', $meeting) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Batalkan meeting ini?" class="mt-3">
             @csrf @method('PATCH')
             <button class="btn btn-danger btn-sm">✗ Batalkan Meeting</button>
         </form>

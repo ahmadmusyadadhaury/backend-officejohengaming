@@ -237,9 +237,9 @@ class MeetingController extends Controller
             return redirect()->route('koordinator.meetings.index')->with('success', 'Meeting berhasil dibuat dan langsung disetujui.');
         }
 
-        // Notif ke semua admin & HR bahwa ada request meeting baru
-        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
-        Notification::sendToMany($adminHrIds, 'activity',
+        // Notif ke semua FULL_ACCESS_ROLES bahwa ada request meeting baru
+        $approverIds = User::whereIn('role', User::FULL_ACCESS_ROLES)->pluck('id')->toArray();
+        Notification::sendToMany($approverIds, 'activity',
             'Request Meeting Baru',
             auth()->user()->name.' mengajukan request meeting: '.$meeting->title,
             route('admin.meetings.show', $meeting)
@@ -262,9 +262,9 @@ class MeetingController extends Controller
         }
         $meeting->update(['status' => 'confirmed']);
 
-        // Notif ke admin/hr bahwa meeting dikonfirmasi
-        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
-        Notification::sendToMany($adminHrIds, 'activity',
+        // Notif ke semua FULL_ACCESS_ROLES bahwa meeting dikonfirmasi
+        $approverIds = User::whereIn('role', User::FULL_ACCESS_ROLES)->pluck('id')->toArray();
+        Notification::sendToMany($approverIds, 'activity',
             'Meeting Dikonfirmasi',
             auth()->user()->name.' mengkonfirmasi kehadiran: '.$meeting->title,
             route('admin.meetings.show', $meeting)
@@ -280,9 +280,9 @@ class MeetingController extends Controller
         }
         $meeting->update(['status' => 'cancelled']);
 
-        // Notif ke admin/hr bahwa meeting dibatalkan
-        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
-        Notification::sendToMany($adminHrIds, 'activity',
+        // Notif ke semua FULL_ACCESS_ROLES bahwa meeting dibatalkan
+        $approverIds = User::whereIn('role', User::FULL_ACCESS_ROLES)->pluck('id')->toArray();
+        Notification::sendToMany($approverIds, 'activity',
             'Meeting Dibatalkan',
             auth()->user()->name.' membatalkan meeting: '.$meeting->title,
             route('admin.meetings.show', $meeting)
@@ -310,9 +310,9 @@ class MeetingController extends Controller
         // Tandai semua undangan sudah dibaca
         $meeting->invitations()->update(['is_read' => true, 'read_at' => now()]);
 
-        // Notif ke admin/hr bahwa meeting selesai
-        $adminHrIds = User::whereIn('role', ['admin', 'hr'])->pluck('id')->toArray();
-        Notification::sendToMany($adminHrIds, 'activity',
+        // Notif ke semua FULL_ACCESS_ROLES bahwa meeting selesai
+        $approverIds = User::whereIn('role', User::FULL_ACCESS_ROLES)->pluck('id')->toArray();
+        Notification::sendToMany($approverIds, 'activity',
             'Meeting Selesai',
             $meeting->title.' telah diselesaikan oleh '.auth()->user()->name,
             route('admin.meetings.show', $meeting)

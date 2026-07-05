@@ -121,11 +121,11 @@
             Kamu memiliki booking di slot waktu ini. Jika kamu menyetujui override, booking kamu akan dibatalkan dan digantikan oleh pemohon.
         </p>
         <div class="flex flex-wrap gap-3">
-            <form method="POST" action="{{ route('override.accept', $override) }}" onsubmit="return confirm('Setujui override? Booking kamu akan dibatalkan.')">
+            <form method="POST" action="{{ route('override.accept', $override) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Setujui override? Booking kamu akan dibatalkan.">
                 @csrf @method('PATCH')
                 <button class="btn btn-success">✓ Setujui Override</button>
             </form>
-            <form method="POST" action="{{ route('override.reject', $override) }}" onsubmit="return confirm('Tolak override?')">
+            <form method="POST" action="{{ route('override.reject', $override) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Tolak override?">
                 @csrf @method('PATCH')
                 <button class="btn btn-danger">✗ Tolak Override</button>
             </form>

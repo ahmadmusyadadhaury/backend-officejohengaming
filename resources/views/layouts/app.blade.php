@@ -475,9 +475,9 @@
     <div id="confirm-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
         <div class="w-full max-w-[380px] rounded-2xl shadow-2xl flex flex-col p-6" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
             <div class="flex flex-col items-center text-center mb-5">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background:rgba(239,68,68,0.15);">
-                    <svg class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <div id="confirm-icon-wrap" class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background:rgba(239,68,68,0.15);">
+                    <svg id="confirm-icon-svg" class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="confirm-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 <p class="text-base font-semibold" style="color:var(--text-primary);" id="confirm-title">Konfirmasi</p>
@@ -501,6 +501,20 @@
             <p class="text-lg font-bold" style="color:var(--text-primary);">Akses Ditolak</p>
             <p class="text-sm mt-2 leading-relaxed" style="color:var(--text-muted);" id="access-error-message">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
             <button type="button" onclick="closeAccessErrorModal()" class="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition" style="background:var(--bg-surface-2);color:var(--text-primary);border:none;cursor:pointer;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
+        </div>
+    </div>
+
+    {{-- Alert Modal --}}
+    <div id="alert-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[400px] rounded-2xl shadow-2xl flex flex-col items-center p-8 text-center" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mb-4" style="background:rgba(245,158,11,0.12);">
+                <svg class="w-7 h-7" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <p class="text-lg font-bold" style="color:var(--text-primary);" id="alert-modal-title">Perhatian</p>
+            <p class="text-sm mt-2 leading-relaxed" style="color:var(--text-muted);" id="alert-modal-message"></p>
+            <button type="button" onclick="closeAlertModal()" class="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 15px rgba(108,92,255,0.3);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Tutup</button>
         </div>
     </div>
 
@@ -583,8 +597,28 @@
         });
 
         let confirmCallback = null;
-        function showConfirmModal(message, onConfirm) {
+        function showConfirmModal(message, onConfirm, options) {
+            options = options || {};
             document.getElementById('confirm-message').textContent = message;
+            var btn = document.getElementById('confirm-yes-btn');
+            btn.textContent = options.buttonText || 'Ya, Hapus';
+            var color = options.buttonColor || '#ef4444';
+            var hoverColor = options.buttonHoverColor || '#dc2626';
+            btn.style.background = color;
+            btn.onmouseover = function() { this.style.background = hoverColor; };
+            btn.onmouseout = function() { this.style.background = color; };
+            var iconWrap = document.getElementById('confirm-icon-wrap');
+            var iconSvg = document.getElementById('confirm-icon-svg');
+            var iconPath = document.getElementById('confirm-icon-path');
+            if (options.icon === 'success') {
+                iconWrap.style.background = 'rgba(16,185,129,0.15)';
+                iconSvg.style.color = '#10b981';
+                iconPath.setAttribute('d', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
+            } else {
+                iconWrap.style.background = 'rgba(239,68,68,0.15)';
+                iconSvg.style.color = '#ef4444';
+                iconPath.setAttribute('d', 'M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
+            }
             confirmCallback = onConfirm;
             openModal('confirm-modal');
         }
@@ -601,6 +635,19 @@
         function closeAccessErrorModal() {
             closeModal('access-error-modal');
         }
+
+        function showAlertModal(message, title) {
+            document.getElementById('alert-modal-title').textContent = title || 'Perhatian';
+            document.getElementById('alert-modal-message').textContent = message;
+            openModal('alert-modal');
+        }
+        function closeAlertModal() {
+            closeModal('alert-modal');
+        }
+        document.getElementById('alert-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeAlertModal();
+        });
+
         document.getElementById('confirm-yes-btn')?.addEventListener('click', function() {
             if (typeof confirmCallback === 'function') confirmCallback();
             closeConfirmModal();
@@ -1053,6 +1100,8 @@
                 if (cm && cm.style.display === 'flex') { closeConfirmModal(); return; }
                 const am = document.getElementById('access-error-modal');
                 if (am && am.style.display === 'flex') { closeAccessErrorModal(); return; }
+                const alm = document.getElementById('alert-modal');
+                if (alm && alm.style.display === 'flex') { closeAlertModal(); return; }
                 closeInvitationModal();
                 var prModal = document.getElementById('pajak-request-modal');
                 if (prModal && prModal.style.display === 'flex') { closeModal('pajak-request-modal'); return; }

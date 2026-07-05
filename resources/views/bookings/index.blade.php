@@ -39,7 +39,7 @@
                 <div class="flex gap-2 flex-shrink-0">
                     <a href="{{ route('bookings.show', $booking) }}" class="btn btn-secondary btn-sm">Detail</a>
                     @if($booking->status !== 'cancelled')
-                    <form method="POST" action="{{ route('bookings.destroy', $booking) }}" onsubmit="return confirm('Batalkan booking ini?')">
+                    <form method="POST" action="{{ route('bookings.destroy', $booking) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Batalkan booking ini?">
                         @csrf @method('DELETE')
                         <button class="btn btn-danger btn-sm">Batal</button>
                     </form>

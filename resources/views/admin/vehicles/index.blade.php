@@ -9,56 +9,56 @@
 
     {{-- 4 Stat Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
-                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-primary);">Total Kendaraan</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh aset kendaraan</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Kendaraan</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh aset kendaraan</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['pajak_aktif'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Aktif</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak masih berlaku</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['pajak_aktif'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Pajak Aktif</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak masih berlaku</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
-                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['segera_habis'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Segera Habis</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak akan habis dalam 30 hari</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['segera_habis'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Pajak Segera Habis</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak akan habis dalam 30 hari</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
-                <svg class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['pajak_mati'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Pajak Mati</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak sudah expired</div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['pajak_mati'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Pajak Mati</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak sudah expired</div>
             </div>
         </div>
     </div>
@@ -103,10 +103,10 @@
 
     {{-- Tabel --}}
     <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
-                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Data Kendaraan</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Seluruh aset kendaraan milik perusahaan.</div>
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Kendaraan</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Seluruh aset kendaraan milik perusahaan.</div>
             </div>
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,7 +115,7 @@
                 Tambah Kendaraan
             </button>
         </div>
-        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -212,12 +212,12 @@
                                 <div class="dropdown-wrap" style="position:relative;">
                                     <button type="button" onclick="toggleDropdown(this, {{ $v->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $v->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showDetail({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
-                                        <button type="button" onclick="openEditModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <button type="button" onclick="showPajakRequestModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ajukan Pembayaran</button>
+                                        <button type="button" onclick="showDetail({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <button type="button" onclick="showPajakRequestModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ajukan Pembayaran</button>
                                         <form method="POST" action="{{ route('admin.vehicles.destroy', $v) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus kendaraan ini?" style="margin:0;">
                                             @csrf @method('DELETE')
-                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
                                     </div>
                                 </div>
@@ -411,14 +411,14 @@
 {{-- Pending Approvals Section --}}
 @if($isApprover && $pendingPajakRequests->isNotEmpty())
 <div class="gaming-card overflow-hidden" id="pending-approvals">
-    <div class="px-5 py-4" style="border-bottom:1px solid var(--border-color);">
+    <div class="px-6 py-4" style="border-bottom:1px solid var(--border-color);">
         <div style="display:flex;align-items:center;gap:8px;">
             <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
             <div>
-                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengajuan Pembayaran Pajak</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">{{ $pendingPajakRequests->count() }} pengajuan menunggu persetujuan</div>
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Pengajuan Pembayaran Pajak</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">{{ $pendingPajakRequests->count() }} pengajuan menunggu persetujuan</div>
             </div>
         </div>
     </div>
@@ -484,6 +484,8 @@
 
 @push('styles')
 <style>
+.gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
+.gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 .vehicle-modal-card {
     width: 100%;
     max-width: 700px;
@@ -925,19 +927,20 @@ document.getElementById('reject-modal')?.addEventListener('click', function(e) {
 });
 
 function approveRequest(id) {
-    if (!confirm('Setujui pengajuan pembayaran pajak ini?')) return;
-    fetch('/admin/vehicles/pajak-requests/' + id + '/approve', {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    }).then(function(r) {
-        if (!r.ok) return r.json().then(function(e) { throw new Error(e.error); });
-        return r.json();
-    }).then(function() {
-        showSuccessModal('Pengajuan berhasil disetujui. Pajak kendaraan diperpanjang.');
-        setTimeout(function() { location.reload(); }, 1500);
-    }).catch(function(e) {
-        alert(e.message || 'Gagal menyetujui pengajuan.');
-    });
+    showConfirmModal('Setujui pengajuan pembayaran pajak ini?', function() {
+        fetch('/admin/vehicles/pajak-requests/' + id + '/approve', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        }).then(function(r) {
+            if (!r.ok) return r.json().then(function(e) { throw new Error(e.error); });
+            return r.json();
+        }).then(function() {
+            showSuccessModal('Pengajuan berhasil disetujui. Pajak kendaraan diperpanjang.');
+            setTimeout(function() { location.reload(); }, 1500);
+        }).catch(function(e) {
+            showAlertModal(e.message || 'Gagal menyetujui pengajuan.');
+        });
+    }, { icon: 'success', buttonText: 'Ya, Setujui', buttonColor: '#10b981', buttonHoverColor: '#059669' });
 }
 
 function showRejectModal(id) {
@@ -949,7 +952,7 @@ function showRejectModal(id) {
 function rejectRequest() {
     var id = document.getElementById('reject-id').value;
     var notes = document.getElementById('reject-notes').value.trim();
-    if (!notes) { alert('Harap masukan alasan penolakan.'); return; }
+    if (!notes) { showAlertModal('Harap masukan alasan penolakan.'); return; }
     fetch('/admin/vehicles/pajak-requests/' + id + '/reject', {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -962,7 +965,7 @@ function rejectRequest() {
         showSuccessModal('Pengajuan berhasil ditolak.');
         setTimeout(function() { location.reload(); }, 1500);
     }).catch(function(e) {
-        alert(e.message || 'Gagal menolak pengajuan.');
+        showAlertModal(e.message || 'Gagal menolak pengajuan.');
     });
 }
 </script>

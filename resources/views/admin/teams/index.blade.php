@@ -9,10 +9,10 @@
     <div class="gaming-card" style="overflow:visible;">
         <form method="GET" action="{{ route('admin.teams.index') }}" id="filter-form">
         <input type="hidden" name="status" id="status-input" value="{{ request('status') }}">
-        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
-                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Kelola Tim</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Organisir tim dan departemen perusahaan</div>
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Tim</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Organisir tim dan departemen perusahaan</div>
             </div>
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,4 +192,10 @@ function closeCreateModal() {
 }
 document.getElementById('create-modal').addEventListener('click', function(e) { if (e.target === this) closeCreateModal(); });
 </script>
+@push('styles')
+<style>
+.gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
+.gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
+</style>
+@endpush
 @endsection

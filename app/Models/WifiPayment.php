@@ -22,6 +22,7 @@ class WifiPayment extends Model
         'approved_at',
         'bukti_bayar',
         'notes',
+        'period',
     ];
 
     protected function casts(): array
@@ -31,6 +32,7 @@ class WifiPayment extends Model
             'tanggal_bayar' => 'date:d/m/Y',
             'approved_at' => 'datetime',
             'biaya' => 'decimal:2',
+            'period' => 'string',
         ];
     }
 

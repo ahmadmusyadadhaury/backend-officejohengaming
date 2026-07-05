@@ -90,6 +90,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('token-topup/{id}', [PaymentController::class, 'destroyTokenPayment'])->name('pembayaran.token-topup.destroy');
     Route::post('internet-usage', [PaymentController::class, 'storeInternetUsage'])->name('pembayaran.internet-usage.store');
     Route::delete('internet-usage/{id}', [PaymentController::class, 'destroyInternetUsage'])->name('pembayaran.internet-usage.destroy');
+    Route::post('pembayaran/ipl-ruko/bulk', [PaymentController::class, 'storeBulkIplRuko'])->name('pembayaran.ipl-ruko.bulk');
     Route::get('payment-approvals', [PaymentApprovalController::class, 'index'])->name('payment-approvals.index');
     Route::post('payment-approvals/{id}/approve', [PaymentApprovalController::class, 'approve'])->name('payment-approvals.approve');
     Route::post('payment-approvals/{id}/reject', [PaymentApprovalController::class, 'reject'])->name('payment-approvals.reject');
@@ -113,6 +114,7 @@ Route::middleware(['auth', 'admin_hr'])->prefix('admin')->name('admin.')->group(
     Route::get('meetings/{meeting}', [AdminMeetingController::class, 'show'])->name('meetings.show');
     Route::patch('meetings/{meeting}/approve', [AdminMeetingController::class, 'approve'])->name('meetings.approve');
     Route::patch('meetings/{meeting}/reject', [AdminMeetingController::class, 'reject'])->name('meetings.reject');
+    Route::patch('meetings/{meeting}', [AdminMeetingController::class, 'update'])->name('meetings.update');
     Route::delete('meetings/{meeting}', [AdminMeetingController::class, 'destroy'])->name('meetings.destroy');
     Route::resource('weekly-meetings', WeeklyMeetingController::class);
 });
@@ -130,6 +132,7 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::patch('meetings/{meeting}/confirm', [KoordinatorMeetingController::class, 'confirm'])->name('meetings.confirm');
     Route::patch('meetings/{meeting}/cancel', [KoordinatorMeetingController::class, 'cancel'])->name('meetings.cancel');
     Route::patch('meetings/{meeting}/finish', [KoordinatorMeetingController::class, 'finish'])->name('meetings.finish');
+    Route::get('moms', [MomController::class, 'index'])->name('mom.index');
     Route::resource('meetings.mom', MomController::class)->shallow();
     Route::patch('mom/{mom}/send', [MomController::class, 'send'])->name('mom.send');
 });
@@ -141,11 +144,11 @@ Route::middleware(['auth', 'role:user,koordinator,admin,head_of_store,gm,hr,ceo'
 
 // Payment Approval — Staff, Koordinator, HR, Admin submit
 Route::middleware(['auth', 'role:user,koordinator,hr,admin,admin_ga'])->prefix('payment-approval')->name('payment-approval.')->group(function () {
+    Route::get('tagihan', [PaymentApprovalController::class, 'tagihan'])->name('tagihan');
+    Route::post('tagihan/{id}/bayar', [PaymentApprovalController::class, 'bayar'])->name('tagihan.bayar');
     Route::get('create', [PaymentApprovalController::class, 'create'])->name('create');
     Route::post('/', [PaymentApprovalController::class, 'store'])->name('store');
     Route::get('/', [PaymentApprovalController::class, 'myRequests'])->name('status');
-    Route::get('tagihan', [PaymentApprovalController::class, 'tagihan'])->name('tagihan');
-    Route::post('tagihan/{id}/bayar', [PaymentApprovalController::class, 'bayar'])->name('tagihan.bayar');
     Route::get('export', [PaymentApprovalController::class, 'exportStatus'])->name('export');
     Route::get('export-tagihan', [PaymentApprovalController::class, 'exportTagihan'])->name('export-tagihan');
 });

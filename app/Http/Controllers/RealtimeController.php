@@ -275,20 +275,18 @@ class RealtimeController extends Controller
     {
         $userId = auth()->id();
 
-        // Cache: cek cukup sekali per 5 menit per user
         $cacheKey = 'tagihan_check_'.$userId;
         if (Cache::get($cacheKey)) {
             return;
         }
 
-        $today = Carbon::today();
-        $threeDays = Carbon::today()->addDays(3);
+        $sevenDays = Carbon::today()->addDays(7);
 
         $models = [
-            'payments' => ['class' => Payment::class, 'query' => fn ($q) => $q->where('jenis', 'listrik')],
-            'wifi_payments' => ['class' => WifiPayment::class, 'query' => null],
-            'pembayaran_aset_digital' => ['class' => PembayaranAsetDigital::class, 'query' => null],
-            'pembayaran_ipl_ruko' => ['class' => PembayaranIplRuko::class, 'query' => null],
+            'payments' => ['class' => Payment::class, 'dateField' => 'jatuh_tempo', 'query' => fn ($q) => $q->where('jenis', 'listrik')],
+            'wifi_payments' => ['class' => WifiPayment::class, 'dateField' => 'masa_tenggang', 'query' => null],
+            'pembayaran_aset_digital' => ['class' => PembayaranAsetDigital::class, 'dateField' => 'jatuh_tempo', 'query' => null],
+            'pembayaran_ipl_ruko' => ['class' => PembayaranIplRuko::class, 'dateField' => 'jatuh_tempo', 'query' => null],
         ];
 
         $labelMap = ['payments' => 'Listrik', 'wifi_payments' => 'Internet', 'pembayaran_aset_digital' => 'Aset Digital', 'pembayaran_ipl_ruko' => 'IPL Ruko'];
@@ -316,7 +314,6 @@ class RealtimeController extends Controller
             foreach ($records as $r) {
                 $keyId = "tagihan_{$table}_{$r->id}";
 
-                // Cek dedup via indexed column
                 $already = Notification::where('user_id', $userId)
                     ->where('dedup_key', $keyId)
                     ->exists();

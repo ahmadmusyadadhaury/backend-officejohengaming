@@ -20,11 +20,6 @@ class DashboardController extends Controller
         $menunggu = Meeting::where('requested_by', $user->id)->where('status', 'pending')->count();
         $ditolak = Meeting::where('requested_by', $user->id)->where('status', 'rejected')->count();
 
-        $dueTagihanCount = Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')->count()
-            + WifiPayment::where('status', 'jatuh_tempo')->count()
-            + PembayaranAsetDigital::where('status', 'jatuh_tempo')->count()
-            + PembayaranIplRuko::where('status', 'jatuh_tempo')->count();
-
-        return view('leader.dashboard', compact('totalMeeting', 'disetujui', 'menunggu', 'ditolak', 'dueTagihanCount'));
+        return view('leader.dashboard', compact('totalMeeting', 'disetujui', 'menunggu', 'ditolak'));
     }
 }

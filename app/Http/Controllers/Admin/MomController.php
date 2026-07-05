@@ -12,23 +12,22 @@ class MomController extends Controller
     public function index(Request $request)
     {
         $query = Mom::with(['meeting.room', 'meeting.requester', 'creator'])
-            ->where('status', 'sent')
-            ->latest('sent_at');
+            ->latest();
 
         $period = $request->input('period', 'all');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
         if ($period === 'daily' && $request->input('date')) {
-            $query->whereDate('sent_at', $request->input('date'));
+            $query->whereDate('created_at', $request->input('date'));
         } elseif ($period === 'weekly' && $request->input('week')) {
             $week = Carbon::parse($request->input('week'));
-            $query->whereBetween('sent_at', [$week->startOfWeek()->startOfDay(), $week->copy()->endOfWeek()->endOfDay()]);
+            $query->whereBetween('created_at', [$week->startOfWeek()->startOfDay(), $week->copy()->endOfWeek()->endOfDay()]);
         } elseif ($period === 'monthly' && $request->input('month')) {
             $month = Carbon::parse($request->input('month').'-01');
-            $query->whereBetween('sent_at', [$month->startOfMonth()->startOfDay(), $month->copy()->endOfMonth()->endOfDay()]);
+            $query->whereBetween('created_at', [$month->startOfMonth()->startOfDay(), $month->copy()->endOfMonth()->endOfDay()]);
         } elseif ($startDate && $endDate) {
-            $query->whereBetween('sent_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()]);
+            $query->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()]);
         }
 
         $moms = $query->paginate(20);
@@ -42,6 +41,7 @@ class MomController extends Controller
                 'pic' => $mom->pic ?? '—',
                 'dikirim' => $mom->sent_at ? $mom->sent_at->format('d M Y H:i') : '—',
                 'status' => $mom->meeting->status ?? '—',
+                'mom_status' => $mom->status,
                 'file_path' => $mom->file_path,
                 'file_name' => $mom->file_path ? basename($mom->file_path) : null,
                 'file_url' => $mom->file_path ? url('storage/'.$mom->file_path) : null,

@@ -805,7 +805,7 @@
                     <p class="text-xs font-semibold uppercase tracking-widest opacity-70 mb-1" style="font-family:'Rajdhani',sans-serif;">Detail Meeting</p>
                     <h3 id="modal-title" class="font-bold text-base sm:text-lg leading-tight" style="font-family:'Rajdhani',sans-serif;"></h3>
                 </div>
-                <button onclick="closeModal()" class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition" style="background:rgba(255,255,255,0.15);color:white;border:none;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                <button onclick="closeEventModal()" class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition" style="background:rgba(255,255,255,0.15);color:white;border:none;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -844,7 +844,7 @@
                 <span id="modal-rt-status" class="px-3 py-1 rounded-full text-xs font-semibold" style="font-family:'Rajdhani',sans-serif;letter-spacing:0.04em;"></span>
             </div>
 
-            <button onclick="closeModal()" class="btn btn-secondary w-full mt-1" style="justify-content:center;">
+            <button onclick="closeEventModal()" class="btn btn-secondary w-full mt-1" style="justify-content:center;">
                 Tutup
             </button>
         </div>
@@ -1063,7 +1063,7 @@
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
+    function closeEventModal() {
         document.getElementById('event-modal').classList.remove('show');
         document.body.style.overflow = '';
         currentEventId = null;
@@ -1241,26 +1241,25 @@
 
     function deleteWeekly(id) {
         if (!id) return;
-        if (!confirm('Hapus jadwal mingguan ini?')) return;
-        fetch('/admin/weekly-meetings/' + id, {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-            body: new URLSearchParams({ _method: 'DELETE' })
-        }).then(() => {
-            // Hapus dari weeklyData
-            const idx = weeklyData.findIndex(i => i.id === id);
-            if (idx !== -1) weeklyData.splice(idx, 1);
-            // Refetch events & sembunyikan panel
-            if (calendar) calendar.refetchEvents();
-            const panel = document.getElementById('weekly-panel');
-            if (panel) panel.style.display = 'none';
-        }).catch(() => { location.reload(); });
+        showConfirmModal('Hapus jadwal mingguan ini?', function() {
+            fetch('/admin/weekly-meetings/' + id, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                body: new URLSearchParams({ _method: 'DELETE' })
+            }).then(() => {
+                const idx = weeklyData.findIndex(i => i.id === id);
+                if (idx !== -1) weeklyData.splice(idx, 1);
+                if (calendar) calendar.refetchEvents();
+                const panel = document.getElementById('weekly-panel');
+                if (panel) panel.style.display = 'none';
+            }).catch(() => { location.reload(); });
+        });
     }
 
     // Tutup modal
     document.getElementById('event-modal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
+        if (e.target === this) closeEventModal();
     });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEventModal(); });
 </script>
 @endpush

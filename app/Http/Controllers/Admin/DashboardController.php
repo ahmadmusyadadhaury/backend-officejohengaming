@@ -51,7 +51,7 @@ class DashboardController extends Controller
             'this_month' => Meeting::whereMonth('meeting_date', now()->month)->whereYear('meeting_date', now()->year)->count(),
             // Payment stats — dari semua tabel pembayaran
             'total_payments' => Payment::where('jenis', 'listrik')->count() + PembayaranAsetDigital::count() + PembayaranIplRuko::count() + WifiPayment::count() + TokenPayment::count(),
-            'pending_payments' => Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')->count() + PembayaranAsetDigital::where('status', 'jatuh_tempo')->count() + PembayaranIplRuko::where('status', 'jatuh_tempo')->count() + WifiPayment::where('status', 'jatuh_tempo')->count(),
+            'pending_payments' => Payment::where('jenis', 'listrik')->whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + PembayaranAsetDigital::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + PembayaranIplRuko::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + WifiPayment::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('masa_tenggang', '<=', today()->addDays(7))->count(),
             'approval_pending_payments' => Payment::where('jenis', 'listrik')->where('status', 'pending')->count() + PembayaranAsetDigital::where('status', 'pending')->count() + PembayaranIplRuko::where('status', 'pending')->count() + WifiPayment::where('status', 'pending')->count(),
         ];
 
@@ -69,7 +69,7 @@ class DashboardController extends Controller
             ->get();
 
         $today = today();
-        $threeDaysFromNow = today()->addDays(3);
+        $sevenDaysFromNow = today()->addDays(7);
 
         $jenisLabels = [
             'listrik' => 'Listrik',
@@ -95,46 +95,34 @@ class DashboardController extends Controller
 
         $allPayments = collect()
             ->merge(
-                Payment::where('jenis', 'listrik')->where('status', 'jatuh_tempo')
-                    ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
-                        $q->where('jenis', 'listrik')
-                            ->where('jatuh_tempo', '>=', $today)
-                            ->where('jatuh_tempo', '<=', $threeDaysFromNow)
-                            ->where('status', '!=', 'lunas');
-                    })
+                Payment::where('jenis', 'listrik')
+                    ->whereNull('requested_by')
+                    ->whereNotIn('status', ['lunas', 'rejected'])
+                    ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
                     ->orderBy('jatuh_tempo')
                     ->get()
                     ->map(fn ($p) => $mapPayment($p, $jenisLabels['listrik'] ?? 'Listrik'))
             )
             ->merge(
-                PembayaranAsetDigital::where('status', 'jatuh_tempo')
-                    ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
-                        $q->where('jatuh_tempo', '>=', $today)
-                            ->where('jatuh_tempo', '<=', $threeDaysFromNow)
-                            ->where('status', '!=', 'lunas');
-                    })
+                PembayaranAsetDigital::whereNull('requested_by')
+                    ->whereNotIn('status', ['lunas', 'rejected'])
+                    ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
                     ->orderBy('jatuh_tempo')
                     ->get()
                     ->map(fn ($p) => $mapPayment($p, $jenisLabels['aset_digital'] ?? 'Aset Digital'))
             )
             ->merge(
-                PembayaranIplRuko::where('status', 'jatuh_tempo')
-                    ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
-                        $q->where('jatuh_tempo', '>=', $today)
-                            ->where('jatuh_tempo', '<=', $threeDaysFromNow)
-                            ->where('status', '!=', 'lunas');
-                    })
+                PembayaranIplRuko::whereNull('requested_by')
+                    ->whereNotIn('status', ['lunas', 'rejected'])
+                    ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
                     ->orderBy('jatuh_tempo')
                     ->get()
                     ->map(fn ($p) => $mapPayment($p, $jenisLabels['ipl_ruko'] ?? 'IPL Ruko'))
             );
 
-        $allWifi = collect(WifiPayment::where('status', 'jatuh_tempo')
-            ->orWhere(function ($q) use ($today, $threeDaysFromNow) {
-                $q->where('masa_tenggang', '>=', $today)
-                    ->where('masa_tenggang', '<=', $threeDaysFromNow)
-                    ->where('status', '!=', 'lunas');
-            })
+        $allWifi = collect(WifiPayment::whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected'])
+            ->where('masa_tenggang', '<=', $sevenDaysFromNow)
             ->orderBy('masa_tenggang')
             ->get()
             ->map(fn ($w) => [
@@ -156,11 +144,11 @@ class DashboardController extends Controller
         $allMerged = $allPayments->merge($allWifi)->sortBy('due_date');
 
         $todayStr = $today->format('Y-m-d');
-        $threeDaysStr = $threeDaysFromNow->format('Y-m-d');
+        $sevenDaysStr = $sevenDaysFromNow->format('Y-m-d');
 
         $overduePayments = $allMerged->filter(fn ($p) => $p['due_date'] < $todayStr);
         $todayPayments = $allMerged->filter(fn ($p) => $p['due_date'] === $todayStr);
-        $warningPayments = $allMerged->filter(fn ($p) => $p['due_date'] > $todayStr && $p['due_date'] <= $threeDaysStr);
+        $warningPayments = $allMerged->filter(fn ($p) => $p['due_date'] > $todayStr && $p['due_date'] <= $sevenDaysStr);
 
         $approvalWaitingMeetings = Meeting::with(['requester', 'team', 'room'])
             ->where('status', 'pending')

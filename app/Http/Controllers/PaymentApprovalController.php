@@ -13,6 +13,7 @@ use App\Models\SimCard;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\WifiPayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -137,6 +138,7 @@ class PaymentApprovalController extends Controller
                     'status' => $r->status,
                     'pic' => $r->pic,
                     'jabatan' => $r->jabatan,
+                    'period' => $r->period ?? 'bulanan',
                     'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
                     'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
                     'approver_name' => $r->approver?->name,
@@ -155,6 +157,7 @@ class PaymentApprovalController extends Controller
     public function tagihan()
     {
         $all = collect();
+        $sevenDays = Carbon::today()->addDays(7);
 
         foreach ([
             'internet' => WifiPayment::class,
@@ -162,8 +165,12 @@ class PaymentApprovalController extends Controller
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
         ] as $jenis => $class) {
+            $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+
             $records = $class::with('requester')
-                ->where('status', 'jatuh_tempo')
+                ->whereNull('requested_by')
+                ->whereNotIn('status', ['lunas', 'rejected'])
+                ->where($dateField, '<=', $sevenDays)
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(fn ($r) => [
@@ -207,12 +214,17 @@ class PaymentApprovalController extends Controller
             'tanggal_bayar' => 'required|date',
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
+            'period' => 'required|in:bulanan,tahunan',
         ]);
 
         $class = $this->getModelClass($jenis);
         $record = $class::findOrFail($id);
 
-        if ($record->status !== 'jatuh_tempo') {
+        if (in_array($record->status, ['lunas', 'rejected'])) {
+            return redirect()->route('payment-approval.tagihan')
+                ->with('error', 'Tagihan sudah diproses.');
+        }
+        if ($record->status === 'pending' && $record->requested_by !== null) {
             return redirect()->route('payment-approval.tagihan')
                 ->with('error', 'Tagihan sudah diproses.');
         }
@@ -227,6 +239,7 @@ class PaymentApprovalController extends Controller
             'jabatan' => $request->input('jabatan'),
             'tanggal_bayar' => $request->input('tanggal_bayar'),
             'bukti_bayar' => $buktiPath,
+            'period' => $request->input('period'),
         ]);
 
         $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
@@ -310,12 +323,35 @@ class PaymentApprovalController extends Controller
         if ($record->requested_by === auth()->id()) {
             return response()->json(['error' => 'Anda tidak bisa menyetujui pengajuan Anda sendiri.'], 403);
         }
+        $period = $record->period ?? 'bulanan';
+        $offsetMonths = $period === 'tahunan' ? 12 : 1;
 
         $record->update([
             'status' => 'lunas',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
+
+        // Auto-create tagihan baru dengan jatuh tempo di-offset
+        $fillable = $record->getFillable();
+        $newData = [];
+        foreach ($fillable as $col) {
+            if (in_array($col, ['id', 'status', 'tanggal_bayar', 'requested_by', 'approved_by', 'approved_at', 'bukti_bayar', 'notes', 'created_at', 'updated_at', 'period'])) {
+                continue;
+            }
+            $newData[$col] = $record->$col;
+        }
+        $newData['status'] = 'jatuh_tempo';
+        $newData['period'] = 'bulanan'; // tagihan baru default bulanan
+
+        // Set tanggal = original + offset
+        $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+        $newData[$dateField] = $record->{$dateField}->copy()->addMonths($offsetMonths);
+        if ($jenis !== 'internet') {
+            $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
+        }
+
+        $class::create($newData);
 
         $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
         $jenisLabel = match ($jenis) {

@@ -10,139 +10,139 @@
     {{-- Stat Cards --}}
     @if($jenis === 'internet')
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
-                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
+                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01M3.5 13.58a10.5 10.5 0 0117 0"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total WiFi</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Total WiFi</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Seluruh data WiFi</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
+                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
-                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
+                <svg class="w-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['jatuh_tempo'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Dalam masa tenggang</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
-                <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);box-shadow:none rgba(239,68,68,0.2);">
+                <svg class="w-[18px]" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#f87171;">{{ $stats['terlambat'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
+                <div class="text-xl font-gaming font-bold" style="color:#f87171;">{{ $stats['terlambat'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Lewat masa tenggang</div>
             </div>
         </div>
     </div>
     @elseif($jenis === 'aset_digital')
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
-                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
+                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total Aset Digital</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Total Aset Digital</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $stats['total'] }} tagihan</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
+                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
-                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
+                <svg class="w-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['jatuh_tempo'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Belum dibayar</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
-                <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);box-shadow:none rgba(239,68,68,0.2);">
+                <svg class="w-[18px]" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#f87171;">{{ $stats['terlambat'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
+                <div class="text-xl font-gaming font-bold" style="color:#f87171;">{{ $stats['terlambat'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Lewat jatuh tempo</div>
             </div>
         </div>
     </div>
     @elseif($jenis !== 'listrik')
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
-                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
+                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.1 0-2 .9-2 2H9a3 3 0 013-3V7a2 2 0 012 2h-2zm0 8a3 3 0 01-3-3h1a2 2 0 002 2v1zm2-4h4v2h-4v-2zm-8 0H2v2h4v-2z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total Tagihan</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Total Tagihan</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $stats['total'] }} tagihan</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
+                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
             </div>
         </div>
@@ -162,7 +162,7 @@
                 $dueStart = $dueDate->copy()->startOfDay();
                 if ($dueStart->lte($today)) {
                     $redItems->push($a);
-                } elseif ($dueStart->lte($today->copy()->addDays(3))) {
+                } elseif ($dueStart->lte($today->copy()->addDays(7))) {
                     $yellowItems->push($a);
                 }
             }
@@ -191,7 +191,7 @@
                     </svg>
                     <div class="flex-1 min-w-0">
                         <div class="text-sm font-bold" style="color:#f59e0b;">{{ $yellowItems->count() }} Segera Jatuh Tempo</div>
-                        <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $yellowItems->count() }} tagihan jatuh tempo dalam 3 hari.</div>
+                        <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $yellowItems->count() }} tagihan jatuh tempo dalam 7 hari.</div>
                     </div>
                     <button type="button" onclick="showAlertPopup('warning')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.25);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
                 </div>
@@ -235,10 +235,10 @@
     {{-- Table --}}
     @if($jenis !== 'listrik')
     <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
-                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pembayaran {{ $jenisLabels[$jenis] }}</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Pembayaran {{ $jenisLabels[$jenis] }}</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">
                     @if($jenis === 'internet')
                         Kelola WiFi
                     @else
@@ -258,7 +258,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
-                    Generate 1 Tahun
+                    Input 1 Tahun
                 </button>
                 @endif
             </div>
@@ -273,6 +273,14 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
+                @if($jenis === 'ipl_ruko')
+                <select onchange="filterByYear(this.value)" class="gaming-input" style="padding:6px 10px;font-size:12px;min-width:90px;">
+                    <option value="">Semua Tahun</option>
+                    @foreach($availableYears as $th)
+                    <option value="{{ $th }}" {{ (string) $th === (string) $tahun ? 'selected' : '' }}>{{ $th }}</option>
+                    @endforeach
+                </select>
+                @endif
                 <a href="{{ route('admin.export', ['type' => 'pembayaran', 'jenis' => $jenis, 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">Download Excel</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
@@ -334,7 +342,7 @@
                             if ($dueStart->lt($today)) {
                                 $badgeClass = 'badge-red';
                                 $badgeLabel = 'Terlambat';
-                            } elseif ($dueStart->lte($today->copy()->addDays(3))) {
+                            } elseif ($dueStart->lte($today->copy()->addDays(7))) {
                                 $sisa = $today->diffInDays($dueStart);
                                 $badgeClass = 'badge-yellow';
                                 $badgeLabel = $sisa === 0 ? 'Hari Ini' : 'H - ' . $sisa . ' Hari';
@@ -787,10 +795,19 @@
             </button>
         </div>
         <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
-        <div class="px-6 py-4 flex-shrink-0 flex items-center gap-2" style="border-top:1px solid var(--border-color);">
+        <div id="detail-bukti-wrap" class="px-6 py-3" style="display:none;border-top:1px solid var(--border-color);">
+            <div class="field-group">
+                <label class="gaming-label" style="font-size:12px;">Upload Bukti Pembayaran</label>
+                <input type="file" id="detail-bukti_bayar" accept="image/jpeg,image/png,image/jpg" class="gaming-input" style="padding:6px 10px;font-size:12px;">
+                <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Format: JPG/PNG, maks 2MB</div>
+            </div>
+        </div>
+        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
             <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
-            <button type="button" id="detail-bayar-btn" onclick="markAsLunas()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="display:none;background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Bayar / Lunaskan</button>
-            <button type="button" id="detail-edit-btn" onclick="editFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Edit</button>
+            <div class="flex gap-2">
+                <button type="button" id="detail-bayar-btn" onclick="bayarFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="display:none;background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Bayar / Lunaskan</button>
+                <button type="button" onclick="editFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Edit</button>
+            </div>
         </div>
     </div>
 </div>
@@ -801,7 +818,7 @@
 
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);" id="modal-title">Tambah Tagihan</h3>
-            <button type="button" onclick="closePaymentModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <button type="button" onclick="closeModal('payment-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -877,23 +894,14 @@
                         <input type="date" name="jatuh_tempo" id="f-jatuh_tempo" required class="gaming-input">
                     </div>
                     @endif
-                    <div class="field-group">
-                        <label class="gaming-label">Status <span class="field-req">*</span></label>
-                        <select name="status" id="f-status" required class="gaming-input" onchange="toggleTanggalBayar()">
-                            <option value="jatuh_tempo">Jatuh Tempo</option>
-                            <option value="lunas">Lunas</option>
-                            <option value="pending">Menunggu</option>
-                            <option value="rejected">Ditolak</option>
-                        </select>
-                    </div>
-                    <div class="field-group" id="f-tanggal_bayar-group">
+                    <div class="field-group" id="f-tanggal_bayar-group" style="display:none;">
                         <label class="gaming-label">Tanggal Bayar</label>
                         <input type="date" name="tanggal_bayar" id="f-tanggal_bayar" class="gaming-input">
                     </div>
                 </div>
 
                 <div class="form-footer">
-                    <button type="button" onclick="closePaymentModal()" class="btn-form btn-form-batal">Batal</button>
+                    <button type="button" onclick="closeModal('payment-modal')" class="btn-form btn-form-batal">Batal</button>
                     <button type="submit" class="btn-form btn-form-simpan" id="form-submit-btn">Tambah</button>
                 </div>
             </form>
@@ -919,7 +927,7 @@
                 <div id="bayar-nominal" style="font-size:13px;color:var(--text-muted);margin-top:4px;"></div>
                 <div id="bayar-due" style="font-size:13px;color:var(--text-muted);margin-top:2px;"></div>
             </div>
-            <form id="bayar-form" method="POST" action="{{ url('admin/pembayaran') }}">
+            <form id="bayar-form" method="POST" action="{{ url('admin/pembayaran') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" value="PUT">
                 <input type="hidden" name="jenis" value="{{ $jenis }}">
@@ -938,10 +946,16 @@
                 <input type="hidden" name="nominal" id="bayar-nominal_val">
                 @endif
                 <input type="hidden" name="status" id="bayar-status" value="lunas">
+                <input type="hidden" name="period" value="bulanan">
                 <div class="space-y-4">
                     <div class="field-group">
                         <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
                         <input type="date" name="tanggal_bayar" id="bayar-tanggal_bayar" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Bukti Pembayaran</label>
+                        <input type="file" name="bukti_bayar" id="bayar-bukti_bayar" accept="image/jpeg,image/png,image/jpg" class="gaming-input" style="padding:8px;font-size:13px;">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Format: JPG/PNG, maks 2MB. (Opsional)</div>
                     </div>
                 </div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
@@ -953,11 +967,11 @@
     </div>
 </div>
 
-{{-- Bulk IPL Modal --}}
+{{-- Bulk Input IPL Ruko Modal --}}
 <div id="bulk-ipl-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[440px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Generate Tagihan IPL 1 Tahun</h3>
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Input IPL Ruko 1 Tahun</h3>
             <button type="button" onclick="closeBulkIplModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -965,23 +979,52 @@
             </button>
         </div>
         <div class="px-6 py-5 overflow-y-auto flex-1">
-            <form method="POST" action="{{ route('admin.pembayaran.ipl-bulk') }}">
+            <form method="POST" action="{{ route('admin.pembayaran.ipl-ruko.bulk') }}">
                 @csrf
                 <div class="space-y-4">
                     <div class="field-group">
                         <label class="gaming-label">Tahun <span class="field-req">*</span></label>
-                        <input type="number" name="year" id="f-bulk-year" required min="2020" max="2035" value="{{ date('Y') }}" class="gaming-input">
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan tahun tagihan yang akan digenerate (12 bulan).</div>
+                        <select name="tahun" required class="gaming-input">
+                            <option value="">Pilih Tahun</option>
+                            @for($th = now()->year; $th >= 2024; $th--)
+                            <option value="{{ $th }}">{{ $th }}</option>
+                            @endfor
+                        </select>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Sistem akan membuat 12 tagihan (Jan–Des).</div>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Nominal per Bulan (Rp) <span class="field-req">*</span></label>
-                        <input type="number" name="nominal" id="f-bulk-nominal" required min="0" placeholder="Contoh: 500000" class="gaming-input">
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nominal tagihan untuk setiap bulan. Seragam untuk 12 bulan.</div>
+                        <input type="number" name="nominal" required min="0" placeholder="Contoh: 500000" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">PIC <span class="field-req">*</span></label>
+                        <input type="text" name="pic" required placeholder="Nama penanggung jawab" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Jabatan <span class="field-req">*</span></label>
+                        <select name="jabatan" required class="gaming-input gaming-select">
+                            <option value="">Pilih Jabatan</option>
+                            <option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option>
+                            <option value="General Manager (GM)">General Manager (GM)</option>
+                            <option value="Head of Store">Head of Store</option>
+                            <option value="Admin Master">Admin Master</option>
+                            <option value="HR">HR</option>
+                            <option value="Koordinator">Koordinator</option>
+                            <option value="Karyawan">Karyawan</option>
+                        </select>
+                    </div>
+                    <div class="p-3 rounded-xl" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);">
+                        <div style="font-size:12px;color:#f59e0b;font-weight:600;margin-bottom:4px;">Informasi</div>
+                        <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">
+                            Tagihan untuk bulan yang sudah lewat akan langsung berstatus <strong>Jatuh Tempo</strong>.
+                            Tagihan bulan mendatang akan berstatus <strong>Pending</strong> dan otomatis menjadi Jatuh Tempo saat tanggal 30/akhir bulan tiba.
+                        </div>
                     </div>
                 </div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-color);">
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
                     <button type="button" onclick="closeBulkIplModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onclick="return confirm('Generate 12 tagihan IPL untuk tahun '+document.getElementById('f-bulk-year').value+'?')">Generate</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                </div>
                 </div>
             </form>
         </div>
@@ -1074,7 +1117,6 @@ window.__PAYMENT_CONFIG = {
 };
 </script>
 <script src="{{ asset('js/pembayaran.js') }}"></script>
-
 @endsection
 
 @push('styles')
@@ -1129,5 +1171,466 @@ window.__PAYMENT_CONFIG = {
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(108,92,255,0.4);
 }
+.gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
+.gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+const paymentData = @json($itemsJson);
+const currentJenis = '{{ $jenis }}';
+const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+const jenisLabel = @json($jenisLabels[$jenis] ?? $jenis);
+let detailId = null;
+
+function showAlertPopup(type) {
+    const overlay = document.getElementById('alert-overlay');
+    const title = document.getElementById('alert-popup-title');
+    const body = document.getElementById('alert-popup-body');
+    const today = new Date(); today.setHours(0,0,0,0);
+    const color = type === 'danger' ? '#ef4444' : '#f59e0b';
+    const bgColor = type === 'danger' ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)';
+    const borderColor = type === 'danger' ? 'rgba(239,68,68,0.25)' : 'rgba(245,158,11,0.25)';
+    const label = currentJenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
+
+    const items = paymentData.filter(function(item) {
+        if (!item[dueField]) return false;
+        if (item.status === 'lunas' || item.status === 'pending' || item.status === 'rejected') return false;
+        const due = new Date(item[dueField]); due.setHours(0,0,0,0);
+        if (type === 'danger') return due <= today;
+        const in7 = new Date(today); in7.setDate(in7.getDate() + 7);
+        return due > today && due <= in7;
+    });
+
+    title.textContent = type === 'danger' ? 'Tagihan Lewat Jatuh Tempo' : 'Tagihan Segera Jatuh Tempo';
+    title.style.color = color;
+    body.innerHTML = '';
+
+    if (items.length === 0) {
+        body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada data.</div>';
+    } else {
+        items.forEach(function(item) {
+            const due = new Date(item[dueField]); due.setHours(0,0,0,0);
+            const diffDays = Math.round((today - due) / (1000 * 60 * 60 * 24));
+            let badgeText = '';
+            if (type === 'danger') {
+                badgeText = diffDays === 0 ? 'Hari Ini' : diffDays + ' Hari Lewat';
+            } else {
+                badgeText = diffDays + ' Hari Lagi';
+            }
+            const name = currentJenis === 'internet' ? (item.nama_internet + ' (' + item.provider + ')') : item.periode;
+            const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.nominal);
+
+            var card = document.createElement('div');
+            card.setAttribute('data-id', item.id);
+            card.style.cssText = 'padding:12px;margin-bottom:8px;border-radius:10px;background:' + bgColor + ';border:1px solid ' + borderColor + ';cursor:pointer;transition:all 0.15s;';
+
+            card.onmouseover = function() { this.style.transform = 'translateY(-1px)'; this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'; };
+            card.onmouseout = function() { this.style.transform = ''; this.style.boxShadow = ''; };
+            card.onclick = function() { goToEdit(item.id); };
+
+            card.innerHTML =
+                '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                    '<div>' +
+                        '<div style="font-weight:600;font-size:13px;color:var(--text-primary);">' + name + '</div>' +
+                        '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' + label + ': ' + badgeText + ' &middot; ' + nominal + '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:6px;">' +
+                        '<span style="padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:' + bgColor + ';color:' + color + ';border:1px solid ' + borderColor + ';">' + badgeText + '</span>' +
+                        '<svg style="width:14px;height:14px;color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' +
+                    '</div>' +
+                '</div>';
+
+            body.appendChild(card);
+        });
+    }
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function goToEdit(id) {
+    closeAlertPopup();
+    openBayarModal(id);
+}
+
+function openBayarModal(id) {
+    const i = paymentData.find(function(x) { return x.id === id; });
+    if (!i) return;
+
+    document.getElementById('bayar-id').value = i.id;
+    document.getElementById('bayar-form').action = '{{ url("admin/pembayaran") }}/' + i.id;
+
+    const name = currentJenis === 'internet' ? (i.nama_internet + ' (' + i.provider + ')') : i.periode;
+    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(i.nominal);
+    const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+    const dueLabel = currentJenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
+    const dueDate = i[dueField] ? new Date(i[dueField]).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
+
+    document.getElementById('bayar-name').textContent = name;
+    document.getElementById('bayar-nominal').textContent = 'Nominal: ' + nominal;
+    document.getElementById('bayar-due').textContent = dueLabel + ': ' + dueDate;
+
+    if (currentJenis === 'internet') {
+        document.getElementById('bayar-nama_internet').value = i.nama_internet;
+        document.getElementById('bayar-provider').value = i.provider;
+        document.getElementById('bayar-pic').value = i.pic;
+        document.getElementById('bayar-jabatan').value = i.jabatan;
+        document.getElementById('bayar-masa_tenggang').value = i.masa_tenggang;
+        document.getElementById('bayar-biaya').value = i.biaya;
+    } else {
+        document.getElementById('bayar-periode').value = i.periode;
+        document.getElementById('bayar-tanggal_tagihan').value = i.tanggal_tagihan;
+        document.getElementById('bayar-jatuh_tempo').value = i.jatuh_tempo;
+        document.getElementById('bayar-nominal_val').value = i.nominal;
+    }
+
+    document.getElementById('bayar-tanggal_bayar').value = new Date().toISOString().split('T')[0];
+    document.getElementById('bayar-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeBayarModal() {
+    document.getElementById('bayar-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+document.getElementById('bayar-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBayarModal(); });
+
+function closeAlertPopup() {
+    document.getElementById('alert-overlay').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function openCreateModal() {
+    document.getElementById('modal-title').textContent = 'Tambah Tagihan';
+    document.getElementById('form-method').value = 'POST';
+    document.getElementById('form-id').value = '';
+    document.getElementById('payment-form').action = '{{ route('admin.pembayaran.store') }}';
+    document.getElementById('form-submit-btn').textContent = 'Tambah';
+    document.getElementById('payment-form').querySelectorAll('input, select').forEach(el => {
+        if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method') el.value = '';
+    });
+    document.getElementById('f-tanggal_bayar-group').style.display = 'none';
+    showModal();
+}
+
+function showDetail(id) {
+    detailId = id;
+    const i = paymentData.find(x => x.id === id);
+    if (!i) return;
+
+    @if($jenis === 'internet')
+    document.getElementById('detail-title').textContent = i.nama_internet;
+    @else
+    document.getElementById('detail-title').textContent = i.periode;
+    @endif
+
+    const fmtDate = (d) => d ? new Date(d + 'T00:00:00') : null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    @if($jenis === 'internet')
+    const dueDate = fmtDate(i.masa_tenggang);
+    @else
+    const dueDate = fmtDate(i.jatuh_tempo);
+    @endif
+    let computedLabel, computedBg, computedText, computedBorder;
+    if (i.status === 'lunas') {
+        computedLabel = 'Lunas'; computedBg = '#ecfdf5'; computedText = '#059669'; computedBorder = '#a7f3d0';
+    } else if (i.status === 'pending') {
+        computedLabel = 'Menunggu'; computedBg = '#eff6ff'; computedText = '#3b82f6'; computedBorder = '#bfdbfe';
+    } else if (i.status === 'rejected') {
+        computedLabel = 'Ditolak'; computedBg = '#fef2f2'; computedText = '#dc2626'; computedBorder = '#fecaca';
+    } else if (dueDate && dueDate < today) {
+        computedLabel = 'Terlambat'; computedBg = '#fef2f2'; computedText = '#dc2626'; computedBorder = '#fecaca';
+    } else if (dueDate && dueDate <= new Date(today.getTime() + 3*86400000)) {
+        const sisa = Math.round((dueDate - today) / 86400000);
+        computedLabel = sisa === 0 ? 'Hari Ini' : 'H - ' + sisa + ' Hari';
+        computedBg = '#fff7ed'; computedText = '#c2410c'; computedBorder = '#fed7aa';
+    } else {
+        computedLabel = 'Jatuh Tempo'; computedBg = '#fff7ed'; computedText = '#c2410c'; computedBorder = '#fed7aa';
+    }
+    const s = { label: computedLabel, bg: computedBg, text: computedText, border: computedBorder };
+
+    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
+
+    @if($jenis === 'internet')
+    const rows = [
+        { label: 'Nama Internet', value: i.nama_internet },
+        { label: 'Provider', value: i.provider },
+        { label: 'PIC', value: i.pic },
+        { label: 'Jabatan', value: i.jabatan },
+        { label: 'Masa Tenggang', value: fmt(i.masa_tenggang) },
+        { label: 'Biaya', value: 'Rp ' + Number(i.biaya).toLocaleString('id-ID') },
+        { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
+    ];
+    @else
+    const rows = [
+        { label: '{{ $jenis === "aset_digital" ? "Nama Aset" : "Periode" }}', value: i.periode },
+        { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
+        { label: 'Jatuh Tempo', value: fmt(i.jatuh_tempo) },
+        { label: 'Nominal', value: 'Rp ' + Number(i.nominal).toLocaleString('id-ID') },
+        { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
+    ];
+    @endif
+    if (i.bukti_bayar) {
+        rows.push({ label: 'Bukti Bayar', value: '<a href="' + '{{ url("storage") }}/' + i.bukti_bayar + '" target="_blank" style="color:#6c5cff;text-decoration:underline;font-size:13px;">Lihat Bukti</a>' });
+    }
+
+    const bayarBtn = document.getElementById('detail-bayar-btn');
+    const buktiWrap = document.getElementById('detail-bukti-wrap');
+    if (i.status === 'jatuh_tempo' || i.status === 'pending') {
+        bayarBtn.style.display = '';
+        buktiWrap.style.display = '';
+    } else {
+        bayarBtn.style.display = 'none';
+        buktiWrap.style.display = 'none';
+    }
+    document.getElementById('detail-bukti_bayar').value = '';
+
+    document.getElementById('detail-body').innerHTML = `
+        <div class="space-y-1">
+            ${rows.map((r, idx) => `
+                <div class="flex items-center justify-between py-2.5" ${idx < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
+                    <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
+                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.value}</p>
+                </div>
+            `).join('')}
+            <div class="flex items-center justify-between py-2.5">
+                <p class="text-sm" style="color:var(--text-muted);">Status</p>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${s.bg};color:${s.text};border:1px solid ${s.border};">${s.label}</span>
+            </div>
+        </div>
+    `;
+    document.getElementById('detail-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function markAsLunas() {
+    const id = detailId;
+    if (!id) return;
+    showConfirmModal('Tandai pembayaran ini sebagai Lunas?', function() {
+        const i = paymentData.find(x => x.id === id);
+        if (!i) return;
+
+        const formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('_method', 'PUT');
+        formData.append('jenis', currentJenis);
+        formData.append('status', 'lunas');
+        formData.append('tanggal_bayar', new Date().toISOString().split('T')[0]);
+
+        const fileInput = document.getElementById('detail-bukti_bayar');
+        if (fileInput && fileInput.files.length > 0) {
+            formData.append('bukti_bayar', fileInput.files[0]);
+        }
+
+        @if($jenis === 'internet')
+        formData.append('nama_internet', i.nama_internet);
+        formData.append('provider', i.provider);
+        formData.append('pic', i.pic);
+        formData.append('jabatan', i.jabatan);
+        formData.append('masa_tenggang', i.masa_tenggang);
+        formData.append('biaya', i.biaya);
+        @else
+        formData.append('periode', i.periode);
+        formData.append('tanggal_tagihan', i.tanggal_tagihan);
+        formData.append('jatuh_tempo', i.jatuh_tempo);
+        formData.append('nominal', i.nominal);
+        @endif
+
+        fetch('{{ url('admin/pembayaran') }}/' + id, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: formData,
+        }).then(r => {
+            if (r.ok) { location.reload(); }
+            else { r.json().then(e => { showAlertModal('Gagal: ' + JSON.stringify(e.errors || e)); }); }
+        }).catch(() => { location.reload(); });
+    }, { icon: 'success', buttonText: 'Ya, Tandai Lunas', buttonColor: '#10b981', buttonHoverColor: '#059669' });
+}
+
+function closeDetail() {
+    detailId = null;
+    document.getElementById('detail-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function bayarFromDetail() {
+    var id = detailId;
+    closeDetail();
+    if (id) openBayarModal(id);
+}
+
+function editFromDetail() {
+    const id = detailId;
+    closeDetail();
+    if (id) openEditModal(id);
+}
+
+document.getElementById('detail-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeDetail();
+});
+
+function toggleDropdown(btn, id) {
+    const all = document.querySelectorAll('.dropdown-menu');
+    all.forEach(el => { if (el.id !== 'dropdown-' + id) el.style.display = 'none'; });
+    const menu = document.getElementById('dropdown-' + id);
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-wrap')) {
+        document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
+    }
+});
+
+function openEditModal(id) {
+    closeDetail();
+    const i = paymentData.find(x => x.id === id);
+    if (!i) return;
+
+    document.getElementById('modal-title').textContent = 'Edit Tagihan';
+    document.getElementById('form-method').value = 'PUT';
+    document.getElementById('form-id').value = i.id;
+    document.getElementById('payment-form').action = '{{ url('admin/pembayaran') }}/' + i.id;
+    document.getElementById('form-submit-btn').textContent = 'Simpan Perubahan';
+
+    @if($jenis === 'internet')
+    document.getElementById('f-nama_internet').value = i.nama_internet;
+    document.getElementById('f-provider').value = i.provider;
+    document.getElementById('f-pic').value = i.pic;
+    document.getElementById('f-jabatan').value = i.jabatan;
+    document.getElementById('f-masa_tenggang').value = i.masa_tenggang;
+    document.getElementById('f-biaya').value = i.biaya;
+    @else
+    document.getElementById('f-periode').value = i.periode;
+    document.getElementById('f-tanggal_tagihan').value = i.tanggal_tagihan;
+    document.getElementById('f-jatuh_tempo').value = i.jatuh_tempo;
+    document.getElementById('f-nominal').value = i.nominal;
+    @endif
+
+    if (i.tanggal_bayar) {
+        document.getElementById('f-tanggal_bayar').value = i.tanggal_bayar;
+        document.getElementById('f-tanggal_bayar-group').style.display = '';
+    } else {
+        document.getElementById('f-tanggal_bayar').value = '';
+        document.getElementById('f-tanggal_bayar-group').style.display = 'none';
+    }
+
+    showModal();
+}
+
+function showModal() { document.getElementById('payment-modal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+
+document.getElementById('payment-modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal('payment-modal'); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeDetail(); closeModal('payment-modal'); } });
+
+let currentFilter = 'all';
+
+function toggleFilterMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('filter-menu');
+    document.querySelectorAll('.filter-menu').forEach(m => { if (m.id !== 'filter-menu') m.style.display = 'none'; });
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function setFilter(value) {
+    currentFilter = value;
+    const label = document.querySelector(`.filter-menu button[data-value="${value}"]`).textContent;
+    document.getElementById('filter-label').textContent = label;
+    document.getElementById('filter-menu').style.display = 'none';
+    filterTable();
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.getElementById('filter-menu').style.display = 'none';
+    }
+});
+
+function filterTable() {
+    const search = (document.getElementById('search-payment')?.value || '').toLowerCase();
+    const rows = document.querySelectorAll('#payment-tbody tr:not(#empty-row)');
+    rows.forEach(row => {
+        const rowStatus = row.dataset.status;
+        const text = row.textContent.toLowerCase();
+        const matchStatus = currentFilter === 'all' || rowStatus === currentFilter;
+        const matchSearch = !search || text.includes(search);
+        row.style.display = matchStatus && matchSearch ? '' : 'none';
+    });
+}
+
+
+
+function openTokenModal() {
+    document.getElementById('token-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-remaining_kwh').focus();
+}
+
+function closeTokenModal() {
+    document.getElementById('token-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+document.getElementById('token-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTokenModal(); });
+document.getElementById('topup-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTopupModal(); });
+document.getElementById('bulk-ipl-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBulkIplModal(); });
+
+function openTopupModal() {
+    document.getElementById('topup-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-amount_kwh').focus();
+}
+
+function closeTopupModal() {
+    document.getElementById('topup-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function openBulkIplModal() {
+    document.getElementById('bulk-ipl-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeBulkIplModal() {
+    document.getElementById('bulk-ipl-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function filterByYear(tahun) {
+    const params = new URLSearchParams(window.location.search);
+    if (tahun) {
+        params.set('tahun', tahun);
+    } else {
+        params.delete('tahun');
+    }
+    window.location.search = params.toString();
+}
+
+function setTopupRange(range) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('topup_range', range);
+    params.delete('reading_range');
+    window.location.search = params.toString();
+}
+
+function setReadingRange(range) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('reading_range', range);
+    params.delete('topup_range');
+    window.location.search = params.toString();
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeTokenModal();
+        closeTopupModal();
+        closeBulkIplModal();
+        closeAlertPopup();
+        closeBayarModal();
+        document.body.style.overflow = '';
+    }
+});
+</script>
 @endpush
