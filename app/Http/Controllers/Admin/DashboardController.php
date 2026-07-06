@@ -231,15 +231,15 @@ class DashboardController extends Controller
             $start = $month->copy()->startOfMonth();
             $end = $month->copy()->endOfMonth();
 
-            $tagihan = Payment::where('jenis', 'listrik')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + PembayaranAsetDigital::whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + PembayaranIplRuko::whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + WifiPayment::whereBetween('created_at', [$start, $end])->sum('biaya');
+            $tagihan = Payment::where('jenis', 'listrik')->where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranAsetDigital::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranIplRuko::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + WifiPayment::where('status', '!=', 'rejected')->whereBetween('created_at', [$start, $end])->sum('biaya');
 
-            $bayar = Payment::where('jenis', 'listrik')->where('status', 'lunas')->whereBetween('tanggal_bayar', [$start, $end])->sum('nominal')
-                + PembayaranAsetDigital::where('status', 'lunas')->whereBetween('tanggal_bayar', [$start, $end])->sum('nominal')
-                + PembayaranIplRuko::where('status', 'lunas')->whereBetween('tanggal_bayar', [$start, $end])->sum('nominal')
-                + WifiPayment::where('status', 'lunas')->whereBetween('tanggal_bayar', [$start, $end])->sum('biaya');
+            $bayar = Payment::where('jenis', 'listrik')->where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranAsetDigital::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranIplRuko::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + WifiPayment::where('status', 'lunas')->whereBetween('created_at', [$start, $end])->sum('biaya');
 
             $monthlyTagihan[] = (int) $tagihan;
             $monthlyBayar[] = (int) $bayar;

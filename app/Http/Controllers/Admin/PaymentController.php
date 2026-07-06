@@ -35,9 +35,11 @@ class PaymentController extends Controller
             $stats = [
                 'total' => $all->count(),
                 'aktif' => $all->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $all->filter(fn ($w) => is_null($w->requested_by) && !in_array($w->status, ['lunas', 'rejected']) && $w->masa_tenggang && $w->masa_tenggang <= today()->addDays(7) && $w->masa_tenggang >= today())->count(),
-                'terlambat' => $all->filter(fn ($w) => is_null($w->requested_by) && !in_array($w->status, ['lunas', 'rejected']) && $w->masa_tenggang && $w->masa_tenggang < today())->count(),
+                'jatuh_tempo' => $all->filter(fn ($w) => is_null($w->requested_by) && ! in_array($w->status, ['lunas', 'rejected']) && $w->masa_tenggang && $w->masa_tenggang <= today()->addDays(7) && $w->masa_tenggang >= today())->count(),
+                'terlambat' => $all->filter(fn ($w) => is_null($w->requested_by) && ! in_array($w->status, ['lunas', 'rejected']) && $w->masa_tenggang && $w->masa_tenggang < today())->count(),
             ];
+
+
 
             $itemsJson = $items->values()->map(function ($w) {
                 return [
@@ -85,8 +87,8 @@ class PaymentController extends Controller
             $stats = [
                 'total' => $all->count(),
                 'aktif' => $all->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
-                'terlambat' => $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
+                'jatuh_tempo' => $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
+                'terlambat' => $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
             ];
 
             $itemsJson = $items->values()->map(fn ($p) => [
@@ -104,7 +106,7 @@ class PaymentController extends Controller
                 'notes' => $p->notes,
             ]);
 
-            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
+            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
         } elseif ($jenis === 'ipl_ruko') {
             $all = PembayaranIplRuko::all();
 
@@ -129,8 +131,8 @@ class PaymentController extends Controller
             $stats = [
                 'total' => $items->count(),
                 'aktif' => $items->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $items->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
-                'terlambat' => $items->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
+                'jatuh_tempo' => $items->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
+                'terlambat' => $items->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
             ];
 
             $itemsJson = $items->values()->map(fn ($p) => [
@@ -149,7 +151,7 @@ class PaymentController extends Controller
                 'jabatan' => $p->jabatan,
             ]);
 
-            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
+            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
         } else {
             $items = Payment::where('jenis', 'listrik')->orderBy('created_at', 'desc')->get();
             $all = Payment::where('jenis', 'listrik')->get();
@@ -157,8 +159,8 @@ class PaymentController extends Controller
             $stats = [
                 'total' => $all->count(),
                 'aktif' => $all->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
-                'terlambat' => $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
+                'jatuh_tempo' => $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
+                'terlambat' => $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
             ];
 
             $itemsJson = $items->values()->map(function ($p) {
@@ -177,7 +179,7 @@ class PaymentController extends Controller
                 ];
             });
 
-            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && !in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
+            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
         }
 
         $tokenReadings = collect();
@@ -288,7 +290,7 @@ class PaymentController extends Controller
             'jenisLabels', 'jenisIcons', 'tokenReadings', 'latestReading',
             'tokenAlert', 'capacityKwh', 'usedKwh', 'tokenMonth',
             'latestPayment', 'topupHistory', 'topupRange', 'readingRange',
-            'users', 'internetUsages', 'internetUsagesJson', 'internetUsageDate', 'tahun', 'availableYears'
+            'users', 'internetUsages', 'internetUsagesJson', 'internetUsageDate', 'tahun', 'availableYears',
         ));
     }
 

@@ -280,7 +280,8 @@ class RealtimeController extends Controller
             return;
         }
 
-        $sevenDays = Carbon::today()->addDays(7);
+        $today = Carbon::today();
+        $threeDays = Carbon::today()->addDays(3);
 
         $models = [
             'payments' => ['class' => Payment::class, 'dateField' => 'jatuh_tempo', 'query' => fn ($q) => $q->where('jenis', 'listrik')],

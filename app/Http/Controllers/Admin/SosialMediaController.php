@@ -56,7 +56,7 @@ class SosialMediaController extends Controller
         return redirect()->route('admin.sosial-media.index')->with('success', 'Sosial Media berhasil ditambahkan.');
     }
 
-    public function update(Request $request, SosialMedia $sosialMedia)
+    public function update(Request $request, SosialMedia $sosialMedium)
     {
         $data = $request->validate([
             'username' => 'required|string|max:255',
@@ -68,14 +68,14 @@ class SosialMediaController extends Controller
             'ket' => 'nullable|string',
         ]);
 
-        $sosialMedia->update($data);
+        $sosialMedium->update($data);
 
         return redirect()->route('admin.sosial-media.index')->with('success', 'Sosial Media berhasil diperbarui.');
     }
 
-    public function destroy(SosialMedia $sosialMedia)
+    public function destroy(SosialMedia $sosialMedium)
     {
-        $sosialMedia->delete();
+        $sosialMedium->delete();
 
         return redirect()->route('admin.sosial-media.index')->with('success', 'Sosial Media berhasil dihapus.');
     }

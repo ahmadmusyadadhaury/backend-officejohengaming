@@ -249,7 +249,7 @@
     <div class="dashboard-section">
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-2.5 md:gap-3">
             {{-- Bar Chart --}}
-            <div class="gaming-card lg:col-span-3">
+            <div class="gaming-card lg:col-span-3 overflow-hidden">
                 <div class="card-header">
                     <span class="card-header-title">
                         <svg style="color:#3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,7 +265,7 @@
             </div>
 
             {{-- Donut Chart --}}
-            <div class="gaming-card lg:col-span-2 flex flex-col">
+            <div class="gaming-card lg:col-span-2 flex flex-col overflow-hidden">
                 <div class="card-header flex-shrink-0">
                     <span class="card-header-title">
                         <svg style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

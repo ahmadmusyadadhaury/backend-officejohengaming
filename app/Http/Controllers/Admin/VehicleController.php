@@ -70,6 +70,11 @@ class VehicleController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $myPajakRequests = VehiclePajakRequest::with(['vehicle'])
+            ->where('requested_by', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $pendingPajakRequestsJson = $pendingPajakRequests->map(fn ($r) => [
             'id' => $r->id,
             'vehicle_id' => $r->vehicle_id,
@@ -82,7 +87,7 @@ class VehicleController extends Controller
             'created_at' => $r->created_at->format('d/m/Y H:i'),
         ]);
 
-        $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin']);
+        $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin', 'ceo']);
 
         return view('admin.vehicles.index', [
             'vehicles' => $filtered,
@@ -94,6 +99,7 @@ class VehicleController extends Controller
             'pendingPajakRequests' => $pendingPajakRequests,
             'pendingPajakRequestsJson' => $pendingPajakRequestsJson,
             'isApprover' => $isApprover,
+            'myPajakRequests' => $myPajakRequests,
         ]);
     }
 

@@ -149,6 +149,8 @@
     </div>
     @endif
 
+
+
     {{-- Alert Jatuh Tempo / Masa Tenggang --}}
     @if($jenis !== 'listrik' && $alertItems->isNotEmpty())
         @php
@@ -609,14 +611,14 @@
 
     {{-- Pengecekan Token Listrik --}}
     <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-5 py-4 flex items-center flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Token Listrik</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
                     Lakukan pengecekan sisa KWH token setiap minggu. Kapasitas token: {{ number_format($capacityKwh, 0) }} KWH/bulan.
                 </div>
             </div>
-            <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-2 flex-wrap" style="margin-left:auto;">
                 <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
                     <button type="button" onclick="setReadingRange('harian')" class="reading-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'harian' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'harian' ? '#60a5fa' : 'var(--text-muted)' }};">Harian</button>
                     <button type="button" onclick="setReadingRange('mingguan')" class="reading-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'mingguan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'mingguan' ? '#60a5fa' : 'var(--text-muted)' }};">Mingguan</button>
@@ -628,7 +630,7 @@
                 </form>
                 <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Download Excel Pengecekan Token">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Excel
+                    Export
                 </a>
                 <button type="button" onclick="openTokenModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

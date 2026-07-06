@@ -34,7 +34,7 @@ class VehiclePajakRequestController extends Controller
         $jenisLabel = $data['jenis'] === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahunan';
         $message = "Pengajuan pembayaran {$jenisLabel} {$vehicle->nama_kendaraan} ({$vehicle->plat_nomor}) menunggu approval.";
 
-        $approvers = User::whereIn('role', ['head_of_store', 'gm', 'hr', 'admin'])->get();
+        $approvers = User::whereIn('role', ['head_of_store', 'gm', 'hr', 'admin', 'ceo'])->get();
 
         foreach ($approvers as $approver) {
             Notification::send($approver->id, 'activity', 'Pengajuan Pajak Kendaraan', $message, 'https://office.johengaming.store/');
@@ -80,12 +80,17 @@ class VehiclePajakRequestController extends Controller
             return response()->json(['error' => 'Request sudah diproses.'], 422);
         }
 
+        if ($pajakRequest->requested_by === auth()->id()) {
+            return response()->json(['error' => 'Anda tidak dapat menyetujui pengajuan sendiri.'], 422);
+        }
+
         $vehicle = $pajakRequest->vehicle;
+        $oneYearFromNow = now()->addYear();
 
         if ($pajakRequest->jenis === 'tahunan') {
-            $vehicle->pajak_tahunan = now()->addYear();
+            $vehicle->pajak_tahunan = $vehicle->pajak_tahunan?->max($oneYearFromNow) ?? $oneYearFromNow;
         } else {
-            $vehicle->pajak_5_tahun = now()->addYear();
+            $vehicle->pajak_5_tahun = $vehicle->pajak_5_tahun?->max($oneYearFromNow) ?? $oneYearFromNow;
         }
         $vehicle->save();
 
@@ -113,6 +118,10 @@ class VehiclePajakRequestController extends Controller
 
         if ($pajakRequest->status !== 'pending') {
             return response()->json(['error' => 'Request sudah diproses.'], 422);
+        }
+
+        if ($pajakRequest->requested_by === auth()->id()) {
+            return response()->json(['error' => 'Anda tidak dapat menolak pengajuan sendiri.'], 422);
         }
 
         $pajakRequest->update([

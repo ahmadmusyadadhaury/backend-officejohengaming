@@ -1092,6 +1092,17 @@
             if (e.target === this) closeInvitationModal();
         });
 
+        function closeAllModals() {
+            document.querySelectorAll('[id$="-modal"]').forEach(function(el) {
+                if (el.style.display === 'flex') el.style.display = 'none';
+            });
+            document.body.style.overflow = '';
+        }
+
+        function checkModalOpen() {
+            return document.querySelectorAll('[id$="-modal"]').length > 0;
+        }
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 const sm = document.getElementById('success-modal');
