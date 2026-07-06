@@ -97,7 +97,10 @@ class DashboardController extends Controller
                 return $m;
             });
 
-        $todayMeetings = $todayMeetings->merge($weeklySessions)->sortBy('start_time');
+        foreach ($weeklySessions as $ws) {
+            $todayMeetings->push($ws);
+        }
+        $todayMeetings = $todayMeetings->sortBy('start_time');
 
         $today = today();
         $sevenDaysFromNow = today()->addDays(7);

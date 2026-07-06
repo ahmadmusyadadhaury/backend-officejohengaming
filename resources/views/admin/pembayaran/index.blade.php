@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', $jenisLabels[$jenis])
 @section('page-title', 'Pembayaran')
 @section('page-subtitle', $jenis === 'internet' ? 'Kelola WiFi' : 'Kelola tagihan '.$jenisLabels[$jenis])
@@ -274,7 +274,7 @@
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
-            <div class="flex items-center gap-2" style="margin-left:auto;">
+            <div class="flex items-center gap-2 flex-shrink-0" style="margin-left:auto;">
                 @if($jenis === 'ipl_ruko')
                 <select onchange="filterByYear(this.value)" class="gaming-input" style="padding:6px 10px;font-size:12px;min-width:90px;">
                     <option value="">Semua Tahun</option>
@@ -283,7 +283,7 @@
                     @endforeach
                 </select>
                 @endif
-                <a href="{{ route('admin.export', ['type' => 'pembayaran', 'jenis' => $jenis, 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">Download Excel</a>
+                <a href="{{ route('admin.export', ['type' => 'pembayaran', 'jenis' => $jenis, 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5 whitespace-nowrap"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -410,8 +410,8 @@
 
     {{-- Pengecekan Usage Internet --}}
     @if($jenis === 'internet')
-    <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+    <div class="gaming-card" style="overflow:hidden;">
+        <div class="card-header">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Usage Internet</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
@@ -433,11 +433,11 @@
                 <input type="month" name="internet_usage_date" value="{{ $internetUsageDate }}" style="padding:0.35rem 0.875rem;font-size:0.8rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:var(--radius-md);background:var(--bg-surface-2);border:1px solid var(--border-color);color:var(--text-primary);cursor:pointer;outline:none;line-height:1.4;height:36px;box-sizing:border-box;" onchange="this.form.submit()">
             </form>
             <div class="flex items-center gap-2">
-                <a href="{{ route('admin.export', ['type' => 'internet-usage', 'internet_usage_date' => $internetUsageDate]) }}" class="btn btn-secondary btn-sm" title="Download Excel Usage Internet">
+                <a href="{{ route('admin.export', ['type' => 'internet-usage', 'internet_usage_date' => $internetUsageDate]) }}" class="btn btn-secondary btn-sm" title="Export Usage Internet">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.293.707l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    Download Excel
+                    Export
                 </a>
             </div>
         </div>
@@ -499,8 +499,8 @@
 
     {{-- Riwayat Top Up Token --}}
     @if($jenis === 'listrik')
-    <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+    <div class="gaming-card" style="overflow:hidden;">
+        <div class="card-header" style="flex-wrap:wrap;gap:0.75rem;">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Riwayat Top Up Token</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Riwayat pembelian/pengisian token listrik.</div>
@@ -511,7 +511,7 @@
                     <button type="button" onclick="setTopupRange('mingguan')" class="topup-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? '#a78bfa' : 'var(--text-muted)' }};">Mingguan</button>
                     <button type="button" onclick="setTopupRange('bulanan')" class="topup-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? '#a78bfa' : 'var(--text-muted)' }};">Bulanan</button>
                 </div>
-                <a href="{{ route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan']) }}" class="btn btn-secondary btn-sm" title="Download Excel Riwayat Top Up">
+                <a href="{{ route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan']) }}" class="btn btn-secondary btn-sm" title="Export Riwayat Top Up">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Excel
                 </a>
@@ -576,7 +576,7 @@
                 <div class="text-xs font-semibold" style="color:var(--text-muted);">Top Up Terakhir</div>
                 <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);">{{ $latestPayment ? number_format($latestPayment->amount_kwh, 0) : '7.000' }} KWH</div>
                 <div class="text-xs font-medium" style="color:var(--text-muted);">{{ $latestPayment && $latestPayment->nominal ? 'Rp '.number_format($latestPayment->nominal, 0) : '' }}</div>
-                <div class="text-xs" style="color:var(--text-muted);">{{ $latestPayment ? $latestPayment->payment_date->format('d M Y') : '-' }} Â· {{ $latestPayment?->creator?->name ?? '-' }}</div>
+                <div class="text-xs" style="color:var(--text-muted);">{{ $latestPayment ? $latestPayment->payment_date->format('d M Y') : '-' }} · {{ $latestPayment?->creator?->name ?? '-' }}</div>
             </div>
             <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-xs flex-shrink-0" style="font-size:11px;padding:4px 10px;">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -611,8 +611,8 @@
     @endif
 
     {{-- Pengecekan Token Listrik --}}
-    <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+    <div class="gaming-card" style="overflow:hidden;">
+        <div class="card-header" style="flex-wrap:wrap;gap:0.75rem;">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Token Listrik</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
@@ -629,7 +629,7 @@
                     <input type="hidden" name="jenis" value="listrik">
                     <input type="month" name="token_month" value="{{ $tokenMonth }}" style="padding:0.35rem 0.875rem;font-size:0.8rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:var(--radius-md);background:var(--bg-surface-2);border:1px solid var(--border-color);color:var(--text-primary);cursor:pointer;outline:none;line-height:1.4;height:36px;box-sizing:border-box;" onchange="this.form.submit()">
                 </form>
-                <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Download Excel Pengecekan Token">
+                <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Export Pengecekan Token">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Export
                 </a>
@@ -677,7 +677,7 @@
                                     @csrf @method('DELETE')
                                     <button type="submit" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:2px 6px;">Hapus</button>
                                 </form>
-                                <a href="{{ route('admin.export', ['type' => 'token-readings']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
+                                <a href="{{ route('admin.export', ['type' => 'token-readings']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Export">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 </a>
                             </div>
@@ -952,7 +952,7 @@
                 <div class="field-group" style="margin-bottom:16px;">
                     <label class="gaming-label">Jabatan <span class="field-req">*</span></label>
                     <select name="jabatan" id="bayar-jabatan-select" required class="gaming-input gaming-select">
-                        <option value="">— Pilih Jabatan —</option>
+                        <option value="">� Pilih Jabatan �</option>
                         <option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option>
                         <option value="General Manager (GM)">General Manager (GM)</option>
                         <option value="Head of Store">Head of Store</option>
@@ -1003,7 +1003,7 @@
                             <option value="{{ $th }}">{{ $th }}</option>
                             @endfor
                         </select>
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Sistem akan membuat 12 tagihan (Jan–Des).</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Sistem akan membuat 12 tagihan (Jan�Des).</div>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Nominal per Bulan (Rp) <span class="field-req">*</span></label>

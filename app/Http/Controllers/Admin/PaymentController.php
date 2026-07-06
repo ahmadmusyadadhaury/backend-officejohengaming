@@ -27,6 +27,8 @@ class PaymentController extends Controller
         $internetUsages = collect();
         $internetUsagesJson = collect();
         $internetUsageDate = now()->format('Y-m');
+        $tahun = $request->get('tahun');
+        $availableYears = [];
 
         if ($jenis === 'internet') {
             $items = WifiPayment::orderBy('created_at', 'desc')->get();
@@ -190,8 +192,6 @@ class PaymentController extends Controller
         $topupHistory = collect();
         $topupRange = $request->get('topup_range', 'bulanan');
         $readingRange = $request->get('reading_range', 'bulanan');
-        $tahun = $request->get('tahun');
-        $availableYears = [];
 
         if ($jenis === 'listrik') {
             $tokenMonth = $request->get('token_month', now()->format('Y-m'));

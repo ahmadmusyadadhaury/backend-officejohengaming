@@ -69,7 +69,10 @@ class DashboardController extends Controller
                 return $m;
             });
 
-        $todayMeetings = $todayMeetings->merge($weeklySessions)->sortBy('start_time');
+        foreach ($weeklySessions as $ws) {
+            $todayMeetings->push($ws);
+        }
+        $todayMeetings = $todayMeetings->sortBy('start_time');
 
         $totalInvitations = $user->participatingMeetings()
             ->whereIn('meetings.status', ['approved', 'confirmed', 'in_progress'])
