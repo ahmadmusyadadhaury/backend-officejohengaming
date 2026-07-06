@@ -205,16 +205,14 @@
                         <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $v->keperluan }}">{{ $v->keperluan ?? '-' }}</td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showPajakRequestModal({{ $v->id }})" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;font-size:0.7rem;">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                    Bayar
-                                </button>
                                 <button type="button" onclick="showDetail({{ $v->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
                                     <button type="button" onclick="toggleDropdown(this, {{ $v->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $v->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showPajakRequestModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Bayar</button>
                                         <button type="button" onclick="showDetail({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.vehicles.destroy', $v) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus kendaraan ini?" style="margin:0;">
@@ -271,80 +269,9 @@
     </div>
 </div>
 
-{{-- Status Pengajuan Saya --}}
-@if($myPajakRequests->isNotEmpty())
-<div class="gaming-card overflow-hidden">
-    <div class="px-6 py-4" style="border-bottom:1px solid var(--border-color);">
-        <div style="display:flex;align-items:center;gap:8px;">
-            <svg class="w-5 h-5" style="color:var(--color-accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <div>
-                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Status Pengajuan Pajak Saya</div>
-                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">{{ $myPajakRequests->count() }} pengajuan</div>
-            </div>
-        </div>
-    </div>
-    <div class="table-responsive">
-        <table class="gaming-table min-w-[650px]">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Kendaraan</th>
-                    <th>Plat Nomor</th>
-                    <th>Jenis Pajak</th>
-                    <th>Nominal</th>
-                    <th>Tanggal</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($myPajakRequests as $pr)
-                <tr>
-                    <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                    <td style="color:var(--text-primary);font-weight:500;">{{ $pr->vehicle->nama_kendaraan }}</td>
-                    <td style="font-family:monospace;font-weight:600;color:var(--text-muted);">{{ $pr->vehicle->plat_nomor }}</td>
-                    <td style="color:var(--text-primary);">{{ $pr->jenis === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahunan' }}</td>
-                    <td style="color:var(--text-primary);">Rp {{ number_format($pr->nominal, 0, ',', '.') }}</td>
-                    <td style="color:var(--text-muted);">{{ $pr->created_at->format('d/m/Y H:i') }}</td>
-                    <td>
-                        @php
-                            $statusLabel = match($pr->status) {
-                                'pending' => 'Menunggu',
-                                'approved' => 'Disetujui',
-                                'rejected' => 'Ditolak',
-                                default => $pr->status,
-                            };
-                            $statusColor = match($pr->status) {
-                                'pending' => '#f59e0b',
-                                'approved' => '#10b981',
-                                'rejected' => '#ef4444',
-                                default => '#6b7280',
-                            };
-                            $statusBg = match($pr->status) {
-                                'pending' => 'rgba(245,158,11,0.12)',
-                                'approved' => 'rgba(16,185,129,0.12)',
-                                'rejected' => 'rgba(239,68,68,0.12)',
-                                default => 'rgba(107,114,128,0.12)',
-                            };
-                        @endphp
-                        <span style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:600;background:{{ $statusBg }};color:{{ $statusColor }};">{{ $statusLabel }}</span>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
-@endif
-
 @push('modals')
 {{-- Modal Tambah / Edit Kendaraan --}}
-<style>
-#vehicle-modal { background: rgba(13,15,26,1); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-body.light #vehicle-modal { background: rgba(255,255,255,1); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-</style>
-<div id="vehicle-modal" style="display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:rgba(13,15,26,1);">
+<div id="vehicle-modal" style="display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="vehicle-modal-card" onclick="event.stopPropagation()">
 
         {{-- Header --}}
@@ -482,66 +409,6 @@ body.light #vehicle-modal { background: rgba(255,255,255,1); backdrop-filter: bl
     </div>
 </div>
 @endpush
-
-{{-- Pending Approvals Section --}}
-@if($isApprover && $pendingPajakRequests->isNotEmpty())
-<div class="gaming-card overflow-hidden" id="pending-approvals">
-    <div class="px-6 py-4" style="border-bottom:1px solid var(--border-color);">
-        <div style="display:flex;align-items:center;gap:8px;">
-            <svg class="w-5 h-5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-            <div>
-                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Pengajuan Pembayaran Pajak</div>
-                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">{{ $pendingPajakRequests->count() }} pengajuan menunggu persetujuan</div>
-            </div>
-        </div>
-    </div>
-    <div class="table-responsive">
-        <table class="gaming-table min-w-[700px]">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Kendaraan</th>
-                    <th>Plat Nomor</th>
-                    <th>Jenis Pajak</th>
-                    <th>Nominal</th>
-                    <th>Pemohon</th>
-                    <th>Tanggal</th>
-                    <th>Bukti</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($pendingPajakRequests as $pr)
-                <tr>
-                    <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                    <td style="color:var(--text-primary);font-weight:500;">{{ $pr->vehicle->nama_kendaraan }}</td>
-                    <td style="font-family:monospace;font-weight:600;color:var(--text-muted);">{{ $pr->vehicle->plat_nomor }}</td>
-                    <td style="color:var(--text-primary);">{{ $pr->jenis === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahunan' }}</td>
-                    <td style="color:var(--text-primary);">Rp {{ number_format($pr->nominal, 0, ',', '.') }}</td>
-                    <td style="color:var(--text-muted);">{{ $pr->requester->name }}</td>
-                    <td style="color:var(--text-muted);">{{ $pr->created_at->format('d/m/Y H:i') }}</td>
-                    <td>
-                        @if($pr->bukti_bayar)
-                        <a href="{{ url('storage/'.$pr->bukti_bayar) }}" target="_blank" rel="noopener" style="color:var(--color-accent);font-size:13px;text-decoration:none;font-weight:500;">Lihat</a>
-                        @else
-                        <span style="color:var(--text-muted);">-</span>
-                        @endif
-                    </td>
-                    <td>
-                        <div class="flex gap-1">
-                            <button type="button" onclick="approveRequest({{ $pr->id }})" class="btn btn-success btn-sm" style="padding:3px 10px;font-size:11px;">Setuju</button>
-                            <button type="button" onclick="showRejectModal({{ $pr->id }})" class="btn btn-danger btn-sm" style="padding:3px 10px;font-size:11px;">Tolak</button>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
-@endif
 
 {{-- Modal Alasan Tolak --}}
 <div id="reject-modal" style="display:none;position:fixed;inset:0;z-index:100001;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">

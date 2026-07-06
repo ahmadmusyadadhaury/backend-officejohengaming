@@ -77,11 +77,12 @@ function openBayarModal(id) {
     const i = paymentData.find(function(x) { return x.id === id; });
     if (!i) return;
 
-    document.getElementById('bayar-id').value = i.id;
-    document.getElementById('bayar-form').action = C.baseUrl + '/' + i.id;
+    document.getElementById('bayar-form').action = C.paymentApprovalUrl + '/' + i.id + '/bayar';
+    document.getElementById('bayar-jenis').value = C.currentJenis;
 
     const name = currentJenis === 'internet' ? (i.nama_internet + ' (' + i.provider + ')') : i.periode;
-    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(i.nominal);
+    const nominalVal = i.nominal || i.biaya || 0;
+    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(nominalVal);
     const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
     const dueLabel = currentJenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
     const dueDate = i[dueField] ? new Date(i[dueField]).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
@@ -90,27 +91,47 @@ function openBayarModal(id) {
     document.getElementById('bayar-nominal').textContent = 'Nominal: ' + nominal;
     document.getElementById('bayar-due').textContent = dueLabel + ': ' + dueDate;
 
-    if (currentJenis === 'internet') {
-        document.getElementById('bayar-nama_internet').value = i.nama_internet;
-        document.getElementById('bayar-provider').value = i.provider;
-        document.getElementById('bayar-pic').value = i.pic;
-        document.getElementById('bayar-jabatan').value = i.jabatan;
-        document.getElementById('bayar-masa_tenggang').value = i.masa_tenggang;
-        document.getElementById('bayar-biaya').value = i.biaya;
-    } else {
-        document.getElementById('bayar-periode').value = i.periode;
-        document.getElementById('bayar-tanggal_tagihan').value = i.tanggal_tagihan;
-        document.getElementById('bayar-jatuh_tempo').value = i.jatuh_tempo;
-        document.getElementById('bayar-nominal_val').value = i.nominal;
-    }
+    document.getElementById('bayar-pic').value = i.pic || C.currentUserName;
+    document.getElementById('bayar-jabatan-select').value = i.jabatan || '';
 
     document.getElementById('bayar-tanggal_bayar').value = new Date().toISOString().split('T')[0];
+    document.getElementById('bayar-bukti_bayar').value = '';
+
+    document.querySelectorAll('[data-period]').forEach(function(el) {
+        el.style.borderColor = 'var(--border-color)';
+    });
+    var bulananEl = document.querySelector('[data-period="bulanan"]');
+    if (bulananEl) {
+        bulananEl.style.borderColor = '#6c5cff';
+        bulananEl.querySelector('input[type="radio"]').checked = true;
+    }
+    document.getElementById('period-info').textContent = '';
+
     document.getElementById('bayar-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
 }
 function closeBayarModal() {
     document.getElementById('bayar-modal').style.display = 'none';
     document.body.style.overflow = '';
+    document.getElementById('bayar-bukti_bayar').value = '';
+}
+
+function selectPeriod(el) {
+    var isTahunan = el.dataset.period === 'tahunan';
+    document.querySelectorAll('[data-period]').forEach(function(e) {
+        e.style.borderColor = 'var(--border-color)';
+    });
+    el.style.borderColor = '#6c5cff';
+    el.querySelector('input[type="radio"]').checked = true;
+    var info = document.getElementById('period-info');
+    if (isTahunan) {
+        var nominalText = document.getElementById('bayar-nominal').textContent;
+        var match = nominalText.match(/[\d.]+/);
+        var nominal = match ? parseInt(match[0].replace(/\./g, '')) : 0;
+        info.textContent = 'Total dibayar: Rp ' + (nominal * 12).toLocaleString('id-ID') + ' (' + nominal.toLocaleString('id-ID') + ' \u00d7 12)';
+    } else {
+        info.textContent = '';
+    }
 }
 
 document.getElementById('bayar-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBayarModal(); });
@@ -144,7 +165,6 @@ function openCreateModal() {
     document.getElementById('payment-form').querySelectorAll('input, select').forEach(el => {
         if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method') el.value = '';
     });
-    document.getElementById('f-status').value = 'jatuh_tempo';
     document.getElementById('f-tanggal_bayar-group').style.display = 'none';
     showModal();
 }

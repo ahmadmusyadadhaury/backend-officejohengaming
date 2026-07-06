@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Models\Asset;
 use App\Models\Meeting;
+use App\Models\Team;
 use App\Models\VehiclePajakRequest;
+use App\Models\WeeklyMeetingSession;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -43,7 +45,39 @@ class AppServiceProvider extends ServiceProvider
                     ->orderBy('meeting_date')
                     ->orderBy('start_time')
                     ->take(3)
-                    ->get();
+                    ->get()
+                    ->map(function ($m) {
+                        $m->meeting_type = 'regular';
+
+                        return $m;
+                    });
+
+                $upcomingWeeklySessions = WeeklyMeetingSession::with('weeklyMeeting.room')
+                    ->where('session_date', '>=', today())
+                    ->whereIn('status', ['active', 'extended'])
+                    ->orderBy('session_date')
+                    ->orderBy('start_time')
+                    ->take(3)
+                    ->get()
+                    ->map(function ($s) {
+                        $m = new Meeting;
+                        $m->title = $s->weeklyMeeting->title;
+                        $m->meeting_date = $s->session_date;
+                        $m->start_time = $s->start_time;
+                        $m->end_time = $s->end_time;
+                        $m->room = $s->weeklyMeeting->room;
+                        $team = new Team;
+                        $team->name = 'Weekly';
+                        $m->team = $team;
+                        $m->meeting_type = 'weekly';
+
+                        return $m;
+                    });
+
+                $upcomingMeetings = $upcomingMeetings->merge($upcomingWeeklySessions)
+                    ->sortBy('meeting_date')
+                    ->sortBy('start_time')
+                    ->take(3);
 
                 // Peringatan Kadaluarsa (Aset dengan stock rendah)
                 $upcomingAlerts = Asset::where('quantity', '<=', 2)

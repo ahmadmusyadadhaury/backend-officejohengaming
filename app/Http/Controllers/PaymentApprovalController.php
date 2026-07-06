@@ -12,6 +12,7 @@ use App\Models\PeralatanKantor;
 use App\Models\SimCard;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\VehiclePajakRequest;
 use App\Models\WifiPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class PaymentApprovalController extends Controller
             'listrik' => new Payment,
             'aset_digital' => new PembayaranAsetDigital,
             'ipl_ruko' => new PembayaranIplRuko,
+            'pajak_kendaraan' => new VehiclePajakRequest,
             default => abort(400, 'Jenis tidak valid'),
         };
     }
@@ -41,6 +43,7 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'pajak_kendaraan' => VehiclePajakRequest::class,
             default => abort(400, 'Jenis tidak valid'),
         };
     }
@@ -148,6 +151,30 @@ class PaymentApprovalController extends Controller
                 ]);
             $all = $all->merge($records);
         }
+
+        // Vehicle tax requests
+        $pajakRecords = VehiclePajakRequest::with(['vehicle', 'requester', 'approver'])
+            ->where('requested_by', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'pajak_kendaraan',
+                'jenis_label' => 'Pajak Kendaraan',
+                'detail' => $r->vehicle->nama_kendaraan.' ('.$r->vehicle->plat_nomor.')',
+                'nominal' => (int) $r->nominal,
+                'status' => $r->status === 'approved' ? 'lunas' : $r->status,
+                'pic' => null,
+                'jabatan' => null,
+                'period' => null,
+                'tanggal_bayar' => $r->created_at->format('d/m/Y'),
+                'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
+                'approver_name' => $r->approver?->name,
+                'approved_at' => $r->approved_at?->format('d/m/Y H:i'),
+                'notes' => $r->notes,
+                'created_at' => $r->created_at->format('d/m/Y H:i'),
+            ]);
+        $all = $all->merge($pajakRecords);
 
         $requests = $all->sortByDesc('created_at')->values();
 
@@ -272,8 +299,10 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'pajak_kendaraan' => VehiclePajakRequest::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
+                ->when($jenis === 'pajak_kendaraan', fn ($q) => $q->with('vehicle'))
                 ->where('status', 'pending')
                 ->orderBy('created_at', 'desc')
                 ->get()
@@ -285,12 +314,17 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
+                        'pajak_kendaraan' => 'Pajak Kendaraan',
                     },
-                    'detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
+                    'detail' => match ($jenis) {
+                        'internet' => $r->nama_internet,
+                        'pajak_kendaraan' => ($r->vehicle->nama_kendaraan ?? '?').' ('.($r->vehicle->plat_nomor ?? '?').') — '.($r->jenis === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahunan'),
+                        default => $r->periode,
+                    },
                     'provider' => $r->provider ?? '-',
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
                     'status' => $r->status,
-                    'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
+                    'tanggal_bayar' => $jenis === 'pajak_kendaraan' ? $r->created_at?->format('d/m/Y') : $r->tanggal_bayar?->format('d/m/Y'),
                     'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
                     'requester_name' => $r->requester?->name ?? '-',
                     'pic' => $r->pic,
@@ -455,6 +489,27 @@ class PaymentApprovalController extends Controller
             $all = $all->merge($records);
         }
 
+        // Vehicle tax requests
+        $pajakRecords = VehiclePajakRequest::with(['vehicle', 'requester', 'approver'])
+            ->where('requested_by', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'No' => null,
+                'Jenis' => 'Pajak Kendaraan',
+                'Detail' => $r->vehicle->nama_kendaraan.' ('.$r->vehicle->plat_nomor.')',
+                'Nominal' => 'Rp '.number_format((int) $r->nominal, 0, ',', '.'),
+                'Tgl Bayar' => $r->created_at->format('d/m/Y'),
+                'Status' => match ($r->status) {
+                    'approved' => 'Disetujui',
+                    'pending' => 'Menunggu',
+                    'rejected' => 'Ditolak',
+                    default => ucfirst($r->status),
+                },
+                'Bukti' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : '-',
+            ]);
+        $all = $all->merge($pajakRecords);
+
         $data = $all->sortByDesc(fn ($r) => $r['Tgl Bayar'])->values();
 
         $headings = ['No', 'Jenis', 'Detail', 'Nominal', 'Tgl Bayar', 'Status', 'Bukti'];
@@ -515,8 +570,10 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'pajak_kendaraan' => VehiclePajakRequest::class,
         ] as $jenis => $class) {
             $records = $class::with('requester')
+                ->when($jenis === 'pajak_kendaraan', fn ($q) => $q->with('vehicle'))
                 ->where('status', 'pending')
                 ->orderBy('created_at', 'desc')
                 ->get()
@@ -529,10 +586,15 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
+                        'pajak_kendaraan' => 'Pajak Kendaraan',
                     },
-                    'Detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
+                    'Detail' => match ($jenis) {
+                        'internet' => $r->nama_internet,
+                        'pajak_kendaraan' => ($r->vehicle->nama_kendaraan ?? '?').' ('.($r->vehicle->plat_nomor ?? '?').') — '.($r->jenis === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahunan'),
+                        default => $r->periode,
+                    },
                     'Nominal' => 'Rp '.number_format((int) ($r->biaya ?? $r->nominal), 0, ',', '.'),
-                    'Tgl Bayar' => $r->tanggal_bayar?->format('d/m/Y') ?? '-',
+                    'Tgl Bayar' => $jenis === 'pajak_kendaraan' ? $r->created_at?->format('d/m/Y') : ($r->tanggal_bayar?->format('d/m/Y') ?? '-'),
                 ]);
             $all = $all->merge($records);
         }

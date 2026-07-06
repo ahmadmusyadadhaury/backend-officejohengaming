@@ -39,8 +39,6 @@ class PaymentController extends Controller
                 'terlambat' => $all->filter(fn ($w) => is_null($w->requested_by) && ! in_array($w->status, ['lunas', 'rejected']) && $w->masa_tenggang && $w->masa_tenggang < today())->count(),
             ];
 
-
-
             $itemsJson = $items->values()->map(function ($w) {
                 return [
                     'id' => $w->id,

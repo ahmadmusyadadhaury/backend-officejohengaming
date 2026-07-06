@@ -19,7 +19,9 @@ use App\Models\Team;
 use App\Models\TokenPayment;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\WeeklyMeetingSession;
 use App\Models\WifiPayment;
+use App\Services\WeeklyMeetingService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 
@@ -45,15 +47,19 @@ class DashboardController extends Controller
                 : 0,
             // Meeting stats
             'total_meetings' => Meeting::count(),
-            'meetings_this_week' => Meeting::whereBetween('meeting_date', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'meetings_this_week' => Meeting::whereBetween('meeting_date', [now()->startOfWeek(), now()->endOfWeek()])->count()
+                + WeeklyMeetingSession::whereBetween('session_date', [now()->startOfWeek(), now()->endOfWeek()])->whereIn('status', ['active', 'extended', 'completed'])->count(),
             'pending' => Meeting::where('status', 'pending')->count(),
-            'today_meetings' => Meeting::whereDate('meeting_date', today())->whereIn('status', ['approved', 'confirmed', 'in_progress'])->count(),
+            'today_meetings' => Meeting::whereDate('meeting_date', today())->whereIn('status', ['approved', 'confirmed', 'in_progress'])->count()
+                + WeeklyMeetingSession::whereDate('session_date', today())->whereIn('status', ['active', 'extended'])->count(),
             'this_month' => Meeting::whereMonth('meeting_date', now()->month)->whereYear('meeting_date', now()->year)->count(),
             // Payment stats — dari semua tabel pembayaran
             'total_payments' => Payment::where('jenis', 'listrik')->count() + PembayaranAsetDigital::count() + PembayaranIplRuko::count() + WifiPayment::count() + TokenPayment::count(),
             'pending_payments' => Payment::where('jenis', 'listrik')->whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + PembayaranAsetDigital::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + PembayaranIplRuko::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + WifiPayment::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('masa_tenggang', '<=', today()->addDays(7))->count(),
             'approval_pending_payments' => Payment::where('jenis', 'listrik')->where('status', 'pending')->count() + PembayaranAsetDigital::where('status', 'pending')->count() + PembayaranIplRuko::where('status', 'pending')->count() + WifiPayment::where('status', 'pending')->count(),
         ];
+
+        app(WeeklyMeetingService::class)->generateTodaySessions();
 
         // Data untuk tampilan
         $pendingMeetings = Meeting::with(['requester', 'team', 'room'])
@@ -66,7 +72,32 @@ class DashboardController extends Controller
             ->whereDate('meeting_date', today())
             ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
             ->orderBy('start_time')
-            ->get();
+            ->get()
+            ->map(function ($m) {
+                $m->meeting_type = 'regular';
+
+                return $m;
+            });
+
+        $weeklySessions = WeeklyMeetingSession::with('weeklyMeeting.room')
+            ->whereDate('session_date', today())
+            ->whereIn('status', ['active', 'extended'])
+            ->get()
+            ->map(function ($s) {
+                $m = new Meeting;
+                $m->title = $s->weeklyMeeting->title;
+                $m->start_time = $s->start_time;
+                $m->end_time = $s->end_time;
+                $m->room = $s->weeklyMeeting->room;
+                $team = new Team;
+                $team->name = 'Weekly';
+                $m->team = $team;
+                $m->meeting_type = 'weekly';
+
+                return $m;
+            });
+
+        $todayMeetings = $todayMeetings->merge($weeklySessions)->sortBy('start_time');
 
         $today = today();
         $sevenDaysFromNow = today()->addDays(7);
@@ -77,7 +108,7 @@ class DashboardController extends Controller
             'ipl_ruko' => 'IPL Ruko',
         ];
 
-        $mapPayment = function ($p, $jenisName) {
+        $mapPayment = function ($p, $jenisKey, $jenisName) {
             return [
                 'id' => $p->id,
                 'label' => $jenisName.' · '.$p->periode,
@@ -85,7 +116,7 @@ class DashboardController extends Controller
                 'amount' => $p->nominal,
                 'status' => $p->status,
                 'jenis' => $jenisName,
-                'type' => 'payment',
+                'type' => $jenisKey,
                 'periode' => $p->periode,
                 'tanggal_tagihan' => $p->tanggal_tagihan instanceof Carbon ? $p->tanggal_tagihan->format('Y-m-d') : $p->tanggal_tagihan,
                 'jatuh_tempo' => $p->jatuh_tempo instanceof Carbon ? $p->jatuh_tempo->format('Y-m-d') : $p->jatuh_tempo,
@@ -101,7 +132,7 @@ class DashboardController extends Controller
                     ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
                     ->orderBy('jatuh_tempo')
                     ->get()
-                    ->map(fn ($p) => $mapPayment($p, $jenisLabels['listrik'] ?? 'Listrik'))
+                    ->map(fn ($p) => $mapPayment($p, 'listrik', $jenisLabels['listrik'] ?? 'Listrik'))
             )
             ->merge(
                 PembayaranAsetDigital::whereNull('requested_by')
@@ -109,7 +140,7 @@ class DashboardController extends Controller
                     ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
                     ->orderBy('jatuh_tempo')
                     ->get()
-                    ->map(fn ($p) => $mapPayment($p, $jenisLabels['aset_digital'] ?? 'Aset Digital'))
+                    ->map(fn ($p) => $mapPayment($p, 'aset_digital', $jenisLabels['aset_digital'] ?? 'Aset Digital'))
             )
             ->merge(
                 PembayaranIplRuko::whereNull('requested_by')
@@ -117,7 +148,7 @@ class DashboardController extends Controller
                     ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
                     ->orderBy('jatuh_tempo')
                     ->get()
-                    ->map(fn ($p) => $mapPayment($p, $jenisLabels['ipl_ruko'] ?? 'IPL Ruko'))
+                    ->map(fn ($p) => $mapPayment($p, 'ipl_ruko', $jenisLabels['ipl_ruko'] ?? 'IPL Ruko'))
             );
 
         $allWifi = collect(WifiPayment::whereNull('requested_by')
@@ -142,6 +173,7 @@ class DashboardController extends Controller
             ]));
 
         $allMerged = $allPayments->merge($allWifi)->sortBy('due_date');
+        $paymentDataJson = $allMerged->values()->toJson();
 
         $todayStr = $today->format('Y-m-d');
         $sevenDaysStr = $sevenDaysFromNow->format('Y-m-d');
@@ -248,6 +280,16 @@ class DashboardController extends Controller
         $chartTagihan = $monthlyTagihan;
         $chartBayar = $monthlyBayar;
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar'));
+        $jabatanList = Vehicle::distinct()->pluck('jabatan')
+            ->merge(DigitalAsset::distinct()->pluck('jabatan'))
+            ->merge(SimCard::distinct()->pluck('jabatan'))
+            ->merge(PeralatanKantor::distinct()->pluck('jabatan'))
+            ->merge(WifiPayment::distinct()->pluck('jabatan'))
+            ->unique()
+            ->filter()
+            ->sort()
+            ->values();
+
+        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'paymentDataJson', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar', 'jabatanList'));
     }
 }

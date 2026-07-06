@@ -109,23 +109,23 @@
                 <div id="bayar-detail" style="font-weight:600;font-size:14px;color:var(--text-primary);"></div>
                 <div id="bayar-nominal" style="font-size:13px;color:var(--text-muted);margin-top:4px;"></div>
             </div>
-            <div class="field-group mb-4">
-                <label class="gaming-label">Periode Pembayaran <span class="field-req">*</span></label>
-                <div style="display:flex;gap:12px;margin-top:4px;">
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-surface-2);transition:all 0.2s;" data-period="bulanan" onclick="selectPeriod(this)">
-                        <input type="radio" name="period" value="bulanan" checked style="accent-color:#6c5cff;">
-                        <span style="font-weight:500;color:var(--text-primary);font-size:13px;">Bulanan (1 bulan)</span>
-                    </label>
-                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-surface-2);transition:all 0.2s;" data-period="tahunan" onclick="selectPeriod(this)">
-                        <input type="radio" name="period" value="tahunan" style="accent-color:#6c5cff;">
-                        <span style="font-weight:500;color:var(--text-primary);font-size:13px;">Tahunan (12 bulan)</span>
-                    </label>
-                </div>
-                <div id="period-info" style="font-size:12px;color:var(--text-muted);margin-top:4px;"></div>
-            </div>
             <form id="bayar-form" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="jenis" id="bayar-jenis">
+                <div class="field-group mb-4">
+                    <label class="gaming-label">Periode Pembayaran <span class="field-req">*</span></label>
+                    <div style="display:flex;gap:12px;margin-top:4px;">
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-surface-2);transition:all 0.2s;" data-period="bulanan" onclick="selectPeriod(this)">
+                            <input type="radio" name="period" value="bulanan" checked style="accent-color:#6c5cff;">
+                            <span style="font-weight:500;color:var(--text-primary);font-size:13px;">Bulanan (1 bulan)</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-surface-2);transition:all 0.2s;" data-period="tahunan" onclick="selectPeriod(this)">
+                            <input type="radio" name="period" value="tahunan" style="accent-color:#6c5cff;">
+                            <span style="font-weight:500;color:var(--text-primary);font-size:13px;">Tahunan (12 bulan)</span>
+                        </label>
+                    </div>
+                    <div id="period-info" style="font-size:12px;color:var(--text-muted);margin-top:4px;"></div>
+                </div>
                 <div class="field-group mb-4">
                     <label class="gaming-label">PIC <span class="field-req">*</span></label>
                     <input type="text" name="pic" required class="gaming-input" value="{{ auth()->user()->name }}" placeholder="Nama PIC">

@@ -7,7 +7,10 @@ use App\Models\Meeting;
 use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
+use App\Models\Team;
+use App\Models\WeeklyMeetingSession;
 use App\Models\WifiPayment;
+use App\Services\WeeklyMeetingService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -35,11 +38,38 @@ class DashboardController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        app(WeeklyMeetingService::class)->generateTodaySessions();
+
         $todayMeetings = Meeting::with(['room', 'team', 'requester'])
             ->whereDate('meeting_date', today())
             ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
             ->orderBy('start_time')
-            ->get();
+            ->get()
+            ->map(function ($m) {
+                $m->meeting_type = 'regular';
+
+                return $m;
+            });
+
+        $weeklySessions = WeeklyMeetingSession::with('weeklyMeeting.room')
+            ->whereDate('session_date', today())
+            ->whereIn('status', ['active', 'extended'])
+            ->get()
+            ->map(function ($s) {
+                $m = new Meeting;
+                $m->title = $s->weeklyMeeting->title;
+                $m->start_time = $s->start_time;
+                $m->end_time = $s->end_time;
+                $m->room = $s->weeklyMeeting->room;
+                $team = new Team;
+                $team->name = 'Weekly';
+                $m->team = $team;
+                $m->meeting_type = 'weekly';
+
+                return $m;
+            });
+
+        $todayMeetings = $todayMeetings->merge($weeklySessions)->sortBy('start_time');
 
         $totalInvitations = $user->participatingMeetings()
             ->whereIn('meetings.status', ['approved', 'confirmed', 'in_progress'])

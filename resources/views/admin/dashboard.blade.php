@@ -464,49 +464,71 @@
         </div>
         <div class="modal-modern-footer">
             <span class="text-[0.65rem]" style="color:var(--text-muted);">Total: {{ $allMerged->count() }} item · Klik baris untuk bayar</span>
-            <a href="{{ route('admin.pembayaran.index', ['jenis' => 'listrik']) }}" class="text-[0.65rem] font-medium" style="color:var(--color-accent);">Buka Halaman Pembayaran &rarr;</a>
+
         </div>
     </div>
 </div>
 
-{{-- Modal Bayar dari Dashboard --}}
-<div id="dashboard-bayar-modal" class="modal-modern" style="z-index:60;" onclick="if(event.target===this)closeDashboardBayar()">
-    <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
-        <div class="modal-modern-header">
-            <h3>Bayar / Lunaskan</h3>
-            <button type="button" onclick="closeDashboardBayar()" class="modal-modern-close">&times;</button>
+{{-- Modal Bayar dari Dashboard (sama seperti di tagihan) --}}
+<div id="dashboard-bayar-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeDashboardBayar()">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Bayar Tagihan</h3>
+            <button type="button" onclick="closeDashboardBayar()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
-        <div class="modal-modern-body">
-            <div class="p-3 rounded-xl mb-4" style="background:var(--bg-surface-2);border:1px solid var(--border-color);">
-                <div id="dbayar-name" style="font-weight:600;font-size:0.85rem;color:var(--text-primary);"></div>
-                <div id="dbayar-nominal" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
-                <div id="dbayar-due" style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;"></div>
+        <div class="px-6 py-5">
+            <div style="margin-bottom:16px;padding:12px;border-radius:10px;background:var(--bg-surface-2);border:1px solid var(--border-color);">
+                <div id="dbayar-name" style="font-weight:600;font-size:14px;color:var(--text-primary);"></div>
+                <div id="dbayar-nominal" style="font-size:13px;color:var(--text-muted);margin-top:4px;"></div>
             </div>
-            <form id="dashboard-bayar-form" method="POST" action="{{ url('admin/pembayaran') }}">
+            <div class="field-group mb-4">
+                <label class="gaming-label">Periode Pembayaran <span class="field-req">*</span></label>
+                <div style="display:flex;gap:12px;margin-top:4px;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-surface-2);transition:all 0.2s;" data-period="bulanan" onclick="selectPeriod(this)">
+                        <input type="radio" name="period" value="bulanan" checked style="accent-color:#6c5cff;">
+                        <span style="font-weight:500;color:var(--text-primary);font-size:13px;">Bulanan (1 bulan)</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-surface-2);transition:all 0.2s;" data-period="tahunan" onclick="selectPeriod(this)">
+                        <input type="radio" name="period" value="tahunan" style="accent-color:#6c5cff;">
+                        <span style="font-weight:500;color:var(--text-primary);font-size:13px;">Tahunan (12 bulan)</span>
+                    </label>
+                </div>
+                <div id="period-info" style="font-size:12px;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <form id="dashboard-bayar-form" method="POST" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="_method" value="PUT">
-                <input type="hidden" name="jenis" id="dbayar-jenis" value="">
-                <input type="hidden" name="id" id="dbayar-id" value="">
-                <input type="hidden" name="status" value="lunas">
-                <input type="hidden" name="nama_internet" id="dbayar-nama_internet">
-                <input type="hidden" name="provider" id="dbayar-provider">
-                <input type="hidden" name="pic" id="dbayar-pic">
-                <input type="hidden" name="jabatan" id="dbayar-jabatan">
-                <input type="hidden" name="masa_tenggang" id="dbayar-masa_tenggang">
-                <input type="hidden" name="biaya" id="dbayar-biaya">
-                <input type="hidden" name="periode" id="dbayar-periode">
-                <input type="hidden" name="tanggal_tagihan" id="dbayar-tanggal_tagihan">
-                <input type="hidden" name="jatuh_tempo" id="dbayar-jatuh_tempo_val">
-                <input type="hidden" name="nominal" id="dbayar-nominal_val">
-                <div>
-                    <label class="gaming-label">Tanggal Bayar <span style="color:#f87171;">*</span></label>
-                    <input type="date" name="tanggal_bayar" id="dbayar-tanggal_bayar" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                <input type="hidden" name="jenis" id="dbayar-jenis">
+                <div class="field-group mb-4">
+                    <label class="gaming-label">PIC <span class="field-req">*</span></label>
+                    <input type="text" name="pic" required class="gaming-input" value="{{ auth()->user()->name }}" placeholder="Nama PIC">
+                </div>
+                <div class="field-group mb-4">
+                    <label class="gaming-label">Jabatan <span class="field-req">*</span></label>
+                    <select name="jabatan" required class="gaming-input">
+                        <option value="">— Pilih Jabatan —</option>
+                        @foreach($jabatanList as $j)
+                        <option value="{{ $j }}">{{ $j }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="field-group mb-4">
+                    <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
+                    <input type="date" name="tanggal_bayar" required class="gaming-input" value="{{ date('Y-m-d') }}">
+                </div>
+                <div class="field-group mb-4">
+                    <label class="gaming-label">Upload Bukti Bayar <span class="field-req">*</span></label>
+                    <input type="file" name="bukti_bayar" accept="image/jpeg,image/png" required class="gaming-input" style="padding:8px;">
+                    <p class="text-xs mt-1" style="color:var(--text-muted);">Format: JPEG/PNG, maks 2MB</p>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button type="button" onclick="closeDashboardBayar()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;border:none;box-shadow:0 4px 15px rgba(16,185,129,0.3);cursor:pointer;">Kirim</button>
                 </div>
             </form>
-        </div>
-        <div class="modal-modern-footer">
-            <button type="button" onclick="closeDashboardBayar()" class="btn btn-secondary btn-sm">Batal</button>
-            <button type="submit" form="dashboard-bayar-form" class="btn btn-success btn-sm" style="background:linear-gradient(135deg,#10b981,#059669);">Lunaskan</button>
         </div>
     </div>
 </div>
@@ -523,6 +545,13 @@
 .pembayaran-item:hover {
     background: rgba(124,58,237,0.03);
 }
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.field-req { color: #f87171; }
+.gaming-input { width: 100%; }
 </style>
 @endpush
 
@@ -545,6 +574,54 @@
     }
     setInterval(refreshDashboardStats, 60000);
 
+    var dashboardPaymentData = {!! $paymentDataJson !!};
+    var bayarNominal = 0;
+
+    function openDashboardBayar(id, type) {
+        var item = dashboardPaymentData.find(function(x) { return x.id === id && x.type === type; });
+        if (!item) return;
+
+        bayarNominal = item.amount;
+        document.getElementById('dbayar-name').textContent = item.label;
+        document.getElementById('dbayar-nominal').textContent = 'Rp ' + Number(item.amount).toLocaleString('id-ID');
+        document.getElementById('dbayar-jenis').value = type === 'wifi' ? 'internet' : type;
+        document.getElementById('dashboard-bayar-form').action = '{{ url('payment-approval/tagihan') }}/' + id + '/bayar';
+
+        document.querySelectorAll('[data-period]').forEach(function(el) {
+            el.style.borderColor = 'var(--border-color)';
+        });
+        document.querySelector('[data-period="bulanan"]').style.borderColor = '#6c5cff';
+        document.querySelector('input[name="period"][value="bulanan"]').checked = true;
+        document.getElementById('period-info').textContent = '';
+
+        document.getElementById('dashboard-bayar-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function selectPeriod(el) {
+        var isTahunan = el.dataset.period === 'tahunan';
+        document.querySelectorAll('[data-period]').forEach(function(e) {
+            e.style.borderColor = 'var(--border-color)';
+        });
+        el.style.borderColor = '#6c5cff';
+        el.querySelector('input[type="radio"]').checked = true;
+        var info = document.getElementById('period-info');
+        if (isTahunan) {
+            info.textContent = 'Total dibayar: Rp ' + (bayarNominal * 12).toLocaleString('id-ID') + ' (' + bayarNominal.toLocaleString('id-ID') + ' \u00d7 12)';
+        } else {
+            info.textContent = '';
+        }
+    }
+
+    function closeDashboardBayar() {
+        document.getElementById('dashboard-bayar-modal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('dashboard-bayar-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeDashboardBayar();
+    });
+
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             var bm = document.getElementById('dashboard-bayar-modal');
@@ -553,46 +630,6 @@
             else if (pm && pm.style.display !== 'none') { closeModal('semua-pembayaran-modal'); }
         }
     });
-
-    var dashboardPaymentData = {!! $paymentDataJson !!};
-
-    function openDashboardBayar(id, type) {
-        var item = dashboardPaymentData.find(function(x) { return x.id === id && x.type === type; });
-        if (!item) return;
-
-        document.getElementById('dbayar-id').value = item.id;
-        document.getElementById('dbayar-jenis').value = type === 'wifi' ? 'internet' : 'listrik';
-        document.getElementById('dashboard-bayar-form').action = '{{ url("admin/pembayaran") }}/' + item.id;
-
-        var name = item.label;
-        var nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.amount);
-        var dueDate = item.due_date ? new Date(item.due_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
-
-        document.getElementById('dbayar-name').textContent = name;
-        document.getElementById('dbayar-nominal').textContent = 'Nominal: ' + nominal;
-        document.getElementById('dbayar-due').textContent = 'Jatuh Tempo: ' + dueDate;
-
-        if (type === 'wifi') {
-            document.getElementById('dbayar-nama_internet').value = item.nama_internet || '';
-            document.getElementById('dbayar-provider').value = item.provider || '';
-            document.getElementById('dbayar-pic').value = item.pic || '';
-            document.getElementById('dbayar-jabatan').value = item.jabatan || '';
-            document.getElementById('dbayar-masa_tenggang').value = item.masa_tenggang || '';
-            document.getElementById('dbayar-biaya').value = item.biaya || '';
-        } else {
-            document.getElementById('dbayar-periode').value = item.periode || '';
-            document.getElementById('dbayar-tanggal_tagihan').value = item.tanggal_tagihan || '';
-            document.getElementById('dbayar-jatuh_tempo_val').value = item.jatuh_tempo || '';
-            document.getElementById('dbayar-nominal_val').value = item.nominal || '';
-        }
-
-        document.getElementById('dbayar-tanggal_bayar').value = new Date().toISOString().split('T')[0];
-        openModal('dashboard-bayar-modal');
-    }
-
-    function closeDashboardBayar() {
-        closeModal('dashboard-bayar-modal');
-    }
 
     document.addEventListener('DOMContentLoaded', function() {
         if ('IntersectionObserver' in window) {
@@ -720,6 +757,7 @@
                 responsive: true,
                 maintainAspectRatio: true,
                 cutout: '65%',
+                devicePixelRatio: window.devicePixelRatio || 1,
                 plugins: {
                     legend: { display: false },
                     tooltip: {
@@ -733,23 +771,6 @@
                     },
                 },
             },
-            plugins: [{
-                afterDraw: function(chart) {
-                    var ctx = chart.ctx;
-                    var w = chart.width;
-                    var h = chart.height;
-                    var cx = chart.chartArea.left + (chart.chartArea.right - chart.chartArea.left) / 2;
-                    var cy = chart.chartArea.top + (chart.chartArea.bottom - chart.chartArea.top) / 2;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.font = 'bold 18px Poppins, sans-serif';
-                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#e2e8f0';
-                    ctx.fillText(formatChartCurrency(totalTagihan), cx, cy - 8);
-                    ctx.font = '11px Poppins, sans-serif';
-                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim() || '#94a3b8';
-                    ctx.fillText('Total Tagihan', cx, cy + 16);
-                },
-            }],
         });
     }
     });

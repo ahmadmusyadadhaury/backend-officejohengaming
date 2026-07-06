@@ -55,5 +55,7 @@ class DatabaseSeeder extends Seeder
         foreach (['TV', 'Speaker', 'Proyektor', 'Whiteboard', 'Laptop', 'Kamera'] as $asset) {
             Asset::create(['name' => $asset, 'quantity' => 2, 'is_active' => true]);
         }
+
+        $this->call(WeeklyMeetingSeeder::class);
     }
 }

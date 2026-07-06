@@ -386,6 +386,7 @@
                                     <div id="dropdown-{{ $itemId }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <button type="button" onclick="openBayarModal({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#10b981;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Bayar</button>
                                         <form method="POST" action="{{ route('admin.pembayaran.destroy', $itemId) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <input type="hidden" name="jenis" value="{{ $jenis }}">
@@ -912,57 +913,67 @@
     </div>
 </div>
 
-{{-- Modal Bayar/Lunaskan --}}
+{{-- Modal Bayar/Lunaskan (approval flow: period, pic, jabatan, bukti) --}}
 <div id="bayar-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Bayar / Lunaskan</h3>
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Bayar Tagihan</h3>
             <button type="button" onclick="closeBayarModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
         <div class="px-6 py-5 overflow-y-auto flex-1">
-            <div id="bayar-info" style="margin-bottom:16px;padding:12px;border-radius:10px;background:var(--bg-surface-2);border:1px solid var(--border-color);">
+            <div style="margin-bottom:16px;padding:12px;border-radius:10px;background:var(--bg-surface-2);border:1px solid var(--border-color);">
                 <div id="bayar-name" style="font-weight:600;font-size:14px;color:var(--text-primary);"></div>
                 <div id="bayar-nominal" style="font-size:13px;color:var(--text-muted);margin-top:4px;"></div>
                 <div id="bayar-due" style="font-size:13px;color:var(--text-muted);margin-top:2px;"></div>
             </div>
-            <form id="bayar-form" method="POST" action="{{ url('admin/pembayaran') }}" enctype="multipart/form-data">
+            <form id="bayar-form" method="POST" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="_method" value="PUT">
-                <input type="hidden" name="jenis" value="{{ $jenis }}">
-                <input type="hidden" name="id" id="bayar-id" value="">
-                @if($jenis === 'internet')
-                <input type="hidden" name="nama_internet" id="bayar-nama_internet">
-                <input type="hidden" name="provider" id="bayar-provider">
-                <input type="hidden" name="pic" id="bayar-pic">
-                <input type="hidden" name="jabatan" id="bayar-jabatan">
-                <input type="hidden" name="masa_tenggang" id="bayar-masa_tenggang">
-                <input type="hidden" name="biaya" id="bayar-biaya">
-                @else
-                <input type="hidden" name="periode" id="bayar-periode">
-                <input type="hidden" name="tanggal_tagihan" id="bayar-tanggal_tagihan">
-                <input type="hidden" name="jatuh_tempo" id="bayar-jatuh_tempo">
-                <input type="hidden" name="nominal" id="bayar-nominal_val">
-                @endif
-                <input type="hidden" name="status" id="bayar-status" value="lunas">
-                <input type="hidden" name="period" value="bulanan">
-                <div class="space-y-4">
-                    <div class="field-group">
-                        <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
-                        <input type="date" name="tanggal_bayar" id="bayar-tanggal_bayar" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                <input type="hidden" name="jenis" id="bayar-jenis" value="{{ $jenis }}">
+                <div class="field-group" style="margin-bottom:16px;">
+                    <label class="gaming-label">Periode Pembayaran <span class="field-req">*</span></label>
+                    <div style="display:flex;gap:12px;margin-top:4px;">
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-surface-2);transition:all 0.2s;" data-period="bulanan" onclick="selectPeriod(this)">
+                            <input type="radio" name="period" value="bulanan" checked style="accent-color:#6c5cff;">
+                            <span style="font-weight:500;color:var(--text-primary);font-size:13px;">Bulanan (1 bulan)</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:8px;border:2px solid var(--border-color);background:var(--bg-surface-2);transition:all 0.2s;" data-period="tahunan" onclick="selectPeriod(this)">
+                            <input type="radio" name="period" value="tahunan" style="accent-color:#6c5cff;">
+                            <span style="font-weight:500;color:var(--text-primary);font-size:13px;">Tahunan (12 bulan)</span>
+                        </label>
                     </div>
-                    <div class="field-group">
-                        <label class="gaming-label">Bukti Pembayaran</label>
-                        <input type="file" name="bukti_bayar" id="bayar-bukti_bayar" accept="image/jpeg,image/png,image/jpg" class="gaming-input" style="padding:8px;font-size:13px;">
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Format: JPG/PNG, maks 2MB. (Opsional)</div>
-                    </div>
+                    <div id="period-info" style="font-size:12px;color:var(--text-muted);margin-top:4px;"></div>
+                </div>
+                <div class="field-group" style="margin-bottom:16px;">
+                    <label class="gaming-label">PIC <span class="field-req">*</span></label>
+                    <input type="text" name="pic" id="bayar-pic" required class="gaming-input" placeholder="Nama PIC">
+                </div>
+                <div class="field-group" style="margin-bottom:16px;">
+                    <label class="gaming-label">Jabatan <span class="field-req">*</span></label>
+                    <select name="jabatan" id="bayar-jabatan-select" required class="gaming-input gaming-select">
+                        <option value="">— Pilih Jabatan —</option>
+                        <option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option>
+                        <option value="General Manager (GM)">General Manager (GM)</option>
+                        <option value="Head of Store">Head of Store</option>
+                        <option value="Admin Master">Admin Master</option>
+                        <option value="HR">HR</option>
+                        <option value="Koordinator">Koordinator</option>
+                        <option value="Karyawan">Karyawan</option>
+                    </select>
+                </div>
+                <div class="field-group" style="margin-bottom:16px;">
+                    <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
+                    <input type="date" name="tanggal_bayar" id="bayar-tanggal_bayar" required class="gaming-input" value="{{ date('Y-m-d') }}">
+                </div>
+                <div class="field-group" style="margin-bottom:16px;">
+                    <label class="gaming-label">Upload Bukti Bayar <span class="field-req">*</span></label>
+                    <input type="file" name="bukti_bayar" id="bayar-bukti_bayar" accept="image/jpeg,image/png" required class="gaming-input" style="padding:8px;">
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Format: JPG/PNG, maks 2MB.</div>
                 </div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
                     <button type="button" onclick="closeBayarModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;border:none;box-shadow:0 4px 15px rgba(16,185,129,0.3);cursor:pointer;">Lunaskan</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;border:none;box-shadow:0 4px 15px rgba(16,185,129,0.3);cursor:pointer;">Kirim</button>
                 </div>
             </form>
         </div>
@@ -1115,7 +1126,9 @@ window.__PAYMENT_CONFIG = {
     jenisLabels: @json($jenisLabels),
     baseUrl: '{{ url("admin/pembayaran") }}',
     storeUrl: '{{ route("admin.pembayaran.store") }}',
-    csrfToken: '{{ csrf_token() }}'
+    csrfToken: '{{ csrf_token() }}',
+    currentUserName: '{{ auth()->user()->name }}',
+    paymentApprovalUrl: '{{ url("payment-approval/tagihan") }}'
 };
 </script>
 <script src="{{ asset('js/pembayaran.js') }}"></script>
@@ -1180,11 +1193,6 @@ window.__PAYMENT_CONFIG = {
 
 @push('scripts')
 <script>
-const paymentData = @json($itemsJson);
-const currentJenis = '{{ $jenis }}';
-const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
-const jenisLabel = @json($jenisLabels[$jenis] ?? $jenis);
-let detailId = null;
 
 function showAlertPopup(type) {
     const overlay = document.getElementById('alert-overlay');
@@ -1260,11 +1268,12 @@ function openBayarModal(id) {
     const i = paymentData.find(function(x) { return x.id === id; });
     if (!i) return;
 
-    document.getElementById('bayar-id').value = i.id;
-    document.getElementById('bayar-form').action = '{{ url("admin/pembayaran") }}/' + i.id;
+    document.getElementById('bayar-form').action = '{{ url("payment-approval/tagihan") }}/' + i.id + '/bayar';
+    document.getElementById('bayar-jenis').value = currentJenis;
 
     const name = currentJenis === 'internet' ? (i.nama_internet + ' (' + i.provider + ')') : i.periode;
-    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(i.nominal);
+    const nominalVal = i.nominal || i.biaya || 0;
+    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(nominalVal);
     const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
     const dueLabel = currentJenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
     const dueDate = i[dueField] ? new Date(i[dueField]).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
@@ -1273,21 +1282,22 @@ function openBayarModal(id) {
     document.getElementById('bayar-nominal').textContent = 'Nominal: ' + nominal;
     document.getElementById('bayar-due').textContent = dueLabel + ': ' + dueDate;
 
-    if (currentJenis === 'internet') {
-        document.getElementById('bayar-nama_internet').value = i.nama_internet;
-        document.getElementById('bayar-provider').value = i.provider;
-        document.getElementById('bayar-pic').value = i.pic;
-        document.getElementById('bayar-jabatan').value = i.jabatan;
-        document.getElementById('bayar-masa_tenggang').value = i.masa_tenggang;
-        document.getElementById('bayar-biaya').value = i.biaya;
-    } else {
-        document.getElementById('bayar-periode').value = i.periode;
-        document.getElementById('bayar-tanggal_tagihan').value = i.tanggal_tagihan;
-        document.getElementById('bayar-jatuh_tempo').value = i.jatuh_tempo;
-        document.getElementById('bayar-nominal_val').value = i.nominal;
-    }
+    document.getElementById('bayar-pic').value = i.pic || '{{ auth()->user()->name }}';
+    document.getElementById('bayar-jabatan-select').value = i.jabatan || '';
 
     document.getElementById('bayar-tanggal_bayar').value = new Date().toISOString().split('T')[0];
+    document.getElementById('bayar-bukti_bayar').value = '';
+
+    document.querySelectorAll('[data-period]').forEach(function(el) {
+        el.style.borderColor = 'var(--border-color)';
+    });
+    var bulananEl = document.querySelector('[data-period="bulanan"]');
+    if (bulananEl) {
+        bulananEl.style.borderColor = '#6c5cff';
+        bulananEl.querySelector('input[type="radio"]').checked = true;
+    }
+    document.getElementById('period-info').textContent = '';
+
     document.getElementById('bayar-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
 }
@@ -1295,6 +1305,25 @@ function openBayarModal(id) {
 function closeBayarModal() {
     document.getElementById('bayar-modal').style.display = 'none';
     document.body.style.overflow = '';
+    document.getElementById('bayar-bukti_bayar').value = '';
+}
+
+function selectPeriod(el) {
+    var isTahunan = el.dataset.period === 'tahunan';
+    document.querySelectorAll('[data-period]').forEach(function(e) {
+        e.style.borderColor = 'var(--border-color)';
+    });
+    el.style.borderColor = '#6c5cff';
+    el.querySelector('input[type="radio"]').checked = true;
+    var info = document.getElementById('period-info');
+    if (isTahunan) {
+        var nominalText = document.getElementById('bayar-nominal').textContent;
+        var match = nominalText.match(/[\d.]+/);
+        var nominal = match ? parseInt(match[0].replace(/\./g, '')) : 0;
+        info.textContent = 'Total dibayar: Rp ' + (nominal * 12).toLocaleString('id-ID') + ' (' + nominal.toLocaleString('id-ID') + ' \u00d7 12)';
+    } else {
+        info.textContent = '';
+    }
 }
 
 document.getElementById('bayar-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBayarModal(); });

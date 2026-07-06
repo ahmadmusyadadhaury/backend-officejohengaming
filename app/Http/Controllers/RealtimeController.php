@@ -163,7 +163,10 @@ class RealtimeController extends Controller
                 'pending' => Meeting::where('status', 'pending')->count(),
                 'today_meetings' => Meeting::whereDate('meeting_date', today())
                     ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
-                    ->count(),
+                    ->count()
+                    + WeeklyMeetingSession::whereDate('session_date', today())
+                        ->whereIn('status', ['active', 'extended'])
+                        ->count(),
             ]);
         }
 

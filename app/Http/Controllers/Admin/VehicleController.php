@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
-use App\Models\VehiclePajakRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -65,30 +64,6 @@ class VehicleController extends Controller
             'status_pajak' => $v->status_pajak,
         ]);
 
-        $pendingPajakRequests = VehiclePajakRequest::with(['vehicle', 'requester'])
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $myPajakRequests = VehiclePajakRequest::with(['vehicle'])
-            ->where('requested_by', auth()->id())
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $pendingPajakRequestsJson = $pendingPajakRequests->map(fn ($r) => [
-            'id' => $r->id,
-            'vehicle_id' => $r->vehicle_id,
-            'vehicle_name' => $r->vehicle->nama_kendaraan,
-            'plat_nomor' => $r->vehicle->plat_nomor,
-            'requester_name' => $r->requester->name,
-            'jenis' => $r->jenis,
-            'nominal' => (int) $r->nominal,
-            'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
-            'created_at' => $r->created_at->format('d/m/Y H:i'),
-        ]);
-
-        $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin', 'ceo']);
-
         return view('admin.vehicles.index', [
             'vehicles' => $filtered,
             'vehiclesJson' => $vehiclesJson,
@@ -96,10 +71,6 @@ class VehicleController extends Controller
             'statusFilter' => $statusFilter,
             'alertVehicles' => $alertVehicles,
             'alertJson' => $alertJson,
-            'pendingPajakRequests' => $pendingPajakRequests,
-            'pendingPajakRequestsJson' => $pendingPajakRequestsJson,
-            'isApprover' => $isApprover,
-            'myPajakRequests' => $myPajakRequests,
         ]);
     }
 

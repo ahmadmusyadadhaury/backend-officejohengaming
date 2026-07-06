@@ -143,7 +143,7 @@ Route::middleware(['auth', 'role:user,koordinator,admin,head_of_store,gm,hr,ceo'
 });
 
 // Payment Approval — Staff, Koordinator, HR, Admin submit
-Route::middleware(['auth', 'role:user,koordinator,hr,admin,admin_ga'])->prefix('payment-approval')->name('payment-approval.')->group(function () {
+Route::middleware(['auth', 'role:user,koordinator,hr,admin,admin_ga,head_of_store,gm,ceo'])->prefix('payment-approval')->name('payment-approval.')->group(function () {
     Route::get('tagihan', [PaymentApprovalController::class, 'tagihan'])->name('tagihan');
     Route::post('tagihan/{id}/bayar', [PaymentApprovalController::class, 'bayar'])->name('tagihan.bayar');
     Route::get('create', [PaymentApprovalController::class, 'create'])->name('create');
