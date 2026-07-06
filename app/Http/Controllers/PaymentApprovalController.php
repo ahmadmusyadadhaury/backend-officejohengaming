@@ -375,12 +375,12 @@ class PaymentApprovalController extends Controller
             }
             $newData[$col] = $record->$col;
         }
-        $newData['status'] = 'jatuh_tempo';
         $newData['period'] = 'bulanan'; // tagihan baru default bulanan
 
         // Set tanggal = original + offset
         $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
         $newData[$dateField] = $record->{$dateField}->copy()->addMonths($offsetMonths);
+        $newData['status'] = $newData[$dateField]->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
         if ($jenis !== 'internet') {
             $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
         }

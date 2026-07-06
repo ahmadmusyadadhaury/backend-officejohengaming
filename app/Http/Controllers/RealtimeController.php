@@ -284,7 +284,8 @@ class RealtimeController extends Controller
         }
 
         $today = Carbon::today();
-        $threeDays = Carbon::today()->addDays(3);
+        $sevenDaysAgo = $today->copy()->subDays(7);
+        $sevenDaysFromNow = $today->copy()->addDays(7);
 
         $models = [
             'payments' => ['class' => Payment::class, 'dateField' => 'jatuh_tempo', 'query' => fn ($q) => $q->where('jenis', 'listrik')],
@@ -299,15 +300,9 @@ class RealtimeController extends Controller
 
         foreach ($models as $table => $cfg) {
             $dueColumn = $table === 'wifi_payments' ? 'masa_tenggang' : 'jatuh_tempo';
-            $q = $cfg['class']::where(function ($q) use ($today, $threeDays, $dueColumn) {
-                $q->where('status', 'jatuh_tempo')
-                    ->orWhere(function ($q2) use ($today, $threeDays, $dueColumn) {
-                        $q2->where($dueColumn, '>=', $today)
-                            ->where($dueColumn, '<=', $threeDays)
-                            ->where('status', '!=', 'lunas')
-                            ->where('status', '!=', 'pending');
-                    });
-            });
+            $q = $cfg['class']::whereNotIn('status', ['lunas', 'rejected', 'pending'])
+                ->where($dueColumn, '>=', $sevenDaysAgo)
+                ->where($dueColumn, '<=', $sevenDaysFromNow);
 
             if ($cfg['query']) {
                 ($cfg['query'])($q);

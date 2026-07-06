@@ -60,13 +60,14 @@ class DigitalAssetController extends Controller
 
         $asset = DigitalAsset::create($data);
 
+        $jatuhTempo = now()->addDays(30);
         PembayaranAsetDigital::create([
             'digital_asset_id' => $asset->id,
             'periode' => $asset->nama_aset,
             'tanggal_tagihan' => now()->toDateString(),
-            'jatuh_tempo' => now()->addDays(30)->toDateString(),
+            'jatuh_tempo' => $jatuhTempo->toDateString(),
             'nominal' => $asset->biaya,
-            'status' => 'jatuh_tempo',
+            'status' => $jatuhTempo->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending',
             'tanggal_bayar' => null,
         ]);
 

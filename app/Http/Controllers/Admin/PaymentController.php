@@ -20,6 +20,14 @@ use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
+    private function resolvePaymentStatus($dueDate): string
+    {
+        $today = Carbon::today();
+        $due = $dueDate instanceof Carbon ? $dueDate : Carbon::parse($dueDate);
+
+        return $due->lte($today->copy()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+    }
+
     public function index(Request $request)
     {
         $jenis = $request->get('jenis', 'internet');
@@ -306,7 +314,7 @@ class PaymentController extends Controller
                 'biaya' => 'required|numeric|min:0',
                 'tanggal_bayar' => 'nullable|date',
             ]);
-            $data['status'] = 'jatuh_tempo';
+            $data['status'] = $this->resolvePaymentStatus($data['masa_tenggang']);
             WifiPayment::create($data);
         } elseif ($jenis === 'aset_digital') {
             $data = $request->validate([
@@ -316,7 +324,7 @@ class PaymentController extends Controller
                 'nominal' => 'required|numeric|min:0',
                 'tanggal_bayar' => 'nullable|date',
             ]);
-            $data['status'] = 'jatuh_tempo';
+            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             PembayaranAsetDigital::create($data);
         } elseif ($jenis === 'ipl_ruko') {
             $data = $request->validate([
@@ -327,7 +335,7 @@ class PaymentController extends Controller
                 'tanggal_bayar' => 'nullable|date',
                 'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
-            $data['status'] = 'jatuh_tempo';
+            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             if ($request->hasFile('bukti_bayar')) {
                 $data['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
             }
@@ -340,7 +348,7 @@ class PaymentController extends Controller
                 'nominal' => 'required|numeric|min:0',
                 'tanggal_bayar' => 'nullable|date',
             ]);
-            $data['status'] = 'jatuh_tempo';
+            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $data['jenis'] = $jenis;
             Payment::create($data);
         }
@@ -369,6 +377,7 @@ class PaymentController extends Controller
             if (! empty($data['tanggal_bayar'])) {
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
+            $data['status'] = $this->resolvePaymentStatus($data['masa_tenggang']);
             $model = WifiPayment::findOrFail($id);
             $model->update($data);
         } elseif ($jenis === 'aset_digital') {
@@ -388,6 +397,7 @@ class PaymentController extends Controller
             if (! empty($data['tanggal_bayar'])) {
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
+            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model = PembayaranAsetDigital::findOrFail($id);
             $model->update($data);
         } elseif ($jenis === 'ipl_ruko') {
@@ -411,6 +421,7 @@ class PaymentController extends Controller
             if ($request->hasFile('bukti_bayar')) {
                 $data['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
             }
+            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model = PembayaranIplRuko::findOrFail($id);
             $model->update($data);
         } else {
@@ -430,6 +441,7 @@ class PaymentController extends Controller
             if (! empty($data['tanggal_bayar'])) {
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
+            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model = Payment::findOrFail($id);
             $model->update($data);
         }
