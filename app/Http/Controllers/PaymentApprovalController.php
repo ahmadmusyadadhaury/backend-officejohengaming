@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\DataExport;
+use App\Models\AsetDaya;
+use App\Models\AsetTim;
 use App\Models\DigitalAsset;
 use App\Models\Notification;
 use App\Models\Payment;
@@ -196,6 +198,10 @@ class PaymentApprovalController extends Controller
         $all = collect();
         $sevenDays = Carbon::today()->addDays(7);
 
+        $userId = auth()->id();
+        $myAsetDayaIds = AsetDaya::where('penanggung_jawab', $userId)->pluck('id');
+        $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
+
         foreach ([
             'internet' => WifiPayment::class,
             'listrik' => Payment::class,
@@ -206,12 +212,18 @@ class PaymentApprovalController extends Controller
         ] as $jenis => $class) {
             $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
 
-            $records = $class::with('requester')
+            $query = $class::with('requester')
                 ->whereNull('requested_by')
                 ->whereNotIn('status', ['lunas', 'rejected'])
-                ->where($dateField, '<=', $sevenDays)
-                ->orderBy('created_at', 'desc')
-                ->get()
+                ->where($dateField, '<=', $sevenDays);
+
+            if ($jenis === 'aset_daya') {
+                $query->whereIn('aset_daya_id', $myAsetDayaIds);
+            } elseif ($jenis === 'aset_tim') {
+                $query->whereIn('aset_tim_id', $myAsetTimIds);
+            }
+
+            $records = $query->orderBy('created_at', 'desc')->get()
                 ->map(fn ($r) => [
                     'id' => $r->id,
                     'jenis' => $jenis,

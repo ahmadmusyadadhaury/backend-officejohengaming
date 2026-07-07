@@ -171,6 +171,16 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
                                 </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, {{ $meeting->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-{{ $meeting->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showDetail({{ $meeting->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        @if(in_array($meeting->status, ['approved','confirmed','in_progress']))
+                                        <button type="button" onclick="submitAction({{ $meeting->id }},'cancel')" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#f59e0b;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Batalkan</button>
+                                        @endif
+                                        <button type="button" onclick="submitAction({{ $meeting->id }},'delete')" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                    </div>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -827,16 +837,18 @@ function getCurrentTime() {
 }
 
 function executeAction(id, action) {
-    const urlMap = { confirm: '/koordinator/meetings/' + id + '/confirm', cancel: '/koordinator/meetings/' + id + '/cancel' };
+    const urlMap = { confirm: '/koordinator/meetings/' + id + '/confirm', cancel: '/koordinator/meetings/' + id + '/cancel', delete: '/koordinator/meetings/' + id };
+    const methodMap = { confirm: 'PATCH', cancel: 'PATCH', delete: 'DELETE' };
     fetch(urlMap[action], {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
-        body: new URLSearchParams({ _method: 'PATCH' })
-    }).then(r => r.json()).then(() => location.reload()).catch(() => location.reload());
+        body: new URLSearchParams({ _method: methodMap[action] })
+    }).then(r => r.json()).then(d => { if (d.redirect) window.location = d.redirect; else location.reload(); }).catch(() => location.reload());
 }
 
 function submitAction(id, action) {
     if (action === 'cancel') { showConfirmModal('Batalkan meeting ini?', function() { executeAction(id, action); }, { buttonText: 'Ya, Batalkan', buttonColor: '#10b981', buttonHoverColor: '#059669' }); return; }
+    if (action === 'delete') { showConfirmModal('Hapus meeting ini? Data akan hilang permanen.', function() { executeAction(id, action); }, { buttonText: 'Ya, Hapus', buttonColor: '#ef4444', buttonHoverColor: '#dc2626' }); return; }
     executeAction(id, action);
 }
 
@@ -1024,6 +1036,17 @@ document.addEventListener('keydown', function(e) {
         showMomModal(parseInt(momId));
     }
 })();
+
+function toggleDropdown(btn, id) {
+    const menu = document.getElementById('dropdown-' + id);
+    document.querySelectorAll('.dropdown-menu').forEach(function(m) { if (m.id !== 'dropdown-' + id) m.style.display = 'none'; });
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-wrap')) {
+        document.querySelectorAll('.dropdown-menu').forEach(function(m) { m.style.display = 'none'; });
+    }
+});
 </script>
 @endpush
 

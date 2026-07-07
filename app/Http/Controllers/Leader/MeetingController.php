@@ -354,6 +354,22 @@ class MeetingController extends Controller
 
     public function destroy(Meeting $meeting)
     {
-        return back()->with('error', 'Gunakan fitur batalkan meeting.');
+        if ($meeting->requested_by !== auth()->id()) {
+            abort(403);
+        }
+
+        $title = $meeting->title;
+        $meeting->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Meeting berhasil dihapus.',
+                'redirect' => route('koordinator.meetings.index'),
+            ]);
+        }
+
+        return redirect()->route('koordinator.meetings.index')
+            ->with('success', 'Meeting "' . $title . '" berhasil dihapus.');
     }
 }

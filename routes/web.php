@@ -147,8 +147,14 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::resource('meetings.mom', MomController::class)->shallow();
     Route::patch('mom/{mom}/send', [MomController::class, 'send'])->name('mom.send');
     Route::get('data-saya', [DataSayaController::class, 'index'])->name('data-saya.index');
+    Route::post('data-saya', [DataSayaController::class, 'store'])->name('data-saya.store');
+    Route::put('data-saya/{asetDaya}', [DataSayaController::class, 'update'])->name('data-saya.update');
+    Route::delete('data-saya/{asetDaya}', [DataSayaController::class, 'destroy'])->name('data-saya.destroy');
     Route::get('aset-daya', [KoordinatorAsetDayaController::class, 'index'])->name('aset-daya.index');
     Route::get('aset-tim', [KoordinatorAsetTimController::class, 'index'])->name('aset-tim.index');
+    Route::post('aset-tim', [KoordinatorAsetTimController::class, 'store'])->name('aset-tim.store');
+    Route::put('aset-tim/{asetTim}', [KoordinatorAsetTimController::class, 'update'])->name('aset-tim.update');
+    Route::delete('aset-tim/{asetTim}', [KoordinatorAsetTimController::class, 'destroy'])->name('aset-tim.destroy');
 });
 
 // User Routes

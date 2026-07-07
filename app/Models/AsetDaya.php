@@ -10,6 +10,7 @@ class AsetDaya extends Model
 
     protected $fillable = [
         'nama_aset',
+        'jenis_aset',
         'daya',
         'unit',
         'penanggung_jawab',

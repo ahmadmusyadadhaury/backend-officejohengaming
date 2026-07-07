@@ -161,36 +161,19 @@
 
 @push('scripts')
 <script>
-    // Preview theme when toggle changes (without saving to server yet)
     function previewTheme(isDark) {
         const theme = isDark ? 'dark' : 'light';
-        const body = document.body;
-        body.classList.toggle('dark', isDark);
-        body.classList.toggle('light', !isDark);
-        // Update label text
+        document.body.classList.toggle('dark', isDark);
+        document.body.classList.toggle('light', !isDark);
+        try { localStorage.setItem('johenTheme', theme); } catch (e) {}
+        if (window.updateThemeButton) window.updateThemeButton(theme);
         const label = document.querySelector('#tampilan-section .text-sm.font-medium');
-        if (label) {
-            label.textContent = 'Mode ' + (isDark ? 'Gelap' : 'Terang');
-        }
+        if (label) label.textContent = 'Mode ' + (isDark ? 'Gelap' : 'Terang');
     }
 
-    // On page load, apply user's saved theme from DB (overrides localStorage)
     document.addEventListener('DOMContentLoaded', function () {
-        const savedTheme = '{{ $user->theme }}';
-        if (savedTheme === 'dark' || savedTheme === 'light') {
-            const body = document.body;
-            body.classList.toggle('dark', savedTheme === 'dark');
-            body.classList.toggle('light', savedTheme === 'light');
-            // Sync localStorage so topbar toggle stays consistent
-            try { localStorage.setItem('johenTheme', savedTheme); } catch (e) {}
-            // Update topbar button
-            if (window.updateThemeButton) {
-                window.updateThemeButton(savedTheme);
-            }
-            // Sync checkbox
-            const chk = document.getElementById('theme-toggle-input');
-            if (chk) chk.checked = savedTheme === 'dark';
-        }
+        const chk = document.getElementById('theme-toggle-input');
+        if (chk) chk.checked = '{{ $user->theme }}' === 'dark';
     });
 </script>
 @endpush
