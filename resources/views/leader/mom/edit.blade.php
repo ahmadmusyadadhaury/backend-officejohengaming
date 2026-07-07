@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-leader')
 @section('title', 'Edit MOM')
 @section('page-title', 'Edit Minutes of Meeting')
 @section('sidebar-menu') @include(auth()->user()->hasFullAccess() ? 'partials.sidebar-admin' : 'partials.sidebar-leader') @endsection

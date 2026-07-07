@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-leader')
 @section('title', 'Rekap MOM Saya')
 @section('page-title', 'MOM > Rekap Minutes of Meeting')
 @section('page-subtitle', 'Riwayat MOM yang pernah kamu buat')
@@ -148,8 +149,8 @@
 </div>
 
 {{-- Modal Detail MOM (gunakan partial dari admin moms) --}}
-<div id="mom-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[380px] lg:max-w-[480px] xl:max-w-[580px] 2xl:max-w-[720px]" style="max-height:90vh;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
+<div id="mom-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);">
+    <div class="w-full max-w-[380px] lg:max-w-[480px] xl:max-w-[580px] 2xl:max-w-[720px]" style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">

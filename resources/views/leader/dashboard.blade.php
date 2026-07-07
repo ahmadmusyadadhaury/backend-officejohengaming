@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-leader')
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
 @section('page-subtitle', 'Selamat datang, ' . auth()->user()->name)
@@ -254,7 +255,7 @@
             <h3>Semua Pembayaran Mendatang</h3>
             <button type="button" onclick="closeModal('semua-pembayaran-modal')" class="modal-modern-close">&times;</button>
         </div>
-        <div class="overflow-y-auto" style="max-height:65vh;">
+        <div>
             <table class="gaming-table">
                 <thead>
                     <tr>

@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-leader')
 @section('title', 'Aset Saya')
 @section('page-title', 'Aset Saya')
 @section('page-subtitle', 'Daftar aset daya yang menjadi tanggung jawab saya')
@@ -9,39 +10,26 @@
 
     {{-- Stat Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(124,58,237,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        @php
+            $dsStatCards = [
+                ['label' => 'Total Aset', 'count' => $assets->count(), 'color' => '#a78bfa', 'bg' => 'rgba(124,58,237,0.12)', 'icon' => 'M13 10V3L4 14h7v7l9-11h-7z'],
+                ['label' => 'Aktif', 'count' => $assets->where('is_active', true)->count(), 'color' => '#34d399', 'bg' => 'rgba(16,185,129,0.12)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['label' => 'Tidak Aktif', 'count' => $assets->where('is_active', false)->count(), 'color' => '#f87171', 'bg' => 'rgba(239,68,68,0.12)', 'icon' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'],
+            ];
+        @endphp
+        @foreach($dsStatCards as $card)
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:{{ $card['bg'] }};">
+                <svg style="color:{{ $card['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/>
                 </svg>
             </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:var(--text-primary);">{{ $assets->count() }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Total Aset</div>
+            <div>
+                <div class="stat-num" style="color:{{ $card['color'] }};">{{ $card['count'] }}</div>
+                <div class="stat-label-text">{{ $card['label'] }}</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:#34d399;">{{ $assets->where('is_active', true)->count() }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Aktif</div>
-            </div>
-        </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:#f87171;">{{ $assets->where('is_active', false)->count() }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Tidak Aktif</div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
     {{-- Table --}}
@@ -81,18 +69,18 @@
                 <tbody>
                     @forelse($assets as $a)
                     <tr>
-                        <td style="color:var(--text-muted);font-size:0.8rem;">{{ $loop->iteration }}</td>
-                        <td><span class="font-medium" style="color:var(--text-primary);font-size:0.8rem;">{{ $a->nama_aset }}</span></td>
-                        <td><span style="color:var(--text-secondary);font-size:0.8rem;">{{ $a->jenis_aset ?? '-' }}</span></td>
-                        <td><span style="color:var(--text-secondary);font-size:0.8rem;">{{ $a->keterangan ? Str::limit($a->keterangan, 40) : '-' }}</span></td>
-                        <td><span style="color:var(--text-secondary);font-size:0.8rem;">{{ $a->daya ? $a->daya . ($a->unit ? ' ' . $a->unit : '') : '-' }}</span></td>
+                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                        <td><span class="font-medium" style="color:var(--text-primary);">{{ $a->nama_aset }}</span></td>
+                        <td><span style="color:var(--text-secondary);">{{ $a->jenis_aset ?? '-' }}</span></td>
+                        <td><span style="color:var(--text-secondary);">{{ $a->keterangan ? Str::limit($a->keterangan, 40) : '-' }}</span></td>
+                        <td><span style="color:var(--text-secondary);">{{ $a->daya ? $a->daya . ($a->unit ? ' ' . $a->unit : '') : '-' }}</span></td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button onclick='openDetailModal(@json($a))' class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.65rem;">Detail</button>
-                                <button onclick='openEditModal(@json($a))' class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.65rem;">Edit</button>
-                                <form method="POST" action="{{ route('koordinator.data-saya.destroy', $a) }}" onsubmit="return confirm('Hapus aset ini?')">
+                                <button onclick='openDetailModal(@json($a))' class="btn btn-secondary btn-sm">Detail</button>
+                                <button onclick='openEditModal(@json($a))' class="btn btn-secondary btn-sm">Edit</button>
+                                <form method="POST" action="{{ route('koordinator.data-saya.destroy', $a) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus aset ini?">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.65rem;color:#ef4444;">Hapus</button>
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                 </form>
                             </div>
                         </td>
@@ -116,98 +104,98 @@
 </div>
 
 {{-- Modal Tambah --}}
-<div id="addModal" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,0.5);" onclick="if(event.target===this)closeAddModal()">
-    <div class="absolute inset-0 flex items-center justify-center p-4">
-        <div class="gaming-card w-full max-w-md p-6" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Tambah Aset Saya</h3>
-                <button onclick="closeAddModal()" class="btn btn-secondary btn-sm" style="font-size:1.2rem;padding:2px 8px;">&times;</button>
-            </div>
-            <form method="POST" action="{{ route('koordinator.data-saya.store') }}">
-                @csrf
-                <div class="space-y-3">
-                    <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Nama Aset <span style="color:#ef4444;">*</span></label>
-                        <input type="text" name="nama_aset" required class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;" placeholder="Nama aset">
-                    </div>
-                    <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Jenis Aset</label>
-                        <input type="text" name="jenis_aset" class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;" placeholder="Contoh: Aset Daya">
-                    </div>
-                    <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Keterangan</label>
-                        <textarea name="keterangan" class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" rows="2" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;" placeholder="Opsional"></textarea>
-                    </div>
-                    <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Jumlah</label>
-                        <input type="text" name="daya" class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;" placeholder="Contoh: 2200 Watt">
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 mt-5">
-                    <button type="button" onclick="closeAddModal()" class="btn btn-secondary text-xs px-4 py-2">Batal</button>
-                    <button type="submit" class="btn btn-primary text-xs px-4 py-2">Simpan</button>
-                </div>
-            </form>
+<div id="addModal" class="modal-modern" onclick="if(event.target===this)closeAddModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Tambah Aset Saya</h3>
+            <button onclick="closeAddModal()" class="modal-modern-close">&times;</button>
         </div>
+        <form method="POST" action="{{ route('koordinator.data-saya.store') }}">
+            @csrf
+            <div class="modal-modern-body">
+                <div class="space-y-4">
+                    <div>
+                        <label class="gaming-label">Nama Aset <span style="color:#ef4444;">*</span></label>
+                        <input type="text" name="nama_aset" required class="gaming-input" placeholder="Nama aset">
+                    </div>
+                    <div>
+                        <label class="gaming-label">Jenis Aset</label>
+                        <input type="text" name="jenis_aset" class="gaming-input" placeholder="Contoh: Aset Daya">
+                    </div>
+                    <div>
+                        <label class="gaming-label">Keterangan</label>
+                        <textarea name="keterangan" class="gaming-input" rows="2" placeholder="Opsional"></textarea>
+                    </div>
+                    <div>
+                        <label class="gaming-label">Jumlah</label>
+                        <input type="text" name="daya" class="gaming-input" placeholder="Contoh: 2200 Watt">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-modern-footer">
+                <button type="button" onclick="closeAddModal()" class="btn btn-secondary btn-sm">Batal</button>
+                <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+            </div>
+        </form>
     </div>
 </div>
 
 {{-- Modal Edit --}}
-<div id="editModal" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,0.5);" onclick="if(event.target===this)closeEditModal()">
-    <div class="absolute inset-0 flex items-center justify-center p-4">
-        <div class="gaming-card w-full max-w-md p-6" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Edit Aset Saya</h3>
-                <button onclick="closeEditModal()" class="btn btn-secondary btn-sm" style="font-size:1.2rem;padding:2px 8px;">&times;</button>
-            </div>
-            <form method="POST" id="editForm">
-                @csrf @method('PUT')
-                <div class="space-y-3">
+<div id="editModal" class="modal-modern" onclick="if(event.target===this)closeEditModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Edit Aset Saya</h3>
+            <button onclick="closeEditModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <form method="POST" id="editForm">
+            @csrf @method('PUT')
+            <div class="modal-modern-body">
+                <div class="space-y-4">
                     <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Nama Aset <span style="color:#ef4444;">*</span></label>
-                        <input type="text" name="nama_aset" id="edit_nama_aset" required class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                        <label class="gaming-label">Nama Aset <span style="color:#ef4444;">*</span></label>
+                        <input type="text" name="nama_aset" id="edit_nama_aset" required class="gaming-input">
                     </div>
                     <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Jenis Aset</label>
-                        <input type="text" name="jenis_aset" id="edit_jenis_aset" class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                        <label class="gaming-label">Jenis Aset</label>
+                        <input type="text" name="jenis_aset" id="edit_jenis_aset" class="gaming-input">
                     </div>
                     <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Keterangan</label>
-                        <textarea name="keterangan" id="edit_keterangan" class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" rows="2" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;"></textarea>
+                        <label class="gaming-label">Keterangan</label>
+                        <textarea name="keterangan" id="edit_keterangan" class="gaming-input" rows="2"></textarea>
                     </div>
                     <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Jumlah</label>
-                        <input type="text" name="daya" id="edit_daya" class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                        <label class="gaming-label">Jumlah</label>
+                        <input type="text" name="daya" id="edit_daya" class="gaming-input">
                     </div>
                     <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Unit</label>
-                        <input type="text" name="unit" id="edit_unit" class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                        <label class="gaming-label">Unit</label>
+                        <input type="text" name="unit" id="edit_unit" class="gaming-input">
                     </div>
                     <div>
-                        <label class="text-xs font-medium" style="color:var(--text-secondary);">Status</label>
-                        <select name="is_active" id="edit_is_active" class="w-full pl-3 pr-3 py-1.5 rounded-lg text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                        <label class="gaming-label">Status</label>
+                        <select name="is_active" id="edit_is_active" class="gaming-input gaming-select">
                             <option value="1">Aktif</option>
                             <option value="0">Tidak Aktif</option>
                         </select>
                     </div>
                 </div>
-                <div class="flex justify-end gap-2 mt-5">
-                    <button type="button" onclick="closeEditModal()" class="btn btn-secondary text-xs px-4 py-2">Batal</button>
-                    <button type="submit" class="btn btn-primary text-xs px-4 py-2">Simpan</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="modal-modern-footer">
+                <button type="button" onclick="closeEditModal()" class="btn btn-secondary btn-sm">Batal</button>
+                <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+            </div>
+        </form>
     </div>
 </div>
 
 {{-- Modal Detail --}}
-<div id="detailModal" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,0.5);" onclick="if(event.target===this)closeDetailModal()">
-    <div class="absolute inset-0 flex items-center justify-center p-4">
-        <div class="gaming-card w-full max-w-md p-6" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Detail Aset</h3>
-                <button onclick="closeDetailModal()" class="btn btn-secondary btn-sm" style="font-size:1.2rem;padding:2px 8px;">&times;</button>
-            </div>
+<div id="detailModal" class="modal-modern" onclick="if(event.target===this)closeDetailModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Detail Aset</h3>
+            <button onclick="closeDetailModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <div class="modal-modern-body">
             <div class="space-y-3">
                 <div class="flex justify-between py-2" style="border-bottom:1px solid var(--border-color);">
                     <span class="text-xs" style="color:var(--text-muted);">Nama Aset</span>
@@ -230,9 +218,9 @@
                     <span id="detail_status"></span>
                 </div>
             </div>
-            <div class="flex justify-end mt-5">
-                <button type="button" onclick="closeDetailModal()" class="btn btn-secondary text-xs px-4 py-2">Tutup</button>
-            </div>
+        </div>
+        <div class="modal-modern-footer">
+            <button type="button" onclick="closeDetailModal()" class="btn btn-secondary btn-sm">Tutup</button>
         </div>
     </div>
 </div>

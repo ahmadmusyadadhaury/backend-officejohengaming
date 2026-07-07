@@ -370,6 +370,6 @@ class MeetingController extends Controller
         }
 
         return redirect()->route('koordinator.meetings.index')
-            ->with('success', 'Meeting "' . $title . '" berhasil dihapus.');
+            ->with('success', 'Meeting "'.$title.'" berhasil dihapus.');
     }
 }

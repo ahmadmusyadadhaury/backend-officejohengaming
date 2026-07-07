@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-leader')
 @section('title', 'Aset Daya Saya')
 @section('page-title', 'Operasional > Aset Daya')
 @section('page-subtitle', 'Daftar aset daya yang menjadi tanggung jawab saya')

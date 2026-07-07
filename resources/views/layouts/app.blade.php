@@ -78,7 +78,7 @@
     </style>
     @stack('styles')
 </head>
-<body style="background:var(--bg-base);color:var(--text-primary);" class="min-h-screen-safe">
+<body style="background:var(--bg-base);color:var(--text-primary);" class="min-h-screen-safe @yield('body-class')">
 
     {{-- Overlay mobile --}}
     <div id="sidebar-overlay" class="fixed inset-0 z-20 hidden lg:hidden"
@@ -441,80 +441,97 @@
     </div>
 
     {{-- Success Modal --}}
-    <div id="success-modal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:var(--bg-overlay);" onclick="if(event.target===this)closeSuccessModal()">
-        <div class="w-full max-w-[400px] rounded-3xl shadow-2xl overflow-hidden animate-fade-in" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);">
-                <div class="flex items-center gap-2.5">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="#10b981" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    <h3 class="text-base font-bold" style="color:var(--text-primary);" id="success-modal-header">Berhasil</h3>
-                </div>
-                <button type="button" onclick="closeSuccessModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+    <div id="success-modal" class="modal-modern" style="z-index:9999;" onclick="if(event.target===this)closeSuccessModal()">
+        <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+            <div class="modal-modern-header">
+                <h3 id="success-modal-header">Berhasil</h3>
+                <button type="button" onclick="closeSuccessModal()" class="modal-modern-close">&times;</button>
             </div>
-            <div class="px-6 py-10 flex flex-col items-center text-center space-y-4">
-                <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background:rgba(16,185,129,0.15);">
-                    <svg class="w-8 h-8" fill="#10b981" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-                <div class="space-y-1.5">
-                    <h2 class="text-lg font-bold" style="color:var(--text-primary);" id="success-modal-title">Berhasil!</h2>
-                    <p class="text-sm" style="color:var(--text-tertiary);" id="success-modal-sub">Data telah diproses.</p>
+            <div class="modal-modern-body text-center">
+                <div class="flex flex-col items-center py-4 space-y-3">
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:rgba(16,185,129,0.15);">
+                        <svg class="w-7 h-7" fill="#10b981" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <h2 class="text-base font-bold" style="color:var(--text-primary);" id="success-modal-title">Berhasil!</h2>
+                        <p class="text-sm" style="color:var(--text-tertiary);" id="success-modal-sub">Data telah diproses.</p>
+                    </div>
                 </div>
             </div>
-            <div class="px-6 py-4 flex justify-center" style="border-top:1px solid var(--border-color);">
-                <button type="button" onclick="closeSuccessModal()" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 active:scale-95" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 15px rgba(99,102,241,0.3);">Tutup</button>
+            <div class="modal-modern-footer justify-center">
+                <button type="button" onclick="closeSuccessModal()" class="btn btn-sm btn-primary">Tutup</button>
             </div>
         </div>
     </div>
 
     {{-- Confirm Modal --}}
-    <div id="confirm-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-        <div class="w-full max-w-[380px] rounded-2xl shadow-2xl flex flex-col p-6" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
-            <div class="flex flex-col items-center text-center mb-5">
-                <div id="confirm-icon-wrap" class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background:rgba(239,68,68,0.15);">
-                    <svg id="confirm-icon-svg" class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path id="confirm-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+    <div id="confirm-modal" class="modal-modern" style="z-index:60;" onclick="if(event.target===this)closeConfirmModal()">
+        <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+            <div class="modal-modern-body text-center">
+                <div class="flex flex-col items-center py-3 space-y-3">
+                    <div id="confirm-icon-wrap" class="w-12 h-12 rounded-full flex items-center justify-center" style="background:rgba(239,68,68,0.15);">
+                        <svg id="confirm-icon-svg" class="w-6 h-6" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="confirm-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-base font-semibold" style="color:var(--text-primary);" id="confirm-title">Konfirmasi</p>
+                        <p class="text-sm" style="color:var(--text-muted);" id="confirm-message">Yakin ingin melanjutkan?</p>
+                    </div>
                 </div>
-                <p class="text-base font-semibold" style="color:var(--text-primary);" id="confirm-title">Konfirmasi</p>
-                <p class="text-sm mt-1" style="color:var(--text-muted);" id="confirm-message">Yakin ingin melanjutkan?</p>
             </div>
-            <div class="flex gap-3">
-                <button type="button" onclick="closeConfirmModal()" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition" style="background:var(--bg-surface-2);color:var(--text-primary);border:none;cursor:pointer;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='var(--bg-surface-2)'">Batal</button>
-                <button type="button" id="confirm-yes-btn" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition" style="background:#ef4444;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Ya, Hapus</button>
+            <div class="modal-modern-footer justify-center gap-3">
+                <button type="button" onclick="closeConfirmModal()" class="btn btn-sm btn-secondary">Batal</button>
+                <button type="button" id="confirm-yes-btn" class="btn btn-sm btn-danger">Ya, Hapus</button>
             </div>
         </div>
     </div>
 
     {{-- Access Error Modal --}}
-    <div id="access-error-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-        <div class="w-full max-w-[400px] rounded-2xl shadow-2xl flex flex-col items-center p-8 text-center" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
-            <div class="w-16 h-16 rounded-full flex items-center justify-center mb-4" style="background:rgba(239,68,68,0.12);">
-                <svg class="w-8 h-8" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+    <div id="access-error-modal" class="modal-modern" style="z-index:60;" onclick="if(event.target===this)closeAccessErrorModal()">
+        <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+            <div class="modal-modern-header">
+                <h3>Akses Ditolak</h3>
+                <button type="button" onclick="closeAccessErrorModal()" class="modal-modern-close">&times;</button>
             </div>
-            <p class="text-lg font-bold" style="color:var(--text-primary);">Akses Ditolak</p>
-            <p class="text-sm mt-2 leading-relaxed" style="color:var(--text-muted);" id="access-error-message">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
-            <button type="button" onclick="closeAccessErrorModal()" class="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition" style="background:var(--bg-surface-2);color:var(--text-primary);border:none;cursor:pointer;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
+            <div class="modal-modern-body text-center">
+                <div class="flex flex-col items-center py-4 space-y-3">
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:rgba(239,68,68,0.12);">
+                        <svg class="w-7 h-7" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm" style="color:var(--text-muted);" id="access-error-message">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+                </div>
+            </div>
+            <div class="modal-modern-footer justify-center">
+                <button type="button" onclick="closeAccessErrorModal()" class="btn btn-sm btn-secondary">Tutup</button>
+            </div>
         </div>
     </div>
 
     {{-- Alert Modal --}}
-    <div id="alert-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-        <div class="w-full max-w-[400px] rounded-2xl shadow-2xl flex flex-col items-center p-8 text-center" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
-            <div class="w-14 h-14 rounded-full flex items-center justify-center mb-4" style="background:rgba(245,158,11,0.12);">
-                <svg class="w-7 h-7" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+    <div id="alert-modal" class="modal-modern" style="z-index:60;" onclick="if(event.target===this)closeAlertModal()">
+        <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+            <div class="modal-modern-header">
+                <h3 id="alert-modal-title">Perhatian</h3>
+                <button type="button" onclick="closeAlertModal()" class="modal-modern-close">&times;</button>
             </div>
-            <p class="text-lg font-bold" style="color:var(--text-primary);" id="alert-modal-title">Perhatian</p>
-            <p class="text-sm mt-2 leading-relaxed" style="color:var(--text-muted);" id="alert-modal-message"></p>
-            <button type="button" onclick="closeAlertModal()" class="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 15px rgba(108,92,255,0.3);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Tutup</button>
+            <div class="modal-modern-body text-center">
+                <div class="flex flex-col items-center py-4 space-y-3">
+                    <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:rgba(245,158,11,0.12);">
+                        <svg class="w-7 h-7" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm" style="color:var(--text-muted);" id="alert-modal-message"></p>
+                </div>
+            </div>
+            <div class="modal-modern-footer justify-center">
+                <button type="button" onclick="closeAlertModal()" class="btn btn-sm btn-primary">Tutup</button>
+            </div>
         </div>
     </div>
 
@@ -524,14 +541,7 @@
 
         // Success Modal
         function closeSuccessModal() {
-            const el = document.getElementById('success-modal');
-            if (el) {
-                el.style.display = 'none';
-                el.style.visibility = 'hidden';
-                el.style.opacity = '0';
-                el.style.pointerEvents = 'none';
-            }
-            document.body.style.overflow = '';
+            closeModal('success-modal');
         }
 
         function parseSuccessMessage(msg) {
@@ -602,11 +612,12 @@
             document.getElementById('confirm-message').textContent = message;
             var btn = document.getElementById('confirm-yes-btn');
             btn.textContent = options.buttonText || 'Ya, Hapus';
-            var color = options.buttonColor || '#ef4444';
-            var hoverColor = options.buttonHoverColor || '#dc2626';
-            btn.style.background = color;
-            btn.onmouseover = function() { this.style.background = hoverColor; };
-            btn.onmouseout = function() { this.style.background = color; };
+            btn.className = 'btn btn-sm';
+            if (options.icon === 'success' || options.buttonColor === '#10b981') {
+                btn.classList.add('btn-success');
+            } else {
+                btn.classList.add('btn-danger');
+            }
             var iconWrap = document.getElementById('confirm-icon-wrap');
             var iconSvg = document.getElementById('confirm-icon-svg');
             var iconPath = document.getElementById('confirm-icon-path');

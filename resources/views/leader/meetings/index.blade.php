@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-leader')
 @section('title', 'Meeting Saya')
 @section('page-title', 'Meeting Saya')
 @section('page-subtitle', 'Kelola seluruh meeting yang kamu ajukan')
@@ -9,63 +10,27 @@
 
     {{-- Stat Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        @php
+            $meetingStatCards = [
+                ['label' => 'Total Meeting', 'count' => $totalMeeting, 'color' => '#a78bfa', 'bg' => 'rgba(124,58,237,0.12)', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                ['label' => 'Menunggu', 'count' => $menungguMeeting, 'color' => '#fbbf24', 'bg' => 'rgba(245,158,11,0.12)', 'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['label' => 'Disetujui', 'count' => $disetujuiMeeting, 'color' => '#34d399', 'bg' => 'rgba(16,185,129,0.12)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['label' => 'Ditolak', 'count' => $ditolakMeeting, 'color' => '#f87171', 'bg' => 'rgba(239,68,68,0.12)', 'icon' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'],
+            ];
+        @endphp
+        @foreach($meetingStatCards as $card)
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:{{ $card['bg'] }};">
+                <svg style="color:{{ $card['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/>
                 </svg>
             </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:var(--text-primary);">{{ $totalMeeting }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Total Meeting</div>
+            <div>
+                <div class="stat-num" style="color:{{ $card['color'] }};">{{ $card['count'] }}</div>
+                <div class="stat-label-text">{{ $card['label'] }}</div>
             </div>
         </div>
-
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:#fbbf24;">{{ $menungguMeeting }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Menunggu</div>
-            </div>
-        </div>
-
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:#34d399;">{{ $disetujuiMeeting }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Disetujui</div>
-            </div>
-        </div>
-
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:#f87171;">{{ $ditolakMeeting }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Ditolak</div>
-            </div>
-        </div>
-
+        @endforeach
     </div>
 
     {{-- Table --}}
@@ -208,8 +173,8 @@
 
 @push('modals')
 {{-- Modal Detail Meeting --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -241,8 +206,8 @@
 </div>
 
 {{-- Request Meeting Modal --}}
-<div id="request-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full max-w-[820px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="request-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
+    <div class="w-full max-w-[820px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Request Meeting Baru</h3>
@@ -388,8 +353,8 @@
 @endpush
 
 {{-- MOM Modal (terpisah dari modal detail) --}}
-<div id="mom-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);" data-meeting-id="">
-    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="max-height:75vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="mom-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);" data-meeting-id="">
+    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Buat Minutes of Meeting</h3>

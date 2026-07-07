@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-leader')
 @section('title', 'Status Pengajuan')
 @section('page-title', 'Status Pengajuan Pembayaran')
 @section('page-subtitle', 'Riwayat pengajuan pembayaran kamu')
