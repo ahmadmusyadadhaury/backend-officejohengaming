@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
 @section('page-subtitle', 'Selamat datang, ' . auth()->user()->name)

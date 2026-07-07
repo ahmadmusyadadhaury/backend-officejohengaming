@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Aset Ruko')
 @section('page-title', 'Data Aset > Milik Ruko')
 @section('page-subtitle', 'Seluruh aset ruko milik perusahaan')
@@ -165,13 +166,13 @@
 </div>
 
 {{-- Popup Alert Maintenance --}}
-<div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
-    <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:520px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);">Aset Ruko Perlu Servis</div>
-            <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
+<div id="alert-overlay" class="modal-modern" onclick="if(event.target===this)closeAlertPopup()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3 id="alert-popup-title">Aset Ruko Perlu Servis</h3>
+            <button type="button" onclick="closeAlertPopup()" class="modal-modern-close">&times;</button>
         </div>
-        <div id="alert-popup-body"></div>
+        <div class="modal-modern-body" id="alert-popup-body"></div>
     </div>
 </div>
 

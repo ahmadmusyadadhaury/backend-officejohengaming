@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Rekap MOM')
 @section('page-title', 'Overview > Rekap Minutes of Meeting')
 @section('page-subtitle', 'Lihat rekap hasil meeting dan keputusan')

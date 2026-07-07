@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Kelola Booking')
 @section('page-title', 'Overview > Kelola Booking')
 @section('page-subtitle', 'Kelola pemesanan ruangan dan fasilitas')

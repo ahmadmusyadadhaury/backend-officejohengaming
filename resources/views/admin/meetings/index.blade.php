@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Permintaan Meeting')
 @section('page-title', 'Permintaan Meeting')
 @section('page-subtitle', 'Kelola semua permintaan meeting perusahaan')
@@ -259,24 +260,20 @@
 
 @push('modals')
 {{-- Detail Modal --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full" style="max-width:640px;width:90vw;max-height:min(90vh,800px);background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
+<div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetail()">
+    <div class="modal-modern-panel lg" onclick="event.stopPropagation()">
 
-        {{-- Header --}}
-        <div class="flex items-center justify-between px-5 py-3.5 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+        <div class="modal-modern-header">
             <div class="flex items-center gap-2.5">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.15);">
                     <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                 </div>
-                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Detail Meeting — <span id="detail-judul">Meeting</span></h3>
+                <h3 style="color:var(--text-primary);">Detail Meeting — <span id="detail-judul">Meeting</span></h3>
             </div>
-            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+            <button type="button" onclick="closeDetail()" class="modal-modern-close">&times;</button>
         </div>
 
-        {{-- Body --}}
-        <div class="p-5 flex-1 overflow-y-auto" id="detail-body" style="scrollbar-width:thin;scrollbar-color:rgba(129,140,248,0.25) transparent;">
+        <div class="modal-modern-body">
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                 <div id="meeting-info-rows" class="space-y-0"></div>
@@ -306,95 +303,94 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="d-reject-section" class="hidden px-5 pb-3.5 flex-shrink-0">
-            <div class="p-3 rounded-xl" style="background:#fef2f2;border:1px solid #fecaca;">
-                <p class="text-xs font-semibold mb-0.5" style="color:#ef4444;">Alasan Penolakan</p>
-                <p class="text-xs" style="color:#f87171;" id="d-reject-reason"></p>
+            <div id="d-reject-section" class="hidden">
+                <div class="p-3 rounded-xl" style="background:#fef2f2;border:1px solid #fecaca;">
+                    <p class="text-xs font-semibold mb-0.5" style="color:#ef4444;">Alasan Penolakan</p>
+                    <p class="text-xs" style="color:#f87171;" id="d-reject-reason"></p>
+                </div>
             </div>
-        </div>
 
-        <div id="d-actions-section" class="hidden px-5 pb-4 flex-shrink-0">
-            <div class="flex items-center justify-between gap-3" style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:10px 14px;">
-                <p class="text-[10px] font-bold tracking-[0.1em] flex-shrink-0" style="color:var(--text-muted);">UPDATE STATUS</p>
-                <div class="flex items-center gap-2">
-                    <form id="d-approve-form" method="POST">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="_method" value="PATCH">
-                        <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition" style="background:#10b981;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">✓ Setujui</button>
-                    </form>
+            <div id="d-actions-section" class="hidden">
+                <div class="flex items-center justify-between gap-3" style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:10px 14px;">
+                    <p class="text-[10px] font-bold tracking-[0.1em] flex-shrink-0" style="color:var(--text-muted);">UPDATE STATUS</p>
                     <div class="flex items-center gap-2">
-                        <textarea name="reject_reason" id="d-reject-input" placeholder="Alasan tolak..." rows="1" class="w-40 px-3 py-1.5 rounded-lg text-xs border transition" style="resize:none;border-color:var(--border-color);color:var(--text-primary);background:var(--bg-surface);" onfocus="this.style.borderColor='#f87171'" onblur="this.style.borderColor='var(--border-color)'"></textarea>
-                        <form id="d-reject-form" method="POST" class="flex-shrink-0">
+                        <form id="d-approve-form" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="_method" value="PATCH">
-                            <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="color:#e11d48;background:#ffe4e6;" onmouseover="this.style.background='#fecdd3'" onmouseout="this.style.background='#ffe4e6'">× Tolak</button>
+                            <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition" style="background:#10b981;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">✓ Setujui</button>
                         </form>
+                        <div class="flex items-center gap-2">
+                            <textarea name="reject_reason" id="d-reject-input" placeholder="Alasan tolak..." rows="1" class="w-40 px-3 py-1.5 rounded-lg text-xs border transition" style="resize:none;border-color:var(--border-color);color:var(--text-primary);background:var(--bg-surface);" onfocus="this.style.borderColor='#f87171'" onblur="this.style.borderColor='var(--border-color)'"></textarea>
+                            <form id="d-reject-form" method="POST" class="flex-shrink-0">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="_method" value="PATCH">
+                                <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="color:#e11d48;background:#ffe4e6;" onmouseover="this.style.background='#fecdd3'" onmouseout="this.style.background='#ffe4e6'">× Tolak</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
 
-        <div class="flex items-center justify-end px-5 py-3.5 flex-shrink-0" style="border-top:1px solid var(--border-color);">
+        <div class="modal-modern-footer">
             <button type="button" onclick="closeDetail()" class="px-4 py-1.5 rounded-lg text-xs font-medium transition" style="color:var(--text-secondary);border:1px solid var(--border-color);background:var(--bg-surface-2);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
         </div>
     </div>
 </div>
 
 {{-- Edit Modal --}}
-<div id="edit-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full" style="max-width:500px;width:90vw;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
+<div id="edit-modal" class="modal-modern" onclick="if(event.target===this)closeEditModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
 
-        <div class="flex items-center justify-between px-5 py-3.5 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+        <div class="modal-modern-header">
             <div class="flex items-center gap-2.5">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.15);">
                     <svg class="w-3.5 h-3.5" style="color:#8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 </div>
-                <h3 class="text-sm font-bold" style="color:var(--text-primary);">Edit Meeting</h3>
+                <h3 style="color:var(--text-primary);">Edit Meeting</h3>
             </div>
-            <button type="button" onclick="closeEditModal()" class="p-1.5 rounded-lg transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+            <button type="button" onclick="closeEditModal()" class="modal-modern-close">&times;</button>
         </div>
 
-        <form id="edit-form" method="POST" class="p-5 space-y-4 overflow-y-auto" style="max-height:70vh;">
+        <form id="edit-form" method="POST">
             @csrf
             @method('PATCH')
             <input type="hidden" id="edit-meeting-id" name="meeting_id" value="">
-
-            <div>
-                <label class="gaming-label text-xs">Judul Meeting <span style="color:#f87171;">*</span></label>
-                <input type="text" id="edit-title" name="title" required class="gaming-input mt-1" placeholder="Judul meeting">
-            </div>
-
-            <div>
-                <label class="gaming-label text-xs">Ruangan <span style="color:#f87171;">*</span></label>
-                <select id="edit-room" name="room_id" required class="gaming-input gaming-select mt-1">
-                    <option value="">Pilih Ruangan</option>
-                    @foreach($rooms as $room)
-                        <option value="{{ $room->id }}">{{ $room->name }} ({{ $room->capacity }} orang)</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="gaming-label text-xs">Tanggal Meeting <span style="color:#f87171;">*</span></label>
-                <input type="date" id="edit-date" name="meeting_date" required class="gaming-input mt-1">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
+            <div class="modal-modern-body space-y-4">
                 <div>
-                    <label class="gaming-label text-xs">Jam Mulai <span style="color:#f87171;">*</span></label>
-                    <input type="time" id="edit-start-time" name="start_time" required class="gaming-input mt-1">
+                    <label class="gaming-label text-xs">Judul Meeting <span style="color:#f87171;">*</span></label>
+                    <input type="text" id="edit-title" name="title" required class="gaming-input mt-1" placeholder="Judul meeting">
                 </div>
+
                 <div>
-                    <label class="gaming-label text-xs">Jam Selesai <span style="color:#f87171;">*</span></label>
-                    <input type="time" id="edit-end-time" name="end_time" required class="gaming-input mt-1">
+                    <label class="gaming-label text-xs">Ruangan <span style="color:#f87171;">*</span></label>
+                    <select id="edit-room" name="room_id" required class="gaming-input gaming-select mt-1">
+                        <option value="">Pilih Ruangan</option>
+                        @foreach($rooms as $room)
+                            <option value="{{ $room->id }}">{{ $room->name }} ({{ $room->capacity }} orang)</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="gaming-label text-xs">Tanggal Meeting <span style="color:#f87171;">*</span></label>
+                    <input type="date" id="edit-date" name="meeting_date" required class="gaming-input mt-1">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="gaming-label text-xs">Jam Mulai <span style="color:#f87171;">*</span></label>
+                        <input type="time" id="edit-start-time" name="start_time" required class="gaming-input mt-1">
+                    </div>
+                    <div>
+                        <label class="gaming-label text-xs">Jam Selesai <span style="color:#f87171;">*</span></label>
+                        <input type="time" id="edit-end-time" name="end_time" required class="gaming-input mt-1">
+                    </div>
                 </div>
             </div>
-
-            <div class="flex items-center gap-3 pt-3" style="border-top:1px solid var(--border-color);">
+            <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -408,28 +404,33 @@
 </div>
 
 {{-- Delete Confirm Modal --}}
-<div id="delete-confirm-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full" style="max-width:380px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);padding:1.75rem;text-align:center;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
-        <div class="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style="background:rgba(239,68,68,0.12);">
-            <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
+<div id="delete-confirm-modal" class="modal-modern" onclick="if(event.target===this)closeDeleteModal()">
+    <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Hapus Meeting</h3>
+            <button type="button" onclick="closeDeleteModal()" class="modal-modern-close">&times;</button>
         </div>
-        <h3 class="text-base font-bold mb-2" style="color:var(--text-primary);">Hapus Meeting</h3>
-        <p class="text-sm mb-6" style="color:var(--text-secondary);">Apakah kamu yakin ingin menghapus meeting ini? Tindakan ini tidak dapat dibatalkan.</p>
-        <form id="delete-form" method="POST" style="display:inline;">
-            @csrf
-            @method('DELETE')
-            <div class="flex items-center gap-3 justify-center">
-                <button type="submit" class="btn btn-danger btn-sm px-5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                    Ya, Hapus
-                </button>
-                <button type="button" onclick="closeDeleteModal()" class="btn btn-secondary btn-sm">Batal</button>
+        <div class="modal-modern-body text-center">
+            <div class="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style="background:rgba(239,68,68,0.12);">
+                <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
             </div>
-        </form>
+            <p style="color:var(--text-secondary);margin-bottom:24px;">Apakah kamu yakin ingin menghapus meeting ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <form id="delete-form" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="flex items-center gap-3 justify-center">
+                    <button type="submit" class="btn btn-danger btn-sm px-5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Ya, Hapus
+                    </button>
+                    <button type="button" onclick="closeDeleteModal()" class="btn btn-secondary btn-sm">Batal</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 @endpush

@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Peralatan Kantor')
 @section('page-title', 'Data Aset > Peralatan Kantor')
 @section('page-subtitle', 'Inventaris peralatan kantor milik perusahaan')

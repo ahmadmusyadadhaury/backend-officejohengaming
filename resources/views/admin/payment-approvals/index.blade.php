@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Persetujuan Pembayaran')
 @section('page-title', 'Persetujuan Pembayaran')
 @section('page-subtitle', 'Pengajuan pembayaran yang menunggu persetujuan')

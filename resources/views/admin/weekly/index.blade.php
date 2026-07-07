@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Meeting Mingguan')
 @section('page-title', 'Meeting Mingguan')
 @section('page-subtitle', 'Jadwal meeting rutin yang otomatis muncul di kalender')

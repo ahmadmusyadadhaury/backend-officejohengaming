@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Sosial Media')
 @section('page-title', 'Data Aset > Sosial Media')
 @section('page-subtitle', 'Seluruh akun sosial media operasional perusahaan')

@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Data Kendaraan')
 @section('page-title', 'Data Aset > Kendaraan')
 @section('page-subtitle', 'Seluruh aset kendaraan milik perusahaan')
@@ -248,23 +249,20 @@
 </div>
 
 {{-- Detail Modal --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+<div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetail()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
 
-        {{-- Header --}}
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Kendaraan</h3>
-            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+        <div class="modal-modern-header">
+            <h3 id="detail-title">Detail Kendaraan</h3>
+            <button type="button" onclick="closeDetail()" class="modal-modern-close">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
 
-        {{-- Body --}}
-        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="modal-modern-body" id="detail-body"></div>
 
-        {{-- Footer --}}
-        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        <div class="modal-modern-footer">
+            <button type="button" onclick="closeDetail()" class="btn btn-secondary">Tutup</button>
         </div>
     </div>
 </div>

@@ -9,7 +9,7 @@
 <div class="pt-2 space-y-4 animate-fade-in">
 
     {{-- Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         @php
             $dsStatCards = [
                 ['label' => 'Total Aset', 'count' => $assets->count(), 'color' => '#a78bfa', 'bg' => 'rgba(124,58,237,0.12)', 'icon' => 'M13 10V3L4 14h7v7l9-11h-7z'],

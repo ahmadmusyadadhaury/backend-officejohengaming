@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Kelola Ruangan')
 @section('page-title', 'Overview > Kelola Ruangan')
 @section('page-subtitle', 'Kelola ruangan dan sumber daya perusahaan')
@@ -107,43 +108,43 @@
     </div>
 </div>
 
-<div id="edit-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[440px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Edit Ruangan</h3>
-            <button type="button" onclick="closeEditModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="edit-modal" class="modal-modern" onclick="if(event.target===this)closeEditModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Edit Ruangan</h3>
+            <button type="button" onclick="closeEditModal()" class="modal-modern-close">&times;</button>
         </div>
-        <form id="edit-form" method="POST" class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
+        <form id="edit-form" method="POST">
             @csrf @method('PUT')
-            <div>
-                <label class="gaming-label">Nama Ruangan <span style="color:#f87171;">*</span></label>
-                <input type="text" name="name" id="edit-name" required class="gaming-input">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="modal-modern-body space-y-4">
                 <div>
-                    <label class="gaming-label">Kapasitas <span style="color:#f87171;">*</span></label>
-                    <input type="number" name="capacity" id="edit-capacity" required min="1" class="gaming-input">
+                    <label class="gaming-label">Nama Ruangan <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="name" id="edit-name" required class="gaming-input">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="gaming-label">Kapasitas <span style="color:#f87171;">*</span></label>
+                        <input type="number" name="capacity" id="edit-capacity" required min="1" class="gaming-input">
+                    </div>
+                    <div>
+                        <label class="gaming-label">Lokasi <span style="color:#f87171;">*</span></label>
+                        <input type="text" name="location" id="edit-location" required class="gaming-input">
+                    </div>
                 </div>
                 <div>
-                    <label class="gaming-label">Lokasi <span style="color:#f87171;">*</span></label>
-                    <input type="text" name="location" id="edit-location" required class="gaming-input">
+                    <label class="gaming-label">Fasilitas <span style="color:var(--text-muted);font-weight:400;">(satu per baris)</span></label>
+                    <textarea name="facilities" id="edit-facilities" rows="4" class="gaming-input" style="resize:vertical;"></textarea>
+                </div>
+                <div>
+                    <label class="gaming-label">Deskripsi</label>
+                    <textarea name="description" id="edit-description" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="is_active" id="edit-is-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
+                    <label for="edit-is-active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Ruangan Aktif</label>
                 </div>
             </div>
-            <div>
-                <label class="gaming-label">Fasilitas <span style="color:var(--text-muted);font-weight:400;">(satu per baris)</span></label>
-                <textarea name="facilities" id="edit-facilities" rows="4" class="gaming-input" style="resize:vertical;"></textarea>
-            </div>
-            <div>
-                <label class="gaming-label">Deskripsi</label>
-                <textarea name="description" id="edit-description" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
-            </div>
-            <div class="flex items-center gap-2">
-                <input type="checkbox" name="is_active" id="edit-is-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
-                <label for="edit-is-active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Ruangan Aktif</label>
-            </div>
-            <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
+            <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 <button type="button" onclick="closeEditModal()" class="btn btn-secondary">Batal</button>
             </div>
@@ -152,39 +153,39 @@
 </div>
 
 {{-- Create Modal --}}
-<div id="create-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[440px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Tambah Ruangan</h3>
-            <button type="button" onclick="closeCreateModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="create-modal" class="modal-modern" onclick="if(event.target===this)closeCreateModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Tambah Ruangan</h3>
+            <button type="button" onclick="closeCreateModal()" class="modal-modern-close">&times;</button>
         </div>
-        <form id="create-form" method="POST" action="{{ route('admin.rooms.store') }}" class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
+        <form id="create-form" method="POST" action="{{ route('admin.rooms.store') }}">
             @csrf
-            <div>
-                <label class="gaming-label">Nama Ruangan <span style="color:#f87171;">*</span></label>
-                <input type="text" name="name" required class="gaming-input">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="modal-modern-body space-y-4">
                 <div>
-                    <label class="gaming-label">Kapasitas <span style="color:#f87171;">*</span></label>
-                    <input type="number" name="capacity" required min="1" class="gaming-input">
+                    <label class="gaming-label">Nama Ruangan <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="name" required class="gaming-input">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="gaming-label">Kapasitas <span style="color:#f87171;">*</span></label>
+                        <input type="number" name="capacity" required min="1" class="gaming-input">
+                    </div>
+                    <div>
+                        <label class="gaming-label">Lokasi <span style="color:#f87171;">*</span></label>
+                        <input type="text" name="location" required class="gaming-input">
+                    </div>
                 </div>
                 <div>
-                    <label class="gaming-label">Lokasi <span style="color:#f87171;">*</span></label>
-                    <input type="text" name="location" required class="gaming-input">
+                    <label class="gaming-label">Fasilitas <span style="color:var(--text-muted);font-weight:400;">(satu per baris)</span></label>
+                    <textarea name="facilities" rows="4" class="gaming-input" style="resize:vertical;"></textarea>
+                </div>
+                <div>
+                    <label class="gaming-label">Deskripsi</label>
+                    <textarea name="description" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
                 </div>
             </div>
-            <div>
-                <label class="gaming-label">Fasilitas <span style="color:var(--text-muted);font-weight:400;">(satu per baris)</span></label>
-                <textarea name="facilities" rows="4" class="gaming-input" style="resize:vertical;"></textarea>
-            </div>
-            <div>
-                <label class="gaming-label">Deskripsi</label>
-                <textarea name="description" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
-            </div>
-            <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
+            <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Buat Ruangan</button>
                 <button type="button" onclick="closeCreateModal()" class="btn btn-secondary">Batal</button>
             </div>

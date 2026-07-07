@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Pengaturan Email')
 @section('page-title', 'Pengaturan Email')
 @section('page-subtitle', 'Kelola alamat pengirim dan penerima notifikasi email')

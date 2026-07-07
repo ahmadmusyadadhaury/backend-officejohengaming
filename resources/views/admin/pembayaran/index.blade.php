@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', $jenisLabels[$jenis])
 @section('page-title', 'Pembayaran')
 @section('page-subtitle', $jenis === 'internet' ? 'Kelola WiFi' : 'Kelola tagihan '.$jenisLabels[$jenis])
@@ -694,92 +695,80 @@
     </div>
 
     {{-- Token Reading Modal --}}
-    <div id="token-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-                <h3 class="text-base font-bold" style="color:var(--text-primary);">Input Pengecekan Token</h3>
-                <button type="button" onclick="closeTokenModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+    <div id="token-modal" class="modal-modern" onclick="if(event.target===this)closeTokenModal()">
+        <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+            <div class="modal-modern-header">
+                <h3>Input Pengecekan Token</h3>
+                <button type="button" onclick="closeTokenModal()" class="modal-modern-close">&times;</button>
             </div>
-            <div class="px-6 py-5 overflow-y-auto flex-1">
-                <form method="POST" action="{{ route('admin.pembayaran.token-reading.store') }}">
-                    @csrf
-                    <div class="space-y-4">
-                        <div class="field-group">
-                            <label class="gaming-label">Sisa KWH <span class="field-req">*</span></label>
-                            <input type="number" name="remaining_kwh" id="f-remaining_kwh" required step="0.01" min="0" max="9999" placeholder="Contoh: 342.5" class="gaming-input">
-                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Input sisa KWH yang tertera di meteran.</div>
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Tanggal Pengecekan <span class="field-req">*</span></label>
-                            <input type="date" name="checked_date" id="f-checked_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Pengecek <span class="field-req">*</span></label>
-                            <select name="checked_by" id="f-checked_by" required class="gaming-input">
-                                <option value="">Pilih pengecek</option>
-                                @foreach($users as $u)
-                                    <option value="{{ $u->id }}" {{ $u->id === auth()->id() ? 'selected' : '' }}>{{ $u->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Catatan</label>
-                            <textarea name="notes" id="f-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
-                        </div>
+            <form method="POST" action="{{ route('admin.pembayaran.token-reading.store') }}">
+                @csrf
+                <div class="modal-modern-body space-y-4">
+                    <div class="field-group">
+                        <label class="gaming-label">Sisa KWH <span class="field-req">*</span></label>
+                        <input type="number" name="remaining_kwh" id="f-remaining_kwh" required step="0.01" min="0" max="9999" placeholder="Contoh: 342.5" class="gaming-input">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Input sisa KWH yang tertera di meteran.</div>
                     </div>
-                    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
-                        <button type="button" onclick="closeTokenModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                    <div class="field-group">
+                        <label class="gaming-label">Tanggal Pengecekan <span class="field-req">*</span></label>
+                        <input type="date" name="checked_date" id="f-checked_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
                     </div>
-                </form>
-            </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Pengecek <span class="field-req">*</span></label>
+                        <select name="checked_by" id="f-checked_by" required class="gaming-input">
+                            <option value="">Pilih pengecek</option>
+                            @foreach($users as $u)
+                                <option value="{{ $u->id }}" {{ $u->id === auth()->id() ? 'selected' : '' }}>{{ $u->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Catatan</label>
+                        <textarea name="notes" id="f-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-modern-footer gap-2">
+                    <button type="button" onclick="closeTokenModal()" class="btn btn-secondary">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
 
     {{-- Top Up Token Modal --}}
-    <div id="topup-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-                <h3 class="text-base font-bold" style="color:var(--text-primary);">Top Up Token Listrik</h3>
-                <button type="button" onclick="closeTopupModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+    <div id="topup-modal" class="modal-modern" onclick="if(event.target===this)closeTopupModal()">
+        <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+            <div class="modal-modern-header">
+                <h3>Top Up Token Listrik</h3>
+                <button type="button" onclick="closeTopupModal()" class="modal-modern-close">&times;</button>
             </div>
-            <div class="px-6 py-5 overflow-y-auto flex-1">
-                <form method="POST" action="{{ route('admin.pembayaran.token-topup.store') }}">
-                    @csrf
-                    <div class="space-y-4">
-                        <div class="field-group">
-                            <label class="gaming-label">Jumlah KWH <span class="field-req">*</span></label>
-                            <input type="number" name="amount_kwh" id="f-amount_kwh" required step="0.01" min="1" placeholder="Contoh: 7000" class="gaming-input">
-                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan jumlah KWH yang dibeli.</div>
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Nominal (Rp) <span class="field-req">*</span></label>
-                            <input type="number" name="nominal" id="f-nominal" required step="0.01" min="0" placeholder="Contoh: 1500000" class="gaming-input">
-                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan nominal harga token.</div>
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
-                            <input type="date" name="payment_date" id="f-payment_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Catatan</label>
-                            <textarea name="notes" id="f-topup-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
-                        </div>
+            <form method="POST" action="{{ route('admin.pembayaran.token-topup.store') }}">
+                @csrf
+                <div class="modal-modern-body space-y-4">
+                    <div class="field-group">
+                        <label class="gaming-label">Jumlah KWH <span class="field-req">*</span></label>
+                        <input type="number" name="amount_kwh" id="f-amount_kwh" required step="0.01" min="1" placeholder="Contoh: 7000" class="gaming-input">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan jumlah KWH yang dibeli.</div>
                     </div>
-                    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
-                        <button type="button" onclick="closeTopupModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                    <div class="field-group">
+                        <label class="gaming-label">Nominal (Rp) <span class="field-req">*</span></label>
+                        <input type="number" name="nominal" id="f-nominal" required step="0.01" min="0" placeholder="Contoh: 1500000" class="gaming-input">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan nominal harga token.</div>
                     </div>
-                </form>
-            </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
+                        <input type="date" name="payment_date" id="f-payment_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Catatan</label>
+                        <textarea name="notes" id="f-topup-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-modern-footer gap-2">
+                    <button type="button" onclick="closeTopupModal()" class="btn btn-secondary">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
     @endif
@@ -787,29 +776,27 @@
 </div>
 
 {{-- Detail Modal --}}
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[460px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail</h3>
-            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+<div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetail()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3 id="detail-title">Detail</h3>
+            <button type="button" onclick="closeDetail()" class="modal-modern-close">&times;</button>
         </div>
-        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
-        <div id="detail-bukti-wrap" class="px-6 py-3" style="display:none;border-top:1px solid var(--border-color);">
-            <div class="field-group">
-                <label class="gaming-label" style="font-size:12px;">Upload Bukti Pembayaran</label>
-                <input type="file" id="detail-bukti_bayar" accept="image/jpeg,image/png,image/jpg" class="gaming-input" style="padding:6px 10px;font-size:12px;">
-                <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Format: JPG/PNG, maks 2MB</div>
+        <div class="modal-modern-body">
+            <div id="detail-body"></div>
+            <div id="detail-bukti-wrap" style="display:none;margin-top:16px;">
+                <div class="field-group">
+                    <label class="gaming-label" style="font-size:12px;">Upload Bukti Pembayaran</label>
+                    <input type="file" id="detail-bukti_bayar" accept="image/jpeg,image/png,image/jpg" class="gaming-input" style="padding:6px 10px;font-size:12px;">
+                    <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Format: JPG/PNG, maks 2MB</div>
+                </div>
             </div>
         </div>
-        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        <div class="modal-modern-footer" style="justify-content:space-between;">
+            <button type="button" onclick="closeDetail()" class="btn btn-secondary">Tutup</button>
             <div class="flex gap-2">
-                <button type="button" id="detail-bayar-btn" onclick="bayarFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="display:none;background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Bayar / Lunaskan</button>
-                <button type="button" onclick="editFromDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Edit</button>
+                <button type="button" id="detail-bayar-btn" onclick="bayarFromDetail()" class="btn btn-success" style="display:none;">Bayar / Lunaskan</button>
+                <button type="button" onclick="editFromDetail()" class="btn btn-primary">Edit</button>
             </div>
         </div>
     </div>
@@ -952,7 +939,7 @@
                 <div class="field-group" style="margin-bottom:16px;">
                     <label class="gaming-label">Jabatan <span class="field-req">*</span></label>
                     <select name="jabatan" id="bayar-jabatan-select" required class="gaming-input gaming-select">
-                        <option value="">— Pilih Jabatan —</option>
+                        <option value="">ï¿½ Pilih Jabatan ï¿½</option>
                         <option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option>
                         <option value="General Manager (GM)">General Manager (GM)</option>
                         <option value="Head of Store">Head of Store</option>
@@ -1003,7 +990,7 @@
                             <option value="{{ $th }}">{{ $th }}</option>
                             @endfor
                         </select>
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Sistem akan membuat 12 tagihan (Jan–Des).</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Sistem akan membuat 12 tagihan (Janï¿½Des).</div>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Nominal per Bulan (Rp) <span class="field-req">*</span></label>

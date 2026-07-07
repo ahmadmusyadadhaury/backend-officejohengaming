@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Edit Tim')
 @section('page-title', 'Edit Tim')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection

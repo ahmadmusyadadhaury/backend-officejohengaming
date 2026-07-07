@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('body-class', 'page-admin')
 @section('title', 'Kelola Admin')
 @section('page-title', 'Overview > Kelola Admin')
 @section('page-subtitle', 'Kelola admin dengan akses PENUH ke seluruh menu sistem.')
@@ -107,43 +108,43 @@
 </div>
 
 {{-- Edit Modal --}}
-<div id="edit-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[440px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Edit Akun Admin</h3>
-            <button type="button" onclick="closeEditModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="edit-modal" class="modal-modern" onclick="if(event.target===this)closeEditModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Edit Akun Admin</h3>
+            <button type="button" onclick="closeEditModal()" class="modal-modern-close">&times;</button>
         </div>
-        <form id="edit-form" method="POST" class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
+        <form id="edit-form" method="POST">
             @csrf @method('PUT')
-            <div>
-                <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
-                <input type="text" name="name" id="edit-name" required class="gaming-input">
+            <div class="modal-modern-body space-y-4">
+                <div>
+                    <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="name" id="edit-name" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="username" id="edit-username" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Password Baru <span style="color:var(--text-muted);font-weight:400;">(kosongkan jika tidak diubah)</span></label>
+                    <input type="password" name="password" class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Role Admin <span style="color:#f87171;">*</span></label>
+                    <select name="role" id="edit-role" required class="gaming-input gaming-select">
+                        <option value="admin">Admin Master</option>
+                        <option value="head_of_store">Head of Store</option>
+                        <option value="gm">General Manager (GM)</option>
+                        <option value="ceo">Chief Executive Officer (CEO)</option>
+                        <option value="hr">HR (Human Resources)</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="is_active" id="edit-is-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
+                    <label for="edit-is-active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Akun Aktif</label>
+                </div>
             </div>
-            <div>
-                <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
-                <input type="text" name="username" id="edit-username" required class="gaming-input">
-            </div>
-            <div>
-                <label class="gaming-label">Password Baru <span style="color:var(--text-muted);font-weight:400;">(kosongkan jika tidak diubah)</span></label>
-                <input type="password" name="password" class="gaming-input">
-            </div>
-            <div>
-                <label class="gaming-label">Role Admin <span style="color:#f87171;">*</span></label>
-                <select name="role" id="edit-role" required class="gaming-input gaming-select">
-                    <option value="admin">Admin Master</option>
-                    <option value="head_of_store">Head of Store</option>
-                    <option value="gm">General Manager (GM)</option>
-                    <option value="ceo">Chief Executive Officer (CEO)</option>
-                    <option value="hr">HR (Human Resources)</option>
-                </select>
-            </div>
-            <div class="flex items-center gap-2">
-                <input type="checkbox" name="is_active" id="edit-is-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
-                <label for="edit-is-active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Akun Aktif</label>
-            </div>
-            <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
+            <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 <button type="button" onclick="closeEditModal()" class="btn btn-secondary">Batal</button>
             </div>
@@ -152,40 +153,40 @@
 </div>
 
 {{-- Create Modal --}}
-<div id="create-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[440px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Tambah Akun Admin</h3>
-            <button type="button" onclick="closeCreateModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+<div id="create-modal" class="modal-modern" onclick="if(event.target===this)closeCreateModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Tambah Akun Admin</h3>
+            <button type="button" onclick="closeCreateModal()" class="modal-modern-close">&times;</button>
         </div>
-        <form id="create-form" method="POST" action="{{ route('admin.admins.store') }}" class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
+        <form id="create-form" method="POST" action="{{ route('admin.admins.store') }}">
             @csrf
-            <div>
-                <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
-                <input type="text" name="name" required class="gaming-input">
+            <div class="modal-modern-body space-y-4">
+                <div>
+                    <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="name" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="username" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
+                    <input type="password" name="password" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Role Admin <span style="color:#f87171;">*</span></label>
+                    <select name="role" required class="gaming-input gaming-select">
+                        <option value="">Pilih Role</option>
+                        <option value="admin">Admin Master</option>
+                        <option value="head_of_store">Head of Store</option>
+                        <option value="gm">General Manager (GM)</option>
+                        <option value="ceo">Chief Executive Officer (CEO)</option>
+                        <option value="hr">HR (Human Resources)</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
-                <input type="text" name="username" required class="gaming-input">
-            </div>
-            <div>
-                <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
-                <input type="password" name="password" required class="gaming-input">
-            </div>
-            <div>
-                <label class="gaming-label">Role Admin <span style="color:#f87171;">*</span></label>
-                <select name="role" required class="gaming-input gaming-select">
-                    <option value="">Pilih Role</option>
-                    <option value="admin">Admin Master</option>
-                    <option value="head_of_store">Head of Store</option>
-                    <option value="gm">General Manager (GM)</option>
-                    <option value="ceo">Chief Executive Officer (CEO)</option>
-                    <option value="hr">HR (Human Resources)</option>
-                </select>
-            </div>
-            <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
+            <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Buat Akun</button>
                 <button type="button" onclick="closeCreateModal()" class="btn btn-secondary">Batal</button>
             </div>
