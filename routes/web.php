@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAccountController;
+use App\Http\Controllers\Admin\AsetDayaController;
 use App\Http\Controllers\Admin\AsetRukoController;
+use App\Http\Controllers\Admin\AsetTimController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
@@ -23,7 +25,10 @@ use App\Http\Controllers\Admin\VehiclePajakRequestController;
 use App\Http\Controllers\Admin\WeeklyMeetingController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\Leader\AsetDayaController as KoordinatorAsetDayaController;
+use App\Http\Controllers\Leader\AsetTimController as KoordinatorAsetTimController;
 use App\Http\Controllers\Leader\DashboardController as KoordinatorDashboard;
+use App\Http\Controllers\Leader\DataSayaController;
 use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingController;
 use App\Http\Controllers\Leader\MomController;
 use App\Http\Controllers\MomExportController;
@@ -54,6 +59,10 @@ Route::get('/', function () {
             return redirect()->route('admin.dashboard');
         }
 
+        if ($role === 'admin_ga') {
+            return redirect()->route('koordinator.dashboard');
+        }
+
         return redirect()->route($role.'.dashboard');
     }
 
@@ -79,6 +88,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('peralatan-kantor/template', [PeralatanKantorController::class, 'downloadTemplate'])->name('peralatan-kantor.template');
     Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
+    Route::resource('aset-daya', AsetDayaController::class)->except(['create', 'show', 'edit']);
+    Route::resource('aset-tim', AsetTimController::class)->except(['create', 'show', 'edit']);
     Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
     Route::post('pembayaran', [PaymentController::class, 'store'])->name('pembayaran.store');
     Route::put('pembayaran/{id}', [PaymentController::class, 'update'])->name('pembayaran.update');
@@ -135,6 +146,9 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::get('moms', [MomController::class, 'index'])->name('mom.index');
     Route::resource('meetings.mom', MomController::class)->shallow();
     Route::patch('mom/{mom}/send', [MomController::class, 'send'])->name('mom.send');
+    Route::get('data-saya', [DataSayaController::class, 'index'])->name('data-saya.index');
+    Route::get('aset-daya', [KoordinatorAsetDayaController::class, 'index'])->name('aset-daya.index');
+    Route::get('aset-tim', [KoordinatorAsetTimController::class, 'index'])->name('aset-tim.index');
 });
 
 // User Routes

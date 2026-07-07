@@ -2,7 +2,7 @@
 @section('title', 'Rekap MOM Saya')
 @section('page-title', 'MOM > Rekap Minutes of Meeting')
 @section('page-subtitle', 'Riwayat MOM yang pernah kamu buat')
-@section('sidebar-menu') @include('partials.sidebar-leader') @endsection
+@section('sidebar-menu') @include(auth()->user()->hasFullAccess() ? 'partials.sidebar-admin' : 'partials.sidebar-leader') @endsection
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 

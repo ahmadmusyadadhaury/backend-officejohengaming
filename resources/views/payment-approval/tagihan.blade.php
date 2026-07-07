@@ -5,7 +5,7 @@
 
 @section('sidebar-menu')
     @php $role = auth()->user()->role; @endphp
-    @include($role === 'koordinator' ? 'partials.sidebar-leader' : (in_array($role, ['admin','hr','head_of_store','gm','ceo','admin_ga']) ? 'partials.sidebar-admin' : 'partials.sidebar-user'))
+    @include(in_array($role, ['koordinator', 'admin_ga']) ? 'partials.sidebar-leader' : (in_array($role, ['admin','hr','head_of_store','gm','ceo']) ? 'partials.sidebar-admin' : 'partials.sidebar-user'))
 @endsection
 
 @section('content')

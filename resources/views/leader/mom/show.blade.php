@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Detail MOM')
 @section('page-title', 'Minutes of Meeting')
-@section('sidebar-menu') @include('partials.sidebar-leader') @endsection
+@section('sidebar-menu') @include(auth()->user()->hasFullAccess() ? 'partials.sidebar-admin' : 'partials.sidebar-leader') @endsection
 @section('content')
 <div class="pt-2 max-w-2xl space-y-4 animate-fade-in">
     <div class="gaming-card overflow-hidden">

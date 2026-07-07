@@ -2,7 +2,7 @@
 @section('title', 'Request Meeting')
 @section('page-title', 'Request Meeting')
 @section('page-subtitle', 'Ajukan permintaan ruang meeting baru')
-@section('sidebar-menu') @include('partials.sidebar-leader') @endsection
+@section('sidebar-menu') @include(auth()->user()->hasFullAccess() ? 'partials.sidebar-admin' : 'partials.sidebar-leader') @endsection
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 

@@ -23,6 +23,10 @@ Route::middleware('guest')->group(function () {
                 return redirect()->route('admin.dashboard');
             }
 
+            if ($role === 'admin_ga') {
+                return redirect()->route('koordinator.dashboard');
+            }
+
             return redirect()->route($role.'.dashboard');
         }
 

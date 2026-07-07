@@ -6,7 +6,9 @@ use App\Exports\DataExport;
 use App\Models\DigitalAsset;
 use App\Models\Notification;
 use App\Models\Payment;
+use App\Models\PembayaranAsetDaya;
 use App\Models\PembayaranAsetDigital;
+use App\Models\PembayaranAsetTim;
 use App\Models\PembayaranIplRuko;
 use App\Models\PeralatanKantor;
 use App\Models\SimCard;
@@ -31,6 +33,8 @@ class PaymentApprovalController extends Controller
             'listrik' => new Payment,
             'aset_digital' => new PembayaranAsetDigital,
             'ipl_ruko' => new PembayaranIplRuko,
+            'aset_daya' => new PembayaranAsetDaya,
+            'aset_tim' => new PembayaranAsetTim,
             'pajak_kendaraan' => new VehiclePajakRequest,
             default => abort(400, 'Jenis tidak valid'),
         };
@@ -43,6 +47,8 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'aset_daya' => PembayaranAsetDaya::class,
+            'aset_tim' => PembayaranAsetTim::class,
             'pajak_kendaraan' => VehiclePajakRequest::class,
             default => abort(400, 'Jenis tidak valid'),
         };
@@ -66,7 +72,7 @@ class PaymentApprovalController extends Controller
                 'masa_tenggang' => 'required|date',
                 'biaya' => 'required|numeric|min:0',
             ],
-            'listrik', 'aset_digital', 'ipl_ruko' => [
+            'listrik', 'aset_digital', 'ipl_ruko', 'aset_daya', 'aset_tim' => [
                 'periode' => 'required|string|max:255',
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
@@ -122,6 +128,8 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'aset_daya' => PembayaranAsetDaya::class,
+            'aset_tim' => PembayaranAsetTim::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
                 ->where('requested_by', $userId)
@@ -135,6 +143,8 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
+                        'aset_daya' => 'Aset Daya',
+                        'aset_tim' => 'Aset TIM',
                     },
                     'detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
@@ -191,6 +201,8 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'aset_daya' => PembayaranAsetDaya::class,
+            'aset_tim' => PembayaranAsetTim::class,
         ] as $jenis => $class) {
             $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
 
@@ -208,6 +220,8 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
+                        'aset_daya' => 'Aset Daya',
+                        'aset_tim' => 'Aset TIM',
                     },
                     'detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
@@ -275,6 +289,8 @@ class PaymentApprovalController extends Controller
             'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
+            'aset_daya' => 'Aset Daya',
+            'aset_tim' => 'Aset TIM',
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) menunggu approval.";
 
@@ -299,6 +315,8 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'aset_daya' => PembayaranAsetDaya::class,
+            'aset_tim' => PembayaranAsetTim::class,
             'pajak_kendaraan' => VehiclePajakRequest::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
@@ -314,6 +332,8 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
+                        'aset_daya' => 'Aset Daya',
+                        'aset_tim' => 'Aset TIM',
                         'pajak_kendaraan' => 'Pajak Kendaraan',
                     },
                     'detail' => match ($jenis) {
@@ -393,6 +413,8 @@ class PaymentApprovalController extends Controller
             'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
+            'aset_daya' => 'Aset Daya',
+            'aset_tim' => 'Aset TIM',
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) telah disetujui oleh ".auth()->user()->name.'.';
 
@@ -439,6 +461,8 @@ class PaymentApprovalController extends Controller
             'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
+            'aset_daya' => 'Aset Daya',
+            'aset_tim' => 'Aset TIM',
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) ditolak. Alasan: {$data['notes']}";
 
@@ -462,6 +486,8 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'aset_daya' => PembayaranAsetDaya::class,
+            'aset_tim' => PembayaranAsetTim::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
                 ->where('requested_by', $userId)
@@ -474,6 +500,8 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
+                        'aset_daya' => 'Aset Daya',
+                        'aset_tim' => 'Aset TIM',
                     },
                     'Detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'Nominal' => 'Rp '.number_format((int) ($r->biaya ?? $r->nominal), 0, ',', '.'),
@@ -530,6 +558,8 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
+            'aset_daya' => PembayaranAsetDaya::class,
+            'aset_tim' => PembayaranAsetTim::class,
         ] as $jenis => $class) {
             $records = $class::with('requester')
                 ->where('status', 'jatuh_tempo')
@@ -542,6 +572,8 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
+                        'aset_daya' => 'Aset Daya',
+                        'aset_tim' => 'Aset TIM',
                     },
                     'Detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'Nominal' => 'Rp '.number_format((int) ($r->biaya ?? $r->nominal), 0, ',', '.'),

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Edit Meeting')
 @section('page-title', 'Edit Meeting')
-@section('sidebar-menu') @include('partials.sidebar-leader') @endsection
+@section('sidebar-menu') @include(auth()->user()->hasFullAccess() ? 'partials.sidebar-admin' : 'partials.sidebar-leader') @endsection
 @section('content')
 <div class="pt-2 max-w-lg">
     <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">

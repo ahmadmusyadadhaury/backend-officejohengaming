@@ -2,7 +2,7 @@
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
 @section('page-subtitle', 'Selamat datang, ' . auth()->user()->name)
-@section('sidebar-menu') @include('partials.sidebar-leader') @endsection
+@section('sidebar-menu') @include(auth()->user()->hasFullAccess() ? 'partials.sidebar-admin' : 'partials.sidebar-leader') @endsection
 
 @section('content')
 <div class="dashboard-section stagger-children">

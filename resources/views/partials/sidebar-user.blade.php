@@ -19,6 +19,14 @@
         + \App\Models\PembayaranIplRuko::whereNull('requested_by')
             ->whereNotIn('status', ['lunas', 'rejected'])
             ->where('jatuh_tempo', '<=', $sevenDays)
+            ->count()
+        + \App\Models\PembayaranAsetDaya::whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected'])
+            ->where('jatuh_tempo', '<=', $sevenDays)
+            ->count()
+        + \App\Models\PembayaranAsetTim::whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected'])
+            ->where('jatuh_tempo', '<=', $sevenDays)
             ->count();
 @endphp
 

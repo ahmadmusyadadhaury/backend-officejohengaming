@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Ajukan Override Booking')
 @section('page-title', 'Ajukan Override Booking')
-@section('sidebar-menu') @include('partials.sidebar-leader') @endsection
+@section('sidebar-menu') @include(auth()->user()->hasFullAccess() ? 'partials.sidebar-admin' : 'partials.sidebar-leader') @endsection
 @section('content')
 <div class="pt-2 max-w-3xl animate-fade-in">
     <div class="gaming-card p-6 mb-4" style="border-color:rgba(245,158,11,0.4);background:rgba(245,158,11,0.05);">
