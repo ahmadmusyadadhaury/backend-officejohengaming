@@ -229,11 +229,11 @@
 @push('scripts')
 <script>
 function openAddModal() {
-    document.getElementById('addModal').classList.remove('hidden');
+    openModal('addModal');
 }
 
 function closeAddModal() {
-    document.getElementById('addModal').classList.add('hidden');
+    closeModal('addModal');
 }
 
 function openEditModal(asset) {
@@ -244,17 +244,17 @@ function openEditModal(asset) {
     document.getElementById('edit_daya').value = asset.daya || '';
     document.getElementById('edit_unit').value = asset.unit || '';
     document.getElementById('edit_is_active').value = asset.is_active ? '1' : '0';
-    document.getElementById('editModal').classList.remove('hidden');
+    openModal('editModal');
 }
 
 function closeEditModal() {
-    document.getElementById('editModal').classList.add('hidden');
+    closeModal('editModal');
 }
 
 function openDetailModal(asset) {
     document.getElementById('detail_nama_aset').textContent = asset.nama_aset;
     document.getElementById('detail_jenis_aset').textContent = asset.jenis_aset || '-';
-    document.getElementById('detail_keterangan').textContent = asset.keterangan || '-';
+    document.getElementById('detail_keterangan').content = asset.keterangan || '-';
     var jumlah = asset.daya || '';
     if (asset.unit) jumlah += ' ' + asset.unit;
     document.getElementById('detail_daya').textContent = jumlah || '-';
@@ -264,11 +264,11 @@ function openDetailModal(asset) {
     } else {
         statusEl.innerHTML = '<span class="badge badge-red" style="font-size:0.65rem;">Tidak Aktif</span>';
     }
-    document.getElementById('detailModal').classList.remove('hidden');
+    openModal('detailModal');
 }
 
 function closeDetailModal() {
-    document.getElementById('detailModal').classList.add('hidden');
+    closeModal('detailModal');
 }
 </script>
 @endpush

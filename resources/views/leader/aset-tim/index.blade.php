@@ -229,11 +229,11 @@
 @push('scripts')
 <script>
 function openAddModal() {
-    document.getElementById('addModal').classList.remove('hidden');
+    openModal('addModal');
 }
 
 function closeAddModal() {
-    document.getElementById('addModal').classList.add('hidden');
+    closeModal('addModal');
 }
 
 function openEditModal(asset) {
@@ -243,11 +243,11 @@ function openEditModal(asset) {
     document.getElementById('edit_keterangan').value = asset.keterangan || '';
     document.getElementById('edit_jumlah').value = asset.jumlah || '';
     document.getElementById('edit_is_active').value = asset.is_active ? '1' : '0';
-    document.getElementById('editModal').classList.remove('hidden');
+    openModal('editModal');
 }
 
 function closeEditModal() {
-    document.getElementById('editModal').classList.add('hidden');
+    closeModal('editModal');
 }
 
 function openDetailModal(asset) {
@@ -261,11 +261,11 @@ function openDetailModal(asset) {
     } else {
         statusEl.innerHTML = '<span class="badge badge-red" style="font-size:0.65rem;">Tidak Aktif</span>';
     }
-    document.getElementById('detailModal').classList.remove('hidden');
+    openModal('detailModal');
 }
 
 function closeDetailModal() {
-    document.getElementById('detailModal').classList.add('hidden');
+    closeModal('detailModal');
 }
 </script>
 @endpush
