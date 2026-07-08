@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\AsetDayaController;
+use App\Http\Controllers\Admin\AsetMesController;
 use App\Http\Controllers\Admin\AsetRukoController;
 use App\Http\Controllers\Admin\AsetTimController;
 use App\Http\Controllers\Admin\AssetController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\Leader\AsetDayaController as KoordinatorAsetDayaController;
 use App\Http\Controllers\Leader\AsetTimController as KoordinatorAsetTimController;
+use App\Http\Controllers\Leader\AsetMesController as KoordinatorAsetMesController;
 use App\Http\Controllers\Leader\DashboardController as KoordinatorDashboard;
 use App\Http\Controllers\Leader\DataSayaController;
 use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingController;
@@ -90,6 +92,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-daya', AsetDayaController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-tim', AsetTimController::class)->except(['create', 'show', 'edit']);
+    Route::resource('aset-mes', AsetMesController::class)->except(['create', 'show', 'edit']);
     Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
     Route::post('pembayaran', [PaymentController::class, 'store'])->name('pembayaran.store');
     Route::put('pembayaran/{id}', [PaymentController::class, 'update'])->name('pembayaran.update');
@@ -155,6 +158,10 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::post('aset-tim', [KoordinatorAsetTimController::class, 'store'])->name('aset-tim.store');
     Route::put('aset-tim/{asetTim}', [KoordinatorAsetTimController::class, 'update'])->name('aset-tim.update');
     Route::delete('aset-tim/{asetTim}', [KoordinatorAsetTimController::class, 'destroy'])->name('aset-tim.destroy');
+    Route::get('aset-mes', [KoordinatorAsetMesController::class, 'index'])->name('aset-mes.index');
+    Route::post('aset-mes', [KoordinatorAsetMesController::class, 'store'])->name('aset-mes.store');
+    Route::put('aset-mes/{asetMes}', [KoordinatorAsetMesController::class, 'update'])->name('aset-mes.update');
+    Route::delete('aset-mes/{asetMes}', [KoordinatorAsetMesController::class, 'destroy'])->name('aset-mes.destroy');
 });
 
 // User Routes

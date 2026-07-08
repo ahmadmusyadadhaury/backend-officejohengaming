@@ -41,6 +41,7 @@ class DashboardController extends Controller
 
         $myAsetDayaIds = AsetDaya::where('penanggung_jawab', $userId)->pluck('id');
         $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
+        $myAsetMesIds = \App\Models\AsetMes::where('penanggung_jawab', auth()->id())->pluck('id');
 
         $allPayments = collect();
 
@@ -65,6 +66,18 @@ class DashboardController extends Controller
                     ->orderBy('jatuh_tempo')
                     ->get()
                     ->map(fn ($p) => $this->mapPayment($p, 'aset_tim', 'Aset TIM'))
+            );
+        }
+
+        if ($myAsetMesIds->isNotEmpty()) {
+            $allPayments = $allPayments->merge(
+                \App\Models\PembayaranAsetMes::whereNull('requested_by')
+                    ->whereNotIn('status', ['lunas', 'rejected'])
+                    ->whereIn('aset_mes_id', $myAsetMesIds)
+                    ->where('jatuh_tempo', '<=', $sevenDays)
+                    ->orderBy('jatuh_tempo')
+                    ->get()
+                    ->map(fn ($p) => $this->mapPayment($p, 'aset_mes', 'Aset MES'))
             );
         }
 

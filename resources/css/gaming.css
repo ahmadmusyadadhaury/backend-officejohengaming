@@ -1569,24 +1569,29 @@ body.light .badge-orange {
 ============================================ */
 
 /* ── Cards: cleaner, less "gaming" ── */
-.page-leader, .page-admin .gaming-card {
+.page-leader .gaming-card,
+.page-admin .gaming-card {
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     animation: none;
 }
-.page-leader, .page-admin .gaming-card:hover {
+.page-leader .gaming-card:hover,
+.page-admin .gaming-card:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
     border-color: var(--border-color);
 }
-.page-leader, .page-admin .gaming-card::before,
-.page-leader, .page-admin .gaming-card::after {
+.page-leader .gaming-card::before,
+.page-admin .gaming-card::before,
+.page-leader .gaming-card::after,
+.page-admin .gaming-card::after {
     display: none !important;
 }
 
 /* ── Stat cards ── */
-.page-leader, .page-admin .stat-card {
+.page-leader .stat-card,
+.page-admin .stat-card {
     padding: 1.25rem 1.5rem;
     gap: 1rem;
     border-radius: 12px;
@@ -1594,63 +1599,77 @@ body.light .badge-orange {
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     animation: none;
 }
-.page-leader, .page-admin .stat-card::before,
-.page-leader, .page-admin .stat-card::after {
+.page-leader .stat-card::before,
+.page-admin .stat-card::before,
+.page-leader .stat-card::after,
+.page-admin .stat-card::after {
     display: none !important;
 }
-.page-leader, .page-admin .stat-card:hover {
+.page-leader .stat-card:hover,
+.page-admin .stat-card:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
     border-color: var(--border-color);
 }
-.page-leader, .page-admin .stat-icon {
+.page-leader .stat-icon,
+.page-admin .stat-icon {
     width: 42px;
     height: 42px;
     border-radius: 10px;
 }
-.page-leader, .page-admin .stat-value {
+.page-leader .stat-value,
+.page-admin .stat-value {
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: -0.02em;
 }
-.page-leader, .page-admin .stat-label {
+.page-leader .stat-label,
+.page-admin .stat-label {
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.02em;
 }
 
 /* ── Stat card compact variant ── */
-.page-leader, .page-admin .stat-card-compact {
+.page-leader .stat-card-compact,
+.page-admin .stat-card-compact {
     padding: 1rem 1.25rem;
     gap: 0.875rem;
     border-radius: 12px;
     animation: none;
 }
-.page-leader, .page-admin .stat-card-compact::before,
-.page-leader, .page-admin .stat-card-compact::after {
+.page-leader .stat-card-compact::before,
+.page-admin .stat-card-compact::before,
+.page-leader .stat-card-compact::after,
+.page-admin .stat-card-compact::after {
     display: none !important;
 }
-.page-leader, .page-admin .stat-card-compact:hover {
+.page-leader .stat-card-compact:hover,
+.page-admin .stat-card-compact:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.07);
     border-color: var(--border-color);
 }
-.page-leader, .page-admin .stat-card-compact .stat-num {
+.page-leader .stat-card-compact .stat-num,
+.page-admin .stat-card-compact .stat-num {
     font-size: 1.25rem;
     letter-spacing: -0.02em;
 }
-.page-leader, .page-admin .stat-card-compact .stat-icon-box {
+.page-leader .stat-card-compact .stat-icon-box,
+.page-admin .stat-card-compact .stat-icon-box {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 10px;
 }
-.page-leader, .page-admin .stat-card-compact .stat-icon-box svg {
+.page-leader .stat-card-compact .stat-icon-box svg,
+.page-admin .stat-card-compact .stat-icon-box svg {
     width: 1.25rem;
     height: 1.25rem;
 }
 
 /* ── Tables ── */
-.page-leader, .page-admin .gaming-table thead th {
+.page-leader .gaming-table thead th,
+.page-admin .gaming-table thead th {
     padding: 0.75rem 1rem;
     font-size: 0.6rem;
     font-weight: 600;
@@ -1659,58 +1678,69 @@ body.light .badge-orange {
     color: var(--text-muted);
     border-bottom: 1px solid var(--border-color);
 }
-.page-leader, .page-admin .gaming-table tbody td {
+.page-leader .gaming-table tbody td,
+.page-admin .gaming-table tbody td {
     padding: 0.875rem 1rem;
     font-size: 0.8rem;
     white-space: nowrap;
     border-bottom: 1px solid var(--border-color);
 }
-.page-leader, .page-admin .gaming-table tbody tr:last-child td {
+.page-leader .gaming-table tbody tr:last-child td,
+.page-admin .gaming-table tbody tr:last-child td {
     border-bottom: none;
 }
 
 /* ── Buttons ── */
-.page-leader, .page-admin .btn {
+.page-leader .btn,
+.page-admin .btn {
     padding: 0.5rem 1.125rem;
     font-size: 0.8rem;
     font-weight: 600;
     letter-spacing: 0.02em;
     border-radius: 8px;
 }
-.page-leader, .page-admin .btn-sm {
+.page-leader .btn-sm,
+.page-admin .btn-sm {
     padding: 0.3rem 0.75rem;
     font-size: 0.7rem;
     border-radius: 6px;
 }
-.page-leader, .page-admin .btn-primary {
+.page-leader .btn-primary,
+.page-admin .btn-primary {
     background: #3b82f6;
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     box-shadow: 0 2px 8px rgba(59,130,246,0.25);
 }
-.page-leader, .page-admin .btn-primary:hover {
+.page-leader .btn-primary:hover,
+.page-admin .btn-primary:hover {
     box-shadow: 0 4px 14px rgba(59,130,246,0.35);
     transform: translateY(-1px);
 }
-.page-leader, .page-admin .btn-success {
+.page-leader .btn-success,
+.page-admin .btn-success {
     background: linear-gradient(135deg, #10b981, #059669);
     box-shadow: 0 2px 8px rgba(16,185,129,0.25);
 }
-.page-leader, .page-admin .btn-danger {
+.page-leader .btn-danger,
+.page-admin .btn-danger {
     background: linear-gradient(135deg, #ef4444, #dc2626);
     box-shadow: 0 2px 8px rgba(239,68,68,0.25);
 }
-.page-leader, .page-admin .btn-secondary {
+.page-leader .btn-secondary,
+.page-admin .btn-secondary {
     background: var(--bg-surface-2);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
 }
-.page-leader, .page-admin .btn-secondary:hover {
+.page-leader .btn-secondary:hover,
+.page-admin .btn-secondary:hover {
     border-color: var(--color-secondary);
     color: var(--color-secondary);
 }
 
 /* ── Badges ── */
-.page-leader, .page-admin .badge {
+.page-leader .badge,
+.page-admin .badge {
     padding: 0.2rem 0.6rem;
     font-size: 0.6rem;
     font-weight: 600;
@@ -1721,18 +1751,21 @@ body.light .badge-orange {
 }
 
 /* ── Inputs ── */
-.page-leader, .page-admin .gaming-input {
+.page-leader .gaming-input,
+.page-admin .gaming-input {
     padding: 0.6rem 0.875rem;
     font-size: 0.8125rem;
     border-radius: 8px;
     border: 1px solid var(--border-color);
     background: var(--bg-surface-2);
 }
-.page-leader, .page-admin .gaming-input:focus {
+.page-leader .gaming-input:focus,
+.page-admin .gaming-input:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
 }
-.page-leader, .page-admin .gaming-label {
+.page-leader .gaming-label,
+.page-admin .gaming-label {
     font-size: 0.68rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -1740,90 +1773,110 @@ body.light .badge-orange {
 }
 
 /* ── Modals ── */
-.page-leader, .page-admin .modal-modern {
+.page-leader .modal-modern,
+.page-admin .modal-modern {
     overflow-y: auto;
 }
-.page-leader, .page-admin .modal-modern-panel {
+.page-leader .modal-modern-panel,
+.page-admin .modal-modern-panel {
     border-radius: 16px;
 }
-.page-leader, .page-admin .modal-modern-header {
+.page-leader .modal-modern-header,
+.page-admin .modal-modern-header {
     padding: 1.125rem 1.5rem;
 }
-.page-leader, .page-admin .modal-modern-header h3 {
+.page-leader .modal-modern-header h3,
+.page-admin .modal-modern-header h3 {
     font-size: 0.95rem;
     font-weight: 700;
     letter-spacing: -0.01em;
 }
-.page-leader, .page-admin .modal-modern-body {
+.page-leader .modal-modern-body,
+.page-admin .modal-modern-body {
     padding: 1.5rem;
 }
-.page-leader, .page-admin .modal-modern-footer {
+.page-leader .modal-modern-footer,
+.page-admin .modal-modern-footer {
     padding: 1rem 1.5rem;
 }
-.page-leader, .page-admin .modal-modern-close {
+.page-leader .modal-modern-close,
+.page-admin .modal-modern-close {
     width: 2rem;
     height: 2rem;
     border-radius: 8px;
 }
 
 /* ── Card content spacing ── */
-.page-leader, .page-admin .card-header {
+.page-leader .card-header,
+.page-admin .card-header {
     padding: 1rem 1.25rem;
 }
-.page-leader, .page-admin .card-header-title {
+.page-leader .card-header-title,
+.page-admin .card-header-title {
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.04em;
 }
-.page-leader, .page-admin .card-body {
+.page-leader .card-body,
+.page-admin .card-body {
     padding: 1rem 1.25rem;
 }
-.page-leader, .page-admin .card-list-item {
+.page-leader .card-list-item,
+.page-admin .card-list-item {
     padding: 0.75rem 1.25rem;
     gap: 0.875rem;
 }
 
 /* ── Filter bar ── */
-.page-leader, .page-admin .filter-bar {
+.page-leader .filter-bar,
+.page-admin .filter-bar {
     padding: 0.75rem 1.25rem;
     gap: 0.625rem;
 }
 
 /* ── Page content spacing ── */
-.page-leader, .page-admin .page-content {
+.page-leader .page-content,
+.page-admin .page-content {
     padding: 1.25rem 2rem 1.5rem;
 }
 @media (max-width: 640px) {
-    .page-leader, .page-admin .page-content {
+    .page-leader .page-content,
+.page-admin .page-content {
         padding: 0.75rem 0.75rem 1rem;
     }
 }
 
 /* ── Dashboard sections ── */
-.page-leader, .page-admin .dashboard-section {
+.page-leader .dashboard-section,
+.page-admin .dashboard-section {
     margin-bottom: 1.5rem;
 }
-.page-leader, .page-admin .dashboard-grid {
+.page-leader .dashboard-grid,
+.page-admin .dashboard-grid {
     gap: 1rem;
 }
 @media (min-width: 640px) {
-    .page-leader, .page-admin .dashboard-grid {
+    .page-leader .dashboard-grid,
+.page-admin .dashboard-grid {
         gap: 1.25rem;
     }
 }
 
 /* ── Empty state ── */
-.page-leader, .page-admin .empty-state {
+.page-leader .empty-state,
+.page-admin .empty-state {
     padding: 3rem 1.5rem;
 }
-.page-leader, .page-admin .empty-state svg {
+.page-leader .empty-state svg,
+.page-admin .empty-state svg {
     width: 2.75rem;
     height: 2.75rem;
     opacity: 0.3;
 }
 
 /* ── Section label ── */
-.page-leader, .page-admin .section-label {
+.page-leader .section-label,
+.page-admin .section-label {
     font-size: 0.6rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -1832,7 +1885,8 @@ body.light .badge-orange {
 }
 
 /* ── Toast notification stack ── */
-.page-leader, .page-admin .toast-stack {
+.page-leader .toast-stack,
+.page-admin .toast-stack {
     top: 1.25rem;
     right: 2rem;
     gap: 0.75rem;
@@ -1840,30 +1894,35 @@ body.light .badge-orange {
 }
 
 /* ── Meeting action dropdown ── */
-.page-leader, .page-admin .dropdown-menu {
+.page-leader .dropdown-menu,
+.page-admin .dropdown-menu {
     border-radius: 10px !important;
     padding: 6px !important;
     border: 1px solid var(--border-color) !important;
     box-shadow: 0 8px 24px rgba(0,0,0,0.1) !important;
 }
-.page-leader, .page-admin .dropdown-menu button {
+.page-leader .dropdown-menu button,
+.page-admin .dropdown-menu button {
     border-radius: 6px !important;
     padding: 7px 10px !important;
     font-size: 0.75rem !important;
 }
 
 /* ── Remove gaming gradient borders on hover ── */
-.page-leader, .page-admin .gaming-card-accent::before {
+.page-leader .gaming-card-accent::before,
+.page-admin .gaming-card-accent::before {
     display: none;
 }
 
 /* ── Remove sidebar glow line ── */
-.page-leader, .page-admin .gaming-sidebar::before {
+.page-leader .gaming-sidebar::before,
+.page-admin .gaming-sidebar::before {
     display: none;
 }
 
 /* ── Inline select in gaming-select ── */
-.page-leader, .page-admin .gaming-select {
+.page-leader .gaming-select,
+.page-admin .gaming-select {
     background-position: right 0.625rem center;
     background-size: 0.875rem;
     padding-right: 2.25rem;

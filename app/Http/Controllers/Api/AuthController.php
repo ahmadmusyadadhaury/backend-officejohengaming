@@ -15,7 +15,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -26,7 +26,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        if (! Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::attempt($request->only('username', 'password'))) {
             return response()->json([
                 'error' => 'Invalid credentials',
             ], 401);
@@ -34,13 +34,12 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        // Create API token
         $token = ApiToken::generateToken();
         $apiToken = ApiToken::create([
             'user_id' => $user->id,
             'token' => $token,
             'name' => 'API Token',
-            'expires_at' => now()->addDays(30), // Token expires in 30 days
+            'expires_at' => now()->addDays(30),
         ]);
 
         return response()->json([
@@ -48,7 +47,7 @@ class AuthController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
-                'email' => $user->email,
+                'username' => $user->username,
                 'role' => $user->role,
             ],
             'token' => $token,
@@ -60,7 +59,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
+            'username' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -73,12 +72,11 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
+            'username' => $request->username,
             'password' => Hash::make($request->password),
-            'role' => 'USER', // Default role
+            'role' => 'user',
         ]);
 
-        // Create API token for new user
         $token = ApiToken::generateToken();
         $apiToken = ApiToken::create([
             'user_id' => $user->id,
@@ -92,7 +90,7 @@ class AuthController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
-                'email' => $user->email,
+                'username' => $user->username,
                 'role' => $user->role,
             ],
             'token' => $token,

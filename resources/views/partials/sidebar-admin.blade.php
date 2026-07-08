@@ -1,6 +1,6 @@
 @php
     $isMeetingActive = request()->routeIs('admin.meetings.*', 'admin.moms.*', 'calendar', 'koordinator.meetings.*', 'koordinator.mom.*');
-    $isAssetActive = request()->routeIs('admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*', 'admin.sosial-media.*', 'admin.aset-daya.*', 'admin.aset-tim.*');
+    $isAssetActive = request()->routeIs('admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*', 'admin.sosial-media.*', 'admin.aset-mes.*');
     $isPaymentActive = request()->routeIs('admin.pembayaran.*', 'admin.payment-approvals.*', 'payment-approval.*');
     $isAdminActive = request()->routeIs('admin.users.*', 'admin.admins.*', 'admin.assets.*', 'admin.teams.*', 'admin.rooms.*');
 
@@ -38,14 +38,11 @@
             ->whereNotIn('status', ['lunas', 'rejected'])
             ->where('jatuh_tempo', '<=', $sevenDays)
             ->count()
-        + \App\Models\PembayaranAsetDaya::whereNull('requested_by')
+        + \App\Models\PembayaranAsetMes::whereNull('requested_by')
             ->whereNotIn('status', ['lunas', 'rejected'])
             ->where('jatuh_tempo', '<=', $sevenDays)
             ->count()
-        + \App\Models\PembayaranAsetTim::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count();
+        ;
 
     $role = auth()->user()->role;
     $approverRoles = ['admin', 'head_of_store', 'hr', 'gm', 'ceo'];
@@ -56,8 +53,8 @@
             + \App\Models\WifiPayment::where('status', 'pending')->count()
             + \App\Models\PembayaranAsetDigital::where('status', 'pending')->count()
             + \App\Models\PembayaranIplRuko::where('status', 'pending')->count()
-            + \App\Models\PembayaranAsetDaya::where('status', 'pending')->count()
-            + \App\Models\PembayaranAsetTim::where('status', 'pending')->count();
+            + \App\Models\PembayaranAsetMes::where('status', 'pending')->count()
+            ;
     }
 @endphp
 
@@ -110,8 +107,7 @@
     <a href="{{ route('admin.sim-cards.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.sim-cards.*') ? 'active' : '' }}"><span class="truncate">SIM Card</span></a>
     <a href="{{ route('admin.peralatan-kantor.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.peralatan-kantor.*') ? 'active' : '' }}"><span class="truncate">Peralatan Kantor</span></a>
     <a href="{{ route('admin.ruko.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.ruko.*') ? 'active' : '' }}"><span class="truncate">Aset Ruko</span></a>
-    <a href="{{ route('admin.aset-daya.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.aset-daya.*') ? 'active' : '' }}"><span class="truncate">Aset Daya</span></a>
-    <a href="{{ route('admin.aset-tim.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.aset-tim.*') ? 'active' : '' }}"><span class="truncate">Aset TIM</span></a>
+    <a href="{{ route('admin.aset-mes.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.aset-mes.*') ? 'active' : '' }}"><span class="truncate">Aset MES</span></a>
 </div>
 
 <div class="sidebar-section">
@@ -130,8 +126,7 @@
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'internet']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'internet' ? 'active' : '' }}"><span class="truncate">Internet</span></a>
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'aset_digital']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'aset_digital' ? 'active' : '' }}"><span class="truncate">Aset Digital</span></a>
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'ipl_ruko']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'ipl_ruko' ? 'active' : '' }}"><span class="truncate">IPL Ruko</span></a>
-    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'aset_daya']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'aset_daya' ? 'active' : '' }}"><span class="truncate">Aset Daya</span></a>
-    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'aset_tim']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'aset_tim' ? 'active' : '' }}"><span class="truncate">Aset TIM</span></a>
+    <a href="{{ route('admin.pembayaran.index', ['jenis' => 'aset_mes']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'aset_mes' ? 'active' : '' }}"><span class="truncate">Aset MES</span></a>
     @if(in_array(auth()->user()->role, ['admin', 'hr', 'admin_ga']))
     <a href="{{ route('payment-approval.tagihan') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.tagihan') ? 'active' : '' }}">
         <span class="truncate">Tagihan</span>

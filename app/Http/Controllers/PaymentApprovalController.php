@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Exports\DataExport;
 use App\Models\AsetDaya;
+use App\Models\AsetMes;
 use App\Models\AsetTim;
 use App\Models\DigitalAsset;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\PembayaranAsetDaya;
 use App\Models\PembayaranAsetDigital;
+use App\Models\PembayaranAsetMes;
 use App\Models\PembayaranAsetTim;
 use App\Models\PembayaranIplRuko;
 use App\Models\PeralatanKantor;
@@ -37,6 +39,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => new PembayaranIplRuko,
             'aset_daya' => new PembayaranAsetDaya,
             'aset_tim' => new PembayaranAsetTim,
+            'aset_mes' => new PembayaranAsetMes,
             'pajak_kendaraan' => new VehiclePajakRequest,
             default => abort(400, 'Jenis tidak valid'),
         };
@@ -51,6 +54,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
+            'aset_mes' => PembayaranAsetMes::class,
             'pajak_kendaraan' => VehiclePajakRequest::class,
             default => abort(400, 'Jenis tidak valid'),
         };
@@ -74,7 +78,7 @@ class PaymentApprovalController extends Controller
                 'masa_tenggang' => 'required|date',
                 'biaya' => 'required|numeric|min:0',
             ],
-            'listrik', 'aset_digital', 'ipl_ruko', 'aset_daya', 'aset_tim' => [
+            'listrik', 'aset_digital', 'ipl_ruko', 'aset_daya', 'aset_tim', 'aset_mes' => [
                 'periode' => 'required|string|max:255',
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
@@ -132,6 +136,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
+            'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
                 ->where('requested_by', $userId)
@@ -147,6 +152,7 @@ class PaymentApprovalController extends Controller
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
+                        'aset_mes' => 'Aset MES',
                     },
                     'detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
@@ -201,6 +207,7 @@ class PaymentApprovalController extends Controller
         $userId = auth()->id();
         $myAsetDayaIds = AsetDaya::where('penanggung_jawab', $userId)->pluck('id');
         $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
+        $myAsetMesIds = AsetMes::where('penanggung_jawab', $userId)->pluck('id');
 
         foreach ([
             'internet' => WifiPayment::class,
@@ -209,6 +216,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
+            'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
             $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
 
@@ -221,6 +229,8 @@ class PaymentApprovalController extends Controller
                 $query->whereIn('aset_daya_id', $myAsetDayaIds);
             } elseif ($jenis === 'aset_tim') {
                 $query->whereIn('aset_tim_id', $myAsetTimIds);
+            } elseif ($jenis === 'aset_mes') {
+                $query->whereIn('aset_mes_id', $myAsetMesIds);
             }
 
             $records = $query->orderBy('created_at', 'desc')->get()
@@ -234,6 +244,7 @@ class PaymentApprovalController extends Controller
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
+                        'aset_mes' => 'Aset MES',
                     },
                     'detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
@@ -303,6 +314,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => 'IPL Ruko',
             'aset_daya' => 'Aset Daya',
             'aset_tim' => 'Aset TIM',
+            'aset_mes' => 'Aset MES',
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) menunggu approval.";
 
@@ -329,6 +341,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
+            'aset_mes' => PembayaranAsetMes::class,
             'pajak_kendaraan' => VehiclePajakRequest::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
@@ -346,6 +359,7 @@ class PaymentApprovalController extends Controller
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
+                        'aset_mes' => 'Aset MES',
                         'pajak_kendaraan' => 'Pajak Kendaraan',
                     },
                     'detail' => match ($jenis) {
@@ -427,6 +441,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => 'IPL Ruko',
             'aset_daya' => 'Aset Daya',
             'aset_tim' => 'Aset TIM',
+            'aset_mes' => 'Aset MES',
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) telah disetujui oleh ".auth()->user()->name.'.';
 
@@ -475,6 +490,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => 'IPL Ruko',
             'aset_daya' => 'Aset Daya',
             'aset_tim' => 'Aset TIM',
+            'aset_mes' => 'Aset MES',
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) ditolak. Alasan: {$data['notes']}";
 
@@ -500,6 +516,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
+            'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
                 ->where('requested_by', $userId)
@@ -514,6 +531,7 @@ class PaymentApprovalController extends Controller
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
+                        'aset_mes' => 'Aset MES',
                     },
                     'Detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'Nominal' => 'Rp '.number_format((int) ($r->biaya ?? $r->nominal), 0, ',', '.'),
@@ -572,6 +590,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
+            'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
             $records = $class::with('requester')
                 ->where('status', 'jatuh_tempo')
@@ -586,6 +605,7 @@ class PaymentApprovalController extends Controller
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
+                        'aset_mes' => 'Aset MES',
                     },
                     'Detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'Nominal' => 'Rp '.number_format((int) ($r->biaya ?? $r->nominal), 0, ',', '.'),

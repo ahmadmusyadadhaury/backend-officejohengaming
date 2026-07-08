@@ -85,7 +85,7 @@ class WeeklySessionController extends Controller
         ]);
 
         $newEndTime = Carbon::parse($session->end_time)
-            ->addMinutes($request->extend_minutes)
+            ->addMinutes((int) $request->extend_minutes)
             ->format('H:i:s');
 
         $session->update(['end_time' => $newEndTime, 'status' => 'extended']);

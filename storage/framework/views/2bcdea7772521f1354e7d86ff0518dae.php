@@ -1,15 +1,15 @@
-@extends('layouts.app')
-@section('title', $jenisLabels[$jenis])
-@section('page-title', 'Pembayaran')
-@section('page-subtitle', $jenis === 'internet' ? 'Data WiFi prabayar — Indosat billing tgl 5, IndiHome billing tgl 20. Input setelah bayar.' : 'Kelola tagihan '.$jenisLabels[$jenis])
-@section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 
-@section('content')
+<?php $__env->startSection('title', $jenisLabels[$jenis]); ?>
+<?php $__env->startSection('page-title', 'Pembayaran'); ?>
+<?php $__env->startSection('page-subtitle', $jenis === 'internet' ? 'Data WiFi prabayar — Indosat billing tgl 5, IndiHome billing tgl 20. Input setelah bayar.' : 'Kelola tagihan '.$jenisLabels[$jenis]); ?>
+<?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
 <script>window.INLINE_TEST = 'WORKS';</script>
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- Stat Cards --}}
-    @if($jenis === 'internet')
+    
+    <?php if($jenis === 'internet'): ?>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="gaming-card p-5 flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -19,7 +19,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total WiFi</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Seluruh data WiFi</div>
             </div>
@@ -32,7 +32,7 @@
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
             </div>
@@ -45,7 +45,7 @@
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;"><?php echo e($stats['jatuh_tempo']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Dalam masa tenggang</div>
             </div>
@@ -58,13 +58,13 @@
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#f87171;">{{ $stats['terlambat'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:#f87171;"><?php echo e($stats['terlambat']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Lewat masa tenggang</div>
             </div>
         </div>
     </div>
-    @elseif($jenis === 'aset_digital')
+    <?php elseif($jenis === 'aset_digital'): ?>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="gaming-card p-5 flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -74,9 +74,9 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total Aset Digital</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $stats['total'] }} tagihan</div>
+                <div class="text-xs mt-0.5" style="color:var(--text-muted);"><?php echo e($stats['total']); ?> tagihan</div>
             </div>
         </div>
         <div class="gaming-card p-5 flex items-center gap-4">
@@ -87,7 +87,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
             </div>
@@ -100,7 +100,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;"><?php echo e($stats['jatuh_tempo']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Belum dibayar</div>
             </div>
@@ -113,13 +113,13 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#f87171;">{{ $stats['terlambat'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:#f87171;"><?php echo e($stats['terlambat']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Lewat jatuh tempo</div>
             </div>
         </div>
     </div>
-    @elseif($jenis !== 'listrik')
+    <?php elseif($jenis !== 'listrik'): ?>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="gaming-card p-5 flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -129,9 +129,9 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total Tagihan</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">{{ $stats['total'] }} tagihan</div>
+                <div class="text-xs mt-0.5" style="color:var(--text-muted);"><?php echo e($stats['total']); ?> tagihan</div>
             </div>
         </div>
         <div class="gaming-card p-5 flex items-center gap-4">
@@ -142,17 +142,17 @@
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-3xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
                 <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
                 <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Alert Jatuh Tempo / Masa Tenggang --}}
-    @if($jenis !== 'listrik' && $alertItems->isNotEmpty())
-        @php
+    
+    <?php if($jenis !== 'listrik' && $alertItems->isNotEmpty()): ?>
+        <?php
             $today = now()->startOfDay();
             $redItems = collect();
             $yellowItems = collect();
@@ -167,42 +167,42 @@
                     $yellowItems->push($a);
                 }
             }
-        @endphp
-        @if($redItems->isNotEmpty() || $yellowItems->isNotEmpty())
+        ?>
+        <?php if($redItems->isNotEmpty() || $yellowItems->isNotEmpty()): ?>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            @if($redItems->isNotEmpty())
+            <?php if($redItems->isNotEmpty()): ?>
             <div style="flex:1;min-width:280px;">
                 <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);">
                     <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
                     <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold" style="color:#ef4444;">{{ $redItems->count() }} Lewat Jatuh Tempo</div>
-                        <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $redItems->count() }} tagihan lewat jatuh tempo.</div>
+                        <div class="text-sm font-bold" style="color:#ef4444;"><?php echo e($redItems->count()); ?> Lewat Jatuh Tempo</div>
+                        <div class="text-xs mt-1" style="color:var(--text-secondary);"><?php echo e($redItems->count()); ?> tagihan lewat jatuh tempo.</div>
                     </div>
                     <button type="button" onclick="showAlertPopup('danger')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.25);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
                 </div>
             </div>
-            @endif
-            @if($yellowItems->isNotEmpty())
+            <?php endif; ?>
+            <?php if($yellowItems->isNotEmpty()): ?>
             <div style="flex:1;min-width:280px;">
                 <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);">
                     <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
                     <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold" style="color:#f59e0b;">{{ $yellowItems->count() }} Segera Jatuh Tempo</div>
-                        <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $yellowItems->count() }} tagihan jatuh tempo dalam 3 hari.</div>
+                        <div class="text-sm font-bold" style="color:#f59e0b;"><?php echo e($yellowItems->count()); ?> Segera Jatuh Tempo</div>
+                        <div class="text-xs mt-1" style="color:var(--text-secondary);"><?php echo e($yellowItems->count()); ?> tagihan jatuh tempo dalam 3 hari.</div>
                     </div>
                     <button type="button" onclick="showAlertPopup('warning')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.25);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
                 </div>
             </div>
-            @endif
+            <?php endif; ?>
         </div>
-        @endif
-    @endif
+        <?php endif; ?>
+    <?php endif; ?>
 
-    {{-- Popup Detail Alert --}}
+    
     <div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);" onclick="if(event.target===this)closeAlertPopup()">
         <div class="w-full max-w-[460px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -220,31 +220,31 @@
         </div>
     </div>
 
-    {{-- Token Listrik Alert --}}
-    @if($jenis === 'listrik' && $tokenAlert)
-    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:{{ $tokenAlert['level'] === 'danger' ? 'rgba(239,68,68,0.1)' : ($tokenAlert['level'] === 'warning' ? 'rgba(245,158,11,0.1)' : 'rgba(59,130,246,0.1)') }};border:1px solid {{ $tokenAlert['level'] === 'danger' ? 'rgba(239,68,68,0.25)' : ($tokenAlert['level'] === 'warning' ? 'rgba(245,158,11,0.25)' : 'rgba(59,130,246,0.25)') }};">
-        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:{{ $tokenAlert['level'] === 'danger' ? '#ef4444' : ($tokenAlert['level'] === 'warning' ? '#f59e0b' : '#3b82f6') }};" fill="currentColor" viewBox="0 0 20 20">
+    
+    <?php if($jenis === 'listrik' && $tokenAlert): ?>
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:<?php echo e($tokenAlert['level'] === 'danger' ? 'rgba(239,68,68,0.1)' : ($tokenAlert['level'] === 'warning' ? 'rgba(245,158,11,0.1)' : 'rgba(59,130,246,0.1)')); ?>;border:1px solid <?php echo e($tokenAlert['level'] === 'danger' ? 'rgba(239,68,68,0.25)' : ($tokenAlert['level'] === 'warning' ? 'rgba(245,158,11,0.25)' : 'rgba(59,130,246,0.25)')); ?>;">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:<?php echo e($tokenAlert['level'] === 'danger' ? '#ef4444' : ($tokenAlert['level'] === 'warning' ? '#f59e0b' : '#3b82f6')); ?>;" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
         </svg>
         <div>
-            <div class="text-sm font-bold" style="color:{{ $tokenAlert['level'] === 'danger' ? '#ef4444' : ($tokenAlert['level'] === 'warning' ? '#f59e0b' : '#3b82f6') }};">Token Listrik</div>
-            <div class="text-sm mt-1" style="color:var(--text-secondary);">{{ $tokenAlert['message'] }}</div>
+            <div class="text-sm font-bold" style="color:<?php echo e($tokenAlert['level'] === 'danger' ? '#ef4444' : ($tokenAlert['level'] === 'warning' ? '#f59e0b' : '#3b82f6')); ?>;">Token Listrik</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);"><?php echo e($tokenAlert['message']); ?></div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Table --}}
-    @if($jenis !== 'listrik')
+    
+    <?php if($jenis !== 'listrik'): ?>
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
-                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pembayaran {{ $jenisLabels[$jenis] }}</div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pembayaran <?php echo e($jenisLabels[$jenis]); ?></div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
-                    @if($jenis === 'internet')
+                    <?php if($jenis === 'internet'): ?>
                         Data WiFi.
-                    @else
-                        Data tagihan {{ $jenisLabels[$jenis] }}.
-                    @endif
+                    <?php else: ?>
+                        Data tagihan <?php echo e($jenisLabels[$jenis]); ?>.
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -254,14 +254,14 @@
                     </svg>
                     Tambah Tagihan
                 </button>
-                @if($jenis === 'ipl_ruko')
+                <?php if($jenis === 'ipl_ruko'): ?>
                 <button type="button" onclick="openBulkIplModal()" class="btn btn-secondary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                     Generate 1 Tahun
                 </button>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
@@ -274,7 +274,7 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
-                <a href="{{ route('admin.export', ['type' => 'pembayaran', 'jenis' => $jenis, 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">Download Excel</a>
+                <a href="<?php echo e(route('admin.export', ['type' => 'pembayaran', 'jenis' => $jenis, 'filter' => 'all'])); ?>" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">Download Excel</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -298,27 +298,27 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        @if($jenis === 'internet')
+                        <?php if($jenis === 'internet'): ?>
                             <th>Nama Internet</th>
                             <th class="hidden md:table-cell">Provider</th>
                             <th class="hidden md:table-cell">PIC</th>
                             <th class="hidden lg:table-cell">Jabatan</th>
                             <th class="hidden md:table-cell">Masa Tenggang</th>
                             <th class="hidden md:table-cell">Biaya</th>
-                        @else
-                            <th>{{ $jenis === 'aset_digital' ? 'Nama Aset' : 'Periode' }}</th>
+                        <?php else: ?>
+                            <th><?php echo e($jenis === 'aset_digital' ? 'Nama Aset' : 'Periode'); ?></th>
                             <th class="hidden md:table-cell">Tagihan</th>
                             <th>Jatuh Tempo</th>
                             <th>Nominal</th>
-                        @endif
+                        <?php endif; ?>
                         <th>Status</th>
                             <th class="hidden md:table-cell">Tgl Bayar</th>
                             <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="payment-tbody">
-                    @forelse($items as $item)
-                    @php
+                    <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
                         $dueDate = $jenis === 'internet' ? $item->masa_tenggang : $item->jatuh_tempo;
                         $today = now()->startOfDay();
                         if ($item->status === 'lunas') {
@@ -348,38 +348,38 @@
                             $badgeLabel = 'Jatuh Tempo';
                         }
                         $itemId = $item->id;
-                    @endphp
-                    <tr data-status="{{ $item->status }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        @if($jenis === 'internet')
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $item->nama_internet }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->provider }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->pic }}</td>
-                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $item->jabatan }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->masa_tenggang?->format('d/m/Y') }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->biaya, 0, ',', '.') }}</td>
-                        @else
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $item->periode }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->tanggal_tagihan?->format('d/m/Y') }}</td>
-                        <td style="color:var(--text-muted);">{{ $item->jatuh_tempo?->format('d/m/Y') }}</td>
-                        <td style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
-                        @endif
-                        <td><span class="badge {{ $badgeClass }}">{{ $badgeLabel }}</span></td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ ($item->tanggal_bayar) ? $item->tanggal_bayar->format('d/m/Y') : '-' }}</td>
+                    ?>
+                    <tr data-status="<?php echo e($item->status); ?>">
+                        <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
+                        <?php if($jenis === 'internet'): ?>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($item->nama_internet); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($item->provider); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($item->pic); ?></td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($item->jabatan); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($item->masa_tenggang?->format('d/m/Y')); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-primary);font-weight:600;">Rp <?php echo e(number_format($item->biaya, 0, ',', '.')); ?></td>
+                        <?php else: ?>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($item->periode); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($item->tanggal_tagihan?->format('d/m/Y')); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($item->jatuh_tempo?->format('d/m/Y')); ?></td>
+                        <td style="color:var(--text-primary);font-weight:600;">Rp <?php echo e(number_format($item->nominal, 0, ',', '.')); ?></td>
+                        <?php endif; ?>
+                        <td><span class="badge <?php echo e($badgeClass); ?>"><?php echo e($badgeLabel); ?></span></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e(($item->tanggal_bayar) ? $item->tanggal_bayar->format('d/m/Y') : '-'); ?></td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $itemId }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                <button type="button" onclick="showDetail(<?php echo e($itemId); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown(this, {{ $itemId }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $itemId }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showDetail({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
-                                        <button type="button" onclick="openEditModal({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="{{ route('admin.pembayaran.destroy', $itemId) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data ini?" style="margin:0;">
-                                            @csrf @method('DELETE')
-                                            <input type="hidden" name="jenis" value="{{ $jenis }}">
+                                    <button type="button" onclick="toggleDropdown(this, <?php echo e($itemId); ?>)" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-<?php echo e($itemId); ?>" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showDetail(<?php echo e($itemId); ?>)" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditModal(<?php echo e($itemId); ?>)" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="<?php echo e(route('admin.pembayaran.destroy', $itemId)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data ini?" style="margin:0;">
+                                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                                            <input type="hidden" name="jenis" value="<?php echo e($jenis); ?>">
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
                                     </div>
@@ -387,19 +387,19 @@
                             </div>
                         </td>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data {{ $jenisLabels[$jenis] }}.</td>
+                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data <?php echo e($jenisLabels[$jenis]); ?>.</td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Pengecekan Usage Internet --}}
-    @if($jenis === 'internet')
+    
+    <?php if($jenis === 'internet'): ?>
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
             <div>
@@ -409,9 +409,9 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                <form method="GET" action="<?php echo e(route('admin.pembayaran.index')); ?>" class="flex items-center gap-2">
                     <input type="hidden" name="jenis" value="internet">
-                    <input type="month" name="internet_usage_date" value="{{ $internetUsageDate }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                    <input type="month" name="internet_usage_date" value="<?php echo e($internetUsageDate); ?>" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
                 </form>
                 <button type="button" onclick="openInternetUsageModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,28 +437,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($internetUsages as $i => $u)
+                    <?php $__empty_1 = true; $__currentLoopData = $internetUsages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $u->ruangan }}</td>
-                        <td style="color:var(--text-muted);">{{ $u->hari }}</td>
-                        <td style="color:var(--text-primary);">{{ $u->tanggal->format('d M Y') }}</td>
-                        <td style="color:var(--text-muted);">{{ number_format($u->penggunaan_wifi, 2) }} GB</td>
-                        <td style="color:var(--text-muted);">{{ number_format($u->penggunaan_ethernet, 2) }} GB</td>
-                        <td style="color:var(--text-primary);">{{ $u->checker?->name ?? '-' }}</td>
-                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $u->keterangan ?: '-' }}</td>
+                        <td style="color:var(--text-muted);"><?php echo e($i + 1); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($u->ruangan); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($u->hari); ?></td>
+                        <td style="color:var(--text-primary);"><?php echo e($u->tanggal->format('d M Y')); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e(number_format($u->penggunaan_wifi, 2)); ?> GB</td>
+                        <td style="color:var(--text-muted);"><?php echo e(number_format($u->penggunaan_ethernet, 2)); ?> GB</td>
+                        <td style="color:var(--text-primary);"><?php echo e($u->checker?->name ?? '-'); ?></td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?php echo e($u->keterangan ?: '-'); ?></td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showInternetUsageDetail({{ $u->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                <button type="button" onclick="showInternetUsageDetail(<?php echo e($u->id); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown(this, {{ $u->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $u->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showInternetUsageDetail({{ $u->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
-                                        <form method="POST" action="{{ route('admin.pembayaran.internet-usage.destroy', $u->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data usage ini?" style="margin:0;">
-                                            @csrf @method('DELETE')
+                                    <button type="button" onclick="toggleDropdown(this, <?php echo e($u->id); ?>)" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-<?php echo e($u->id); ?>" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showInternetUsageDetail(<?php echo e($u->id); ?>)" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <form method="POST" action="<?php echo e(route('admin.pembayaran.internet-usage.destroy', $u->id)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data usage ini?" style="margin:0;">
+                                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
                                     </div>
@@ -466,19 +466,19 @@
                             </div>
                         </td>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data usage internet.</td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Riwayat Top Up Token --}}
-    @if($jenis === 'listrik')
+    
+    <?php if($jenis === 'listrik'): ?>
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
             <div>
@@ -487,11 +487,11 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
-                    <button type="button" onclick="setTopupRange('harian')" class="topup-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'harian' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'harian' ? '#a78bfa' : 'var(--text-muted)' }};">Harian</button>
-                    <button type="button" onclick="setTopupRange('mingguan')" class="topup-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? '#a78bfa' : 'var(--text-muted)' }};">Mingguan</button>
-                    <button type="button" onclick="setTopupRange('bulanan')" class="topup-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? '#a78bfa' : 'var(--text-muted)' }};">Bulanan</button>
+                    <button type="button" onclick="setTopupRange('harian')" class="topup-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:<?php echo e(($topupRange ?? 'bulanan') === 'harian' ? 'rgba(124,58,237,0.2)' : 'none'); ?>;color:<?php echo e(($topupRange ?? 'bulanan') === 'harian' ? '#a78bfa' : 'var(--text-muted)'); ?>;">Harian</button>
+                    <button type="button" onclick="setTopupRange('mingguan')" class="topup-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:<?php echo e(($topupRange ?? 'bulanan') === 'mingguan' ? 'rgba(124,58,237,0.2)' : 'none'); ?>;color:<?php echo e(($topupRange ?? 'bulanan') === 'mingguan' ? '#a78bfa' : 'var(--text-muted)'); ?>;">Mingguan</button>
+                    <button type="button" onclick="setTopupRange('bulanan')" class="topup-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:<?php echo e(($topupRange ?? 'bulanan') === 'bulanan' ? 'rgba(124,58,237,0.2)' : 'none'); ?>;color:<?php echo e(($topupRange ?? 'bulanan') === 'bulanan' ? '#a78bfa' : 'var(--text-muted)'); ?>;">Bulanan</button>
                 </div>
-                <a href="{{ route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan']) }}" class="btn btn-secondary btn-sm" title="Download Excel Riwayat Top Up">
+                <a href="<?php echo e(route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan'])); ?>" class="btn btn-secondary btn-sm" title="Download Excel Riwayat Top Up">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Excel
                 </a>
@@ -518,33 +518,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($topupHistory as $i => $t)
+                    <?php $__empty_1 = true; $__currentLoopData = $topupHistory; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
-                        <td style="color:var(--text-primary);">{{ $t->payment_date->format('d M Y') }}</td>
-                        <td style="color:var(--text-muted);">{{ $t->period }}</td>
-                        <td style="font-weight:600;color:var(--text-primary);">{{ number_format($t->amount_kwh, 0) }} KWH</td>
-                        <td style="color:var(--text-primary);">Rp {{ number_format($t->nominal, 0) }}</td>
-                        <td style="color:var(--text-primary);">{{ $t->creator?->name ?? '-' }}</td>
-                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $t->notes ?: 'Tidak ada catatan' }}</td>
+                        <td style="color:var(--text-muted);"><?php echo e($i + 1); ?></td>
+                        <td style="color:var(--text-primary);"><?php echo e($t->payment_date->format('d M Y')); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($t->period); ?></td>
+                        <td style="font-weight:600;color:var(--text-primary);"><?php echo e(number_format($t->amount_kwh, 0)); ?> KWH</td>
+                        <td style="color:var(--text-primary);">Rp <?php echo e(number_format($t->nominal, 0)); ?></td>
+                        <td style="color:var(--text-primary);"><?php echo e($t->creator?->name ?? '-'); ?></td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?php echo e($t->notes ?: 'Tidak ada catatan'); ?></td>
                         <td>
-                            <form method="POST" action="{{ route('admin.pembayaran.token-topup.destroy', $t->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up ini?" style="margin:0;">
-                                @csrf @method('DELETE')
+                            <form method="POST" action="<?php echo e(route('admin.pembayaran.token-topup.destroy', $t->id)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up ini?" style="margin:0;">
+                                <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                 <button type="submit" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:2px 6px;">Hapus</button>
                             </form>
                         </td>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 
-    @if($jenis === 'listrik')
+    <?php if($jenis === 'listrik'): ?>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(124,58,237,0.12);">
@@ -554,9 +554,9 @@
             </div>
             <div class="min-w-0 flex-1">
                 <div class="text-xs font-semibold" style="color:var(--text-muted);">Top Up Terakhir</div>
-                <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);">{{ $latestPayment ? number_format($latestPayment->amount_kwh, 0) : '7.000' }} KWH</div>
-                <div class="text-xs font-medium" style="color:var(--text-muted);">{{ $latestPayment && $latestPayment->nominal ? 'Rp '.number_format($latestPayment->nominal, 0) : '' }}</div>
-                <div class="text-xs" style="color:var(--text-muted);">{{ $latestPayment ? $latestPayment->payment_date->format('d M Y') : '-' }} · {{ $latestPayment?->creator?->name ?? '-' }}</div>
+                <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($latestPayment ? number_format($latestPayment->amount_kwh, 0) : '7.000'); ?> KWH</div>
+                <div class="text-xs font-medium" style="color:var(--text-muted);"><?php echo e($latestPayment && $latestPayment->nominal ? 'Rp '.number_format($latestPayment->nominal, 0) : ''); ?></div>
+                <div class="text-xs" style="color:var(--text-muted);"><?php echo e($latestPayment ? $latestPayment->payment_date->format('d M Y') : '-'); ?> · <?php echo e($latestPayment?->creator?->name ?? '-'); ?></div>
             </div>
             <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-xs flex-shrink-0" style="font-size:11px;padding:4px 10px;">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -571,45 +571,45 @@
             </div>
             <div class="min-w-0">
                 <div class="text-xs font-semibold" style="color:var(--text-muted);">Terpakai</div>
-                <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);">{{ number_format($usedKwh, 1) }} KWH</div>
+                <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);"><?php echo e(number_format($usedKwh, 1)); ?> KWH</div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:{{ $latestReading && $latestReading->remaining_kwh < 500 ? 'rgba(239,68,68,0.12)' : ($latestReading && $latestReading->remaining_kwh < 1000 ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.12)') }};">
-                <svg class="w-5 h-5" style="color:{{ $latestReading && $latestReading->remaining_kwh < 500 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 1000 ? '#f59e0b' : '#34d399') }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:<?php echo e($latestReading && $latestReading->remaining_kwh < 500 ? 'rgba(239,68,68,0.12)' : ($latestReading && $latestReading->remaining_kwh < 1000 ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.12)')); ?>;">
+                <svg class="w-5 h-5" style="color:<?php echo e($latestReading && $latestReading->remaining_kwh < 500 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 1000 ? '#f59e0b' : '#34d399')); ?>;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2m0 4h.01"/>
                 </svg>
             </div>
             <div class="min-w-0">
                 <div class="text-xs font-semibold" style="color:var(--text-muted);">Sisa Token</div>
-                <div class="text-lg font-gaming font-bold" style="color:{{ $latestReading && $latestReading->remaining_kwh < 500 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 1000 ? '#f59e0b' : 'var(--text-primary)') }};">
-                    {{ $latestReading ? number_format($latestReading->remaining_kwh, 1) : '0' }} KWH
+                <div class="text-lg font-gaming font-bold" style="color:<?php echo e($latestReading && $latestReading->remaining_kwh < 500 ? '#ef4444' : ($latestReading && $latestReading->remaining_kwh < 1000 ? '#f59e0b' : 'var(--text-primary)')); ?>;">
+                    <?php echo e($latestReading ? number_format($latestReading->remaining_kwh, 1) : '0'); ?> KWH
                 </div>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Pengecekan Token Listrik --}}
+    
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Token Listrik</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
-                    Lakukan pengecekan sisa KWH token setiap minggu. Kapasitas token: {{ number_format($capacityKwh, 0) }} KWH/bulan.
+                    Lakukan pengecekan sisa KWH token setiap minggu. Kapasitas token: <?php echo e(number_format($capacityKwh, 0)); ?> KWH/bulan.
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
-                    <button type="button" onclick="setReadingRange('harian')" class="reading-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'harian' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'harian' ? '#60a5fa' : 'var(--text-muted)' }};">Harian</button>
-                    <button type="button" onclick="setReadingRange('mingguan')" class="reading-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'mingguan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'mingguan' ? '#60a5fa' : 'var(--text-muted)' }};">Mingguan</button>
-                    <button type="button" onclick="setReadingRange('bulanan')" class="reading-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'bulanan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'bulanan' ? '#60a5fa' : 'var(--text-muted)' }};">Bulanan</button>
+                    <button type="button" onclick="setReadingRange('harian')" class="reading-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:<?php echo e(($readingRange ?? 'bulanan') === 'harian' ? 'rgba(59,130,246,0.2)' : 'none'); ?>;color:<?php echo e(($readingRange ?? 'bulanan') === 'harian' ? '#60a5fa' : 'var(--text-muted)'); ?>;">Harian</button>
+                    <button type="button" onclick="setReadingRange('mingguan')" class="reading-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:<?php echo e(($readingRange ?? 'bulanan') === 'mingguan' ? 'rgba(59,130,246,0.2)' : 'none'); ?>;color:<?php echo e(($readingRange ?? 'bulanan') === 'mingguan' ? '#60a5fa' : 'var(--text-muted)'); ?>;">Mingguan</button>
+                    <button type="button" onclick="setReadingRange('bulanan')" class="reading-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:<?php echo e(($readingRange ?? 'bulanan') === 'bulanan' ? 'rgba(59,130,246,0.2)' : 'none'); ?>;color:<?php echo e(($readingRange ?? 'bulanan') === 'bulanan' ? '#60a5fa' : 'var(--text-muted)'); ?>;">Bulanan</button>
                 </div>
-                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                <form method="GET" action="<?php echo e(route('admin.pembayaran.index')); ?>" class="flex items-center gap-2">
                     <input type="hidden" name="jenis" value="listrik">
-                    <input type="month" name="token_month" value="{{ $tokenMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                    <input type="month" name="token_month" value="<?php echo e($tokenMonth); ?>" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
                 </form>
-                <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Download Excel Pengecekan Token">
+                <a href="<?php echo e(route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth])); ?>" class="btn btn-secondary btn-sm" title="Download Excel Pengecekan Token">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Excel
                 </a>
@@ -636,44 +636,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($tokenReadings as $i => $r)
-                    @php
+                    <?php $__empty_1 = true; $__currentLoopData = $tokenReadings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
                         $statusMap = ['segera_isi' => ['#ef4444', 'Segera Isi Token'], 'warning' => ['#f97316', 'Warning'], 'perhatian' => ['#3b82f6', 'Perhatian'], 'aman' => ['#10b981', 'Aman']];
                         $statusColor = $statusMap[$r->status][0] ?? '#10b981';
                         $statusLabel = $statusMap[$r->status][1] ?? 'Aman';
                         $usedInReading = $capacityKwh - $r->remaining_kwh;
-                    @endphp
+                    ?>
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
-                        <td style="color:var(--text-primary);">{{ $r->checked_date->format('d M Y') }}</td>
-                        <td style="font-weight:600;color:var(--text-primary);">{{ $r->remaining_kwh }} KWH</td>
-                        <td style="color:var(--text-muted);">{{ number_format($usedInReading, 0) }} KWH</td>
-                        <td><span class="badge text-xs" style="background:{{ $statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)')) }};color:{{ $statusColor }};border:1px solid {{ $statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)')) }};">{{ $statusLabel }}</span></td>
-                        <td style="color:var(--text-primary);">{{ $r->checker->name }}</td>
-                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->notes ?: 'Tidak ada catatan' }}</td>
+                        <td style="color:var(--text-muted);"><?php echo e($i + 1); ?></td>
+                        <td style="color:var(--text-primary);"><?php echo e($r->checked_date->format('d M Y')); ?></td>
+                        <td style="font-weight:600;color:var(--text-primary);"><?php echo e($r->remaining_kwh); ?> KWH</td>
+                        <td style="color:var(--text-muted);"><?php echo e(number_format($usedInReading, 0)); ?> KWH</td>
+                        <td><span class="badge text-xs" style="background:<?php echo e($statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)'))); ?>;color:<?php echo e($statusColor); ?>;border:1px solid <?php echo e($statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)'))); ?>;"><?php echo e($statusLabel); ?></span></td>
+                        <td style="color:var(--text-primary);"><?php echo e($r->checker->name); ?></td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?php echo e($r->notes ?: 'Tidak ada catatan'); ?></td>
                         <td>
                             <div class="flex items-center gap-1">
-                                <form method="POST" action="{{ route('admin.pembayaran.token-reading.destroy', $r->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data pengecekan ini?" style="margin:0;">
-                                    @csrf @method('DELETE')
+                                <form method="POST" action="<?php echo e(route('admin.pembayaran.token-reading.destroy', $r->id)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data pengecekan ini?" style="margin:0;">
+                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                     <button type="submit" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:2px 6px;">Hapus</button>
                                 </form>
-                                <a href="{{ route('admin.export', ['type' => 'token-readings']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
+                                <a href="<?php echo e(route('admin.export', ['type' => 'token-readings'])); ?>" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 </a>
                             </div>
                         </td>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada pengecekan token listrik.</td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 
-    {{-- Token Reading Modal --}}
+    
     <div id="token-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
         <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -685,8 +685,8 @@
                 </button>
             </div>
             <div class="px-6 py-5 overflow-y-auto flex-1">
-                <form method="POST" action="{{ route('admin.pembayaran.token-reading.store') }}">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('admin.pembayaran.token-reading.store')); ?>">
+                    <?php echo csrf_field(); ?>
                     <div class="space-y-4">
                         <div class="field-group">
                             <label class="gaming-label">Sisa KWH <span class="field-req">*</span></label>
@@ -695,15 +695,15 @@
                         </div>
                         <div class="field-group">
                             <label class="gaming-label">Tanggal Pengecekan <span class="field-req">*</span></label>
-                            <input type="date" name="checked_date" id="f-checked_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                            <input type="date" name="checked_date" id="f-checked_date" required value="<?php echo e(date('Y-m-d')); ?>" class="gaming-input">
                         </div>
                         <div class="field-group">
                             <label class="gaming-label">Pengecek <span class="field-req">*</span></label>
                             <select name="checked_by" id="f-checked_by" required class="gaming-input">
                                 <option value="">Pilih pengecek</option>
-                                @foreach($users as $u)
-                                    <option value="{{ $u->id }}" {{ $u->id === auth()->id() ? 'selected' : '' }}>{{ $u->name }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($u->id); ?>" <?php echo e($u->id === auth()->id() ? 'selected' : ''); ?>><?php echo e($u->name); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                         <div class="field-group">
@@ -720,7 +720,7 @@
         </div>
     </div>
 
-    {{-- Top Up Token Modal --}}
+    
     <div id="topup-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
         <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -732,8 +732,8 @@
                 </button>
             </div>
             <div class="px-6 py-5 overflow-y-auto flex-1">
-                <form method="POST" action="{{ route('admin.pembayaran.token-topup.store') }}">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('admin.pembayaran.token-topup.store')); ?>">
+                    <?php echo csrf_field(); ?>
                     <div class="space-y-4">
                         <div class="field-group">
                             <label class="gaming-label">Jumlah KWH <span class="field-req">*</span></label>
@@ -747,7 +747,7 @@
                         </div>
                         <div class="field-group">
                             <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
-                            <input type="date" name="payment_date" id="f-payment_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                            <input type="date" name="payment_date" id="f-payment_date" required value="<?php echo e(date('Y-m-d')); ?>" class="gaming-input">
                         </div>
                         <div class="field-group">
                             <label class="gaming-label">Catatan</label>
@@ -762,11 +762,11 @@
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
 </div>
 
-{{-- Detail Modal --}}
+
 <div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[460px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -786,7 +786,7 @@
     </div>
 </div>
 
-{{-- Form Modal --}}
+
 <div id="payment-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[440px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
@@ -801,13 +801,13 @@
 
         <div class="px-6 py-5 overflow-y-auto flex-1">
             <form id="payment-form" method="POST">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="_method" id="form-method" value="POST">
                 <input type="hidden" name="id" id="form-id" value="">
-                <input type="hidden" name="jenis" id="f-jenis" value="{{ $jenis }}">
+                <input type="hidden" name="jenis" id="f-jenis" value="<?php echo e($jenis); ?>">
 
                 <div class="form-grid-2">
-                    @if($jenis === 'internet')
+                    <?php if($jenis === 'internet'): ?>
                     <div class="field-group">
                         <label class="gaming-label">Nama Internet <span class="field-req">*</span></label>
                         <input type="text" name="nama_internet" id="f-nama_internet" required placeholder="Contoh: Wifi 1 (Kantor Utama)" class="gaming-input">
@@ -850,10 +850,10 @@
                         <label class="gaming-label">Biaya <span class="field-req">*</span></label>
                         <input type="number" name="biaya" id="f-biaya" required placeholder="Contoh: Rp 300.000" class="gaming-input" min="0" step="0.01">
                     </div>
-                    @else
+                    <?php else: ?>
                     <div class="field-group">
-                        <label class="gaming-label">{{ $jenis === 'aset_digital' ? 'Nama Aset' : 'Periode' }} <span class="field-req">*</span></label>
-                        <input type="text" name="periode" id="f-periode" required placeholder="{{ $jenis === 'aset_digital' ? 'Contoh: Adobe Photoshop' : 'Contoh: Januari 2026' }}" class="gaming-input">
+                        <label class="gaming-label"><?php echo e($jenis === 'aset_digital' ? 'Nama Aset' : 'Periode'); ?> <span class="field-req">*</span></label>
+                        <input type="text" name="periode" id="f-periode" required placeholder="<?php echo e($jenis === 'aset_digital' ? 'Contoh: Adobe Photoshop' : 'Contoh: Januari 2026'); ?>" class="gaming-input">
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Nominal <span class="field-req">*</span></label>
@@ -867,7 +867,7 @@
                         <label class="gaming-label">Jatuh Tempo <span class="field-req">*</span></label>
                         <input type="date" name="jatuh_tempo" id="f-jatuh_tempo" required class="gaming-input">
                     </div>
-                    @endif
+                    <?php endif; ?>
                     <div class="field-group">
                         <label class="gaming-label">Status <span class="field-req">*</span></label>
                         <select name="status" id="f-status" required class="gaming-input" onchange="toggleTanggalBayar()">
@@ -893,7 +893,7 @@
     </div>
 </div>
 
-{{-- Modal Bayar/Lunaskan --}}
+
 <div id="bayar-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -910,29 +910,29 @@
                 <div id="bayar-nominal" style="font-size:13px;color:var(--text-muted);margin-top:4px;"></div>
                 <div id="bayar-due" style="font-size:13px;color:var(--text-muted);margin-top:2px;"></div>
             </div>
-            <form id="bayar-form" method="POST" action="{{ url('admin/pembayaran') }}">
-                @csrf
+            <form id="bayar-form" method="POST" action="<?php echo e(url('admin/pembayaran')); ?>">
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="_method" value="PUT">
-                <input type="hidden" name="jenis" value="{{ $jenis }}">
+                <input type="hidden" name="jenis" value="<?php echo e($jenis); ?>">
                 <input type="hidden" name="id" id="bayar-id" value="">
-                @if($jenis === 'internet')
+                <?php if($jenis === 'internet'): ?>
                 <input type="hidden" name="nama_internet" id="bayar-nama_internet">
                 <input type="hidden" name="provider" id="bayar-provider">
                 <input type="hidden" name="pic" id="bayar-pic">
                 <input type="hidden" name="jabatan" id="bayar-jabatan">
                 <input type="hidden" name="masa_tenggang" id="bayar-masa_tenggang">
                 <input type="hidden" name="biaya" id="bayar-biaya">
-                @else
+                <?php else: ?>
                 <input type="hidden" name="periode" id="bayar-periode">
                 <input type="hidden" name="tanggal_tagihan" id="bayar-tanggal_tagihan">
                 <input type="hidden" name="jatuh_tempo" id="bayar-jatuh_tempo">
                 <input type="hidden" name="nominal" id="bayar-nominal_val">
-                @endif
+                <?php endif; ?>
                 <input type="hidden" name="status" id="bayar-status" value="lunas">
                 <div class="space-y-4">
                     <div class="field-group">
                         <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
-                        <input type="date" name="tanggal_bayar" id="bayar-tanggal_bayar" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                        <input type="date" name="tanggal_bayar" id="bayar-tanggal_bayar" required value="<?php echo e(date('Y-m-d')); ?>" class="gaming-input">
                     </div>
                 </div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
@@ -944,7 +944,7 @@
     </div>
 </div>
 
-{{-- Bulk IPL Modal --}}
+
 <div id="bulk-ipl-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -956,12 +956,12 @@
             </button>
         </div>
         <div class="px-6 py-5 overflow-y-auto flex-1">
-            <form method="POST" action="{{ route('admin.pembayaran.ipl-bulk') }}">
-                @csrf
+            <form method="POST" action="<?php echo e(route('admin.pembayaran.ipl-bulk')); ?>">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-4">
                     <div class="field-group">
                         <label class="gaming-label">Tahun <span class="field-req">*</span></label>
-                        <input type="number" name="year" id="f-bulk-year" required min="2020" max="2035" value="{{ date('Y') }}" class="gaming-input">
+                        <input type="number" name="year" id="f-bulk-year" required min="2020" max="2035" value="<?php echo e(date('Y')); ?>" class="gaming-input">
                         <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan tahun tagihan yang akan digenerate (12 bulan).</div>
                     </div>
                     <div class="field-group">
@@ -979,8 +979,8 @@
     </div>
 </div>
 
-@if($jenis === 'internet')
-    {{-- Internet Usage Modal --}}
+<?php if($jenis === 'internet'): ?>
+    
     <div id="internet-usage-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
         <div class="w-full max-w-[480px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -992,8 +992,8 @@
                 </button>
             </div>
             <div class="px-6 py-5 overflow-y-auto flex-1">
-                <form method="POST" action="{{ route('admin.pembayaran.internet-usage.store') }}">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('admin.pembayaran.internet-usage.store')); ?>">
+                    <?php echo csrf_field(); ?>
                     <div class="space-y-4">
                         <div class="field-group">
                             <label class="gaming-label">Ruangan <span class="field-req">*</span></label>
@@ -1024,7 +1024,7 @@
                             </div>
                             <div class="field-group">
                                 <label class="gaming-label">Tanggal <span class="field-req">*</span></label>
-                                <input type="date" name="tanggal" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                                <input type="date" name="tanggal" required value="<?php echo e(date('Y-m-d')); ?>" class="gaming-input">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
@@ -1050,17 +1050,17 @@
             </div>
         </div>
     </div>
-@endif
+<?php endif; ?>
 
 <script>
 window.__paymentScript = 0;
 console.log('[PAYMENT] Script loaded', window.__paymentScript);
 window.__paymentScript = 1;
-const paymentData = @json($itemsJson);
-const internetUsageData = @json($internetUsagesJson);
-const currentJenis = '{{ $jenis }}';
+const paymentData = <?php echo json_encode($itemsJson, 15, 512) ?>;
+const internetUsageData = <?php echo json_encode($internetUsagesJson, 15, 512) ?>;
+const currentJenis = '<?php echo e($jenis); ?>';
 const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
-const jenisLabel = @json($jenisLabels[$jenis] ?? $jenis);
+const jenisLabel = <?php echo json_encode($jenisLabels[$jenis] ?? $jenis, 15, 512) ?>;
 let detailId = null;
 
 function showAlertPopup(type) {
@@ -1135,7 +1135,7 @@ function openBayarModal(id) {
     if (!i) return;
 
     document.getElementById('bayar-id').value = i.id;
-    document.getElementById('bayar-form').action = '{{ url("admin/pembayaran") }}/' + i.id;
+    document.getElementById('bayar-form').action = '<?php echo e(url("admin/pembayaran")); ?>/' + i.id;
 
     const name = currentJenis === 'internet' ? (i.nama_internet + ' (' + i.provider + ')') : i.periode;
     const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(i.nominal);
@@ -1197,7 +1197,7 @@ function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah Tagihan';
     document.getElementById('form-method').value = 'POST';
     document.getElementById('form-id').value = '';
-    document.getElementById('payment-form').action = '{{ route('admin.pembayaran.store') }}';
+    document.getElementById('payment-form').action = '<?php echo e(route('admin.pembayaran.store')); ?>';
     document.getElementById('form-submit-btn').textContent = 'Tambah';
     document.getElementById('payment-form').querySelectorAll('input, select').forEach(el => {
         if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method') el.value = '';
@@ -1212,19 +1212,19 @@ function showDetail(id) {
     const i = paymentData.find(x => x.id === id);
     if (!i) return;
 
-    @if($jenis === 'internet')
+    <?php if($jenis === 'internet'): ?>
     document.getElementById('detail-title').textContent = i.nama_internet;
-    @else
+    <?php else: ?>
     document.getElementById('detail-title').textContent = i.periode;
-    @endif
+    <?php endif; ?>
 
     const fmtDate = (d) => d ? new Date(d + 'T00:00:00') : null;
     const today = new Date(); today.setHours(0,0,0,0);
-    @if($jenis === 'internet')
+    <?php if($jenis === 'internet'): ?>
     const dueDate = fmtDate(i.masa_tenggang);
-    @else
+    <?php else: ?>
     const dueDate = fmtDate(i.jatuh_tempo);
-    @endif
+    <?php endif; ?>
     let computedLabel, computedBg, computedText, computedBorder;
     if (i.status === 'lunas') {
         computedLabel = 'Lunas'; computedBg = '#ecfdf5'; computedText = '#059669'; computedBorder = '#a7f3d0';
@@ -1245,7 +1245,7 @@ function showDetail(id) {
 
     const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
 
-    @if($jenis === 'internet')
+    <?php if($jenis === 'internet'): ?>
     const rows = [
         { label: 'Nama Internet', value: i.nama_internet },
         { label: 'Provider', value: i.provider },
@@ -1255,15 +1255,15 @@ function showDetail(id) {
         { label: 'Biaya', value: 'Rp ' + Number(i.biaya).toLocaleString('id-ID') },
         { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
     ];
-    @else
+    <?php else: ?>
     const rows = [
-        { label: '{{ $jenis === "aset_digital" ? "Nama Aset" : "Periode" }}', value: i.periode },
+        { label: '<?php echo e($jenis === "aset_digital" ? "Nama Aset" : "Periode"); ?>', value: i.periode },
         { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
         { label: 'Jatuh Tempo', value: fmt(i.jatuh_tempo) },
         { label: 'Nominal', value: 'Rp ' + Number(i.nominal).toLocaleString('id-ID') },
         { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
     ];
-    @endif
+    <?php endif; ?>
 
     const bayarBtn = document.getElementById('detail-bayar-btn');
     if (i.status === 'jatuh_tempo' || i.status === 'pending') {
@@ -1299,27 +1299,27 @@ function markAsLunas() {
     if (!i) return;
 
     const formData = new FormData();
-    formData.append('_token', '{{ csrf_token() }}');
+    formData.append('_token', '<?php echo e(csrf_token()); ?>');
     formData.append('_method', 'PUT');
     formData.append('jenis', currentJenis);
     formData.append('status', 'lunas');
     formData.append('tanggal_bayar', new Date().toISOString().split('T')[0]);
 
-    @if($jenis === 'internet')
+    <?php if($jenis === 'internet'): ?>
     formData.append('nama_internet', i.nama_internet);
     formData.append('provider', i.provider);
     formData.append('pic', i.pic);
     formData.append('jabatan', i.jabatan);
     formData.append('masa_tenggang', i.masa_tenggang);
     formData.append('biaya', i.biaya);
-    @else
+    <?php else: ?>
     formData.append('periode', i.periode);
     formData.append('tanggal_tagihan', i.tanggal_tagihan);
     formData.append('jatuh_tempo', i.jatuh_tempo);
     formData.append('nominal', i.nominal);
-    @endif
+    <?php endif; ?>
 
-    fetch('{{ url('admin/pembayaran') }}/' + id, {
+    fetch('<?php echo e(url('admin/pembayaran')); ?>/' + id, {
         method: 'POST',
         headers: { 'Accept': 'application/json' },
         body: formData,
@@ -1400,22 +1400,22 @@ function openEditModal(id) {
     document.getElementById('modal-title').textContent = 'Edit Tagihan';
     document.getElementById('form-method').value = 'PUT';
     document.getElementById('form-id').value = i.id;
-    document.getElementById('payment-form').action = '{{ url('admin/pembayaran') }}/' + i.id;
+    document.getElementById('payment-form').action = '<?php echo e(url('admin/pembayaran')); ?>/' + i.id;
     document.getElementById('form-submit-btn').textContent = 'Simpan Perubahan';
 
-    @if($jenis === 'internet')
+    <?php if($jenis === 'internet'): ?>
     document.getElementById('f-nama_internet').value = i.nama_internet;
     document.getElementById('f-provider').value = i.provider;
     document.getElementById('f-pic').value = i.pic;
     document.getElementById('f-jabatan').value = i.jabatan;
     document.getElementById('f-masa_tenggang').value = i.masa_tenggang;
     document.getElementById('f-biaya').value = i.biaya;
-    @else
+    <?php else: ?>
     document.getElementById('f-periode').value = i.periode;
     document.getElementById('f-tanggal_tagihan').value = i.tanggal_tagihan;
     document.getElementById('f-jatuh_tempo').value = i.jatuh_tempo;
     document.getElementById('f-nominal').value = i.nominal;
-    @endif
+    <?php endif; ?>
 
     document.getElementById('f-status').value = i.status;
     if (i.status === 'lunas' || i.status === 'pending') {
@@ -1546,9 +1546,9 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .form-grid-2 {
     display: grid;
@@ -1601,5 +1601,7 @@ document.addEventListener('keydown', function(e) {
     box-shadow: 0 6px 20px rgba(108,92,255,0.4);
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/pembayaran/index.blade.php ENDPATH**/ ?>

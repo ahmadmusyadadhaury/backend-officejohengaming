@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Meeting Room Booking API",
-    "description": "API untuk sistem booking ruang meeting dengan Laravel Sanctum authentication",
+    "name": "Meeting Room Booking & Asset API",
+    "description": "API untuk sistem booking ruang meeting, manajemen aset, dan pembayaran",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -13,31 +13,19 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/auth/login",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "login"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
             },
-            "description": "Login untuk mendapatkan API token. Gunakan email dan password yang valid."
+            "description": "Login dengan username & password. Response: token (64 char random) digunakan sebagai Bearer token."
           }
         },
         {
@@ -45,31 +33,19 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"username\": \"johndoe\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/auth/register",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "register"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
             },
-            "description": "Register user baru. Password harus dikonfirmasi."
+            "description": "Register user baru. Username harus unik. Role default: 'user'."
           }
         }
       ]
@@ -82,26 +58,14 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "url": {
               "raw": "{{base_url}}/api/rooms",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "rooms"
-              ]
-            },
-            "description": "Mendapatkan semua ruangan yang aktif. Membutuhkan authentication."
+              "host": ["{{base_url}}"],
+              "path": ["api", "rooms"]
+            }
           }
         },
         {
@@ -109,34 +73,19 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Meeting Room A\",\n  \"capacity\": 10,\n  \"facilities\": [\"Projector\", \"Whiteboard\", \"Video Conference\"],\n  \"location\": \"Floor 1\",\n  \"description\": \"Large meeting room with modern facilities\"\n}"
+              "raw": "{\n  \"name\": \"Meeting Room A\",\n  \"capacity\": 10,\n  \"facilities\": [\"Projector\", \"Whiteboard\"],\n  \"location\": \"Floor 1\",\n  \"description\": \"Large meeting room\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/rooms",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "rooms"
-              ]
-            },
-            "description": "Membuat ruangan baru. Hanya admin yang bisa. Facilities harus berupa array."
+              "host": ["{{base_url}}"],
+              "path": ["api", "rooms"]
+            }
           }
         },
         {
@@ -144,35 +93,19 @@
           "request": {
             "method": "PUT",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Meeting Room A\",\n  \"capacity\": 15,\n  \"facilities\": [\"Projector\", \"Whiteboard\", \"Video Conference\", \"Sound System\"],\n  \"location\": \"Floor 1\",\n  \"description\": \"Updated large meeting room\",\n  \"is_active\": true\n}"
+              "raw": "{\n  \"name\": \"Updated Room\",\n  \"capacity\": 15,\n  \"is_active\": true\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/rooms/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "rooms",
-                "1"
-              ]
-            },
-            "description": "Update ruangan berdasarkan ID. Hanya admin yang bisa."
+              "host": ["{{base_url}}"],
+              "path": ["api", "rooms", "1"]
+            }
           }
         },
         {
@@ -180,27 +113,14 @@
           "request": {
             "method": "DELETE",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "url": {
               "raw": "{{base_url}}/api/rooms/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "rooms",
-                "1"
-              ]
-            },
-            "description": "Hapus ruangan berdasarkan ID. Hanya admin yang bisa."
+              "host": ["{{base_url}}"],
+              "path": ["api", "rooms", "1"]
+            }
           }
         }
       ]
@@ -213,33 +133,17 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "url": {
-              "raw": "{{base_url}}/api/bookings?date=2026-05-02",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "bookings"
-              ],
+              "raw": "{{base_url}}/api/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings"],
               "query": [
-                {
-                  "key": "date",
-                  "value": "2026-05-02",
-                  "description": "Filter berdasarkan tanggal (YYYY-MM-DD). Opsional."
-                }
+                { "key": "date", "value": "2026-07-08", "description": "Filter tanggal (opsional)" }
               ]
-            },
-            "description": "Mendapatkan semua booking. User biasa hanya melihat booking sendiri, admin melihat semua. Bisa filter berdasarkan tanggal."
+            }
           }
         },
         {
@@ -247,34 +151,19 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"room_id\": 1,\n  \"title\": \"Team Meeting\",\n  \"description\": \"Weekly team sync meeting\",\n  \"participants\": \"john@example.com, jane@example.com\",\n  \"start_time\": \"2026-05-02T10:00:00\",\n  \"end_time\": \"2026-05-02T11:00:00\"\n}"
+              "raw": "{\n  \"room_id\": 1,\n  \"title\": \"Team Meeting\",\n  \"description\": \"Weekly sync\",\n  \"participants\": \"user@example.com\",\n  \"start_time\": \"2026-07-08T10:00:00\",\n  \"end_time\": \"2026-07-08T11:00:00\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/bookings",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "bookings"
-              ]
-            },
-            "description": "Membuat booking baru. Akan dicek konflik waktu secara otomatis."
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings"]
+            }
           }
         },
         {
@@ -282,27 +171,663 @@
           "request": {
             "method": "DELETE",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
             ],
             "url": {
               "raw": "{{base_url}}/api/bookings/1",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "bookings",
-                "1"
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assets",
+      "item": [
+        {
+          "name": "General Assets",
+          "item": [
+            {
+              "name": "Get All Assets",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/assets",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "assets"]
+                }
+              }
+            },
+            {
+              "name": "Create Asset",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Projector\",\n  \"description\": \"LCD Projector\",\n  \"quantity\": 5,\n  \"expire_date\": \"2027-07-08\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/assets",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "assets"]
+                }
+              }
+            },
+            {
+              "name": "Update Asset",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Projector Updated\",\n  \"quantity\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/assets/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "assets", "1"]
+                }
+              }
+            },
+            {
+              "name": "Delete Asset",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/assets/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "assets", "1"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Aset Ruko",
+          "item": [
+            {
+              "name": "Get All Aset Ruko",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/aset-ruko",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-ruko"]
+                }
+              }
+            },
+            {
+              "name": "Create Aset Ruko",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_aset\": \"Ruko A\",\n  \"lokasi\": \"Jl. Merdeka No.1\",\n  \"jumlah\": 1,\n  \"kondisi\": \"baik\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/aset-ruko",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-ruko"]
+                }
+              }
+            },
+            {
+              "name": "Update Aset Ruko",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"kondisi\": \"perlu_servis\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/aset-ruko/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-ruko", "1"]
+                }
+              }
+            },
+            {
+              "name": "Delete Aset Ruko",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/aset-ruko/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-ruko", "1"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Aset Daya",
+          "item": [
+            {
+              "name": "Get All Aset Daya",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/aset-daya",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-daya"]
+                }
+              }
+            },
+            {
+              "name": "Create Aset Daya",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_aset\": \"AC Central\",\n  \"daya\": \"2000\",\n  \"unit\": \"Watt\",\n  \"penanggung_jawab\": 1,\n  \"pic\": \"Budi\",\n  \"jabatan\": \"Koordinator\",\n  \"keterangan\": \"AC lantai 2\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/aset-daya",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-daya"]
+                }
+              }
+            },
+            {
+              "name": "Update Aset Daya",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"keterangan\": \"Updated keterangan\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/aset-daya/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-daya", "1"]
+                }
+              }
+            },
+            {
+              "name": "Delete Aset Daya",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/aset-daya/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-daya", "1"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Aset Tim",
+          "item": [
+            {
+              "name": "Get All Aset Tim",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/aset-tim",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-tim"]
+                }
+              }
+            },
+            {
+              "name": "Create Aset Tim",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_aset\": \"Laptop Dell\",\n  \"tim\": \"IT\",\n  \"jumlah\": 5,\n  \"penanggung_jawab\": 1,\n  \"pic\": \"Andi\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/aset-tim",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-tim"]
+                }
+              }
+            },
+            {
+              "name": "Update Aset Tim",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"jumlah\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/aset-tim/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-tim", "1"]
+                }
+              }
+            },
+            {
+              "name": "Delete Aset Tim",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/aset-tim/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "aset-tim", "1"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Digital Assets",
+          "item": [
+            {
+              "name": "Get All Digital Assets",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/digital-assets",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "digital-assets"]
+                }
+              }
+            },
+            {
+              "name": "Create Digital Asset",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_aset\": \"Canva Pro\",\n  \"email\": \"canva@company.com\",\n  \"mulai\": \"2026-01-01\",\n  \"berakhir\": \"2027-01-01\",\n  \"biaya\": 1500000,\n  \"pic\": \"Sari\",\n  \"jabatan\": \"Designer\",\n  \"keperluan\": \"Design needs\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/digital-assets",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "digital-assets"]
+                }
+              }
+            },
+            {
+              "name": "Update Digital Asset",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"biaya\": 2000000\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/digital-assets/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "digital-assets", "1"]
+                }
+              }
+            },
+            {
+              "name": "Delete Digital Asset",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/digital-assets/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "digital-assets", "1"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Get Payments by Jenis",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran?jenis=internet",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran"],
+              "query": [
+                { "key": "jenis", "value": "internet" }
               ]
             },
-            "description": "Hapus booking berdasarkan ID. Hanya pemilik booking atau admin yang bisa."
+            "description": "jenis: internet, listrik, aset_digital, ipl_ruko, aset_daya, aset_tim"
+          }
+        },
+        {
+          "name": "Create Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jenis\": \"internet\",\n  \"nama_internet\": \"Biznet\",\n  \"provider\": \"Biznet\",\n  \"pic\": \"Budi\",\n  \"jabatan\": \"IT\",\n  \"masa_tenggang\": \"2026-08-08\",\n  \"biaya\": 500000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran"]
+            }
+          }
+        },
+        {
+          "name": "Update Payment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jenis\": \"internet\",\n  \"nama_internet\": \"Biznet Updated\",\n  \"provider\": \"Biznet\",\n  \"pic\": \"Budi\",\n  \"jabatan\": \"IT\",\n  \"masa_tenggang\": \"2026-09-08\",\n  \"biaya\": 550000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Payment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jenis\": \"internet\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "1"]
+            }
+          }
+        },
+        {
+          "name": "Bulk IPL Ruko",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tahun\": 2026,\n  \"nominal\": 1000000,\n  \"pic\": \"Budi\",\n  \"jabatan\": \"Finance\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/ipl-ruko-bulk",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "ipl-ruko-bulk"]
+            }
+          }
+        },
+        {
+          "name": "Store Token Reading",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remaining_kwh\": 4500,\n  \"checked_date\": \"2026-07-08\",\n  \"checked_by\": 1,\n  \"notes\": \"Cek rutin\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/token-reading",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "token-reading"]
+            }
+          }
+        },
+        {
+          "name": "Delete Token Reading",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/token-reading/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "token-reading", "1"]
+            }
+          }
+        },
+        {
+          "name": "Store Token Topup",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount_kwh\": 5000,\n  \"nominal\": 5000000,\n  \"payment_date\": \"2026-07-08\",\n  \"notes\": \"Topup bulanan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/token-topup",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "token-topup"]
+            }
+          }
+        },
+        {
+          "name": "Delete Token Topup",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/token-topup/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "token-topup", "1"]
+            }
+          }
+        },
+        {
+          "name": "Store Internet Usage",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ruangan\": \"Room A\",\n  \"hari\": \"Senin\",\n  \"tanggal\": \"2026-07-08\",\n  \"penggunaan_wifi\": 50.5,\n  \"penggunaan_ethernet\": 100.2,\n  \"keterangan\": \"Normal\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/internet-usage",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "internet-usage"]
+            }
+          }
+        },
+        {
+          "name": "Delete Internet Usage",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pembayaran/internet-usage/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pembayaran", "internet-usage", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Approvals",
+      "item": [
+        {
+          "name": "Get Pending Approvals",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/payment-approvals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payment-approvals"]
+            }
+          }
+        },
+        {
+          "name": "Approve Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jenis\": \"internet\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payment-approvals/1/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payment-approvals", "1", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Reject Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jenis\": \"internet\",\n  \"notes\": \"Bukti bayar tidak jelas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payment-approvals/1/reject",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payment-approvals", "1", "reject"]
+            }
           }
         }
       ]
@@ -318,7 +843,7 @@
       "key": "token",
       "value": "",
       "type": "string",
-      "description": "API token yang didapat dari login response"
+      "description": "API token dari response login — copy ke sini"
     }
   ]
 }

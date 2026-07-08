@@ -1,6 +1,6 @@
 @php
     $isMeetingActive = request()->routeIs('koordinator.meetings.*', 'koordinator.mom.*', 'calendar');
-    $isOperationalActive = request()->routeIs('koordinator.data-saya.*', 'koordinator.aset-tim.*');
+    $isOperationalActive = request()->routeIs('koordinator.data-saya.*', 'koordinator.aset-tim.*', 'koordinator.aset-mes.*');
     $isPaymentActive = request()->routeIs('payment-approval.*');
 
     $now = \Carbon\Carbon::today();
@@ -8,6 +8,7 @@
     $userId = auth()->id();
     $myAsetDayaIds = \App\Models\AsetDaya::where('penanggung_jawab', $userId)->pluck('id');
     $myAsetTimIds = \App\Models\AsetTim::where('penanggung_jawab', $userId)->pluck('id');
+    $myAsetMesIds = \App\Models\AsetMes::where('penanggung_jawab', $userId)->pluck('id');
 
     $totalTagihan = ($myAsetDayaIds->isNotEmpty()
             ? \App\Models\PembayaranAsetDaya::whereNull('requested_by')
@@ -20,6 +21,13 @@
             ? \App\Models\PembayaranAsetTim::whereNull('requested_by')
                 ->whereNotIn('status', ['lunas', 'rejected'])
                 ->whereIn('aset_tim_id', $myAsetTimIds)
+                ->where('jatuh_tempo', '<=', $sevenDays)
+                ->count()
+            : 0)
+        + ($myAsetMesIds->isNotEmpty()
+            ? \App\Models\PembayaranAsetMes::whereNull('requested_by')
+                ->whereNotIn('status', ['lunas', 'rejected'])
+                ->whereIn('aset_mes_id', $myAsetMesIds)
                 ->where('jatuh_tempo', '<=', $sevenDays)
                 ->count()
             : 0);
@@ -71,6 +79,7 @@
         <span class="truncate">Aset Saya</span>
     </a>
     <a href="{{ route('koordinator.aset-tim.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.aset-tim.index') ? 'active' : '' }}"><span class="truncate">Aset TIM</span></a>
+    <a href="{{ route('koordinator.aset-mes.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.aset-mes.index') ? 'active' : '' }}"><span class="truncate">Aset MES</span></a>
 </div>
 
 <div class="sidebar-section">

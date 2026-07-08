@@ -20,14 +20,11 @@
             ->whereNotIn('status', ['lunas', 'rejected'])
             ->where('jatuh_tempo', '<=', $sevenDays)
             ->count()
-        + \App\Models\PembayaranAsetDaya::whereNull('requested_by')
+        + \App\Models\PembayaranAsetMes::whereNull('requested_by')
             ->whereNotIn('status', ['lunas', 'rejected'])
             ->where('jatuh_tempo', '<=', $sevenDays)
             ->count()
-        + \App\Models\PembayaranAsetTim::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count();
+        ;
 @endphp
 
 <p class="sidebar-section-label">Menu Utama</p>

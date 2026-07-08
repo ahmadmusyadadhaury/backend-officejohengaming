@@ -18,7 +18,7 @@ class VehiclePajakRequestController extends Controller
     {
         $data = $request->validate([
             'jenis' => 'required|in:tahunan,5_tahunan',
-            'nominal' => 'required|numeric|min:0',
+            'nominal' => 'required|numeric|min:0|max:9999999999999.99',
             'bukti_bayar' => 'required|image|mimes:jpeg,png|max:200',
         ]);
 
