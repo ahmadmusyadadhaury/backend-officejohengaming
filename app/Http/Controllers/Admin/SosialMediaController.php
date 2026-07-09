@@ -14,10 +14,9 @@ class SosialMediaController extends Controller
 
         $stats = [
             'total' => $items->count(),
+            'aktif' => $items->where('status', 'aktif')->count(),
+            'nonaktif' => $items->where('status', 'nonaktif')->count(),
         ];
-
-        $platformCounts = $items->groupBy('platform')->map->count();
-        $stats['platforms'] = $platformCounts;
 
         $itemsJson = $items->values()->map(function ($i) {
             return [
@@ -29,6 +28,7 @@ class SosialMediaController extends Controller
                 'divisi' => $i->divisi,
                 'pic' => $i->pic,
                 'ket' => $i->ket,
+                'status' => $i->status,
             ];
         });
 

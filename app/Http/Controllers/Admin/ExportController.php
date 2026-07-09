@@ -186,7 +186,7 @@ class ExportController extends Controller
             'Nomor Rangka' => $v->nomor_rangka ?? '-',
             'Nomor Mesin' => $v->nomor_mesin ?? '-',
             'Status Kepemilikan' => $v->kepemilikan_status,
-            'Foto' => $v->foto ? url('storage/'.$v->foto) : '-',
+            'Foto' => $v->foto ? asset('storage/'.$v->foto) : '-',
             'Keterangan' => $v->keperluan ?? '-',
         ]);
 

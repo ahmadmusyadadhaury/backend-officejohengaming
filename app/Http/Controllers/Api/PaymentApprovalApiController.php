@@ -52,7 +52,7 @@ class PaymentApprovalApiController extends Controller
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
                     'status' => $r->status,
                     'tanggal_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
-                    'bukti_url' => $r->bukti_bayar ? url('storage/'.$r->bukti_bayar) : null,
+                    'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
                     'requester_name' => $r->requester?->name ?? '-',
                     'pic' => $r->pic,
                     'jabatan' => $r->jabatan,

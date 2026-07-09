@@ -1,14 +1,13 @@
-@extends('layouts.app')
-@section('body-class', 'page-admin')
-@section('title', 'Peralatan Kantor')
-@section('page-title', 'Data Aset > Peralatan Kantor')
-@section('page-subtitle', 'Inventaris peralatan kantor milik perusahaan')
-@section('sidebar-menu') @include('partials.sidebar-admin') @endsection
+<?php $__env->startSection('body-class', 'page-admin'); ?>
+<?php $__env->startSection('title', 'Peralatan Kantor'); ?>
+<?php $__env->startSection('page-title', 'Data Aset > Peralatan Kantor'); ?>
+<?php $__env->startSection('page-subtitle', 'Inventaris peralatan kantor milik perusahaan'); ?>
+<?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- 4 Stat Cards --}}
+    
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -18,7 +17,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total Peralatan</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
@@ -31,7 +30,7 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['kondisi_baik'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['kondisi_baik']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Kondisi Baik</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
@@ -44,7 +43,7 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['perlu_servis'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;"><?php echo e($stats['perlu_servis']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Perlu Servis</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
@@ -57,14 +56,14 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['rusak'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;"><?php echo e($stats['rusak']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Rusak</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
     </div>
 
-    {{-- Tabel --}}
+    
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
@@ -72,14 +71,14 @@
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Inventaris peralatan kantor milik perusahaan.</div>
             </div>
             <div class="flex items-center gap-2">
-                @if(auth()->user()->role !== 'gm')
+                <?php if(auth()->user()->role !== 'gm'): ?>
                 <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     Tambah Peralatan
                 </button>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
@@ -98,7 +97,7 @@
                     </svg>
                     Import Excel
                 </button>
-                <a href="{{ route('admin.export', ['type' => 'peralatan-kantor', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
+                <a href="<?php echo e(route('admin.export', ['type' => 'peralatan-kantor', 'filter' => 'all'])); ?>" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -126,14 +125,14 @@
                         <th class="hidden md:table-cell">Lokasi Unit</th>
                         <th class="hidden md:table-cell">Nilai (Setelah Penyusutan)</th>
                         <th>Kondisi</th>
-                        @if(auth()->user()->role !== 'gm')
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <th>Aksi</th>
-                        @endif
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody id="item-tbody">
-                    @forelse($items as $i)
-                    @php
+                    <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
                         $kondisiBadge = match($i->kondisi) {
                             'baik'        => 'badge-green',
                             'perlu_servis' => 'badge-yellow',
@@ -150,41 +149,41 @@
                         $penyusutanPerHari = $i->nilai / $masaBarang;
                         $hariTerpakai = $i->tanggal_pembelian ? max(abs(now()->diffInDays($i->tanggal_pembelian)), 0) : 0;
                         $nilaiSekarang = max($i->nilai - ($penyusutanPerHari * $hariTerpakai), 0);
-                    @endphp
-                    <tr data-kondisi="{{ $i->kondisi }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $i->nama_barang }}</td>
-                        <td style="color:var(--text-muted);">{{ $i->pic }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $i->lokasi_unit }}</td>
-                        <td class="hidden md:table-cell" style="color:{{ $nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444' }};font-weight:500;">Rp {{ number_format($nilaiSekarang, 0, ',', '.') }}</td>
-                        <td><span class="badge {{ $kondisiBadge }}">{{ $kondisiLabel }}</span></td>
-                        @if(auth()->user()->role !== 'gm')
+                    ?>
+                    <tr data-kondisi="<?php echo e($i->kondisi); ?>">
+                        <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($i->nama_barang); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($i->pic); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($i->lokasi_unit); ?></td>
+                        <td class="hidden md:table-cell" style="color:<?php echo e($nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444'); ?>;font-weight:500;">Rp <?php echo e(number_format($nilaiSekarang, 0, ',', '.')); ?></td>
+                        <td><span class="badge <?php echo e($kondisiBadge); ?>"><?php echo e($kondisiLabel); ?></span></td>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                <button type="button" onclick="showDetail(<?php echo e($i->id); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown(this, {{ $i->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $i->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showDetail({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
-                                        <button type="button" onclick="openEditModal({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="{{ route('admin.peralatan-kantor.destroy', $i) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" style="margin:0;">
-                                            @csrf @method('DELETE')
+                                    <button type="button" onclick="toggleDropdown(this, <?php echo e($i->id); ?>)" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-<?php echo e($i->id); ?>" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showDetail(<?php echo e($i->id); ?>)" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditModal(<?php echo e($i->id); ?>)" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="<?php echo e(route('admin.peralatan-kantor.destroy', $i)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" style="margin:0;">
+                                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        @endif
+                        <?php endif; ?>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr id="empty-row">
                         <td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data peralatan kantor.</td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -192,29 +191,29 @@
 
 </div>
 
-{{-- Detail Modal --}}
+
 <div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-5xl rounded-[22px] shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);border:1px solid var(--border-color);" onclick="event.stopPropagation()">
-        {{-- Header --}}
+        
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <button onclick="closeDetail()" style="color:var(--text-muted);background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:10px;display:flex;align-items:center;gap:6px;font-size:13px;transition:all 0.15s;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m7 7l-7-7 7-7"/></svg>
                 Kembali
             </button>
             <div class="flex items-center gap-2">
-                @if(auth()->user()->role !== 'gm')
+                <?php if(auth()->user()->role !== 'gm'): ?>
                 <button id="detail-edit-btn" onclick="openEditModal(currentDetailId)" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;cursor:pointer;">Edit</button>
-                <form id="detail-delete-form" method="POST" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" data-action="{{ url('admin/peralatan-kantor') }}/" style="margin:0;">
-                    @csrf @method('DELETE')
+                <form id="detail-delete-form" method="POST" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" data-action="<?php echo e(url('admin/peralatan-kantor')); ?>/" style="margin:0;">
+                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                     <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);cursor:pointer;">Hapus</button>
                 </form>
-                @endif
+                <?php endif; ?>
                 <button onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
         </div>
-        {{-- Title + Badge --}}
+        
         <div class="px-6 pt-5 pb-2 flex-shrink-0">
             <div class="flex items-center justify-between">
                 <div>
@@ -224,16 +223,16 @@
                 <span id="detail-badge" class="badge" style="font-size:0.75rem;padding:4px 14px;"></span>
             </div>
         </div>
-        {{-- Body --}}
+        
         <div class="px-6 py-4 overflow-y-auto flex-1" id="detail-body" style="scrollbar-width:thin;"></div>
     </div>
 </div>
 
-{{-- Modal Tambah / Edit Peralatan Kantor (6 Step) --}}
+
 <div id="item-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:95vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
-        {{-- Header --}}
+        
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);" id="modal-title">Tambah Peralatan</h3>
             <button type="button" onclick="closeModal('item-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
@@ -243,7 +242,7 @@
             </button>
         </div>
 
-        {{-- Steps Indicator --}}
+        
         <div class="px-6 pt-4 pb-2 flex-shrink-0">
             <div class="flex items-center gap-1 text-xs font-semibold" id="step-indicator">
                 <div class="step-dot active" data-step="1">1</div>
@@ -260,15 +259,15 @@
             </div>
         </div>
 
-        {{-- Body --}}
+        
         <div class="px-6 py-4 overflow-y-auto flex-1">
             <form id="item-form" method="POST">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="_method" id="form-method" value="POST">
                 <input type="hidden" name="id" id="form-id" value="">
                 <input type="hidden" name="kondisi" id="f-kondisi" value="baik">
 
-                {{-- Step 1 --}}
+                
                 <div class="step-content" id="step-1">
                     <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Informasi Umum</p>
                     <p class="text-xs mb-4" style="color:var(--text-muted);">Data dasar barang</p>
@@ -304,7 +303,7 @@
                     </div>
                 </div>
 
-                {{-- Step 2 --}}
+                
                 <div class="step-content hidden" id="step-2">
                     <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Lokasi & Kepemilikan</p>
                     <p class="text-xs mb-4" style="color:var(--text-muted);">Lokasi dan status kepemilikan</p>
@@ -328,7 +327,7 @@
                     </div>
                 </div>
 
-                {{-- Step 3 --}}
+                
                 <div class="step-content hidden" id="step-3">
                     <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Pengadaan & Nilai Aset</p>
                     <p class="text-xs mb-4" style="color:var(--text-muted);">Data pengadaan dan nilai</p>
@@ -336,7 +335,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="gaming-label">Pengadaan (Tahun) <span style="color:#f87171;">*</span></label>
-                                <input type="number" name="pengadaan_tahun" id="f-pengadaan_tahun" required placeholder="Masukan tahun pengadaan" class="gaming-input" min="1900" max="{{ now()->year + 1 }}">
+                                <input type="number" name="pengadaan_tahun" id="f-pengadaan_tahun" required placeholder="Masukan tahun pengadaan" class="gaming-input" min="1900" max="<?php echo e(now()->year + 1); ?>">
                             </div>
                             <div>
                                 <label class="gaming-label">Tanggal Pembelian <span style="color:#f87171;">*</span></label>
@@ -368,7 +367,7 @@
                     </div>
                 </div>
 
-                {{-- Step 4 --}}
+                
                 <div class="step-content hidden" id="step-4">
                     <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Penyusutan Umur Aset</p>
                     <p class="text-xs mb-4" style="color:var(--text-muted);">Perhitungan penyusutan otomatis</p>
@@ -397,7 +396,7 @@
                     </div>
                 </div>
 
-                {{-- Step 5 --}}
+                
                 <div class="step-content hidden" id="step-5">
                     <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Penanggung Jawab</p>
                     <p class="text-xs mb-4" style="color:var(--text-muted);">Data penanggung jawab</p>
@@ -443,12 +442,12 @@
                     </div>
                 </div>
 
-                {{-- Step 6 Preview --}}
+                
                 <div class="step-content hidden" id="step-6">
                     <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Pratinjau Data</p>
                     <p class="text-xs mb-4" style="color:var(--text-muted);">Periksa kembali data sebelum menyimpan</p>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3" id="preview-content">
-                        {{-- Card 1: Informasi Umum --}}
+                        
                         <div style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:14px;">
                             <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Informasi Umum</p>
                             <div>
@@ -474,7 +473,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- Card 2: Lokasi & Kepemilikan --}}
+                        
                         <div style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:14px;">
                             <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Lokasi &amp; Kepemilikan</p>
                             <div>
@@ -492,7 +491,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- Card 3: Pengadaan & Nilai --}}
+                        
                         <div style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:14px;">
                             <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Pengadaan &amp; Nilai</p>
                             <div>
@@ -518,7 +517,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- Card 4: Penyusutan Umur Aset --}}
+                        
                         <div style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:14px;">
                             <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Penyusutan Umur Aset</p>
                             <div>
@@ -548,7 +547,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- Card 5: Penanggung Jawab --}}
+                        
                         <div style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:14px;">
                             <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Penanggung Jawab</p>
                             <div>
@@ -573,7 +572,7 @@
                     </div>
                 </div>
 
-                {{-- Navigation Buttons --}}
+                
                 <div class="flex items-center pt-4 mt-4" style="border-top:1px solid var(--border-color);">
                     <div class="flex gap-3">
                         <button type="button" id="prev-btn" onclick="prevStep()" class="btn btn-secondary" style="display:none;">Sebelumnya</button>
@@ -590,7 +589,7 @@
     </div>
 </div>
 
-{{-- Modal Import Excel --}}
+
 <div id="import-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[480px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -603,14 +602,14 @@
         </div>
         <div class="px-6 py-5">
             <p class="text-sm mb-3" style="color:var(--text-muted);">Download template terlebih dahulu, lalu isi data sesuai format.</p>
-            <a href="{{ route('admin.peralatan-kantor.template') }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5 mb-4">
+            <a href="<?php echo e(route('admin.peralatan-kantor.template')); ?>" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5 mb-4">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
                 </svg>
                 Download Template
             </a>
-            <form method="POST" action="{{ route('admin.peralatan-kantor.import') }}" enctype="multipart/form-data">
-                @csrf
+            <form method="POST" action="<?php echo e(route('admin.peralatan-kantor.import')); ?>" enctype="multipart/form-data">
+                <?php echo csrf_field(); ?>
                 <div class="field-group" style="margin-bottom:16px;">
                     <label class="gaming-label">Pilih File Excel <span class="field-req">*</span></label>
                     <input type="file" name="file" id="import-file" accept=".xlsx,.xls,.csv" required
@@ -626,7 +625,7 @@
     </div>
 </div>
 
-@if(session('import_errors'))
+<?php if(session('import_errors')): ?>
 <div class="pt-2">
     <div class="gaming-card p-4" style="border-left:4px solid #f59e0b;">
         <div class="flex items-start gap-3">
@@ -635,17 +634,17 @@
             </svg>
             <div>
                 <p class="text-sm font-semibold" style="color:var(--text-primary);">
-                    Import Selesai: {{ session('import_success_count') }} berhasil, {{ session('import_error_count') }} gagal.
+                    Import Selesai: <?php echo e(session('import_success_count')); ?> berhasil, <?php echo e(session('import_error_count')); ?> gagal.
                 </p>
-                @if(session('import_errors'))
+                <?php if(session('import_errors')): ?>
                 <div class="mt-2 max-h-[200px] overflow-y-auto" style="scrollbar-width:thin;">
                     <ul style="list-style:none;padding:0;margin:0;">
-                        @foreach(session('import_errors') as $error)
-                        <li style="font-size:12px;color:#ef4444;padding:2px 0;">{{ $error }}</li>
-                        @endforeach
+                        <?php $__currentLoopData = session('import_errors'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <li style="font-size:12px;color:#ef4444;padding:2px 0;"><?php echo e($error); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
             <button type="button" onclick="this.closest('.gaming-card').remove()" class="ml-auto p-1" style="background:none;border:none;cursor:pointer;color:var(--text-muted);">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -655,10 +654,10 @@
         </div>
     </div>
 </div>
-@endif
-@endsection
+<?php endif; ?>
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .step-dot {
     width: 28px; height: 28px; border-radius: 50%;
@@ -721,11 +720,11 @@
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
-const itemsData = @json($itemsJson);
+const itemsData = <?php echo json_encode($itemsJson, 15, 512) ?>;
 let currentStep = 1;
 const totalSteps = 6;
 let currentDetailId = null;
@@ -734,7 +733,7 @@ function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah Peralatan';
     document.getElementById('form-method').value = 'POST';
     document.getElementById('form-id').value = '';
-    document.getElementById('item-form').action = '{{ route('admin.peralatan-kantor.store') }}';
+    document.getElementById('item-form').action = '<?php echo e(route('admin.peralatan-kantor.store')); ?>';
     document.getElementById('submit-btn').textContent = 'Simpan';
     document.getElementById('item-form').querySelectorAll('input, textarea, select').forEach(el => {
         if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method') {
@@ -883,7 +882,7 @@ function openEditModal(id) {
     document.getElementById('modal-title').textContent = 'Edit Peralatan';
     document.getElementById('form-method').value = 'PUT';
     document.getElementById('form-id').value = i.id;
-    document.getElementById('item-form').action = '{{ url('admin/peralatan-kantor') }}/' + i.id;
+    document.getElementById('item-form').action = '<?php echo e(url('admin/peralatan-kantor')); ?>/' + i.id;
     document.getElementById('submit-btn').textContent = 'Simpan Perubahan';
 
     document.getElementById('f-nama_barang').value = i.nama_barang;
@@ -1144,4 +1143,6 @@ function filterItems() {
     });
 }
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/peralatan-kantor/index.blade.php ENDPATH**/ ?>

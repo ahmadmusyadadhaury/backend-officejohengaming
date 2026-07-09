@@ -53,6 +53,7 @@
     <span class="truncate">Tagihan</span>
     <span class="sidebar-badge tagihan-badge" style="{{ $totalTagihan > 0 ? '' : 'display:none;' }}background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;line-height:1.4;">{{ $totalTagihan }}</span>
 </a>
+@if(auth()->user()->role === 'admin')
 <a href="{{ route('payment-approval.create') }}"
     class="sidebar-item {{ request()->routeIs('payment-approval.create') ? 'active' : '' }}">
     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,6 +61,7 @@
     </svg>
     <span class="truncate">Ajukan Pembayaran</span>
 </a>
+@endif
 <a href="{{ route('payment-approval.status') }}"
     class="sidebar-item {{ request()->routeIs('payment-approval.status') ? 'active' : '' }}">
     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

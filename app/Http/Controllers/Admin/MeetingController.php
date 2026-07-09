@@ -63,7 +63,7 @@ class MeetingController extends Controller
                 'pic' => $m->mom->pic,
                 'creator_name' => $m->mom->creator->name ?? null,
                 'sent_at' => $m->mom->sent_at?->format('d M Y H:i'),
-                'file_url' => $m->mom->file_path ? Storage::url($m->mom->file_path) : null,
+                'file_url' => $m->mom->file_path ? asset('storage/'.$m->mom->file_path) : null,
             ] : null,
         ]);
 

@@ -1,15 +1,14 @@
-@extends('layouts.app')
-@section('body-class', 'page-admin')
-@section('title', 'SIM Card')
-@section('page-title', 'Data Aset > SIM Card')
-@section('page-subtitle', 'Seluruh nomor SIM Card operasional perusahaan')
-@section('sidebar-menu') @include('partials.sidebar-admin') @endsection
+<?php $__env->startSection('body-class', 'page-admin'); ?>
+<?php $__env->startSection('title', 'SIM Card'); ?>
+<?php $__env->startSection('page-title', 'Data Aset > SIM Card'); ?>
+<?php $__env->startSection('page-subtitle', 'Seluruh nomor SIM Card operasional perusahaan'); ?>
+<?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- Alert Banners --}}
-    @php
+    
+    <?php
         $alertGroups = $alerts->groupBy(function($c) {
             $s = $c->status_sim;
             if ($s === 'mati') return 'mati';
@@ -17,43 +16,43 @@
             if ($s === 'jatuh_tempo') return 'jatuh_tempo';
             return 'other';
         });
-    @endphp
-    @if($alerts->isNotEmpty())
+    ?>
+    <?php if($alerts->isNotEmpty()): ?>
     <div class="space-y-2">
-        @if(isset($alertGroups['mati']))
+        <?php if(isset($alertGroups['mati'])): ?>
         <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #ef4444;">
             <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['mati']->count() }} SIM Card</span>
+                <span style="font-weight:600;"><?php echo e($alertGroups['mati']->count()); ?> SIM Card</span>
                 <span style="color:var(--text-muted);"> dengan masa tenggang sudah lewat.</span>
                 <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
-        @if(isset($alertGroups['segera_habis']))
+        <?php endif; ?>
+        <?php if(isset($alertGroups['segera_habis'])): ?>
         <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f59e0b;">
             <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
             <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['segera_habis']->count() }} SIM Card</span>
+                <span style="font-weight:600;"><?php echo e($alertGroups['segera_habis']->count()); ?> SIM Card</span>
                 <span style="color:var(--text-muted);"> akan segera habis masa tenggangnya (≤3 hari).</span>
                 <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
-        @if(isset($alertGroups['jatuh_tempo']))
+        <?php endif; ?>
+        <?php if(isset($alertGroups['jatuh_tempo'])): ?>
         <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f97316;">
             <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['jatuh_tempo']->count() }} SIM Card</span>
+                <span style="font-weight:600;"><?php echo e($alertGroups['jatuh_tempo']->count()); ?> SIM Card</span>
                 <span style="color:var(--text-muted);"> akan jatuh tempo (≤7 hari).</span>
                 <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Stat Cards --}}
+    
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -63,7 +62,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total SIM Card</div>
                 <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh nomor SIM Card</div>
             </div>
@@ -76,7 +75,7 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Aktif</div>
                 
             </div>
@@ -89,7 +88,7 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#fb923c;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fb923c;"><?php echo e($stats['jatuh_tempo']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
                 
             </div>
@@ -102,7 +101,7 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#f59e0b;">{{ $stats['segera_habis'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#f59e0b;"><?php echo e($stats['segera_habis']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
                 
             </div>
@@ -115,28 +114,28 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['mati'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;"><?php echo e($stats['mati']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Mati</div>
                 
             </div>
         </div>
     </div>
 
-    {{-- Tabel --}}
+    
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data SIM Card</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Seluruh nomor SIM Card operasional perusahaan.</div>
             </div>
-            @if(auth()->user()->role !== 'gm')
+            <?php if(auth()->user()->role !== 'gm'): ?>
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah SIM Card
             </button>
-            @endif
+            <?php endif; ?>
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
@@ -148,7 +147,7 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
-                <a href="{{ route('admin.export', ['type' => 'sim-cards', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
+                <a href="<?php echo e(route('admin.export', ['type' => 'sim-cards', 'filter' => 'all'])); ?>" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -179,12 +178,12 @@
                         <th class="hidden lg:table-cell">Masa Tenggang</th>
                         <th style="color:var(--text-muted);font-size:0.65rem;">Hari</th>
                         <th>Status</th>
-                        @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+                        <?php if(auth()->user()->role !== 'gm'): ?><th>Aksi</th><?php endif; ?>
                     </tr>
                 </thead>
                 <tbody id="sim-tbody">
-                    @forelse($cards as $c)
-                    @php
+                    <?php $__empty_1 = true; $__currentLoopData = $cards; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
                         $statusSim = $c->status_sim;
                         $badgeClass = match($statusSim) {
                             'aktif' => 'badge-green',
@@ -200,41 +199,41 @@
                             'mati' => 'Mati',
                             default => 'Nonaktif',
                         };
-                    @endphp
-                    <tr data-status="{{ $statusSim }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        <td style="color:var(--text-primary);font-weight:600;font-family:monospace;">{{ $c->nomor_sim_card }}</td>
-                        <td style="color:var(--text-muted);">{{ $c->pic }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $c->keperluan }}">{{ $c->keperluan ?? '—' }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $c->masa_aktif?->format('d M Y') }}</td>
-                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $c->masa_tenggang?->format('d M Y') }}</td>
-                        <td style="color:var(--text-muted);font-size:0.7rem;">{{ $c->hari_sim }}</td>
-                        <td><span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span></td>
-                        @if(auth()->user()->role !== 'gm')<td>
+                    ?>
+                    <tr data-status="<?php echo e($statusSim); ?>">
+                        <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
+                        <td style="color:var(--text-primary);font-weight:600;font-family:monospace;"><?php echo e($c->nomor_sim_card); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($c->pic); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="<?php echo e($c->keperluan); ?>"><?php echo e($c->keperluan ?? '—'); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($c->masa_aktif?->format('d M Y')); ?></td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($c->masa_tenggang?->format('d M Y')); ?></td>
+                        <td style="color:var(--text-muted);font-size:0.7rem;"><?php echo e($c->hari_sim); ?></td>
+                        <td><span class="badge <?php echo e($badgeClass); ?>"><?php echo e($statusLabel); ?></span></td>
+                        <?php if(auth()->user()->role !== 'gm'): ?><td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $c->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                <button type="button" onclick="showDetail(<?php echo e($c->id); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown(this, {{ $c->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $c->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showDetail({{ $c->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
-                                        <button type="button" onclick="openEditModal({{ $c->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="{{ route('admin.sim-cards.destroy', $c) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus SIM Card ini?" style="margin:0;">
-                                            @csrf @method('DELETE')
+                                    <button type="button" onclick="toggleDropdown(this, <?php echo e($c->id); ?>)" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-<?php echo e($c->id); ?>" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showDetail(<?php echo e($c->id); ?>)" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditModal(<?php echo e($c->id); ?>)" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="<?php echo e(route('admin.sim-cards.destroy', $c)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus SIM Card ini?" style="margin:0;">
+                                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                        </td>@endif
+                        </td><?php endif; ?>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr id="empty-row">
                         <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data SIM Card.</td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -242,7 +241,7 @@
 
 </div>
 
-{{-- Detail Modal --}}
+
 <div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetail()">
     <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
@@ -260,7 +259,7 @@
     </div>
 </div>
 
-{{-- Modal Tambah / Edit SIM Card --}}
+
 <div id="sim-modal" class="modal-modern" onclick="if(event.target===this)closeModal('sim-modal')">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
 
@@ -274,7 +273,7 @@
         </div>
 
         <form id="sim-form" method="POST">
-            @csrf
+            <?php echo csrf_field(); ?>
             <input type="hidden" name="_method" id="form-method" value="POST">
             <input type="hidden" name="id" id="form-id" value="">
 
@@ -331,9 +330,9 @@
 
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .form-grid-2 {
     display: grid;
@@ -388,17 +387,17 @@
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
-const simData = @json($cardsJson);
+const simData = <?php echo json_encode($cardsJson, 15, 512) ?>;
 
 function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah SIM Card';
     document.getElementById('form-method').value = 'POST';
     document.getElementById('form-id').value = '';
-    document.getElementById('sim-form').action = '{{ route('admin.sim-cards.store') }}';
+    document.getElementById('sim-form').action = '<?php echo e(route('admin.sim-cards.store')); ?>';
     document.getElementById('form-submit-btn').textContent = 'Simpan';
     document.getElementById('sim-form').querySelectorAll('input, textarea, select').forEach(el => {
         if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method') {
@@ -479,7 +478,7 @@ function openEditModal(id) {
     document.getElementById('modal-title').textContent = 'Edit SIM Card';
     document.getElementById('form-method').value = 'PUT';
     document.getElementById('form-id').value = c.id;
-    document.getElementById('sim-form').action = '{{ url('admin/sim-cards') }}/' + c.id;
+    document.getElementById('sim-form').action = '<?php echo e(url('admin/sim-cards')); ?>/' + c.id;
     document.getElementById('form-submit-btn').textContent = 'Simpan Perubahan';
 
     document.getElementById('f-nomor_sim_card').value = c.nomor_sim_card;
@@ -538,4 +537,6 @@ function filterSim() {
     });
 }
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/sim-cards/index.blade.php ENDPATH**/ ?>

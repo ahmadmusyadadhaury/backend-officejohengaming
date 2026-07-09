@@ -18,7 +18,7 @@
             <div class="min-w-0">
                 <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Aset MES</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh aset MES perusahaan</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -30,7 +30,7 @@
             <div>
                 <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Aset Aktif</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Aset MES yang masih aktif</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -42,7 +42,7 @@
             <div>
                 <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['nonaktif'] }}</div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Aset Tidak Aktif</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Aset MES yang tidak aktif</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
     </div>

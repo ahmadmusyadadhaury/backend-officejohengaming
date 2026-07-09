@@ -16,5 +16,6 @@ class SosialMedia extends Model
         'divisi',
         'pic',
         'ket',
+        'status',
     ];
 }

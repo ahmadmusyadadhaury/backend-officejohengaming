@@ -1,14 +1,13 @@
-@extends('layouts.app')
-@section('body-class', 'page-leader')
-@section('title', 'Rekap MOM Saya')
-@section('page-title', 'MOM > Rekap Minutes of Meeting')
-@section('page-subtitle', 'Riwayat MOM yang pernah kamu buat')
-@section('sidebar-menu') @include(auth()->user()->hasFullAccess() ? 'partials.sidebar-admin' : 'partials.sidebar-leader') @endsection
-@section('content')
+<?php $__env->startSection('body-class', 'page-admin'); ?>
+<?php $__env->startSection('title', 'Rekap MOM'); ?>
+<?php $__env->startSection('page-title', 'Overview > Rekap Minutes of Meeting'); ?>
+<?php $__env->startSection('page-subtitle', 'Lihat rekap hasil meeting dan keputusan'); ?>
+<?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- 3 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(124,58,237,0.15);">
@@ -18,9 +17,23 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $momStats['total_moms'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($momStats['total_moms']); ?></div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total MOM</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Semua MOM</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Total Minutes of Meeting</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(59,130,246,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#60a5fa;"><?php echo e($momStats['month_moms']); ?></div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Bulan Ini</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">MOM <?php echo e(now()->locale('id')->isoFormat('MMMM YYYY')); ?></div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -32,8 +45,8 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $momStats['sent_moms'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Terkirim</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;"><?php echo e($momStats['reviewed_moms']); ?></div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Sudah Direview</div>
                 <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">MOM sudah dikirim</div>
             </div>
         </div>
@@ -46,18 +59,18 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $momStats['draft_moms'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Draft</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;"><?php echo e($momStats['unreviewed_moms']); ?></div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Belum Direview</div>
                 <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">MOM masih draft</div>
             </div>
         </div>
     </div>
 
-    {{-- Table --}}
+    
     <div class="gaming-card overflow-hidden">
         <div class="px-6 py-4" style="border-bottom:1px solid var(--border-color);">
-            <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Rekap Minutes of Meeting Saya</div>
-            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Dokumentasi hasil meeting yang pernah kamu buat.</div>
+            <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Rekap Minutes of Meeting</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Dokumentasi hasil setiap meeting yang telah dilaksanakan.</div>
         </div>
         <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
@@ -68,9 +81,24 @@
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
+            <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
+                <button type="button" onclick="togglePeriodFilter(event)" class="filter-btn"
+                    style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                    <span id="period-filter-label" data-value="<?php echo e($period); ?>"><?php echo e($period == 'all' ? 'Semua Periode' : ($period == 'daily' ? 'Hari Ini' : ($period == 'weekly' ? 'Minggu Ini' : 'Bulan Ini'))); ?></span>
+                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="period-filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                    <button type="button" data-value="all" onclick="setPeriodFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Periode</button>
+                    <button type="button" data-value="daily" onclick="setPeriodFilter('daily')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hari Ini</button>
+                    <button type="button" data-value="weekly" onclick="setPeriodFilter('weekly')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Minggu Ini</button>
+                    <button type="button" data-value="monthly" onclick="setPeriodFilter('monthly')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Bulan Ini</button>
+                </div>
+            </div>
         </div>
         <div class="overflow-x-auto">
-            <table class="gaming-table" style="width:100%;min-width:800px;">
+            <table class="gaming-table" style="width:100%;min-width:900px;">
                 <colgroup>
                     <col style="width:50px">
                     <col>
@@ -78,7 +106,7 @@
                     <col class="hidden sm:table-cell" style="width:140px">
                     <col style="width:120px">
                     <col class="hidden md:table-cell" style="width:100px">
-                    <col style="width:120px">
+                    <col style="width:100px">
                 </colgroup>
                 <thead>
                     <tr>
@@ -88,71 +116,97 @@
                         <th class="hidden sm:table-cell" style="width:140px">Dibuat Oleh</th>
                         <th style="width:120px">Tanggal Meeting</th>
                         <th class="hidden md:table-cell" style="width:100px">Status</th>
-                        <th style="width:120px">Aksi</th>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
+                        <th style="width:100px">Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($moms as $mom)
+                    <?php $__empty_1 = true; $__currentLoopData = $moms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mom): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $mom->meeting->title ?? '—' }}</td>
-                        <td style="color:var(--text-secondary);">{{ $mom->pic }}</td>
-                        <td class="hidden sm:table-cell" style="color:var(--text-muted);">{{ $mom->creator->name ?? '—' }}</td>
-                        <td style="color:var(--text-muted);">{{ $mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : '—' }}</td>
+                        <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($mom->meeting->title ?? '—'); ?></td>
+                        <td style="color:var(--text-secondary);"><?php echo e($mom->pic); ?></td>
+                        <td class="hidden sm:table-cell" style="color:var(--text-muted);"><?php echo e($mom->creator->name ?? '—'); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : '—'); ?></td>
                         <td class="hidden md:table-cell">
-                            @if($mom->status === 'sent')
+                            <?php if($mom->status === 'sent'): ?>
                                 <span class="inline-block text-[11px] font-bold px-2 py-1" style="background:rgba(16,185,129,0.15);color:#34d399;border-radius:6px;">Terkirim</span>
-                            @else
+                            <?php else: ?>
                                 <span class="inline-block text-[11px] font-bold px-2 py-1" style="background:rgba(245,158,11,0.15);color:#fbbf24;border-radius:6px;">Draft</span>
-                            @endif
+                            <?php endif; ?>
                         </td>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
-                                <button type="button" onclick="showMomDetail({{ $mom->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                    Detail
+                                <button type="button" onclick="showMomDetail(<?php echo e($mom->id); ?>)" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
                                 </button>
-                                @if($mom->status === 'draft')
-                                    <a href="{{ route('koordinator.mom.edit', $mom) }}" class="btn btn-primary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                        Edit
-                                    </a>
-                                @endif
                                 <div class="relative dropdown-actions-mom">
-                                    <button type="button" onclick="toggleMomMenu(event, {{ $mom->id }})" class="btn btn-secondary btn-sm" style="padding:4px 6px;line-height:1;" title="Aksi">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                                    <button type="button" onclick="toggleMomMenu(event, <?php echo e($mom->id); ?>)" style="padding:6px 10px;line-height:1;font-size:0.8rem;font-weight:700;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-surface);color:var(--text-primary);cursor:pointer;" title="Aksi">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
                                     </button>
-                                    <div id="mom-menu-{{ $mom->id }}" style="display:none;position:absolute;top:100%;right:0;min-width:170px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;margin-top:4px;">
-                                        <a href="{{ route('mom.export', $mom->id) }}" class="w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                    <div id="mom-menu-<?php echo e($mom->id); ?>" style="display:none;position:absolute;top:100%;right:0;min-width:170px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;margin-top:4px;">
+                                        <a href="<?php echo e(route('mom.export', $mom->id)); ?>" class="w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                             Export Excel
                                         </a>
-                                        @if($mom->file_path)
-                                        <a href="{{ asset('storage/' . $mom->file_path) }}" target="_blank" class="w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                        <?php if($mom->file_path): ?>
+                                        <a href="<?php echo e(url('storage/' . $mom->file_path)); ?>" target="_blank" class="w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                             Download Lampiran
                                         </a>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
                         </td>
+                        <?php endif; ?>
                     </tr>
-                    @empty
-                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Kamu belum membuat MOM.</td></tr>
-                    @endforelse
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada MOM.</td></tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
-        <div class="px-6 py-3" style="border-top:1px solid var(--border-color);">{{ $moms->links() }}</div>
+        <div class="px-6 py-3" style="border-top:1px solid var(--border-color);"><?php echo e($moms->links()); ?></div>
+    </div>
+
+    
+    <div class="print-only space-y-4">
+        <?php $__currentLoopData = $moms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mom): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <div class="gaming-card p-6" style="break-inside:avoid;">
+            <h3 class="font-gaming font-bold text-lg" style="color:var(--text-primary);"><?php echo e($mom->meeting->title ?? 'Meeting'); ?></h3>
+            <p class="text-sm mt-1" style="color:var(--text-muted);">
+                <?php echo e($mom->meeting->meeting_date ? $mom->meeting->meeting_date->format('d M Y') : ''); ?>
+
+                · <?php echo e($mom->meeting->room->name ?? ''); ?>
+
+                · Dibuat oleh: <?php echo e($mom->creator->name ?? '—'); ?>
+
+                · Dikirim: <?php echo e($mom->sent_at ? $mom->sent_at->format('d M Y H:i') : '—'); ?>
+
+            </p>
+            <div class="mt-4 space-y-3">
+                <div><p class="text-xs font-semibold" style="color:var(--color-accent-light);">RINGKASAN PEMBAHASAN</p><p class="text-sm mt-1" style="color:var(--text-secondary);"><?php echo e($mom->summary); ?></p></div>
+                <div><p class="text-xs font-semibold" style="color:var(--color-accent-light);">KEPUTUSAN</p><p class="text-sm mt-1" style="color:var(--text-secondary);"><?php echo e($mom->decisions); ?></p></div>
+                <div><p class="text-xs font-semibold" style="color:var(--color-accent-light);">ACTION PLAN</p><p class="text-sm mt-1" style="color:var(--text-secondary);"><?php echo e($mom->action_plan); ?></p></div>
+                <div><p class="text-xs font-semibold" style="color:var(--color-accent-light);">PIC</p><p class="text-sm mt-1" style="color:var(--text-primary);font-weight:600;"><?php echo e($mom->pic); ?></p></div>
+            </div>
+            <?php if($mom->file_path): ?>
+            <p class="text-xs mt-3" style="color:var(--text-muted);">Lampiran: <?php echo e(basename($mom->file_path)); ?></p>
+            <?php endif; ?>
+        </div>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
 </div>
 
-{{-- Modal Detail MOM (gunakan partial dari admin moms) --}}
-<div id="mom-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);">
-    <div class="w-full max-w-[380px] lg:max-w-[480px] xl:max-w-[580px] 2xl:max-w-[720px]" style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
 
-        {{-- Header --}}
+<div id="mom-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[380px] lg:max-w-[480px] xl:max-w-[580px] 2xl:max-w-[720px]" style="max-height:90vh;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:22px;box-shadow:0 25px 60px rgba(0,0,0,0.3);display:flex;flex-direction:column;animation:momFadeIn 0.25s ease;" onclick="event.stopPropagation()">
+
+        
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(139,92,246,0.18);">
@@ -165,21 +219,21 @@
             </button>
         </div>
 
-        {{-- Body --}}
+        
         <div class="p-4 overflow-y-auto flex-1" id="mom-detail-body" style="scrollbar-width:thin;scrollbar-color:rgba(129,140,248,0.25) transparent;">
 
-            {{-- 2-Column Grid: Left Info / Right Permohonan --}}
+            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {{-- Left: Meeting Info --}}
+                
                 <div id="mom-info-rows" class="space-y-0"></div>
 
-                {{-- Right: Detail Permohonan --}}
+                
                 <div id="mom-permohonan-section" class="hidden">
                     <div id="mom-permohonan-content"></div>
                 </div>
             </div>
 
-            {{-- MOM Content Card --}}
+            
             <div class="mt-4" id="mom-mom-section">
                 <div style="border:1px solid rgba(16,185,129,0.35);background:var(--bg-base);border-radius:16px;padding:14px;">
                     <div class="flex items-center gap-2 mb-3">
@@ -197,18 +251,18 @@
             </div>
         </div>
 
-        {{-- Footer --}}
+        
         <div class="flex items-center justify-end px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);">
             <button type="button" onclick="closeModal('mom-detail-modal')" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-secondary);border:1px solid var(--border-color);background:var(--bg-surface-2);" onmouseover="this.style.background='var(--bg-surface)'" onmouseout="this.style.background='var(--bg-surface-2)'">Tutup</button>
         </div>
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
-const momsData = @json($momsJson);
+const momsData = <?php echo json_encode($momsJson, 15, 512) ?>;
 
 const momStatusMap = {
     pending:      { label: '\u25cf MENUNGGU',    bg: 'rgba(245,158,11,0.18)', text: '#fbbf24', border: 'rgba(245,158,11,0.3)' },
@@ -226,8 +280,10 @@ function showMomDetail(id) {
 
     const st = momStatusMap[m.status] || momStatusMap.completed;
 
+    // Header judul
     document.getElementById('mom-modal-judul').textContent = m.judul_meeting;
 
+    // Left: Meeting info rows
     const rows = document.getElementById('mom-info-rows');
     rows.innerHTML = `
         <div class="flex items-center justify-between py-2" style="border-bottom:1px solid var(--border-color);">
@@ -259,6 +315,7 @@ function showMomDetail(id) {
         </div>` : ''}
     `;
 
+    // Right: Detail Permohonan
     const permohonanSec = document.getElementById('mom-permohonan-section');
     const permohonanContent = document.getElementById('mom-permohonan-content');
     let pHtml = '';
@@ -293,6 +350,7 @@ function showMomDetail(id) {
         permohonanSec.classList.add('hidden');
     }
 
+    // MOM content items helper
     function momItem(label, content, icon) {
         if (!content) return '';
         return `
@@ -337,6 +395,26 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeModal('mom-detail-modal');
 });
 
+function togglePeriodFilter(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('period-filter-menu');
+    const isHidden = menu.style.display === 'none';
+    document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = isHidden ? 'block' : 'none';
+}
+
+function setPeriodFilter(value) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('period', value);
+    window.location.search = params.toString();
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    }
+});
+
 function filterMoms() {
     const search = (document.getElementById('search-mom')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('.gaming-table tbody tr:not([colspan])');
@@ -346,6 +424,7 @@ function filterMoms() {
     });
 }
 
+// Dropdown titik tiga MOM
 function toggleMomMenu(e, id) {
     e.stopPropagation();
     const menu = document.getElementById('mom-menu-' + id);
@@ -360,19 +439,49 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
     .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
-    #mom-detail-body::-webkit-scrollbar { width: 4px; }
-    #mom-detail-body::-webkit-scrollbar-track { background: transparent; }
-    #mom-detail-body::-webkit-scrollbar-thumb { background: rgba(129,140,248,0.25); border-radius: 4px; }
+    .print-only { display: none; }
+
+    @media print {
+        .gaming-sidebar,
+        .gaming-topbar,
+        nav,
+        header,
+        .btn,
+        form,
+        .pagination,
+        .gaming-table,
+        .space-y-4 > .gaming-card {
+            display: none !important;
+        }
+        body { background: white !important; color: black !important; }
+        .gaming-card { border: 1px solid #ddd !important; box-shadow: none !important; }
+        .lg\\:ml-64 { margin-left: 0 !important; }
+        .page-content { padding: 0 !important; margin-top: 0 !important; }
+        .print-only { display: block !important; }
+    }
+
+    #mom-detail-body::-webkit-scrollbar {
+        width: 4px;
+    }
+    #mom-detail-body::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    #mom-detail-body::-webkit-scrollbar-thumb {
+        background: rgba(129,140,248,0.25);
+        border-radius: 4px;
+    }
 
     @keyframes momFadeIn {
         from { opacity: 0; transform: scale(0.96); }
         to { opacity: 1; transform: scale(1); }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/moms/index.blade.php ENDPATH**/ ?>

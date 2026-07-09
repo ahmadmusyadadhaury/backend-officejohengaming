@@ -131,7 +131,9 @@
         <span class="truncate">Tagihan</span>
         <span class="sidebar-badge tagihan-badge" style="{{ $totalTagihan > 0 ? '' : 'display:none;' }}background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;line-height:1.4;">{{ $totalTagihan }}</span>
     </a>
+    @if(auth()->user()->role === 'admin')
     <a href="{{ route('payment-approval.create') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.create') ? 'active' : '' }}"><span class="truncate">Ajukan Pembayaran</span></a>
+    @endif
     <a href="{{ route('payment-approval.status') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.status') ? 'active' : '' }}"><span class="truncate">Status Pengajuan</span></a>
     @endif
     <a href="{{ route('admin.payment-approvals.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.payment-approvals.*') ? 'active' : '' }}">

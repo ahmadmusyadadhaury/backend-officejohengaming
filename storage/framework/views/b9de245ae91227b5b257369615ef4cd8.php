@@ -1,14 +1,13 @@
-@extends('layouts.app')
-@section('body-class', 'page-admin')
-@section('title', 'Data Kendaraan')
-@section('page-title', 'Data Aset > Kendaraan')
-@section('page-subtitle', 'Seluruh aset kendaraan milik perusahaan')
-@section('sidebar-menu') @include('partials.sidebar-admin') @endsection
+<?php $__env->startSection('body-class', 'page-admin'); ?>
+<?php $__env->startSection('title', 'Data Kendaraan'); ?>
+<?php $__env->startSection('page-title', 'Data Aset > Kendaraan'); ?>
+<?php $__env->startSection('page-subtitle', 'Seluruh aset kendaraan milik perusahaan'); ?>
+<?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- 4 Stat Cards --}}
+    
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -18,7 +17,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Kendaraan</div>
                 
             </div>
@@ -31,7 +30,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['pajak_aktif'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['pajak_aktif']); ?></div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Pajak Aktif</div>
                 <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
@@ -44,7 +43,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['segera_habis'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;"><?php echo e($stats['segera_habis']); ?></div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
                 <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
@@ -57,7 +56,7 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:#f97316;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#f97316;"><?php echo e($stats['jatuh_tempo']); ?></div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
                 <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
@@ -70,81 +69,81 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['pajak_mati'] }}</div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;"><?php echo e($stats['pajak_mati']); ?></div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Pajak Mati</div>
                 <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
     </div>
 
-    {{-- Alert Pajak Mendekati --}}
-    @php
+    
+    <?php
         $matiCount = $alertVehicles->where('status_pajak', 'mati')->count();
         $jatuhTempoCount = $alertVehicles->where('status_pajak', 'jatuh_tempo')->count();
         $segeraCount = $alertVehicles->where('status_pajak', 'segera_habis')->count();
-    @endphp
-    @if($alertVehicles->isNotEmpty())
+    ?>
+    <?php if($alertVehicles->isNotEmpty()): ?>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        @if($matiCount > 0)
+        <?php if($matiCount > 0): ?>
         <div style="flex:1;min-width:260px;">
             <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                 </svg>
                 <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#ef4444;">{{ $matiCount }} Pajak Mati</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $matiCount }} kendaraan dengan pajak sudah expired.</div>
+                    <div class="text-sm font-bold" style="color:#ef4444;"><?php echo e($matiCount); ?> Pajak Mati</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);"><?php echo e($matiCount); ?> kendaraan dengan pajak sudah expired.</div>
                 </div>
                 <button type="button" onclick="showAlertPopup('danger')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
             </div>
         </div>
-        @endif
-        @if($jatuhTempoCount > 0)
+        <?php endif; ?>
+        <?php if($jatuhTempoCount > 0): ?>
         <div style="flex:1;min-width:260px;">
             <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);">
                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                 </svg>
                 <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#f97316;">{{ $jatuhTempoCount }} Jatuh Tempo</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $jatuhTempoCount }} kendaraan dengan pajak jatuh tempo.</div>
+                    <div class="text-sm font-bold" style="color:#f97316;"><?php echo e($jatuhTempoCount); ?> Jatuh Tempo</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);"><?php echo e($jatuhTempoCount); ?> kendaraan dengan pajak jatuh tempo.</div>
                 </div>
                 <button type="button" onclick="showAlertPopup('jatuh_tempo')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(249,115,22,0.12);color:#f97316;border:1px solid rgba(249,115,22,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
             </div>
         </div>
-        @endif
-        @if($segeraCount > 0)
+        <?php endif; ?>
+        <?php if($segeraCount > 0): ?>
         <div style="flex:1;min-width:260px;">
             <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
                 <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                 </svg>
                 <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#f59e0b;">{{ $segeraCount }} Segera Habis</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $segeraCount }} kendaraan dengan pajak akan segera habis.</div>
+                    <div class="text-sm font-bold" style="color:#f59e0b;"><?php echo e($segeraCount); ?> Segera Habis</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);"><?php echo e($segeraCount); ?> kendaraan dengan pajak akan segera habis.</div>
                 </div>
                 <button type="button" onclick="showAlertPopup('warning')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Tabel --}}
+    
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Kendaraan</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Seluruh aset kendaraan milik perusahaan.</div>
             </div>
-            @if(auth()->user()->role !== 'gm')
+            <?php if(auth()->user()->role !== 'gm'): ?>
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Kendaraan
             </button>
-            @endif
+            <?php endif; ?>
         </div>
         <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
@@ -156,11 +155,11 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
-                <a href="{{ route('admin.export', ['type' => 'vehicles', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
+                <a href="<?php echo e(route('admin.export', ['type' => 'vehicles', 'filter' => 'all'])); ?>" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <span id="filter-label">{{ $statusFilter === 'all' ? 'Semua Status' : ($statusFilter === 'aktif' ? 'Pajak Aktif' : ($statusFilter === 'segera_habis' ? 'Segera Habis' : ($statusFilter === 'jatuh_tempo' ? 'Jatuh Tempo' : 'Pajak Mati'))) }}</span>
+                    <span id="filter-label"><?php echo e($statusFilter === 'all' ? 'Semua Status' : ($statusFilter === 'aktif' ? 'Pajak Aktif' : ($statusFilter === 'segera_habis' ? 'Segera Habis' : ($statusFilter === 'jatuh_tempo' ? 'Jatuh Tempo' : 'Pajak Mati')))); ?></span>
                     <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
@@ -191,12 +190,12 @@
                         <th class="hidden lg:table-cell">Foto</th>
                         <th>Status</th>
                         <th class="hidden md:table-cell">Keterangan</th>
-                        @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+                        <?php if(auth()->user()->role !== 'gm'): ?><th>Aksi</th><?php endif; ?>
                     </tr>
                 </thead>
                 <tbody id="vehicles-tbody">
-                    @forelse($vehicles as $v)
-                    @php
+                    <?php $__empty_1 = true; $__currentLoopData = $vehicles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $v): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
                         $statusBadge = match($v->status_pajak) {
                             'aktif'        => 'badge-green',
                             'segera_habis' => 'badge-yellow',
@@ -211,58 +210,58 @@
                             'mati'         => 'Pajak Mati',
                             default        => '-',
                         };
-                    @endphp
-                    <tr data-status="{{ $v->status_pajak }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $v->nama_kendaraan }}</td>
-                        <td style="color:var(--text-muted);font-family:monospace;font-weight:600;">{{ $v->plat_nomor }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-primary);">{{ $v->jenis_kendaraan }}</td>
-                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $v->merk_tipe ?? '-' }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $v->tahun }}</td>
-                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $v->warna ?? '-' }}</td>
+                    ?>
+                    <tr data-status="<?php echo e($v->status_pajak); ?>">
+                        <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($v->nama_kendaraan); ?></td>
+                        <td style="color:var(--text-muted);font-family:monospace;font-weight:600;"><?php echo e($v->plat_nomor); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-primary);"><?php echo e($v->jenis_kendaraan); ?></td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($v->merk_tipe ?? '-'); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($v->tahun); ?></td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($v->warna ?? '-'); ?></td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);font-family:monospace;font-size:12px;">
-                            @if($v->nomor_rangka){{ $v->nomor_rangka }}@else<svg class="w-4 h-4 inline-block align-middle" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg><span class="inline-block align-middle text-xs" style="color:#f59e0b;margin-left:4px;font-weight:500;">Data Belum Dilengkapi</span>@endif
+                            <?php if($v->nomor_rangka): ?><?php echo e($v->nomor_rangka); ?><?php else: ?><svg class="w-4 h-4 inline-block align-middle" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg><span class="inline-block align-middle text-xs" style="color:#f59e0b;margin-left:4px;font-weight:500;">Data Belum Dilengkapi</span><?php endif; ?>
                         </td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);font-family:monospace;font-size:12px;">
-                            @if($v->nomor_mesin){{ $v->nomor_mesin }}@else<svg class="w-4 h-4 inline-block align-middle" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg><span class="inline-block align-middle text-xs" style="color:#f59e0b;margin-left:4px;font-weight:500;">Data Belum Dilengkapi</span>@endif
+                            <?php if($v->nomor_mesin): ?><?php echo e($v->nomor_mesin); ?><?php else: ?><svg class="w-4 h-4 inline-block align-middle" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg><span class="inline-block align-middle text-xs" style="color:#f59e0b;margin-left:4px;font-weight:500;">Data Belum Dilengkapi</span><?php endif; ?>
                         </td>
                         <td class="hidden lg:table-cell" style="vertical-align:middle;font-size:12px;">
-                            @if($v->foto)
-                            <a href="{{ asset('storage/'.$v->foto) }}" target="_blank" rel="noopener">
-                                <img src="{{ asset('storage/'.$v->foto) }}" alt="Foto" style="width:60px;height:40px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);display:block;">
+                            <?php if($v->foto): ?>
+                            <a href="<?php echo e(asset('storage/'.$v->foto)); ?>" target="_blank" rel="noopener">
+                                <img src="<?php echo e(asset('storage/'.$v->foto)); ?>" alt="Foto" style="width:60px;height:40px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);display:block;">
                             </a>
-                            @else
+                            <?php else: ?>
                             <svg class="w-4 h-4 inline-block align-middle" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg><span class="inline-block align-middle" style="color:#f59e0b;margin-left:4px;font-weight:500;font-size:12px;font-family:monospace;">Data Belum Dilengkapi</span>
-                            @endif
+                            <?php endif; ?>
                         </td>
-                        <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span> @if(in_array($v->status_pajak, ['jatuh_tempo', 'segera_habis', 'mati']))<br><span class="text-[9px] font-semibold" style="color:var(--text-muted);">{{ $v->hari_pajak }}</span>@endif</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $v->keperluan }}">{{ $v->keperluan ?? '-' }}</td>
-                        @if(auth()->user()->role !== 'gm')<td>
+                        <td><span class="badge <?php echo e($statusBadge); ?>"><?php echo e($statusLabel); ?></span> <?php if(in_array($v->status_pajak, ['jatuh_tempo', 'segera_habis', 'mati'])): ?><br><span class="text-[9px] font-semibold" style="color:var(--text-muted);"><?php echo e($v->hari_pajak); ?></span><?php endif; ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="<?php echo e($v->keperluan); ?>"><?php echo e($v->keperluan ?? '-'); ?></td>
+                        <?php if(auth()->user()->role !== 'gm'): ?><td>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="showDetail({{ $v->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                <button type="button" onclick="showDetail(<?php echo e($v->id); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     Lihat Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown(this, {{ $v->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $v->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showPajakRequestModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Bayar</button>
-                                        <button type="button" onclick="showDetail({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
-                                        <button type="button" onclick="openEditModal({{ $v->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="{{ route('admin.vehicles.destroy', $v) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus kendaraan ini?" style="margin:0;">
-                                            @csrf @method('DELETE')
+                                    <button type="button" onclick="toggleDropdown(this, <?php echo e($v->id); ?>)" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-<?php echo e($v->id); ?>" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showPajakRequestModal(<?php echo e($v->id); ?>)" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Bayar</button>
+                                        <button type="button" onclick="showDetail(<?php echo e($v->id); ?>)" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditModal(<?php echo e($v->id); ?>)" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="<?php echo e(route('admin.vehicles.destroy', $v)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus kendaraan ini?" style="margin:0;">
+                                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                        </td>@endif
+                        </td><?php endif; ?>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr id="empty-row">
                         <td colspan="12" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data kendaraan.</td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -270,7 +269,7 @@
 
 </div>
 
-{{-- Popup Alert Pajak --}}
+
 <div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
     <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:460px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -281,7 +280,7 @@
     </div>
 </div>
 
-{{-- Detail Modal --}}
+
 <div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetail()">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
 
@@ -300,12 +299,12 @@
     </div>
 </div>
 
-@push('modals')
-{{-- Modal Tambah / Edit Kendaraan --}}
+<?php $__env->startPush('modals'); ?>
+
 <div id="vehicle-modal" style="display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:99999;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="vehicle-modal-card" onclick="event.stopPropagation()">
 
-        {{-- Header --}}
+        
         <div class="vehicle-modal-header">
             <div>
                 <h3 class="vehicle-modal-title" id="modal-title">Tambah Aset Kendaraan</h3>
@@ -318,15 +317,15 @@
             </button>
         </div>
 
-        {{-- Body --}}
+        
         <div class="vehicle-modal-body">
             <form id="vehicle-form" method="POST" enctype="multipart/form-data">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="_method" id="form-method" value="POST">
                 <input type="hidden" name="id" id="form-id" value="">
 
                 <div class="vehicle-form-grid">
-                    {{-- Left Column --}}
+                    
                     <div class="vehicle-form-col">
                         <div class="vehicle-field">
                             <label class="vehicle-label">
@@ -372,13 +371,13 @@
                         </div>
                     </div>
 
-                    {{-- Right Column --}}
+                    
                     <div class="vehicle-form-col">
                         <div class="vehicle-field">
                             <label class="vehicle-label">
                                 Tahun Kendaraan <span class="vehicle-required">*</span>
                             </label>
-                            <input type="number" name="tahun" id="f-tahun" required placeholder="Masukan tahun" class="vehicle-input" min="1900" max="{{ now()->year + 1 }}">
+                            <input type="number" name="tahun" id="f-tahun" required placeholder="Masukan tahun" class="vehicle-input" min="1900" max="<?php echo e(now()->year + 1); ?>">
                         </div>
                         <div class="vehicle-field">
                             <label class="vehicle-label">
@@ -424,12 +423,12 @@
                         </div>
                 </div>
 
-                {{-- Hidden fields --}}
+                
                 <input type="hidden" name="biaya_kendaraan" id="f-biaya_kendaraan" value="0">
-                <input type="hidden" name="pic" id="f-pic" value="{{ auth()->user()->name }}">
-                <input type="hidden" name="jabatan" id="f-jabatan" value="{{ auth()->user()->jabatan ?? auth()->user()->role }}">
+                <input type="hidden" name="pic" id="f-pic" value="<?php echo e(auth()->user()->name); ?>">
+                <input type="hidden" name="jabatan" id="f-jabatan" value="<?php echo e(auth()->user()->jabatan ?? auth()->user()->role); ?>">
 
-                {{-- Footer --}}
+                
                 <div class="vehicle-modal-footer">
                     <button type="button" onclick="closeModal('vehicle-modal')" class="vehicle-btn vehicle-btn-batal">Batal</button>
                     <button type="submit" class="vehicle-btn vehicle-btn-simpan" id="form-submit-btn">Simpan</button>
@@ -439,9 +438,9 @@
 
     </div>
 </div>
-@endpush
+<?php $__env->stopPush(); ?>
 
-{{-- Modal Alasan Tolak --}}
+
 <div id="reject-modal" style="display:none;position:fixed;inset:0;z-index:100001;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div style="width:100%;max-width:420px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:20px;box-shadow:0 25px 60px rgba(0,0,0,0.5);padding:24px;" onclick="event.stopPropagation()">
         <h3 style="font-size:16px;font-weight:700;color:var(--text-primary);margin:0 0 4px;">Tolak Pengajuan</h3>
@@ -455,7 +454,7 @@
     </div>
 </div>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
@@ -623,13 +622,13 @@
     box-shadow: 0 6px 20px rgba(108,92,255,0.4);
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 console.log('[Vehicles] Script loaded');
-const vehiclesData = @json($vehiclesJson);
-const csrfToken = '{{ csrf_token() }}';
+const vehiclesData = <?php echo json_encode($vehiclesJson, 15, 512) ?>;
+const csrfToken = '<?php echo e(csrf_token()); ?>';
 
 const statusMap = {
     aktif:        { label: 'Pajak Aktif',      bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
@@ -638,7 +637,7 @@ const statusMap = {
     mati:         { label: 'Pajak Mati',       bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
 };
 
-const alertData = @json($alertJson);
+const alertData = <?php echo json_encode($alertJson, 15, 512) ?>;
 
 function showAlertPopup(type) {
     const title = document.getElementById('alert-popup-title');
@@ -787,7 +786,7 @@ function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah Aset Kendaraan';
     document.getElementById('form-method').value = 'POST';
     document.getElementById('form-id').value = '';
-    document.getElementById('vehicle-form').action = '{{ route('admin.vehicles.store') }}';
+    document.getElementById('vehicle-form').action = '<?php echo e(route('admin.vehicles.store')); ?>';
     document.getElementById('form-submit-btn').textContent = 'Simpan';
     document.getElementById('vehicle-form').querySelectorAll('input, textarea, select').forEach(el => {
         if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method') el.value = '';
@@ -814,7 +813,7 @@ function openEditModal(id) {
     document.getElementById('modal-title').textContent = 'Edit Aset Kendaraan';
     document.getElementById('form-method').value = 'PUT';
     document.getElementById('form-id').value = v.id;
-    document.getElementById('vehicle-form').action = '{{ url('admin/vehicles') }}/' + v.id;
+    document.getElementById('vehicle-form').action = '<?php echo e(url('admin/vehicles')); ?>/' + v.id;
     document.getElementById('form-submit-btn').textContent = 'Simpan Perubahan';
     document.getElementById('f-nama_kendaraan').value = v.nama_kendaraan;
     document.getElementById('f-jenis_kendaraan').value = v.jenis_kendaraan;
@@ -849,7 +848,7 @@ function showModal() { openModal('vehicle-modal'); }
 document.getElementById('vehicle-modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal('vehicle-modal'); });
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeDetail(); closeModal('vehicle-modal'); } });
 
-let currentFilter = '{{ $statusFilter }}';
+let currentFilter = '<?php echo e($statusFilter); ?>';
 
 function toggleFilterMenu(e) {
     e.stopPropagation();
@@ -954,5 +953,7 @@ function rejectRequest() {
     });
 }
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/vehicles/index.blade.php ENDPATH**/ ?>
