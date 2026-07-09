@@ -26,4 +26,51 @@ class SimCard extends Model
             'status_kartu' => 'boolean',
         ];
     }
+
+    public function getStatusSimAttribute(): string
+    {
+        $now = now();
+        $batasJatuhTempo = now()->addDays(7);
+        $batasSegera = now()->addDays(3);
+
+        if (! $this->masa_tenggang) {
+            return 'nonaktif';
+        }
+
+        if ($this->masa_tenggang > $batasJatuhTempo) {
+            return 'aktif';
+        }
+
+        if ($this->masa_tenggang > $batasSegera) {
+            return 'jatuh_tempo';
+        }
+
+        if ($this->masa_tenggang > $now) {
+            return 'segera_habis';
+        }
+
+        return 'mati';
+    }
+
+    public function getHariSimAttribute(): string
+    {
+        $now = now()->startOfDay();
+        $due = $this->masa_tenggang?->startOfDay();
+
+        if (! $due) {
+            return '-';
+        }
+
+        $diff = $now->diffInDays($due, false);
+
+        if ($diff > 0) {
+            return "H-{$diff}";
+        }
+
+        if ($diff === 0) {
+            return 'H-0';
+        }
+
+        return 'H+'.abs($diff);
+    }
 }

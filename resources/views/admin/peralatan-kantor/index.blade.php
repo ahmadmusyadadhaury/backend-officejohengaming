@@ -72,12 +72,14 @@
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Inventaris peralatan kantor milik perusahaan.</div>
             </div>
             <div class="flex items-center gap-2">
+                @if(auth()->user()->role !== 'gm')
                 <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     Tambah Peralatan
                 </button>
+                @endif
             </div>
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
@@ -124,7 +126,9 @@
                         <th class="hidden md:table-cell">Lokasi Unit</th>
                         <th class="hidden md:table-cell">Nilai (Setelah Penyusutan)</th>
                         <th>Kondisi</th>
+                        @if(auth()->user()->role !== 'gm')
                         <th>Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody id="item-tbody">
@@ -154,6 +158,7 @@
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $i->lokasi_unit }}</td>
                         <td class="hidden md:table-cell" style="color:{{ $nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444' }};font-weight:500;">Rp {{ number_format($nilaiSekarang, 0, ',', '.') }}</td>
                         <td><span class="badge {{ $kondisiBadge }}">{{ $kondisiLabel }}</span></td>
+                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -173,10 +178,11 @@
                                 </div>
                             </div>
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data peralatan kantor.</td>
+                        <td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data peralatan kantor.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -196,11 +202,13 @@
                 Kembali
             </button>
             <div class="flex items-center gap-2">
+                @if(auth()->user()->role !== 'gm')
                 <button id="detail-edit-btn" onclick="openEditModal(currentDetailId)" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;cursor:pointer;">Edit</button>
                 <form id="detail-delete-form" method="POST" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" data-action="{{ url('admin/peralatan-kantor') }}/" style="margin:0;">
                     @csrf @method('DELETE')
                     <button type="submit" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);cursor:pointer;">Hapus</button>
                 </form>
+                @endif
                 <button onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>

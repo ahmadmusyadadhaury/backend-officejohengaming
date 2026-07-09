@@ -9,7 +9,7 @@
 <div class="pt-2 space-y-4 animate-fade-in">
 
     {{-- 4 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(124,58,237,0.15);">
@@ -45,8 +45,21 @@
             </div>
             <div class="min-w-0">
                 <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['segera_habis'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Pajak Segera Habis</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak akan habis dalam 30 hari</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">H-3 s.d H-1</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(249,115,22,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="min-w-0">
+                <div class="text-xl font-gaming font-bold" style="color:#f97316;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">H-7 s.d H-4</div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -59,7 +72,7 @@
             <div class="min-w-0">
                 <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['pajak_mati'] }}</div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Pajak Mati</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Pajak sudah expired</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Sudah lewat jatuh tempo</div>
             </div>
         </div>
     </div>
@@ -67,6 +80,7 @@
     {{-- Alert Pajak Mendekati --}}
     @php
         $matiCount = $alertVehicles->where('status_pajak', 'mati')->count();
+        $jatuhTempoCount = $alertVehicles->where('status_pajak', 'jatuh_tempo')->count();
         $segeraCount = $alertVehicles->where('status_pajak', 'segera_habis')->count();
     @endphp
     @if($alertVehicles->isNotEmpty())
@@ -82,6 +96,20 @@
                     <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $matiCount }} kendaraan dengan pajak sudah expired.</div>
                 </div>
                 <button type="button" onclick="showAlertPopup('danger')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
+            </div>
+        </div>
+        @endif
+        @if($jatuhTempoCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#f97316;">{{ $jatuhTempoCount }} Jatuh Tempo</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $jatuhTempoCount }} kendaraan dengan pajak jatuh tempo.</div>
+                </div>
+                <button type="button" onclick="showAlertPopup('jatuh_tempo')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(249,115,22,0.12);color:#f97316;border:1px solid rgba(249,115,22,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
             </div>
         </div>
         @endif
@@ -109,12 +137,14 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Kendaraan</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Seluruh aset kendaraan milik perusahaan.</div>
             </div>
+            @if(auth()->user()->role !== 'gm')
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Kendaraan
             </button>
+            @endif
         </div>
         <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
@@ -130,7 +160,7 @@
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <span id="filter-label">{{ $statusFilter === 'all' ? 'Semua Status' : ($statusFilter === 'aktif' ? 'Pajak Aktif' : ($statusFilter === 'segera_habis' ? 'Segera Habis' : 'Pajak Mati')) }}</span>
+                    <span id="filter-label">{{ $statusFilter === 'all' ? 'Semua Status' : ($statusFilter === 'aktif' ? 'Pajak Aktif' : ($statusFilter === 'segera_habis' ? 'Segera Habis' : ($statusFilter === 'jatuh_tempo' ? 'Jatuh Tempo' : 'Pajak Mati'))) }}</span>
                     <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
@@ -139,6 +169,7 @@
                     <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
                     <button type="button" data-value="aktif" onclick="setFilter('aktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Pajak Aktif</button>
                     <button type="button" data-value="segera_habis" onclick="setFilter('segera_habis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Segera Habis</button>
+                    <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
                     <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Pajak Mati</button>
                 </div>
             </div>
@@ -160,7 +191,7 @@
                         <th class="hidden lg:table-cell">Foto</th>
                         <th>Status</th>
                         <th class="hidden md:table-cell">Keterangan</th>
-                        <th>Aksi</th>
+                        @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
                     </tr>
                 </thead>
                 <tbody id="vehicles-tbody">
@@ -169,12 +200,14 @@
                         $statusBadge = match($v->status_pajak) {
                             'aktif'        => 'badge-green',
                             'segera_habis' => 'badge-yellow',
+                            'jatuh_tempo'  => 'badge-orange',
                             'mati'         => 'badge-red',
                             default        => 'badge-gray',
                         };
                         $statusLabel = match($v->status_pajak) {
                             'aktif'        => 'Pajak Aktif',
                             'segera_habis' => 'Segera Habis',
+                            'jatuh_tempo'  => 'Jatuh Tempo',
                             'mati'         => 'Pajak Mati',
                             default        => '-',
                         };
@@ -202,9 +235,9 @@
                             <svg class="w-4 h-4 inline-block align-middle" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg><span class="inline-block align-middle" style="color:#f59e0b;margin-left:4px;font-weight:500;font-size:12px;font-family:monospace;">Data Belum Dilengkapi</span>
                             @endif
                         </td>
-                        <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span></td>
+                        <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span> @if(in_array($v->status_pajak, ['jatuh_tempo', 'segera_habis', 'mati']))<br><span class="text-[9px] font-semibold" style="color:var(--text-muted);">{{ $v->hari_pajak }}</span>@endif</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $v->keperluan }}">{{ $v->keperluan ?? '-' }}</td>
-                        <td>
+                        @if(auth()->user()->role !== 'gm')<td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $v->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -223,11 +256,11 @@
                                     </div>
                                 </div>
                             </div>
-                        </td>
+                        </td>@endif
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="13" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data kendaraan.</td>
+                        <td colspan="12" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data kendaraan.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -601,6 +634,7 @@ const csrfToken = '{{ csrf_token() }}';
 const statusMap = {
     aktif:        { label: 'Pajak Aktif',      bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
     segera_habis: { label: 'Segera Habis',     bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+    jatuh_tempo:  { label: 'Jatuh Tempo',      bg: '#fff7ed', text: '#f97316', border: '#fed7aa' },
     mati:         { label: 'Pajak Mati',       bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
 };
 
@@ -610,17 +644,27 @@ function showAlertPopup(type) {
     const overlay = document.getElementById('alert-overlay');
     const title = document.getElementById('alert-popup-title');
     const body = document.getElementById('alert-popup-body');
-    const isDanger = type === 'danger';
-    const color = isDanger ? '#ef4444' : '#f59e0b';
-    const bgColor = isDanger ? 'rgba(239,68,68,0.08)' : 'rgba(245,158,11,0.08)';
-    const borderColor = isDanger ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)';
+    var color, bgColor, borderColor, items, titleText;
 
-    const items = alertData.filter(function(v) {
-        if (isDanger) return v.status_pajak === 'mati';
-        return v.status_pajak === 'segera_habis';
-    });
+    if (type === 'jatuh_tempo') {
+        color = '#f97316';
+        bgColor = 'rgba(249,115,22,0.08)';
+        borderColor = 'rgba(249,115,22,0.2)';
+        items = alertData.filter(function(v) { return v.status_pajak === 'jatuh_tempo'; });
+        titleText = 'Kendaraan dengan Pajak Jatuh Tempo';
+    } else {
+        const isDanger = type === 'danger';
+        color = isDanger ? '#ef4444' : '#f59e0b';
+        bgColor = isDanger ? 'rgba(239,68,68,0.08)' : 'rgba(245,158,11,0.08)';
+        borderColor = isDanger ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)';
+        items = alertData.filter(function(v) {
+            if (isDanger) return v.status_pajak === 'mati';
+            return v.status_pajak === 'segera_habis';
+        });
+        titleText = isDanger ? 'Kendaraan dengan Pajak Mati' : 'Kendaraan dengan Pajak Segera Habis';
+    }
 
-    title.textContent = isDanger ? 'Kendaraan dengan Pajak Mati' : 'Kendaraan dengan Pajak Segera Habis';
+    title.textContent = titleText;
 
     if (items.length === 0) {
         body.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada kendaraan.</p>';
@@ -633,7 +677,9 @@ function showAlertPopup(type) {
                 var d = new Date(parts[2], parts[1] - 1, parts[0]);
                 var today = new Date(); today.setHours(0,0,0,0);
                 var diff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
-                if (isDanger) {
+                if (type === 'jatuh_tempo') {
+                    daysLabel = '<span style="color:#f97316;font-weight:600;">' + (v.hari_pajak || '') + '</span>';
+                } else if (type === 'danger') {
                     daysLabel = '<span style="color:#ef4444;font-weight:600;">Pajak sudah mati</span>';
                 } else {
                     daysLabel = 'Berakhir <span style="color:#f59e0b;font-weight:600;">' + dateStr + '</span> (' + diff + ' hari lagi)';

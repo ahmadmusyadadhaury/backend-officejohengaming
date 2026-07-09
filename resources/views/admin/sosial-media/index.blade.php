@@ -79,12 +79,14 @@ function platformColors($platform, $brands, $fColors, $fBgs) {
                 </svg>
                 Data Sosial Media
             </div>
+            @if(auth()->user()->role !== 'gm')
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Sosial Media
             </button>
+            @endif
         </div>
 
         {{-- Filter Bar --}}
@@ -128,7 +130,9 @@ function platformColors($platform, $brands, $fColors, $fBgs) {
                         <th style="width:120px;">Platform</th>
                         <th class="hidden md:table-cell">Divisi</th>
                         <th class="hidden lg:table-cell">PIC</th>
+                        @if(auth()->user()->role !== 'gm')
                         <th style="width:130px;">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody id="sosmed-tbody">
@@ -142,6 +146,7 @@ function platformColors($platform, $brands, $fColors, $fBgs) {
                         <td><span class="badge {{ $bClass }}">{{ $i->platform }}</span></td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $i->divisi }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $i->pic }}</td>
+                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1.5">
                                 <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" title="Lihat Detail" style="padding:4px 8px;">
@@ -160,10 +165,11 @@ function platformColors($platform, $brands, $fColors, $fBgs) {
                                 </form>
                             </div>
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="8" style="text-align:center;padding:2.5rem 1rem;color:var(--text-muted);">
+                        <td colspan="7" style="text-align:center;padding:2.5rem 1rem;color:var(--text-muted);">
                             <div class="flex flex-col items-center gap-2">
                                 <svg class="w-8 h-8" style="opacity:0.35;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>

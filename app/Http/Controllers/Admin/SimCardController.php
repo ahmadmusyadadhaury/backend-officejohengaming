@@ -12,11 +12,17 @@ class SimCardController extends Controller
     {
         $cards = SimCard::orderBy('created_at', 'desc')->get();
 
+        $now = now();
+
         $stats = [
             'total' => $cards->count(),
-            'nomor_aktif' => $cards->where('status_kartu', true)->count(),
-            'nonaktif' => $cards->where('status_kartu', false)->count(),
+            'aktif' => $cards->filter(fn ($c) => $c->status_sim === 'aktif')->count(),
+            'jatuh_tempo' => $cards->filter(fn ($c) => $c->status_sim === 'jatuh_tempo')->count(),
+            'segera_habis' => $cards->filter(fn ($c) => $c->status_sim === 'segera_habis')->count(),
+            'mati' => $cards->filter(fn ($c) => $c->status_sim === 'mati')->count(),
         ];
+
+        $alerts = $cards->filter(fn ($c) => in_array($c->status_sim, ['jatuh_tempo', 'segera_habis', 'mati']))->values();
 
         $cardsJson = $cards->values()->map(function ($c) {
             return [
@@ -26,7 +32,10 @@ class SimCardController extends Controller
                 'jabatan' => $c->jabatan,
                 'masa_aktif' => $c->masa_aktif?->format('d/m/Y'),
                 'masa_tenggang' => $c->masa_tenggang?->format('d/m/Y'),
+                'masa_tenggang_raw' => $c->masa_tenggang?->format('Y-m-d'),
                 'status_kartu' => $c->status_kartu,
+                'status_sim' => $c->status_sim,
+                'hari_sim' => $c->hari_sim,
                 'keperluan' => $c->keperluan,
             ];
         });
@@ -35,6 +44,7 @@ class SimCardController extends Controller
             'cards' => $cards,
             'cardsJson' => $cardsJson,
             'stats' => $stats,
+            'alerts' => $alerts,
         ]);
     }
 

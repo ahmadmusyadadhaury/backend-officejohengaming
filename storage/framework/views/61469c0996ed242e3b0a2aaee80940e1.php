@@ -126,7 +126,6 @@
     <a href="<?php echo e(route('admin.pembayaran.index', ['jenis' => 'internet'])); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request('jenis') === 'internet' ? 'active' : ''); ?>"><span class="truncate">Internet</span></a>
     <a href="<?php echo e(route('admin.pembayaran.index', ['jenis' => 'aset_digital'])); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request('jenis') === 'aset_digital' ? 'active' : ''); ?>"><span class="truncate">Aset Digital</span></a>
     <a href="<?php echo e(route('admin.pembayaran.index', ['jenis' => 'ipl_ruko'])); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request('jenis') === 'ipl_ruko' ? 'active' : ''); ?>"><span class="truncate">IPL Ruko</span></a>
-    <a href="<?php echo e(route('admin.pembayaran.index', ['jenis' => 'aset_mes'])); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request('jenis') === 'aset_mes' ? 'active' : ''); ?>"><span class="truncate">Aset MES</span></a>
     <?php if(in_array(auth()->user()->role, ['admin', 'hr', 'admin_ga'])): ?>
     <a href="<?php echo e(route('payment-approval.tagihan')); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request()->routeIs('payment-approval.tagihan') ? 'active' : ''); ?>">
         <span class="truncate">Tagihan</span>
@@ -184,4 +183,4 @@
     </svg>
     <span class="truncate">Profile</span>
 </a>
-<?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/partials/sidebar-admin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\backend-officejohengaming\resources\views/partials/sidebar-admin.blade.php ENDPATH**/ ?>

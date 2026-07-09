@@ -117,7 +117,9 @@
                         <th class="hidden sm:table-cell" style="width:140px">Dibuat Oleh</th>
                         <th style="width:120px">Tanggal Meeting</th>
                         <th class="hidden md:table-cell" style="width:100px">Status</th>
+                        @if(auth()->user()->role !== 'gm')
                         <th style="width:100px">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -135,6 +137,7 @@
                                 <span class="inline-block text-[11px] font-bold px-2 py-1" style="background:rgba(245,158,11,0.15);color:#fbbf24;border-radius:6px;">Draft</span>
                             @endif
                         </td>
+                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
                                 <button type="button" onclick="showMomDetail({{ $mom->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
@@ -160,9 +163,10 @@
                                 </div>
                             </div>
                         </td>
+                        @endif
                     </tr>
                     @empty
-                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada MOM.</td></tr>
+                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada MOM.</td></tr>
                     @endforelse
                 </tbody>
             </table>

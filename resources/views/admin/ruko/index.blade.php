@@ -75,12 +75,14 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Aset Ruko</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Seluruh aset ruko milik perusahaan.</div>
             </div>
+            @if(auth()->user()->role !== 'gm')
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Aset Ruko
             </button>
+            @endif
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
@@ -118,7 +120,7 @@
                         <th class="hidden md:table-cell">Lokasi</th>
                         <th>Jumlah</th>
                         <th>Kondisi</th>
-                        <th>Aksi</th>
+                        @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
                     </tr>
                 </thead>
                 <tbody id="ruko-tbody">
@@ -133,7 +135,7 @@
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $i->lokasi }}</td>
                         <td><span class="badge badge-cyan">{{ $i->jumlah }}</span></td>
                         <td><span class="badge {{ $kondisiBadge }}">{{ $kondisiLabel }}</span></td>
-                        <td>
+                        @if(auth()->user()->role !== 'gm')<td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -151,11 +153,11 @@
                                     </div>
                                 </div>
                             </div>
-                        </td>
+                        </td>@endif
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset ruko.</td>
+                        <td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset ruko.</td>
                     </tr>
                     @endforelse
                 </tbody>

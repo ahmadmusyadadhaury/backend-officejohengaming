@@ -1,18 +1,17 @@
 <?php
 
-use App\Http\Controllers\Api\AssetApiController;
-use App\Http\Controllers\Api\AsetDayaApiController;
 use App\Http\Controllers\Api\AsetRukoApiController;
 use App\Http\Controllers\Api\AsetTimApiController;
+use App\Http\Controllers\Api\AssetApiController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\DigitalAssetApiController;
-use App\Http\Controllers\Api\VehicleApiController;
-use App\Http\Controllers\Api\SimCardApiController;
-use App\Http\Controllers\Api\PeralatanKantorApiController;
 use App\Http\Controllers\Api\PaymentApprovalApiController;
 use App\Http\Controllers\Api\PembayaranApiController;
+use App\Http\Controllers\Api\PeralatanKantorApiController;
 use App\Http\Controllers\Api\RoomController;
+use App\Http\Controllers\Api\SimCardApiController;
+use App\Http\Controllers\Api\VehicleApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,7 +39,6 @@ Route::middleware('api.auth')->group(function () {
 
     Route::apiResource('assets', AssetApiController::class)->parameters(['assets' => 'asset']);
     Route::apiResource('aset-ruko', AsetRukoApiController::class)->parameters(['aset_ruko' => 'ruko']);
-    Route::apiResource('aset-daya', AsetDayaApiController::class)->parameters(['aset_daya' => 'asetDaya']);
     Route::apiResource('aset-tim', AsetTimApiController::class)->parameters(['aset_tim' => 'asetTim']);
     Route::apiResource('digital-assets', DigitalAssetApiController::class)->parameters(['digital_assets' => 'digitalAsset']);
     Route::get('vehicles', [VehicleApiController::class, 'index']);

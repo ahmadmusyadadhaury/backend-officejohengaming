@@ -6,12 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\ElectricityTokenReading;
 use App\Models\InternetUsageCheck;
 use App\Models\Payment;
-use App\Models\PembayaranAsetDaya;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetTim;
 use App\Models\PembayaranIplRuko;
 use App\Models\TokenPayment;
-use App\Models\User;
 use App\Models\WifiPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,6 +20,7 @@ class PembayaranApiController extends Controller
     {
         $today = Carbon::today();
         $due = $dueDate instanceof Carbon ? $dueDate : Carbon::parse($dueDate);
+
         return $due->lte($today->copy()->addDays(7)) ? 'jatuh_tempo' : 'pending';
     }
 
@@ -65,10 +64,6 @@ class PembayaranApiController extends Controller
             $all = PembayaranIplRuko::orderBy('created_at', 'desc')->get();
             $stats = $this->paymentStats($all, 'jatuh_tempo');
             $items = $all->values()->map(fn ($p) => $this->paymentItem($p, 'ipl_ruko'));
-        } elseif ($jenis === 'aset_daya') {
-            $all = PembayaranAsetDaya::orderBy('created_at', 'desc')->get();
-            $stats = $this->paymentStats($all, 'jatuh_tempo');
-            $items = $all->values()->map(fn ($p) => $this->paymentItem($p, 'aset_daya'));
         } elseif ($jenis === 'aset_tim') {
             $all = PembayaranAsetTim::orderBy('created_at', 'desc')->get();
             $stats = $this->paymentStats($all, 'jatuh_tempo');
@@ -122,16 +117,6 @@ class PembayaranApiController extends Controller
             ]);
             $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $record = PembayaranIplRuko::create($data);
-        } elseif ($jenis === 'aset_daya') {
-            $data = $request->validate([
-                'periode' => 'required|string|max:255',
-                'tanggal_tagihan' => 'required|date',
-                'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
-                'nominal' => 'required|numeric|min:0',
-                'tanggal_bayar' => 'nullable|date',
-            ]);
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
-            $record = PembayaranAsetDaya::create($data);
         } elseif ($jenis === 'aset_tim') {
             $data = $request->validate([
                 'periode' => 'required|string|max:255',
@@ -200,17 +185,6 @@ class PembayaranApiController extends Controller
             $model = PembayaranIplRuko::findOrFail($id);
             $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model->update($data);
-        } elseif ($jenis === 'aset_daya') {
-            $data = $request->validate([
-                'periode' => 'required|string|max:255',
-                'tanggal_tagihan' => 'required|date',
-                'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
-                'nominal' => 'required|numeric|min:0',
-                'tanggal_bayar' => 'nullable|date',
-            ]);
-            $model = PembayaranAsetDaya::findOrFail($id);
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
-            $model->update($data);
         } elseif ($jenis === 'aset_tim') {
             $data = $request->validate([
                 'periode' => 'required|string|max:255',
@@ -240,7 +214,6 @@ class PembayaranApiController extends Controller
                 'internet' => WifiPayment::class,
                 'aset_digital' => PembayaranAsetDigital::class,
                 'ipl_ruko' => PembayaranIplRuko::class,
-                'aset_daya' => PembayaranAsetDaya::class,
                 'aset_tim' => PembayaranAsetTim::class,
                 default => Payment::class,
             };
@@ -275,7 +248,6 @@ class PembayaranApiController extends Controller
             'internet' => WifiPayment::findOrFail($id),
             'aset_digital' => PembayaranAsetDigital::findOrFail($id),
             'ipl_ruko' => PembayaranIplRuko::findOrFail($id),
-            'aset_daya' => PembayaranAsetDaya::findOrFail($id),
             'aset_tim' => PembayaranAsetTim::findOrFail($id),
             default => Payment::findOrFail($id),
         };
@@ -351,6 +323,7 @@ class PembayaranApiController extends Controller
             $periode = $monthName.' '.$year;
             if (PembayaranIplRuko::where('periode', $periode)->exists()) {
                 $skipped++;
+
                 continue;
             }
 
@@ -404,6 +377,7 @@ class PembayaranApiController extends Controller
     public function destroyTokenReading($id)
     {
         ElectricityTokenReading::findOrFail($id)->delete();
+
         return response()->json(['message' => 'Token reading deleted successfully']);
     }
 
@@ -430,6 +404,7 @@ class PembayaranApiController extends Controller
     public function destroyTokenPayment($id)
     {
         TokenPayment::findOrFail($id)->delete();
+
         return response()->json(['message' => 'Token topup deleted successfully']);
     }
 
@@ -456,6 +431,7 @@ class PembayaranApiController extends Controller
     public function destroyInternetUsage($id)
     {
         InternetUsageCheck::findOrFail($id)->delete();
+
         return response()->json(['message' => 'Internet usage deleted successfully']);
     }
 
@@ -492,8 +468,6 @@ class PembayaranApiController extends Controller
 
         if ($jenis === 'aset_digital') {
             $item['digital_asset_id'] = $p->digital_asset_id;
-        } elseif ($jenis === 'aset_daya') {
-            $item['aset_daya_id'] = $p->aset_daya_id;
         } elseif ($jenis === 'aset_tim') {
             $item['aset_tim_id'] = $p->aset_tim_id;
         }

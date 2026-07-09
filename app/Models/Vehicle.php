@@ -38,16 +38,43 @@ class Vehicle extends Model
     public function getStatusPajakAttribute(): string
     {
         $now = now();
-        $batasSegera = now()->addMonth();
+        $batasJatuhTempo = now()->addDays(7);
+        $batasSegera = now()->addDays(3);
 
-        if ($this->pajak_tahunan < $now) {
-            return 'mati';
+        if ($this->pajak_tahunan > $batasJatuhTempo) {
+            return 'aktif';
         }
 
-        if ($this->pajak_tahunan <= $batasSegera) {
+        if ($this->pajak_tahunan > $batasSegera) {
+            return 'jatuh_tempo';
+        }
+
+        if ($this->pajak_tahunan > $now) {
             return 'segera_habis';
         }
 
-        return 'aktif';
+        return 'mati';
+    }
+
+    public function getHariPajakAttribute(): string
+    {
+        $now = now()->startOfDay();
+        $due = $this->pajak_tahunan?->startOfDay();
+
+        if (! $due) {
+            return '-';
+        }
+
+        $diff = $now->diffInDays($due, false);
+
+        if ($diff > 0) {
+            return "H-{$diff}";
+        }
+
+        if ($diff === 0) {
+            return 'H-0';
+        }
+
+        return 'H+'.abs($diff);
     }
 }

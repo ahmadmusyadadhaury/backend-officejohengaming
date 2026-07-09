@@ -32,4 +32,51 @@ class DigitalAsset extends Model
     {
         return $this->hasOne(PembayaranAsetDigital::class, 'digital_asset_id');
     }
+
+    public function getStatusAsetAttribute(): string
+    {
+        $now = now();
+        $batasJatuhTempo = now()->addDays(7);
+        $batasSegera = now()->addDays(3);
+
+        if (! $this->berakhir) {
+            return 'nonaktif';
+        }
+
+        if ($this->berakhir > $batasJatuhTempo) {
+            return 'aktif';
+        }
+
+        if ($this->berakhir > $batasSegera) {
+            return 'jatuh_tempo';
+        }
+
+        if ($this->berakhir > $now) {
+            return 'segera_habis';
+        }
+
+        return 'mati';
+    }
+
+    public function getHariAsetAttribute(): string
+    {
+        $now = now()->startOfDay();
+        $due = $this->berakhir?->startOfDay();
+
+        if (! $due) {
+            return '-';
+        }
+
+        $diff = $now->diffInDays($due, false);
+
+        if ($diff > 0) {
+            return "H-{$diff}";
+        }
+
+        if ($diff === 0) {
+            return 'H-0';
+        }
+
+        return 'H+'.abs($diff);
+    }
 }

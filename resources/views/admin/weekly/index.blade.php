@@ -8,12 +8,14 @@
 <div class="pt-2 space-y-4 animate-fade-in">
     @php $days = [1=>'Senin',2=>'Selasa',3=>'Rabu',4=>'Kamis',5=>'Jumat',6=>'Sabtu',7=>'Minggu']; @endphp
     <div class="flex justify-end">
+        @if(auth()->user()->role !== 'gm')
         <a href="{{ route('admin.weekly-meetings.create') }}" class="btn btn-primary btn-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
             Tambah Jadwal Mingguan
         </a>
+        @endif
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
         @forelse($weeklies as $weekly)
@@ -41,6 +43,7 @@
                     <span class="text-sm" style="color:var(--text-primary);">{{ substr($weekly->start_time,0,5) }} – {{ substr($weekly->end_time,0,5) }}</span>
                 </div>
             </div>
+            @if(auth()->user()->role !== 'gm')
             <div class="flex gap-2 pt-3" style="border-top:1px solid var(--border-color);">
                 <a href="{{ route('admin.weekly-meetings.edit', $weekly) }}" class="btn btn-secondary btn-sm flex-1">Edit</a>
                 <form method="POST" action="{{ route('admin.weekly-meetings.destroy', $weekly) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus jadwal ini?" class="flex-1">
@@ -48,6 +51,7 @@
                     <button class="btn btn-danger btn-sm w-full">Hapus</button>
                 </form>
             </div>
+            @endif
         </div>
         @empty
         <div class="col-span-3 gaming-card p-10 text-center">

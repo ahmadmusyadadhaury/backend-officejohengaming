@@ -75,7 +75,9 @@
                         <th style="width:110px">Nominal</th>
                         <th style="width:75px">Tgl Bayar</th>
                         <th style="width:50px">Bukti</th>
+                        @if(auth()->user()->role !== 'gm')
                         <th style="width:115px">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody id="approval-tbody">
@@ -95,6 +97,7 @@
                             <span class="text-xs" style="color:var(--text-muted);">-</span>
                             @endif
                         </td>
+                        @if(auth()->user()->role !== 'gm')
                         <td>
                             @if($isApprover)
                             <div class="flex gap-2">
@@ -105,6 +108,7 @@
                             <span class="text-xs" style="color:var(--text-muted);">-</span>
                             @endif
                         </td>
+                        @endif
                     </tr>
                     @endforeach
                 </tbody>

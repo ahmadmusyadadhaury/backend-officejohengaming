@@ -120,7 +120,7 @@
                     </div>
                     <div>
                         <label class="gaming-label">Jenis Aset</label>
-                        <input type="text" name="jenis_aset" class="gaming-input" placeholder="Contoh: Aset Daya">
+                        <input type="text" name="jenis_aset" class="gaming-input" placeholder="Contoh: Peralatan">
                     </div>
                     <div>
                         <label class="gaming-label">Keterangan</label>

@@ -8,8 +8,53 @@
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- 4 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {{-- Alert Banners --}}
+    @php
+        $alertGroups = $alerts->groupBy(function($c) {
+            $s = $c->status_sim;
+            if ($s === 'mati') return 'mati';
+            if ($s === 'segera_habis') return 'segera_habis';
+            if ($s === 'jatuh_tempo') return 'jatuh_tempo';
+            return 'other';
+        });
+    @endphp
+    @if($alerts->isNotEmpty())
+    <div class="space-y-2">
+        @if(isset($alertGroups['mati']))
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #ef4444;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;">{{ $alertGroups['mati']->count() }} SIM Card</span>
+                <span style="color:var(--text-muted);"> dengan masa tenggang sudah lewat.</span>
+                <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        @endif
+        @if(isset($alertGroups['segera_habis']))
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f59e0b;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;">{{ $alertGroups['segera_habis']->count() }} SIM Card</span>
+                <span style="color:var(--text-muted);"> akan segera habis masa tenggangnya (≤3 hari).</span>
+                <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        @endif
+        @if(isset($alertGroups['jatuh_tempo']))
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f97316;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;">{{ $alertGroups['jatuh_tempo']->count() }} SIM Card</span>
+                <span style="color:var(--text-muted);"> akan jatuh tempo (≤7 hari).</span>
+                <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        @endif
+    </div>
+    @endif
+
+    {{-- Stat Cards --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
@@ -31,9 +76,35 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['nomor_aktif'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Nomor Aktif</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Status kartu aktif</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Aktif</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Lebih dari H-7</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(249,115,22,0.15);box-shadow:none rgba(249,115,22,0.2);">
+                <svg class="w-[18px]" style="color:#fb923c;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#fb923c;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">H-7 s.d H-3</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
+                <svg class="w-[18px]" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#f59e0b;">{{ $stats['segera_habis'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">H-3 s.d H-0</div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -44,9 +115,9 @@
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['nonaktif'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Tidak Aktif</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Status kartu nonaktif</div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['mati'] }}</div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Mati</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Lewat masa tenggang</div>
             </div>
         </div>
     </div>
@@ -58,12 +129,14 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data SIM Card</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Seluruh nomor SIM Card operasional perusahaan.</div>
             </div>
+            @if(auth()->user()->role !== 'gm')
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah SIM Card
             </button>
+            @endif
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
@@ -87,7 +160,9 @@
                 <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                     <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
                     <button type="button" data-value="aktif" onclick="setFilter('aktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
-                    <button type="button" data-value="nonaktif" onclick="setFilter('nonaktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
+                    <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
+                    <button type="button" data-value="segera_habis" onclick="setFilter('segera_habis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Segera Habis</button>
+                    <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Mati</button>
                 </div>
             </div>
             </div>
@@ -102,25 +177,40 @@
                         <th class="hidden md:table-cell">Keperluan</th>
                         <th class="hidden md:table-cell">Masa Aktif</th>
                         <th class="hidden lg:table-cell">Masa Tenggang</th>
+                        <th style="color:var(--text-muted);font-size:0.65rem;">Hari</th>
                         <th>Status</th>
-                        <th>Aksi</th>
+                        @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
                     </tr>
                 </thead>
                 <tbody id="sim-tbody">
                     @forelse($cards as $c)
                     @php
-                        $statusBadge = $c->status_kartu ? 'badge-green' : 'badge-red';
-                        $statusLabel = $c->status_kartu ? 'Aktif' : 'Nonaktif';
+                        $statusSim = $c->status_sim;
+                        $badgeClass = match($statusSim) {
+                            'aktif' => 'badge-green',
+                            'jatuh_tempo' => 'badge-orange',
+                            'segera_habis' => 'badge-yellow',
+                            'mati' => 'badge-red',
+                            default => 'badge-red',
+                        };
+                        $statusLabel = match($statusSim) {
+                            'aktif' => 'Aktif',
+                            'jatuh_tempo' => 'Jatuh Tempo',
+                            'segera_habis' => 'Segera Habis',
+                            'mati' => 'Mati',
+                            default => 'Nonaktif',
+                        };
                     @endphp
-                    <tr data-status="{{ $c->status_kartu ? 'aktif' : 'nonaktif' }}">
+                    <tr data-status="{{ $statusSim }}">
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:600;font-family:monospace;">{{ $c->nomor_sim_card }}</td>
                         <td style="color:var(--text-muted);">{{ $c->pic }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $c->keperluan }}">{{ $c->keperluan ?? '—' }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $c->masa_aktif?->format('d M Y') }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $c->masa_tenggang?->format('d M Y') }}</td>
-                        <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span></td>
-                        <td>
+                        <td style="color:var(--text-muted);font-size:0.7rem;">{{ $c->hari_sim }}</td>
+                        <td><span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span></td>
+                        @if(auth()->user()->role !== 'gm')<td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $c->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -138,7 +228,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </td>
+                        </td>@endif
                     </tr>
                     @empty
                     <tr id="empty-row">
@@ -324,10 +414,13 @@ function showDetail(id) {
     if (!c) return;
     document.getElementById('detail-title').textContent = c.nomor_sim_card;
 
-    const statusKartu = c.status_kartu ? 'Aktif' : 'Nonaktif';
-    const skColor = c.status_kartu ? '#059669' : '#dc2626';
-    const skBg = c.status_kartu ? '#ecfdf5' : '#fef2f2';
-    const skBorder = c.status_kartu ? '#a7f3d0' : '#fecaca';
+    const statusMap = {
+        'aktif': { label: 'Aktif', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' },
+        'jatuh_tempo': { label: 'Jatuh Tempo', color: '#c2410c', bg: '#fff7ed', border: '#fed7aa' },
+        'segera_habis': { label: 'Segera Habis', color: '#b45309', bg: '#fefce8', border: '#fde68a' },
+        'mati': { label: 'Mati', color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
+    };
+    const s = statusMap[c.status_sim] || statusMap['mati'];
 
     const rows = [
         { label: 'Nomor SIM Card', value: c.nomor_sim_card },
@@ -335,6 +428,7 @@ function showDetail(id) {
         { label: 'Jabatan', value: c.jabatan },
         { label: 'Masa Aktif', value: c.masa_aktif },
         { label: 'Masa Tenggang', value: c.masa_tenggang },
+        { label: 'Hari', value: c.hari_sim },
         { label: 'Keperluan', value: c.keperluan || '-' },
     ];
 
@@ -348,8 +442,8 @@ function showDetail(id) {
                 </div>
             `).join('')}
             <div class="flex items-center justify-between py-2.5">
-                <p class="text-sm" style="color:var(--text-muted);">Status Kartu</p>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${skBg};color:${skColor};border:1px solid ${skBorder};">${statusKartu}</span>
+                <p class="text-sm" style="color:var(--text-muted);">Status</p>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${s.bg};color:${s.color};border:1px solid ${s.border};">${s.label}</span>
             </div>
         </div>
     `;

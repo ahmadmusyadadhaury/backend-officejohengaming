@@ -6,18 +6,10 @@
     $now = \Carbon\Carbon::today();
     $sevenDays = $now->copy()->addDays(7);
     $userId = auth()->id();
-    $myAsetDayaIds = \App\Models\AsetDaya::where('penanggung_jawab', $userId)->pluck('id');
     $myAsetTimIds = \App\Models\AsetTim::where('penanggung_jawab', $userId)->pluck('id');
     $myAsetMesIds = \App\Models\AsetMes::where('penanggung_jawab', $userId)->pluck('id');
 
-    $totalTagihan = ($myAsetDayaIds->isNotEmpty()
-            ? \App\Models\PembayaranAsetDaya::whereNull('requested_by')
-                ->whereNotIn('status', ['lunas', 'rejected'])
-                ->whereIn('aset_daya_id', $myAsetDayaIds)
-                ->where('jatuh_tempo', '<=', $sevenDays)
-                ->count()
-            : 0)
-        + ($myAsetTimIds->isNotEmpty()
+    $totalTagihan = ($myAsetTimIds->isNotEmpty()
             ? \App\Models\PembayaranAsetTim::whereNull('requested_by')
                 ->whereNotIn('status', ['lunas', 'rejected'])
                 ->whereIn('aset_tim_id', $myAsetTimIds)

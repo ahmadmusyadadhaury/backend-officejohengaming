@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAccountController;
-use App\Http\Controllers\Admin\AsetDayaController;
 use App\Http\Controllers\Admin\AsetMesController;
 use App\Http\Controllers\Admin\AsetRukoController;
 use App\Http\Controllers\Admin\AsetTimController;
@@ -26,9 +25,8 @@ use App\Http\Controllers\Admin\VehiclePajakRequestController;
 use App\Http\Controllers\Admin\WeeklyMeetingController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InvitationController;
-use App\Http\Controllers\Leader\AsetDayaController as KoordinatorAsetDayaController;
-use App\Http\Controllers\Leader\AsetTimController as KoordinatorAsetTimController;
 use App\Http\Controllers\Leader\AsetMesController as KoordinatorAsetMesController;
+use App\Http\Controllers\Leader\AsetTimController as KoordinatorAsetTimController;
 use App\Http\Controllers\Leader\DashboardController as KoordinatorDashboard;
 use App\Http\Controllers\Leader\DataSayaController;
 use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingController;
@@ -90,7 +88,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('peralatan-kantor/template', [PeralatanKantorController::class, 'downloadTemplate'])->name('peralatan-kantor.template');
     Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
-    Route::resource('aset-daya', AsetDayaController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-tim', AsetTimController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-mes', AsetMesController::class)->except(['create', 'show', 'edit']);
     Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
@@ -153,7 +150,6 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::post('data-saya', [DataSayaController::class, 'store'])->name('data-saya.store');
     Route::put('data-saya/{asetDaya}', [DataSayaController::class, 'update'])->name('data-saya.update');
     Route::delete('data-saya/{asetDaya}', [DataSayaController::class, 'destroy'])->name('data-saya.destroy');
-    Route::get('aset-daya', [KoordinatorAsetDayaController::class, 'index'])->name('aset-daya.index');
     Route::get('aset-tim', [KoordinatorAsetTimController::class, 'index'])->name('aset-tim.index');
     Route::post('aset-tim', [KoordinatorAsetTimController::class, 'store'])->name('aset-tim.store');
     Route::put('aset-tim/{asetTim}', [KoordinatorAsetTimController::class, 'update'])->name('aset-tim.update');

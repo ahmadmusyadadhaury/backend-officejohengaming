@@ -15,12 +15,14 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Akun Koordinator</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Kelola akun koordinator divisi dengan akses TERBATAS (menu Meeting saja).</div>
             </div>
+@if(auth()->user()->role !== 'gm')
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Koordinator
             </button>
+@endif
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
@@ -57,7 +59,7 @@
                         <th>Role</th>
                         <th>Divisi</th>
                         <th>Status</th>
-                        <th>Aksi</th>
+@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
                     </tr>
                 </thead>
                 <tbody>
@@ -75,6 +77,7 @@
                                 {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
                         </td>
+@if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex gap-2">
                                 <button type="button" onclick="openEditModal({{ json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'role'=>$user->role,'team_id'=>$user->team_id,'is_active'=>$user->is_active]) }})" class="btn btn-secondary btn-sm">Edit</button>
@@ -84,9 +87,10 @@
                                 </form>
                             </div>
                         </td>
+@endif
                     </tr>
                     @empty
-                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun koordinator ditemukan.</td></tr>
+                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun koordinator ditemukan.</td></tr>
                     @endforelse
                 </tbody>
             </table>

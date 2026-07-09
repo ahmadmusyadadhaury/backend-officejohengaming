@@ -1,4 +1,4 @@
-
+<?php $__env->startSection('body-class', 'page-admin'); ?>
 <?php $__env->startSection('title', $jenisLabels[$jenis]); ?>
 <?php $__env->startSection('page-title', 'Pembayaran'); ?>
 <?php $__env->startSection('page-subtitle', $jenis === 'internet' ? 'Data WiFi prabayar — Indosat billing tgl 5, IndiHome billing tgl 20. Input setelah bayar.' : 'Kelola tagihan '.$jenisLabels[$jenis]); ?>
@@ -10,112 +10,348 @@
 
     
     <?php if($jenis === 'internet'): ?>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
-                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+    <?php
+        $alertGroups = collect();
+        if (isset($alerts) && $alerts->isNotEmpty()) {
+            $alertGroups = $alerts->groupBy(function($w) {
+                $s = $w->status_internet;
+                if ($s === 'mati') return 'mati';
+                if ($s === 'segera_habis') return 'segera_habis';
+                if ($s === 'jatuh_tempo') return 'jatuh_tempo';
+                return 'other';
+            });
+        }
+    ?>
+    <?php if(isset($alerts) && $alerts->isNotEmpty()): ?>
+    <div class="space-y-2">
+        <?php if(isset($alertGroups['mati'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #ef4444;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['mati']->count()); ?> WiFi</span>
+                <span style="color:var(--text-muted);"> dengan masa tenggang sudah lewat.</span>
+                <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php if(isset($alertGroups['segera_habis'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f59e0b;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['segera_habis']->count()); ?> WiFi</span>
+                <span style="color:var(--text-muted);"> akan segera habis masa tenggangnya (≤3 hari).</span>
+                <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php if(isset($alertGroups['jatuh_tempo'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f97316;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['jatuh_tempo']->count()); ?> WiFi</span>
+                <span style="color:var(--text-muted);"> akan jatuh tempo (≤7 hari).</span>
+                <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
+                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01M3.5 13.58a10.5 10.5 0 0117 0"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total WiFi</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Seluruh data WiFi</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total WiFi</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh data WiFi</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
+                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Aktif</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Lebih dari H-7</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
-                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(249,115,22,0.15);box-shadow:none rgba(249,115,22,0.2);">
+                <svg class="w-[18px]" style="color:#fb923c;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;"><?php echo e($stats['jatuh_tempo']); ?></div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Dalam masa tenggang</div>
+                <div class="text-xl font-gaming font-bold" style="color:#fb923c;"><?php echo e($stats['jatuh_tempo']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">H-7 s.d H-3</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
-                <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
+                <svg class="w-[18px]" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-3xl font-gaming font-bold" style="color:#f87171;"><?php echo e($stats['terlambat']); ?></div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Lewat masa tenggang</div>
+                <div class="text-xl font-gaming font-bold" style="color:#f59e0b;"><?php echo e($stats['segera_habis']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">H-3 s.d H-0</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);box-shadow:none rgba(239,68,68,0.2);">
+                <svg class="w-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;"><?php echo e($stats['mati']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Mati</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Lewat masa tenggang</div>
             </div>
         </div>
     </div>
     <?php elseif($jenis === 'aset_digital'): ?>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:0 0 16px rgba(124,58,237,0.25);">
-                <svg class="w-6 h-6" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+    <?php
+        $alertGroups = collect();
+        if (isset($alerts) && $alerts->isNotEmpty()) {
+            $alertGroups = $alerts->groupBy(function($a) {
+                if ($a->status_digital === 'mati') return 'mati';
+                if ($a->status_digital === 'segera_habis') return 'segera_habis';
+                if ($a->status_digital === 'jatuh_tempo') return 'jatuh_tempo';
+                return 'other';
+            });
+        }
+    ?>
+    <?php if(isset($alerts) && $alerts->isNotEmpty()): ?>
+    <div class="space-y-2">
+        <?php if(isset($alertGroups['mati'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #ef4444;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['mati']->count()); ?> Aset Digital</span>
+                <span style="color:var(--text-muted);"> lewat jatuh tempo.</span>
+                <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php if(isset($alertGroups['segera_habis'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f59e0b;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['segera_habis']->count()); ?> Aset Digital</span>
+                <span style="color:var(--text-muted);"> akan segera jatuh tempo (≤3 hari).</span>
+                <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php if(isset($alertGroups['jatuh_tempo'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f97316;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['jatuh_tempo']->count()); ?> Aset Digital</span>
+                <span style="color:var(--text-muted);"> akan jatuh tempo (≤7 hari).</span>
+                <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
+                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Total Aset Digital</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);"><?php echo e($stats['total']); ?> tagihan</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total Aset Digital</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"><?php echo e($stats['total']); ?> tagihan</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:0 0 16px rgba(16,185,129,0.2);">
-                <svg class="w-6 h-6" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
+                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Sudah Dibayar</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Tagihan lunas</div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Aktif</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Lebih dari H-7</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:0 0 16px rgba(245,158,11,0.2);">
-                <svg class="w-6 h-6" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(249,115,22,0.15);box-shadow:none rgba(249,115,22,0.2);">
+                <svg class="w-[18px]" style="color:#fb923c;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#fbbf24;"><?php echo e($stats['jatuh_tempo']); ?></div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Belum dibayar</div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#fb923c;"><?php echo e($stats['jatuh_tempo']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">H-7 s.d H-3</div>
             </div>
         </div>
-        <div class="gaming-card p-5 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2);">
-                <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
+                <svg class="w-[18px]" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#f59e0b;"><?php echo e($stats['segera_habis']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">H-3 s.d H-0</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);box-shadow:none rgba(239,68,68,0.2);">
+                <svg class="w-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;"><?php echo e($stats['mati']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Mati</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Lewat jatuh tempo</div>
+            </div>
+        </div>
+    </div>
+    <?php elseif($jenis === 'ipl_ruko'): ?>
+
+    <?php
+        $alertGroups = collect();
+        if (isset($alerts) && $alerts->isNotEmpty()) {
+            $alertGroups = $alerts->groupBy(function($a) {
+                if ($a->status_ipl === 'mati') return 'mati';
+                if ($a->status_ipl === 'segera_habis') return 'segera_habis';
+                if ($a->status_ipl === 'jatuh_tempo') return 'jatuh_tempo';
+                return 'other';
+            });
+        }
+    ?>
+    <?php if(isset($alerts) && $alerts->isNotEmpty()): ?>
+    <div class="space-y-2">
+        <?php if(isset($alertGroups['mati'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #ef4444;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['mati']->count()); ?> IPL Ruko</span>
+                <span style="color:var(--text-muted);"> lewat jatuh tempo.</span>
+                <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php if(isset($alertGroups['segera_habis'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f59e0b;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['segera_habis']->count()); ?> IPL Ruko</span>
+                <span style="color:var(--text-muted);"> akan segera jatuh tempo (≤3 hari).</span>
+                <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php if(isset($alertGroups['jatuh_tempo'])): ?>
+        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f97316;">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="text-xs" style="color:var(--text-primary);">
+                <span style="font-weight:600;"><?php echo e($alertGroups['jatuh_tempo']->count()); ?> IPL Ruko</span>
+                <span style="color:var(--text-muted);"> akan jatuh tempo (≤7 hari).</span>
+                <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
+                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-3xl font-gaming font-bold" style="color:#f87171;"><?php echo e($stats['terlambat']); ?></div>
-                <div class="text-sm font-semibold mt-0.5" style="color:var(--text-secondary);">Terlambat</div>
-                <div class="text-xs mt-0.5" style="color:var(--text-muted);">Lewat jatuh tempo</div>
+                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total IPL Ruko</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"><?php echo e($stats['total']); ?> tagihan</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
+                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['aktif']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Aktif</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Lebih dari H-7</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(249,115,22,0.15);box-shadow:none rgba(249,115,22,0.2);">
+                <svg class="w-[18px]" style="color:#fb923c;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#fb923c;"><?php echo e($stats['jatuh_tempo']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">H-7 s.d H-3</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
+                <svg class="w-[18px]" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#f59e0b;"><?php echo e($stats['segera_habis']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">H-3 s.d H-0</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(239,68,68,0.15);box-shadow:none rgba(239,68,68,0.2);">
+                <svg class="w-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#ef4444;"><?php echo e($stats['mati']); ?></div>
+                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Mati</div>
+                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Lewat jatuh tempo</div>
             </div>
         </div>
     </div>
@@ -151,7 +387,7 @@
     <?php endif; ?>
 
     
-    <?php if($jenis !== 'listrik' && $alertItems->isNotEmpty()): ?>
+    <?php if(!in_array($jenis, ['listrik', 'internet', 'aset_digital', 'ipl_ruko']) && $alertItems->isNotEmpty()): ?>
         <?php
             $today = now()->startOfDay();
             $redItems = collect();
@@ -285,8 +521,25 @@
                 </button>
                 <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                     <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
-                    <button type="button" data-value="lunas" onclick="setFilter('lunas')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lunas</button>
+                    <?php if($jenis === 'internet'): ?>
+                    <button type="button" data-value="aktif" onclick="setFilter('aktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
                     <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
+                    <button type="button" data-value="segera_habis" onclick="setFilter('segera_habis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Segera Habis</button>
+                    <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Mati</button>
+                    <?php elseif($jenis === 'aset_digital'): ?>
+                    <button type="button" data-value="aktif" onclick="setFilter('aktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
+                    <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
+                    <button type="button" data-value="segera_habis" onclick="setFilter('segera_habis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Segera Habis</button>
+                    <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Mati</button>
+                    <?php elseif($jenis === 'ipl_ruko'): ?>
+                    <button type="button" data-value="aktif" onclick="setFilter('aktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
+                    <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
+                    <button type="button" data-value="segera_habis" onclick="setFilter('segera_habis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Segera Habis</button>
+                    <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Mati</button>
+                    <?php else: ?>
+                    <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
+                    <?php endif; ?>
+                    <button type="button" data-value="lunas" onclick="setFilter('lunas')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lunas</button>
                     <button type="button" data-value="pending" onclick="setFilter('pending')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Menunggu</button>
                     <button type="button" data-value="rejected" onclick="setFilter('rejected')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ditolak</button>
                 </div>
@@ -304,52 +557,130 @@
                             <th class="hidden md:table-cell">PIC</th>
                             <th class="hidden lg:table-cell">Jabatan</th>
                             <th class="hidden md:table-cell">Masa Tenggang</th>
+                            <th style="color:var(--text-muted);font-size:0.65rem;">Hari</th>
                             <th class="hidden md:table-cell">Biaya</th>
                         <?php else: ?>
                             <th><?php echo e($jenis === 'aset_digital' ? 'Nama Aset' : 'Periode'); ?></th>
                             <th class="hidden md:table-cell">Tagihan</th>
                             <th>Jatuh Tempo</th>
+                            <?php if(in_array($jenis, ['aset_digital', 'ipl_ruko'])): ?>
+                            <th style="color:var(--text-muted);font-size:0.65rem;">Hari</th>
+                            <?php endif; ?>
                             <th>Nominal</th>
                         <?php endif; ?>
                         <th>Status</th>
                             <th class="hidden md:table-cell">Tgl Bayar</th>
-                            <th>Aksi</th>
+                            <?php if(auth()->user()->role !== 'gm'): ?>
+                        <th>Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody id="payment-tbody">
                     <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <?php
-                        $dueDate = $jenis === 'internet' ? $item->masa_tenggang : $item->jatuh_tempo;
-                        $today = now()->startOfDay();
-                        if ($item->status === 'lunas') {
-                            $badgeClass = 'badge-green';
-                            $badgeLabel = 'Lunas';
-                        } elseif ($item->status === 'pending') {
-                            $badgeClass = 'badge-blue';
-                            $badgeLabel = 'Menunggu';
-                        } elseif ($item->status === 'rejected') {
-                            $badgeClass = 'badge-red';
-                            $badgeLabel = 'Ditolak';
-                        } elseif ($dueDate) {
-                            $dueStart = $dueDate->copy()->startOfDay();
-                            if ($dueStart->lt($today)) {
+                        $itemId = $item->id;
+                        if ($jenis === 'internet') {
+                            $statusInternet = $item->status_internet;
+                            $badgeClass = match($statusInternet) {
+                                'lunas' => 'badge-green',
+                                'pending' => 'badge-blue',
+                                'rejected' => 'badge-red',
+                                'aktif' => 'badge-green',
+                                'jatuh_tempo' => 'badge-orange',
+                                'segera_habis' => 'badge-yellow',
+                                'mati' => 'badge-red',
+                                default => 'badge-red',
+                            };
+                            $badgeLabel = match($statusInternet) {
+                                'lunas' => 'Lunas',
+                                'pending' => 'Menunggu',
+                                'rejected' => 'Ditolak',
+                                'aktif' => 'Aktif',
+                                'jatuh_tempo' => 'Jatuh Tempo',
+                                'segera_habis' => 'Segera Habis',
+                                'mati' => 'Mati',
+                                default => 'Nonaktif',
+                            };
+                            $dataStatus = $statusInternet;
+                        } elseif ($jenis === 'aset_digital') {
+                            $statusDigital = $item->status_digital;
+                            $badgeClass = match($statusDigital) {
+                                'lunas' => 'badge-green',
+                                'pending' => 'badge-blue',
+                                'rejected' => 'badge-red',
+                                'aktif' => 'badge-green',
+                                'jatuh_tempo' => 'badge-orange',
+                                'segera_habis' => 'badge-yellow',
+                                'mati' => 'badge-red',
+                                default => 'badge-red',
+                            };
+                            $badgeLabel = match($statusDigital) {
+                                'lunas' => 'Lunas',
+                                'pending' => 'Menunggu',
+                                'rejected' => 'Ditolak',
+                                'aktif' => 'Aktif',
+                                'jatuh_tempo' => 'Jatuh Tempo',
+                                'segera_habis' => 'Segera Habis',
+                                'mati' => 'Mati',
+                                default => 'Nonaktif',
+                            };
+                            $dataStatus = $statusDigital;
+                        } elseif ($jenis === 'ipl_ruko') {
+                            $statusIpl = $item->status_ipl;
+                            $badgeClass = match($statusIpl) {
+                                'lunas' => 'badge-green',
+                                'pending' => 'badge-blue',
+                                'rejected' => 'badge-red',
+                                'aktif' => 'badge-green',
+                                'jatuh_tempo' => 'badge-orange',
+                                'segera_habis' => 'badge-yellow',
+                                'mati' => 'badge-red',
+                                default => 'badge-red',
+                            };
+                            $badgeLabel = match($statusIpl) {
+                                'lunas' => 'Lunas',
+                                'pending' => 'Menunggu',
+                                'rejected' => 'Ditolak',
+                                'aktif' => 'Aktif',
+                                'jatuh_tempo' => 'Jatuh Tempo',
+                                'segera_habis' => 'Segera Habis',
+                                'mati' => 'Mati',
+                                default => 'Nonaktif',
+                            };
+                            $dataStatus = $statusIpl;
+                        } else {
+                            $dueDate = $item->jatuh_tempo;
+                            $today = now()->startOfDay();
+                            if ($item->status === 'lunas') {
+                                $badgeClass = 'badge-green';
+                                $badgeLabel = 'Lunas';
+                            } elseif ($item->status === 'pending') {
+                                $badgeClass = 'badge-blue';
+                                $badgeLabel = 'Menunggu';
+                            } elseif ($item->status === 'rejected') {
                                 $badgeClass = 'badge-red';
-                                $badgeLabel = 'Terlambat';
-                            } elseif ($dueStart->lte($today->copy()->addDays(3))) {
-                                $sisa = $today->diffInDays($dueStart);
-                                $badgeClass = 'badge-yellow';
-                                $badgeLabel = $sisa === 0 ? 'Hari Ini' : 'H - ' . $sisa . ' Hari';
+                                $badgeLabel = 'Ditolak';
+                            } elseif ($dueDate) {
+                                $dueStart = $dueDate->copy()->startOfDay();
+                                if ($dueStart->lt($today)) {
+                                    $badgeClass = 'badge-red';
+                                    $badgeLabel = 'Terlambat';
+                                } elseif ($dueStart->lte($today->copy()->addDays(3))) {
+                                    $sisa = $today->diffInDays($dueStart);
+                                    $badgeClass = 'badge-yellow';
+                                    $badgeLabel = $sisa === 0 ? 'Hari Ini' : 'H - ' . $sisa . ' Hari';
+                                } else {
+                                    $badgeClass = 'badge-yellow';
+                                    $badgeLabel = 'Jatuh Tempo';
+                                }
                             } else {
                                 $badgeClass = 'badge-yellow';
                                 $badgeLabel = 'Jatuh Tempo';
                             }
-                        } else {
-                            $badgeClass = 'badge-yellow';
-                            $badgeLabel = 'Jatuh Tempo';
+                            $dataStatus = $item->status;
                         }
-                        $itemId = $item->id;
                     ?>
-                    <tr data-status="<?php echo e($item->status); ?>">
+                    <tr data-status="<?php echo e($dataStatus); ?>">
                         <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
                         <?php if($jenis === 'internet'): ?>
                         <td style="color:var(--text-primary);font-weight:500;"><?php echo e($item->nama_internet); ?></td>
@@ -357,15 +688,22 @@
                         <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($item->pic); ?></td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($item->jabatan); ?></td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($item->masa_tenggang?->format('d/m/Y')); ?></td>
+                        <td style="color:var(--text-muted);font-size:0.7rem;"><?php echo e($item->hari_internet); ?></td>
                         <td class="hidden md:table-cell" style="color:var(--text-primary);font-weight:600;">Rp <?php echo e(number_format($item->biaya, 0, ',', '.')); ?></td>
                         <?php else: ?>
                         <td style="color:var(--text-primary);font-weight:500;"><?php echo e($item->periode); ?></td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($item->tanggal_tagihan?->format('d/m/Y')); ?></td>
                         <td style="color:var(--text-muted);"><?php echo e($item->jatuh_tempo?->format('d/m/Y')); ?></td>
+                        <?php if($jenis === 'aset_digital'): ?>
+                        <td style="color:var(--text-muted);font-size:0.7rem;"><?php echo e($item->hari_digital); ?></td>
+                        <?php elseif($jenis === 'ipl_ruko'): ?>
+                        <td style="color:var(--text-muted);font-size:0.7rem;"><?php echo e($item->hari_ipl); ?></td>
+                        <?php endif; ?>
                         <td style="color:var(--text-primary);font-weight:600;">Rp <?php echo e(number_format($item->nominal, 0, ',', '.')); ?></td>
                         <?php endif; ?>
                         <td><span class="badge <?php echo e($badgeClass); ?>"><?php echo e($badgeLabel); ?></span></td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e(($item->tanggal_bayar) ? $item->tanggal_bayar->format('d/m/Y') : '-'); ?></td>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail(<?php echo e($itemId); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -386,10 +724,11 @@
                                 </div>
                             </div>
                         </td>
+                        <?php endif; ?>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data <?php echo e($jenisLabels[$jenis]); ?>.</td>
+                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data <?php echo e($jenisLabels[$jenis]); ?>.</td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
@@ -433,7 +772,9 @@
                         <th>Penggunaan Ethernet/Hari</th>
                         <th>Pengecek</th>
                         <th>Keterangan</th>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <th>Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -447,6 +788,7 @@
                         <td style="color:var(--text-muted);"><?php echo e(number_format($u->penggunaan_ethernet, 2)); ?> GB</td>
                         <td style="color:var(--text-primary);"><?php echo e($u->checker?->name ?? '-'); ?></td>
                         <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?php echo e($u->keterangan ?: '-'); ?></td>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showInternetUsageDetail(<?php echo e($u->id); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -465,10 +807,11 @@
                                 </div>
                             </div>
                         </td>
+                        <?php endif; ?>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data usage internet.</td>
+                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data usage internet.</td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
@@ -514,7 +857,9 @@
                         <th>Nominal</th>
                         <th>Oleh</th>
                         <th>Catatan</th>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <th>Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -527,16 +872,18 @@
                         <td style="color:var(--text-primary);">Rp <?php echo e(number_format($t->nominal, 0)); ?></td>
                         <td style="color:var(--text-primary);"><?php echo e($t->creator?->name ?? '-'); ?></td>
                         <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?php echo e($t->notes ?: 'Tidak ada catatan'); ?></td>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
                             <form method="POST" action="<?php echo e(route('admin.pembayaran.token-topup.destroy', $t->id)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up ini?" style="margin:0;">
                                 <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                 <button type="submit" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:2px 6px;">Hapus</button>
                             </form>
                         </td>
+                        <?php endif; ?>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
+                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
@@ -632,7 +979,9 @@
                         <th>Status</th>
                         <th>Pengecek</th>
                         <th>Catatan</th>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <th>Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -651,6 +1000,7 @@
                         <td><span class="badge text-xs" style="background:<?php echo e($statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)'))); ?>;color:<?php echo e($statusColor); ?>;border:1px solid <?php echo e($statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)'))); ?>;"><?php echo e($statusLabel); ?></span></td>
                         <td style="color:var(--text-primary);"><?php echo e($r->checker->name); ?></td>
                         <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?php echo e($r->notes ?: 'Tidak ada catatan'); ?></td>
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
                             <div class="flex items-center gap-1">
                                 <form method="POST" action="<?php echo e(route('admin.pembayaran.token-reading.destroy', $r->id)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data pengecekan ini?" style="margin:0;">
@@ -662,10 +1012,11 @@
                                 </a>
                             </div>
                         </td>
+                        <?php endif; ?>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada pengecekan token listrik.</td>
+                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada pengecekan token listrik.</td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
@@ -1074,6 +1425,14 @@ function showAlertPopup(type) {
     const label = currentJenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
 
     const items = paymentData.filter(function(item) {
+        if (currentJenis === 'internet') {
+            if (item.status_internet === 'lunas' || item.status_internet === 'pending' || item.status_internet === 'rejected') return false;
+            if (!item[dueField]) return false;
+            const due = new Date(item[dueField]); due.setHours(0,0,0,0);
+            if (type === 'danger') return due <= today;
+            const in3 = new Date(today); in3.setDate(in3.getDate() + 3);
+            return due > today && due <= in3;
+        }
         if (!item[dueField]) return false;
         if (item.status !== 'jatuh_tempo') return false;
         const due = new Date(item[dueField]); due.setHours(0,0,0,0);
@@ -1218,13 +1577,45 @@ function showDetail(id) {
     document.getElementById('detail-title').textContent = i.periode;
     <?php endif; ?>
 
+    const statusComputedMap = {
+        'lunas': { label: 'Lunas', bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
+        'pending': { label: 'Menunggu', bg: '#eff6ff', text: '#3b82f6', border: '#bfdbfe' },
+        'rejected': { label: 'Ditolak', bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
+        'aktif': { label: 'Aktif', bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
+        'jatuh_tempo': { label: 'Jatuh Tempo', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+        'segera_habis': { label: 'Segera Habis', bg: '#fefce8', text: '#b45309', border: '#fde68a' },
+        'mati': { label: 'Mati', bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
+    };
+    <?php if($jenis === 'internet'): ?>
+    const s = statusComputedMap[i.status_internet] || statusComputedMap['mati'];
+    <?php elseif($jenis === 'aset_digital'): ?>
+    const s = statusComputedMap[i.status_digital] || statusComputedMap['mati'];
+    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
+    const rows = [
+        { label: 'Nama Aset', value: i.periode },
+        { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
+        { label: 'Jatuh Tempo', value: fmt(i.jatuh_tempo) },
+        { label: 'Hari', value: i.hari_digital || '-' },
+        { label: 'Nominal', value: 'Rp ' + Number(i.nominal).toLocaleString('id-ID') },
+        { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
+    ];
+    <?php elseif($jenis === 'ipl_ruko'): ?>
+    const s = statusComputedMap[i.status_ipl] || statusComputedMap['mati'];
+    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
+    const rows = [
+        { label: 'Periode', value: i.periode },
+        { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
+        { label: 'Jatuh Tempo', value: fmt(i.jatuh_tempo) },
+        { label: 'Hari', value: i.hari_ipl || '-' },
+        { label: 'PIC', value: i.pic || '-' },
+        { label: 'Jabatan', value: i.jabatan || '-' },
+        { label: 'Nominal', value: 'Rp ' + Number(i.nominal).toLocaleString('id-ID') },
+        { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
+    ];
+    <?php else: ?>
     const fmtDate = (d) => d ? new Date(d + 'T00:00:00') : null;
     const today = new Date(); today.setHours(0,0,0,0);
-    <?php if($jenis === 'internet'): ?>
-    const dueDate = fmtDate(i.masa_tenggang);
-    <?php else: ?>
     const dueDate = fmtDate(i.jatuh_tempo);
-    <?php endif; ?>
     let computedLabel, computedBg, computedText, computedBorder;
     if (i.status === 'lunas') {
         computedLabel = 'Lunas'; computedBg = '#ecfdf5'; computedText = '#059669'; computedBorder = '#a7f3d0';
@@ -1242,22 +1633,27 @@ function showDetail(id) {
         computedLabel = 'Jatuh Tempo'; computedBg = '#fff7ed'; computedText = '#c2410c'; computedBorder = '#fed7aa';
     }
     const s = { label: computedLabel, bg: computedBg, text: computedText, border: computedBorder };
+    <?php endif; ?>
 
     const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
 
     <?php if($jenis === 'internet'): ?>
+    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
     const rows = [
         { label: 'Nama Internet', value: i.nama_internet },
         { label: 'Provider', value: i.provider },
         { label: 'PIC', value: i.pic },
         { label: 'Jabatan', value: i.jabatan },
         { label: 'Masa Tenggang', value: fmt(i.masa_tenggang) },
+        { label: 'Hari', value: i.hari_internet || '-' },
         { label: 'Biaya', value: 'Rp ' + Number(i.biaya).toLocaleString('id-ID') },
         { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
     ];
+    <?php elseif(in_array($jenis, ['aset_digital', 'ipl_ruko'])): ?>
+    
     <?php else: ?>
     const rows = [
-        { label: '<?php echo e($jenis === "aset_digital" ? "Nama Aset" : "Periode"); ?>', value: i.periode },
+        { label: 'Periode', value: i.periode },
         { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
         { label: 'Jatuh Tempo', value: fmt(i.jatuh_tempo) },
         { label: 'Nominal', value: 'Rp ' + Number(i.nominal).toLocaleString('id-ID') },
@@ -1604,4 +2000,4 @@ document.addEventListener('keydown', function(e) {
 <?php $__env->stopPush(); ?>
 
 
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/pembayaran/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-officejohengaming\resources\views/admin/pembayaran/index.blade.php ENDPATH**/ ?>

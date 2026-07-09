@@ -140,7 +140,9 @@
                         <th class="hidden sm:table-cell" style="width:95px">Waktu</th>
                         <th style="width:85px">Status</th>
                         <th class="hidden md:table-cell" style="width:85px">Antrian</th>
+                        @if(auth()->user()->role !== 'gm')
                         <th style="width:80px">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody id="meetings-tbody">
@@ -193,6 +195,7 @@
                                 <span style="color:var(--text-muted);font-size:0.8rem;">—</span>
                             @endif
                         </td>
+                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
                                 <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
@@ -234,6 +237,7 @@
                                 </div>
                             </div>
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr id="empty-row">

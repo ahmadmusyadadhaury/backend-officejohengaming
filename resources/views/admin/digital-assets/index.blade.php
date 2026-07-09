@@ -8,8 +8,8 @@
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- 3 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    {{-- Stat Cards --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(124,58,237,0.15);">
@@ -38,6 +38,32 @@
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(249,115,22,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#f97316;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">H-7 s.d H-4</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style="background:rgba(245,158,11,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['segera_habis'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">H-3 s.d H-1</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                 style="background:rgba(239,68,68,0.15);">
                 <svg class="w-[18px] h-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -45,11 +71,61 @@
             </div>
             <div>
                 <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['nonaktif'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Aset Tidak Aktif</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Aset digital yang tidak aktif</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Tidak Aktif</div>
+                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Sudah lewat masa berlaku</div>
             </div>
         </div>
     </div>
+
+    {{-- Alert --}}
+    @php
+        $matiCount = $alertAssets->where('status_aset', 'mati')->count();
+        $jatuhTempoCount = $alertAssets->where('status_aset', 'jatuh_tempo')->count();
+        $segeraCount = $alertAssets->where('status_aset', 'segera_habis')->count();
+    @endphp
+    @if($alertAssets->isNotEmpty())
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        @if($matiCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#ef4444;">{{ $matiCount }} Tidak Aktif</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $matiCount }} aset dengan masa berlaku sudah habis.</div>
+                </div>
+            </div>
+        </div>
+        @endif
+        @if($jatuhTempoCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#f97316;">{{ $jatuhTempoCount }} Jatuh Tempo</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $jatuhTempoCount }} aset akan berakhir dalam 4-7 hari.</div>
+                </div>
+            </div>
+        </div>
+        @endif
+        @if($segeraCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#f59e0b;">{{ $segeraCount }} Segera Habis</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $segeraCount }} aset akan berakhir dalam 1-3 hari.</div>
+                </div>
+            </div>
+        </div>
+        @endif
+    </div>
+    @endif
 
     {{-- Tabel --}}
     <div class="gaming-card" style="overflow:visible;">
@@ -58,12 +134,14 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Aset Digital</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Lisensi software, akun dan layanan digital perusahaan.</div>
             </div>
+            @if(auth()->user()->role !== 'gm')
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Aset Digital
             </button>
+            @endif
         </div>
         <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
@@ -87,7 +165,9 @@
                 <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                     <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
                     <button type="button" data-value="aktif" onclick="setFilter('aktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
-                    <button type="button" data-value="nonaktif" onclick="setFilter('nonaktif')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
+                    <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
+                    <button type="button" data-value="segera_habis" onclick="setFilter('segera_habis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Segera Habis</button>
+                    <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
                 </div>
             </div>
             </div>
@@ -106,23 +186,42 @@
                         <th>PIC</th>
                         <th class="hidden lg:table-cell">Jabatan</th>
                         <th class="hidden md:table-cell">Keterangan</th>
+                        @if(auth()->user()->role !== 'gm')
                         <th>Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody id="digital-tbody">
                     @forelse($assets as $a)
                     @php
-                        $activeBadge = $a->is_active ? 'badge-green' : 'badge-red';
-                        $activeLabel = $a->is_active ? 'Aktif' : 'Tidak Aktif';
+                        $statusBadge = match($a->status_aset) {
+                            'aktif'        => 'badge-green',
+                            'jatuh_tempo'  => 'badge-orange',
+                            'segera_habis' => 'badge-yellow',
+                            'mati'         => 'badge-red',
+                            default        => 'badge-gray',
+                        };
+                        $statusLabel = match($a->status_aset) {
+                            'aktif'        => 'Aktif',
+                            'jatuh_tempo'  => 'Jatuh Tempo',
+                            'segera_habis' => 'Segera Habis',
+                            'mati'         => 'Tidak Aktif',
+                            default        => '-',
+                        };
                     @endphp
-                    <tr data-status="{{ $a->is_active ? 'aktif' : 'nonaktif' }}">
+                    <tr data-status="{{ $a->status_aset }}">
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $a->email }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $a->mulai?->format('d/m/Y') }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $a->berakhir?->format('d/m/Y') }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">Rp {{ number_format($a->biaya, 0, ',', '.') }}</td>
-                        <td><span class="badge {{ $activeBadge }}">{{ $activeLabel }}</span></td>
+                        <td>
+                            <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
+                            @if(in_array($a->status_aset, ['jatuh_tempo', 'segera_habis', 'mati']))
+                            <br><span class="text-[9px] font-semibold" style="color:var(--text-muted);">{{ $a->hari_aset }}</span>
+                            @endif
+                        </td>
                         <td style="color:var(--text-muted);">{{ $a->pic }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $a->jabatan }}</td>
                         <td class="hidden md:table-cell" style="max-width:150px;">
@@ -133,6 +232,7 @@
                                 </button>
                             </div>
                         </td>
+                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $a->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -152,10 +252,11 @@
                                 </div>
                             </div>
                         </td>
+                        @endif
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="11" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset digital.</td>
+                        <td colspan="10" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset digital.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -330,10 +431,13 @@ function showDetail(id) {
     document.getElementById('detail-title').textContent = a.nama_aset;
 
     const rp = a.biaya ? 'Rp ' + Number(a.biaya).toLocaleString('id-ID') : '-';
-    const statusLabel = a.is_active ? 'Aktif' : 'Tidak Aktif';
-    const statusColor = a.is_active ? '#059669' : '#dc2626';
-    const statusBg = a.is_active ? '#ecfdf5' : '#fef2f2';
-    const statusBorder = a.is_active ? '#a7f3d0' : '#fecaca';
+    const statusMap = {
+        aktif:        { label: 'Aktif',        bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
+        jatuh_tempo:  { label: 'Jatuh Tempo',  bg: '#fff7ed', text: '#f97316', border: '#fed7aa' },
+        segera_habis: { label: 'Segera Habis', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+        mati:         { label: 'Tidak Aktif',  bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
+    };
+    const st = statusMap[a.status_aset] || statusMap.mati;
 
     const rows = [
         { label: 'Nama Aset', value: a.nama_aset },
@@ -357,7 +461,7 @@ function showDetail(id) {
             `).join('')}
             <div class="flex items-center justify-between py-2.5">
                 <p class="text-sm" style="color:var(--text-muted);">Status</p>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${statusBg};color:${statusColor};border:1px solid ${statusBorder};">${statusLabel}</span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${st.bg};color:${st.text};border:1px solid ${st.border};">${st.label}${a.status_aset !== 'aktif' ? ' (' + (a.hari_aset || '') + ')' : ''}</span>
             </div>
         </div>
     `;

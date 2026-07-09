@@ -13,15 +13,16 @@ class DigitalAssetController extends Controller
     public function index()
     {
         $assets = DigitalAsset::orderBy('created_at', 'desc')->get();
-        $today = now()->startOfDay();
 
         $stats = [
             'total' => $assets->count(),
-            'aktif' => $assets->filter(fn ($a) => $a->berakhir && $a->berakhir->gte($today))->count(),
-            'nonaktif' => $assets->filter(fn ($a) => ! $a->berakhir || $a->berakhir->lt($today))->count(),
+            'aktif' => $assets->filter(fn ($a) => $a->status_aset === 'aktif')->count(),
+            'jatuh_tempo' => $assets->filter(fn ($a) => $a->status_aset === 'jatuh_tempo')->count(),
+            'segera_habis' => $assets->filter(fn ($a) => $a->status_aset === 'segera_habis')->count(),
+            'nonaktif' => $assets->filter(fn ($a) => $a->status_aset === 'mati')->count(),
         ];
 
-        $assetsJson = $assets->values()->map(function ($a) use ($today) {
+        $assetsJson = $assets->values()->map(function ($a) {
             return [
                 'id' => $a->id,
                 'nama_aset' => $a->nama_aset,
@@ -32,14 +33,27 @@ class DigitalAssetController extends Controller
                 'pic' => $a->pic,
                 'jabatan' => $a->jabatan,
                 'keperluan' => $a->keperluan,
-                'is_active' => $a->berakhir && $a->berakhir->gte($today),
+                'is_active' => $a->status_aset !== 'mati',
+                'status_aset' => $a->status_aset,
+                'hari_aset' => $a->hari_aset,
             ];
         });
+
+        $alertAssets = $assets->filter(fn ($a) => in_array($a->status_aset, ['jatuh_tempo', 'segera_habis', 'mati']));
+        $alertJson = $alertAssets->values()->map(fn ($a) => [
+            'id' => $a->id,
+            'nama_aset' => $a->nama_aset,
+            'berakhir' => $a->berakhir?->format('d/m/Y'),
+            'status_aset' => $a->status_aset,
+            'hari_aset' => $a->hari_aset,
+        ]);
 
         return view('admin.digital-assets.index', [
             'assets' => $assets,
             'assetsJson' => $assetsJson,
             'stats' => $stats,
+            'alertAssets' => $alertAssets,
+            'alertJson' => $alertJson,
         ]);
     }
 

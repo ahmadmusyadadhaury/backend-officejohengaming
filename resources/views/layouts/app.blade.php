@@ -388,7 +388,7 @@
         </header>
 
         {{-- Flash Messages --}}
-        <div class="px-4 lg:px-6 pt-4">
+        <div class="px-3 lg:px-8 pt-3 lg:pt-5">
             @if(session('success'))
                 <span id="success-flash-data" style="display:none;">{{ session('success') }}</span>
             @endif

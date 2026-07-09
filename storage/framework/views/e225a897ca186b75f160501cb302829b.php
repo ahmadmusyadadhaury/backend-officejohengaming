@@ -388,7 +388,7 @@
         </header>
 
         
-        <div class="px-4 lg:px-6 pt-4">
+        <div class="px-3 lg:px-8 pt-3 lg:pt-5">
             <?php if(session('success')): ?>
                 <span id="success-flash-data" style="display:none;"><?php echo e(session('success')); ?></span>
             <?php endif; ?>
@@ -1258,4 +1258,4 @@
     </script>
 </body>
 </html>
-<?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\backend-officejohengaming\resources\views/layouts/app.blade.php ENDPATH**/ ?>

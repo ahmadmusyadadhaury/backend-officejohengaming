@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Exports\DataExport;
-use App\Models\AsetDaya;
 use App\Models\AsetMes;
 use App\Models\AsetTim;
 use App\Models\DigitalAsset;
 use App\Models\Notification;
 use App\Models\Payment;
-use App\Models\PembayaranAsetDaya;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetMes;
 use App\Models\PembayaranAsetTim;
@@ -37,7 +35,6 @@ class PaymentApprovalController extends Controller
             'listrik' => new Payment,
             'aset_digital' => new PembayaranAsetDigital,
             'ipl_ruko' => new PembayaranIplRuko,
-            'aset_daya' => new PembayaranAsetDaya,
             'aset_tim' => new PembayaranAsetTim,
             'aset_mes' => new PembayaranAsetMes,
             'pajak_kendaraan' => new VehiclePajakRequest,
@@ -52,7 +49,6 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
             'aset_mes' => PembayaranAsetMes::class,
             'pajak_kendaraan' => VehiclePajakRequest::class,
@@ -78,7 +74,7 @@ class PaymentApprovalController extends Controller
                 'masa_tenggang' => 'required|date',
                 'biaya' => 'required|numeric|min:0',
             ],
-            'listrik', 'aset_digital', 'ipl_ruko', 'aset_daya', 'aset_tim', 'aset_mes' => [
+            'listrik', 'aset_digital', 'ipl_ruko', 'aset_tim', 'aset_mes' => [
                 'periode' => 'required|string|max:255',
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
@@ -134,7 +130,6 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
             'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
@@ -150,7 +145,6 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
-                        'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
                         'aset_mes' => 'Aset MES',
                     },
@@ -202,10 +196,9 @@ class PaymentApprovalController extends Controller
     public function tagihan()
     {
         $all = collect();
-        $sevenDays = Carbon::today()->addDays(7);
+        $today = Carbon::today();
 
         $userId = auth()->id();
-        $myAsetDayaIds = AsetDaya::where('penanggung_jawab', $userId)->pluck('id');
         $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
         $myAsetMesIds = AsetMes::where('penanggung_jawab', $userId)->pluck('id');
 
@@ -214,7 +207,6 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
             'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
@@ -223,11 +215,9 @@ class PaymentApprovalController extends Controller
             $query = $class::with('requester')
                 ->whereNull('requested_by')
                 ->whereNotIn('status', ['lunas', 'rejected'])
-                ->where($dateField, '<=', $sevenDays);
+                ->where($dateField, '<', $today);
 
-            if ($jenis === 'aset_daya') {
-                $query->whereIn('aset_daya_id', $myAsetDayaIds);
-            } elseif ($jenis === 'aset_tim') {
+            if ($jenis === 'aset_tim') {
                 $query->whereIn('aset_tim_id', $myAsetTimIds);
             } elseif ($jenis === 'aset_mes') {
                 $query->whereIn('aset_mes_id', $myAsetMesIds);
@@ -242,7 +232,6 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
-                        'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
                         'aset_mes' => 'Aset MES',
                     },
@@ -312,7 +301,6 @@ class PaymentApprovalController extends Controller
             'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
-            'aset_daya' => 'Aset Daya',
             'aset_tim' => 'Aset TIM',
             'aset_mes' => 'Aset MES',
         };
@@ -339,7 +327,6 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
             'aset_mes' => PembayaranAsetMes::class,
             'pajak_kendaraan' => VehiclePajakRequest::class,
@@ -357,7 +344,6 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
-                        'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
                         'aset_mes' => 'Aset MES',
                         'pajak_kendaraan' => 'Pajak Kendaraan',
@@ -439,7 +425,6 @@ class PaymentApprovalController extends Controller
             'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
-            'aset_daya' => 'Aset Daya',
             'aset_tim' => 'Aset TIM',
             'aset_mes' => 'Aset MES',
         };
@@ -488,7 +473,6 @@ class PaymentApprovalController extends Controller
             'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
-            'aset_daya' => 'Aset Daya',
             'aset_tim' => 'Aset TIM',
             'aset_mes' => 'Aset MES',
         };
@@ -514,7 +498,6 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
             'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
@@ -529,7 +512,6 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
-                        'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
                         'aset_mes' => 'Aset MES',
                     },
@@ -588,7 +570,6 @@ class PaymentApprovalController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
             'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
@@ -603,7 +584,6 @@ class PaymentApprovalController extends Controller
                         'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
-                        'aset_daya' => 'Aset Daya',
                         'aset_tim' => 'Aset TIM',
                         'aset_mes' => 'Aset MES',
                     },

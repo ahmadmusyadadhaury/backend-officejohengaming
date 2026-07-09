@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use App\Models\Payment;
-use App\Models\PembayaranAsetDaya;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetTim;
 use App\Models\PembayaranIplRuko;
-use App\Models\User;
 use App\Models\WifiPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -25,7 +23,6 @@ class PaymentApprovalApiController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
             default => abort(400, 'Jenis tidak valid'),
         };
@@ -40,7 +37,6 @@ class PaymentApprovalApiController extends Controller
             'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_daya' => PembayaranAsetDaya::class,
             'aset_tim' => PembayaranAsetTim::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
@@ -179,7 +175,6 @@ class PaymentApprovalApiController extends Controller
             'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
-            'aset_daya' => 'Aset Daya',
             'aset_tim' => 'Aset TIM',
             default => $jenis,
         };

@@ -17,7 +17,7 @@
                         <th>Mulai</th>
                         <th>Selesai</th>
                         <th>Status</th>
-                        <th>Aksi</th>
+@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
                     </tr>
                 </thead>
                 <tbody>
@@ -39,15 +39,17 @@
                             @endphp
                             <span class="badge {{ $sc }}">{{ ucfirst($booking->status) }}</span>
                         </td>
+@if(auth()->user()->role !== 'gm')
                         <td>
                             <form method="POST" action="{{ route('admin.bookings.destroy', $booking) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus booking ini?">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>
                             </form>
                         </td>
+@endif
                     </tr>
                     @empty
-                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada booking.</td></tr>
+                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada booking.</td></tr>
                     @endforelse
                 </tbody>
             </table>

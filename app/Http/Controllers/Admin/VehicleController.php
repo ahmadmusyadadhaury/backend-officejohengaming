@@ -27,6 +27,7 @@ class VehicleController extends Controller
             'total' => $vehicles->count(),
             'pajak_aktif' => $vehicles->filter(fn ($v) => $v->status_pajak === 'aktif')->count(),
             'segera_habis' => $vehicles->filter(fn ($v) => $v->status_pajak === 'segera_habis')->count(),
+            'jatuh_tempo' => $vehicles->filter(fn ($v) => $v->status_pajak === 'jatuh_tempo')->count(),
             'pajak_mati' => $vehicles->filter(fn ($v) => $v->status_pajak === 'mati')->count(),
         ];
 
@@ -50,10 +51,11 @@ class VehicleController extends Controller
                 'jabatan' => $v->jabatan,
                 'keperluan' => $v->keperluan,
                 'status_pajak' => $v->status_pajak,
+                'hari_pajak' => $v->hari_pajak,
             ];
         });
 
-        $alertVehicles = $vehicles->filter(fn ($v) => in_array($v->status_pajak, ['segera_habis', 'mati']));
+        $alertVehicles = $vehicles->filter(fn ($v) => in_array($v->status_pajak, ['segera_habis', 'jatuh_tempo', 'mati']));
         $alertJson = $alertVehicles->values()->map(fn ($v) => [
             'id' => $v->id,
             'nama_kendaraan' => $v->nama_kendaraan,
@@ -62,6 +64,7 @@ class VehicleController extends Controller
             'pajak_tahunan' => $v->pajak_tahunan?->format('d/m/Y'),
             'pajak_5_tahun' => $v->pajak_5_tahun?->format('d/m/Y'),
             'status_pajak' => $v->status_pajak,
+            'hari_pajak' => $v->hari_pajak,
         ]);
 
         return view('admin.vehicles.index', [
@@ -146,11 +149,12 @@ class VehicleController extends Controller
 
     public function updateStatus(Request $request, Vehicle $vehicle)
     {
-        $status = $request->validate(['status' => 'required|in:aktif,segera_habis,mati'])['status'];
+        $status = $request->validate(['status' => 'required|in:aktif,jatuh_tempo,segera_habis,mati'])['status'];
 
         $vehicle->pajak_tahunan = match ($status) {
             'aktif' => now()->addYear(),
-            'segera_habis' => now()->addDays(15),
+            'jatuh_tempo' => now()->addDays(5),
+            'segera_habis' => now()->addDays(1),
             'mati' => now()->subDay(),
         };
         $vehicle->save();

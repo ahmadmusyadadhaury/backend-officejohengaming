@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Leader;
 
 use App\Http\Controllers\Controller;
-use App\Models\AsetDaya;
+use App\Models\AsetMes;
 use App\Models\AsetTim;
 use App\Models\DigitalAsset;
 use App\Models\Meeting;
-use App\Models\PembayaranAsetDaya;
+use App\Models\PembayaranAsetMes;
 use App\Models\PembayaranAsetTim;
 use App\Models\PeralatanKantor;
 use App\Models\SimCard;
@@ -39,23 +39,10 @@ class DashboardController extends Controller
         $today = Carbon::today();
         $userId = $user->id;
 
-        $myAsetDayaIds = AsetDaya::where('penanggung_jawab', $userId)->pluck('id');
         $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
-        $myAsetMesIds = \App\Models\AsetMes::where('penanggung_jawab', auth()->id())->pluck('id');
+        $myAsetMesIds = AsetMes::where('penanggung_jawab', auth()->id())->pluck('id');
 
         $allPayments = collect();
-
-        if ($myAsetDayaIds->isNotEmpty()) {
-            $allPayments = $allPayments->merge(
-                PembayaranAsetDaya::whereNull('requested_by')
-                    ->whereNotIn('status', ['lunas', 'rejected'])
-                    ->whereIn('aset_daya_id', $myAsetDayaIds)
-                    ->where('jatuh_tempo', '<=', $sevenDays)
-                    ->orderBy('jatuh_tempo')
-                    ->get()
-                    ->map(fn ($p) => $this->mapPayment($p, 'aset_daya', 'Aset Daya'))
-            );
-        }
 
         if ($myAsetTimIds->isNotEmpty()) {
             $allPayments = $allPayments->merge(
@@ -71,7 +58,7 @@ class DashboardController extends Controller
 
         if ($myAsetMesIds->isNotEmpty()) {
             $allPayments = $allPayments->merge(
-                \App\Models\PembayaranAsetMes::whereNull('requested_by')
+                PembayaranAsetMes::whereNull('requested_by')
                     ->whereNotIn('status', ['lunas', 'rejected'])
                     ->whereIn('aset_mes_id', $myAsetMesIds)
                     ->where('jatuh_tempo', '<=', $sevenDays)

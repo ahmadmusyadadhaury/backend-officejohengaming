@@ -46,4 +46,55 @@ class PembayaranIplRuko extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+
+    public function getStatusIplAttribute(): string
+    {
+        if (in_array($this->status, ['lunas', 'pending', 'rejected'])) {
+            return $this->status;
+        }
+
+        $now = now();
+        $batasJatuhTempo = now()->addDays(7);
+        $batasSegera = now()->addDays(3);
+
+        if (! $this->jatuh_tempo) {
+            return 'nonaktif';
+        }
+
+        if ($this->jatuh_tempo > $batasJatuhTempo) {
+            return 'aktif';
+        }
+
+        if ($this->jatuh_tempo > $batasSegera) {
+            return 'jatuh_tempo';
+        }
+
+        if ($this->jatuh_tempo > $now) {
+            return 'segera_habis';
+        }
+
+        return 'mati';
+    }
+
+    public function getHariIplAttribute(): string
+    {
+        $now = now()->startOfDay();
+        $due = $this->jatuh_tempo?->startOfDay();
+
+        if (! $due) {
+            return '-';
+        }
+
+        $diff = $now->diffInDays($due, false);
+
+        if ($diff > 0) {
+            return "H-{$diff}";
+        }
+
+        if ($diff === 0) {
+            return 'H-0';
+        }
+
+        return 'H+'.abs($diff);
+    }
 }
