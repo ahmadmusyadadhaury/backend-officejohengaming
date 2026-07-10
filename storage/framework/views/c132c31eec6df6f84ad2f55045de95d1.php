@@ -191,4 +191,4 @@
     </svg>
     <span class="truncate">Profile</span>
 </a>
-<?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/partials/sidebar-admin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views\partials\sidebar-admin.blade.php ENDPATH**/ ?>

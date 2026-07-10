@@ -1046,98 +1046,101 @@
         </div>
     </div>
 
-    
-    <div id="token-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-                <h3 class="text-base font-bold" style="color:var(--text-primary);">Input Pengecekan Token</h3>
-                <button type="button" onclick="closeTokenModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="px-6 py-5 overflow-y-auto flex-1">
-                <form method="POST" action="<?php echo e(route('admin.pembayaran.token-reading.store')); ?>">
-                    <?php echo csrf_field(); ?>
-                    <div class="space-y-4">
-                        <div class="field-group">
-                            <label class="gaming-label">Sisa KWH <span class="field-req">*</span></label>
-                            <input type="number" name="remaining_kwh" id="f-remaining_kwh" required step="0.01" min="0" max="9999" placeholder="Contoh: 342.5" class="gaming-input">
-                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Input sisa KWH yang tertera di meteran.</div>
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Tanggal Pengecekan <span class="field-req">*</span></label>
-                            <input type="date" name="checked_date" id="f-checked_date" required value="<?php echo e(date('Y-m-d')); ?>" class="gaming-input">
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Pengecek <span class="field-req">*</span></label>
-                            <select name="checked_by" id="f-checked_by" required class="gaming-input">
-                                <option value="">Pilih pengecek</option>
-                                <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($u->id); ?>" <?php echo e($u->id === auth()->id() ? 'selected' : ''); ?>><?php echo e($u->name); ?></option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </select>
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Catatan</label>
-                            <textarea name="notes" id="f-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
-                        <button type="button" onclick="closeTokenModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    
-    <div id="topup-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-                <h3 class="text-base font-bold" style="color:var(--text-primary);">Top Up Token Listrik</h3>
-                <button type="button" onclick="closeTopupModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="px-6 py-5 overflow-y-auto flex-1">
-                <form method="POST" action="<?php echo e(route('admin.pembayaran.token-topup.store')); ?>">
-                    <?php echo csrf_field(); ?>
-                    <div class="space-y-4">
-                        <div class="field-group">
-                            <label class="gaming-label">Jumlah KWH <span class="field-req">*</span></label>
-                            <input type="number" name="amount_kwh" id="f-amount_kwh" required step="0.01" min="1" placeholder="Contoh: 7000" class="gaming-input">
-                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan jumlah KWH yang dibeli.</div>
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Nominal (Rp) <span class="field-req">*</span></label>
-                            <input type="number" name="nominal" id="f-nominal" required step="0.01" min="0" placeholder="Contoh: 1500000" class="gaming-input">
-                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan nominal harga token.</div>
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
-                            <input type="date" name="payment_date" id="f-payment_date" required value="<?php echo e(date('Y-m-d')); ?>" class="gaming-input">
-                        </div>
-                        <div class="field-group">
-                            <label class="gaming-label">Catatan</label>
-                            <textarea name="notes" id="f-topup-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
-                        <button type="button" onclick="closeTopupModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     <?php endif; ?>
 
 </div>
+
+<?php if($jenis === 'listrik'): ?>
+
+<div id="token-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Input Pengecekan Token</h3>
+            <button type="button" onclick="closeTokenModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1">
+            <form method="POST" action="<?php echo e(route('admin.pembayaran.token-reading.store')); ?>">
+                <?php echo csrf_field(); ?>
+                <div class="space-y-4">
+                    <div class="field-group">
+                        <label class="gaming-label">Sisa KWH <span class="field-req">*</span></label>
+                        <input type="number" name="remaining_kwh" id="f-remaining_kwh" required step="0.01" min="0" max="9999" placeholder="Contoh: 342.5" class="gaming-input">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Input sisa KWH yang tertera di meteran.</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Tanggal Pengecekan <span class="field-req">*</span></label>
+                        <input type="date" name="checked_date" id="f-checked_date" required value="<?php echo e(date('Y-m-d')); ?>" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Pengecek <span class="field-req">*</span></label>
+                        <select name="checked_by" id="f-checked_by" required class="gaming-input">
+                            <option value="">Pilih pengecek</option>
+                            <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($u->id); ?>" <?php echo e($u->id === auth()->id() ? 'selected' : ''); ?>><?php echo e($u->name); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Catatan</label>
+                        <textarea name="notes" id="f-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+                    <button type="button" onclick="closeTokenModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div id="topup-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Top Up Token Listrik</h3>
+            <button type="button" onclick="closeTopupModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1">
+            <form method="POST" action="<?php echo e(route('admin.pembayaran.token-topup.store')); ?>">
+                <?php echo csrf_field(); ?>
+                <div class="space-y-4">
+                    <div class="field-group">
+                        <label class="gaming-label">Jumlah KWH <span class="field-req">*</span></label>
+                        <input type="number" name="amount_kwh" id="f-amount_kwh" required step="0.01" min="1" placeholder="Contoh: 7000" class="gaming-input">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan jumlah KWH yang dibeli.</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Nominal (Rp) <span class="field-req">*</span></label>
+                        <input type="number" name="nominal" id="f-nominal" required step="0.01" min="0" placeholder="Contoh: 1500000" class="gaming-input">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan nominal harga token.</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
+                        <input type="date" name="payment_date" id="f-payment_date" required value="<?php echo e(date('Y-m-d')); ?>" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Catatan</label>
+                        <textarea name="notes" id="f-topup-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+                    <button type="button" onclick="closeTopupModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 
 <div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
@@ -1519,7 +1522,8 @@ function openBayarModal(id) {
     document.getElementById('bayar-form').action = '<?php echo e(url("admin/pembayaran")); ?>/' + i.id;
 
     const name = currentJenis === 'internet' ? (i.nama_internet + ' (' + i.provider + ')') : i.periode;
-    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(i.nominal);
+    const nominalVal = i.nominal || i.biaya || 0;
+    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(nominalVal);
     const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
     const dueLabel = currentJenis === 'internet' ? 'Masa Tenggang' : 'Jatuh Tempo';
     const dueDate = i[dueField] ? new Date(i[dueField]).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
@@ -1608,11 +1612,22 @@ function showDetail(id) {
         'segera_habis': { label: 'Segera Habis', bg: '#fefce8', text: '#b45309', border: '#fde68a' },
         'mati': { label: 'Mati', bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
     };
+    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
+
     <?php if($jenis === 'internet'): ?>
     const s = statusComputedMap[i.status_internet] || statusComputedMap['mati'];
+    const rows = [
+        { label: 'Nama Internet', value: i.nama_internet },
+        { label: 'Provider', value: i.provider },
+        { label: 'PIC', value: i.pic },
+        { label: 'Jabatan', value: i.jabatan },
+        { label: 'Masa Tenggang', value: fmt(i.masa_tenggang) },
+        { label: 'Hari', value: i.hari_internet || '-' },
+        { label: 'Biaya', value: 'Rp ' + Number(i.biaya).toLocaleString('id-ID') },
+        { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
+    ];
     <?php elseif($jenis === 'aset_digital'): ?>
     const s = statusComputedMap[i.status_digital] || statusComputedMap['mati'];
-    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
     const rows = [
         { label: 'Nama Aset', value: i.periode },
         { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
@@ -1623,7 +1638,6 @@ function showDetail(id) {
     ];
     <?php elseif($jenis === 'ipl_ruko'): ?>
     const s = statusComputedMap[i.status_ipl] || statusComputedMap['mati'];
-    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
     const rows = [
         { label: 'Periode', value: i.periode },
         { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
@@ -1655,25 +1669,6 @@ function showDetail(id) {
         computedLabel = 'Jatuh Tempo'; computedBg = '#fff7ed'; computedText = '#c2410c'; computedBorder = '#fed7aa';
     }
     const s = { label: computedLabel, bg: computedBg, text: computedText, border: computedBorder };
-    <?php endif; ?>
-
-    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
-
-    <?php if($jenis === 'internet'): ?>
-    const fmt = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }) : '-';
-    const rows = [
-        { label: 'Nama Internet', value: i.nama_internet },
-        { label: 'Provider', value: i.provider },
-        { label: 'PIC', value: i.pic },
-        { label: 'Jabatan', value: i.jabatan },
-        { label: 'Masa Tenggang', value: fmt(i.masa_tenggang) },
-        { label: 'Hari', value: i.hari_internet || '-' },
-        { label: 'Biaya', value: 'Rp ' + Number(i.biaya).toLocaleString('id-ID') },
-        { label: 'Tgl Bayar', value: fmt(i.tanggal_bayar) },
-    ];
-    <?php elseif(in_array($jenis, ['aset_digital', 'ipl_ruko'])): ?>
-    
-    <?php else: ?>
     const rows = [
         { label: 'Periode', value: i.periode },
         { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
@@ -1781,7 +1776,8 @@ function showInternetUsageDetail(id) {
     });
 
     document.getElementById('detail-bayar-btn').style.display = 'none';
-    document.getElementById('detail-edit-btn')?.style.display = 'none';
+    var editBtn = document.getElementById('detail-edit-btn');
+    if (editBtn) editBtn.style.display = 'none';
 
     document.getElementById('detail-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
