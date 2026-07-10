@@ -960,6 +960,10 @@ function renderDetailCards(i) {
     return html;
 }
 
+function getBarcodeColor() {
+    return document.body.classList.contains('dark') ? '#ffffff' : '#000000';
+}
+
 function renderBarcode(containerId, code) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
@@ -973,6 +977,7 @@ function renderBarcode(containerId, code) {
     svg.id = 'barcode-svg';
     container.appendChild(svg);
     try {
+        const color = getBarcodeColor();
         JsBarcode(svg, code, {
             format: 'CODE128',
             width: 2,
@@ -982,8 +987,8 @@ function renderBarcode(containerId, code) {
             font: 'monospace',
             margin: 8,
             background: 'transparent',
-            lineColor: '#000000',
-            textColor: '#000000',
+            lineColor: color,
+            textColor: color,
         });
     } catch (e) {
         container.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">Gagal render barcode</p>';
@@ -1216,6 +1221,21 @@ function showModal() { openModal('item-modal'); }
 document.getElementById('item-modal')?.addEventListener('click', function(e) {
     if (e.target === this) closeModal('item-modal');
 });
+
+(function() {
+    let lastTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    new MutationObserver(function() {
+        const current = document.body.classList.contains('dark') ? 'dark' : 'light';
+        if (current !== lastTheme) {
+            lastTheme = current;
+            const svg = document.getElementById('barcode-svg');
+            if (svg && currentDetailId) {
+                const item = itemsData.find(x => x.id === currentDetailId);
+                if (item) renderBarcode('detail-barcode-image', item.barcode || item.kode_aset);
+            }
+        }
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+})();
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { closeDetail(); closeModal('item-modal'); closeScanModal(); }
