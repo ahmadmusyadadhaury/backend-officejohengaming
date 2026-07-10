@@ -19,6 +19,7 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
     {
         return collect([
             [
+                'PK-2026-0001', 'PK-2026-0001',
                 'Meja Kantor', '5', 'Meja kayu uk. 120x60cm', 'Furniture', 'Meja untuk staf',
                 'Johen Office', 'Ruang Staf', 'Perusahaan', '2025', '2025-06-01',
                 'Kurang dari 5 Juta', 'Sedang', '3500000', '8', '720',
@@ -30,6 +31,8 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
     public function headings(): array
     {
         return [
+            'Kode Aset',
+            'Barcode',
             'Nama Barang',
             'Jumlah',
             'Detail',
@@ -55,7 +58,7 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
 
     public function styles(Worksheet $sheet): array
     {
-        $lastCol = 'T';
+        $lastCol = 'V';
 
         $sheet->getStyle("A1:{$lastCol}1")->applyFromArray([
             'font' => [
@@ -95,26 +98,28 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
     public function columnWidths(): array
     {
         return [
-            'A' => 22,
-            'B' => 10,
-            'C' => 30,
-            'D' => 18,
-            'E' => 22,
-            'F' => 20,
-            'G' => 18,
-            'H' => 18,
+            'A' => 20,
+            'B' => 20,
+            'C' => 22,
+            'D' => 10,
+            'E' => 30,
+            'F' => 18,
+            'G' => 22,
+            'H' => 20,
             'I' => 18,
-            'J' => 20,
-            'K' => 22,
-            'L' => 18,
-            'M' => 16,
-            'N' => 22,
-            'O' => 24,
-            'P' => 20,
-            'Q' => 28,
+            'J' => 18,
+            'K' => 18,
+            'L' => 20,
+            'M' => 22,
+            'N' => 18,
+            'O' => 16,
+            'P' => 22,
+            'Q' => 24,
             'R' => 20,
             'S' => 28,
-            'T' => 14,
+            'T' => 20,
+            'U' => 28,
+            'V' => 14,
         ];
     }
 

@@ -31,6 +31,8 @@ class PeralatanKantorController extends Controller
 
             return [
                 'id' => $i->id,
+                'kode_aset' => $i->kode_aset,
+                'barcode' => $i->barcode,
                 'nama_barang' => $i->nama_barang,
                 'jumlah' => $i->jumlah,
                 'detail' => $i->detail,
@@ -69,6 +71,8 @@ class PeralatanKantorController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
+            'kode_aset' => 'nullable|string|max:255|unique:peralatan_kantor,kode_aset',
+            'barcode' => 'nullable|string|max:255|unique:peralatan_kantor,barcode',
             'nama_barang' => 'required|string|max:255',
             'jumlah' => 'required|integer|min:1',
             'detail' => 'nullable|string',
@@ -96,10 +100,10 @@ class PeralatanKantorController extends Controller
         $hariTerpakai = max(abs(now()->diffInDays(Carbon::parse($data['tanggal_pembelian']))), 0);
         $data['harga_per_hari_ini'] = max($data['nilai'] - ($data['pengurangan_harga_per_hari'] * $hariTerpakai), 0);
 
-        PeralatanKantor::create($data);
+        $item = PeralatanKantor::create($data);
 
         if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['message' => 'Peralatan kantor berhasil ditambahkan.'], 201);
+            return response()->json(['message' => 'Peralatan kantor berhasil ditambahkan.', 'data' => $item], 201);
         }
 
         return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Peralatan kantor berhasil ditambahkan.');
@@ -108,6 +112,8 @@ class PeralatanKantorController extends Controller
     public function update(Request $request, PeralatanKantor $peralatanKantor)
     {
         $data = $request->validate([
+            'kode_aset' => 'required|string|max:255|unique:peralatan_kantor,kode_aset,'.$peralatanKantor->id,
+            'barcode' => 'required|string|max:255|unique:peralatan_kantor,barcode,'.$peralatanKantor->id,
             'nama_barang' => 'required|string|max:255',
             'jumlah' => 'required|integer|min:1',
             'detail' => 'nullable|string',
@@ -149,6 +155,59 @@ class PeralatanKantorController extends Controller
         $peralatanKantor->delete();
 
         return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Peralatan kantor berhasil dihapus.');
+    }
+
+    public function scan(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:255',
+        ]);
+
+        $code = $request->input('code');
+
+        $item = PeralatanKantor::where('barcode', $code)
+            ->orWhere('kode_aset', $code)
+            ->first();
+
+        if (! $item) {
+            return response()->json(['message' => 'Data aset tidak ditemukan.'], 404);
+        }
+
+        $masaBarang = max($item->estimasi_waktu_barang ?: 360, 1);
+        $penyusutanPerHari = $item->nilai / $masaBarang;
+        $hariTerpakai = $item->tanggal_pembelian ? max(abs(now()->diffInDays($item->tanggal_pembelian)), 0) : 0;
+        $nilaiSekarang = max($item->nilai - ($penyusutanPerHari * $hariTerpakai), 0);
+
+        return response()->json([
+            'id' => $item->id,
+            'kode_aset' => $item->kode_aset,
+            'barcode' => $item->barcode,
+            'nama_barang' => $item->nama_barang,
+            'jumlah' => $item->jumlah,
+            'detail' => $item->detail,
+            'sub_kategori' => $item->sub_kategori,
+            'keterangan' => $item->keterangan,
+            'lokasi_unit' => $item->lokasi_unit,
+            'ruangan' => $item->ruangan,
+            'milik' => $item->milik,
+            'pengadaan_tahun' => $item->pengadaan_tahun,
+            'tanggal_pembelian' => $item->tanggal_pembelian?->format('Y-m-d'),
+            'kategori_nilai' => $item->kategori_nilai,
+            'kategori_ukuran' => $item->kategori_ukuran,
+            'nilai' => (int) $item->nilai,
+            'waktu_pakai_per_hari' => $item->waktu_pakai_per_hari,
+            'estimasi_waktu_barang' => $item->estimasi_waktu_barang,
+            'pengurangan_harga_per_hari' => round($penyusutanPerHari, 2),
+            'harga_per_hari_ini' => round($nilaiSekarang, 0),
+            'hari_terpakai' => $hariTerpakai,
+            'penyusutan_per_hari' => round($penyusutanPerHari, 2),
+            'nilai_sekarang' => round($nilaiSekarang, 0),
+            'pic' => $item->pic,
+            'jabatan' => $item->jabatan,
+            'atasan' => $item->atasan,
+            'jabatan_atasan' => $item->jabatan_atasan,
+            'kondisi' => $item->kondisi,
+        ]);
     }
 
     public function downloadTemplate()

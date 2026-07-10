@@ -12,7 +12,6 @@ use App\Models\Team;
 use App\Models\User;
 use App\Services\MeetingQueueService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class MeetingController extends Controller
 {

@@ -9,6 +9,8 @@ class PeralatanKantor extends Model
     protected $table = 'peralatan_kantor';
 
     protected $fillable = [
+        'kode_aset',
+        'barcode',
         'nama_barang',
         'jumlah',
         'detail',
@@ -45,5 +47,37 @@ class PeralatanKantor extends Model
             'pengurangan_harga_per_hari' => 'decimal:2',
             'harga_per_hari_ini' => 'decimal:2',
         ];
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (PeralatanKantor $model) {
+            if (empty($model->kode_aset)) {
+                $model->kode_aset = self::generateKodeAset();
+            }
+            if (empty($model->barcode)) {
+                $model->barcode = $model->kode_aset;
+            }
+        });
+    }
+
+    public static function generateKodeAset(): string
+    {
+        $year = date('Y');
+        $prefix = 'PK-'.$year.'-';
+
+        $last = self::where('kode_aset', 'like', $prefix.'%')
+            ->orderByDesc('kode_aset')
+            ->value('kode_aset');
+
+        if ($last) {
+            $seq = (int) substr($last, -4) + 1;
+        } else {
+            $seq = 1;
+        }
+
+        return $prefix.str_pad($seq, 4, '0', STR_PAD_LEFT);
     }
 }

@@ -130,16 +130,20 @@
                         </td>
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
-                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:2px;padding:3px 6px;font-size:0.65rem;" title="Lihat detail">
+                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;font-size:0.65rem;" title="Lihat detail">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
+                                    Lihat Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
                                     <button type="button" onclick="toggleDropdown(this, {{ $meeting->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $meeting->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showDetail({{ $meeting->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="showDetail({{ $meeting->id }})" style="display:flex;align-items:center;gap:6px;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            Detail
+                                        </button>
                                         @if(in_array($meeting->status, ['approved','confirmed','in_progress']))
                                         <button type="button" onclick="submitAction({{ $meeting->id }},'cancel')" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#f59e0b;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Batalkan</button>
                                         @endif
@@ -174,7 +178,7 @@
 @push('modals')
 {{-- Modal Detail Meeting --}}
 <div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[560px] max-h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-y-auto min-h-0" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -185,7 +189,7 @@
         </div>
 
         {{-- Body --}}
-        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="px-6 py-5 overflow-y-auto flex-1 min-h-0" id="detail-body"></div>
 
         {{-- Reject reason --}}
         <div id="d-reject-section" class="hidden px-6 pb-4 flex-shrink-0">
@@ -207,7 +211,7 @@
 
 {{-- Request Meeting Modal --}}
 <div id="request-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full max-w-[820px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[820px] max-h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-y-auto min-h-0" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Request Meeting Baru</h3>
@@ -217,7 +221,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
+        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0">
             @csrf
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -354,7 +358,7 @@
 
 {{-- MOM Modal (terpisah dari modal detail) --}}
 <div id="mom-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);" data-meeting-id="">
-    <div class="w-full max-w-[560px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[560px] max-h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-y-auto min-h-0" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <h3 class="text-base font-bold" style="color:var(--text-primary);">Buat Minutes of Meeting</h3>
@@ -364,7 +368,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <div class="px-6 py-5 overflow-y-auto flex-1 space-y-4">
+        <div class="px-6 py-5 overflow-y-auto flex-1 min-h-0 space-y-4">
             <div>
                 <label class="gaming-label">Ringkasan Pembahasan <span style="color:#f87171;">*</span></label>
                 <textarea id="mom-summary" rows="2" class="gaming-input" style="resize:vertical;" placeholder="Ringkasan hasil pembahasan meeting"></textarea>

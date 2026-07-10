@@ -19,7 +19,6 @@
             <div class="min-w-0">
                 <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total Peralatan</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -32,7 +31,6 @@
             <div>
                 <div class="text-xl font-gaming font-bold" style="color:#34d399;"><?php echo e($stats['kondisi_baik']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Kondisi Baik</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -45,7 +43,6 @@
             <div>
                 <div class="text-xl font-gaming font-bold" style="color:#fbbf24;"><?php echo e($stats['perlu_servis']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Perlu Servis</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -58,7 +55,6 @@
             <div>
                 <div class="text-xl font-gaming font-bold" style="color:#ef4444;"><?php echo e($stats['rusak']); ?></div>
                 <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Rusak</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
     </div>
@@ -71,6 +67,12 @@
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Inventaris peralatan kantor milik perusahaan.</div>
             </div>
             <div class="flex items-center gap-2">
+                <button type="button" onclick="openScanModal()" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                    </svg>
+                    Scan Barcode
+                </button>
                 <?php if(auth()->user()->role !== 'gm'): ?>
                 <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,7 +88,7 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-item" placeholder="Cari nama barang atau PIC" oninput="filterItems()"
+                <input type="text" id="search-item" placeholder="Cari nama barang, kode aset, atau PIC" oninput="filterItems()"
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
@@ -116,13 +118,15 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table class="gaming-table min-w-[700px]" id="item-table">
+            <table class="gaming-table min-w-[1100px]" id="item-table">
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th style="width:40px;">No</th>
                         <th>Nama Barang</th>
+                        <th>Jumlah</th>
                         <th>PIC</th>
-                        <th class="hidden md:table-cell">Lokasi Unit</th>
+                        <th class="hidden lg:table-cell">Lokasi Unit</th>
+                        <th class="hidden md:table-cell">Kode Aset</th>
                         <th class="hidden md:table-cell">Nilai (Setelah Penyusutan)</th>
                         <th>Kondisi</th>
                         <?php if(auth()->user()->role !== 'gm'): ?>
@@ -153,8 +157,10 @@
                     <tr data-kondisi="<?php echo e($i->kondisi); ?>">
                         <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
                         <td style="color:var(--text-primary);font-weight:500;"><?php echo e($i->nama_barang); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($i->jumlah); ?></td>
                         <td style="color:var(--text-muted);"><?php echo e($i->pic); ?></td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);"><?php echo e($i->lokasi_unit); ?></td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($i->lokasi_unit); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--color-accent);font-weight:500;font-family:monospace;font-size:0.75rem;"><?php echo e($i->kode_aset); ?></td>
                         <td class="hidden md:table-cell" style="color:<?php echo e($nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444'); ?>;font-weight:500;">Rp <?php echo e(number_format($nilaiSekarang, 0, ',', '.')); ?></td>
                         <td><span class="badge <?php echo e($kondisiBadge); ?>"><?php echo e($kondisiLabel); ?></span></td>
                         <?php if(auth()->user()->role !== 'gm'): ?>
@@ -181,7 +187,7 @@
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr id="empty-row">
-                        <td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data peralatan kantor.</td>
+                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data peralatan kantor.</td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
@@ -221,6 +227,28 @@
                     <p class="text-sm mt-1" style="color:var(--text-muted);">Detail lengkap peralatan kantor</p>
                 </div>
                 <span id="detail-badge" class="badge" style="font-size:0.75rem;padding:4px 14px;"></span>
+            </div>
+        </div>
+        
+        <div class="px-6 py-3 flex-shrink-0" id="detail-barcode-section" style="display:none;">
+            <div style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:14px;text-align:center;">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <span style="color:var(--text-muted);font-size:0.7rem;">Kode Aset:</span>
+                        <span id="detail-kode-aset" style="color:var(--color-accent);font-weight:700;font-family:monospace;font-size:0.85rem;margin-left:6px;"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="printBarcode()" class="btn btn-secondary btn-sm inline-flex items-center gap-1" style="font-size:0.7rem;padding:4px 10px;">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                            Cetak
+                        </button>
+                        <button type="button" onclick="downloadBarcode()" class="btn btn-secondary btn-sm inline-flex items-center gap-1" style="font-size:0.7rem;padding:4px 10px;">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                            Unduh
+                        </button>
+                    </div>
+                </div>
+                <div id="detail-barcode-image" style="display:flex;justify-content:center;"></div>
             </div>
         </div>
         
@@ -625,6 +653,99 @@
     </div>
 </div>
 
+
+<div id="scan-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-lg rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);border:1px solid var(--border-color);" onclick="event.stopPropagation()">
+        
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(124,58,237,0.15);">
+                    <svg class="w-5 h-5" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold" style="color:var(--text-primary);">Scan Barcode</h3>
+                    <p class="text-xs" style="color:var(--text-muted);">Arahkan kamera ke barcode aset</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeScanModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        
+        <div class="px-6 py-4 flex-1 overflow-y-auto">
+            
+            <div id="scan-status" class="mb-4 text-center">
+                <div id="scan-status-idle" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style="background:rgba(124,58,237,0.15);color:#a78bfa;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Siap Memindai
+                </div>
+                <div id="scan-status-scanning" class="hidden inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style="background:rgba(59,130,246,0.15);color:#60a5fa;">
+                    <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
+                    Memindai...
+                </div>
+                <div id="scan-status-success" class="hidden inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style="background:rgba(16,185,129,0.15);color:#34d399;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Barcode Dikenali!
+                </div>
+                <div id="scan-status-error" class="hidden inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold" style="background:rgba(239,68,68,0.15);color:#f87171;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="scan-status-error-text">Data aset tidak ditemukan.</span>
+                </div>
+            </div>
+
+            
+            <div id="camera-container" class="relative overflow-hidden rounded-2xl mb-4" style="background:#000;aspect-ratio:4/3;">
+                <video id="camera-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>
+                <div id="camera-placeholder" class="absolute inset-0 flex flex-col items-center justify-center" style="background:rgba(0,0,0,0.6);">
+                    <svg class="w-16 h-16 mb-3" style="color:rgba(255,255,255,0.3);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <p class="text-xs" style="color:rgba(255,255,255,0.5);">Klik "Mulai Scan" untuk mengaktifkan kamera</p>
+                </div>
+                
+                <div id="scan-line" class="hidden" style="position:absolute;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,#a78bfa,transparent);box-shadow:0 0 12px rgba(124,58,237,0.6);animation:scanLine 2s ease-in-out infinite;"></div>
+            </div>
+
+            
+            <div class="mb-4">
+                <p class="text-xs font-semibold mb-2" style="color:var(--text-muted);">Atau masukkan kode secara manual:</p>
+                <div class="flex gap-2">
+                    <input type="text" id="manual-code-input" placeholder="Masukkan kode aset atau barcode" class="gaming-input flex-1" style="font-family:monospace;font-size:0.85rem;" onkeypress="if(event.key==='Enter'){manualScan();}">
+                    <button type="button" onclick="manualScan()" class="btn btn-primary btn-sm whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        Cari
+                    </button>
+                </div>
+            </div>
+
+            
+            <div id="no-camera-warning" class="hidden mb-4 p-3 rounded-xl text-xs" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;">
+                <div class="flex items-start gap-2">
+                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div>
+                        <p class="font-semibold">Kamera tidak tersedia</p>
+                        <p class="mt-1" style="color:var(--text-muted);">Gunakan input manual di bawah untuk memasukkan kode aset atau barcode.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="px-6 py-4 flex-shrink-0 flex items-center justify-between" style="border-top:1px solid var(--border-color);">
+            <button type="button" id="scan-toggle-btn" onclick="toggleScan()" class="btn btn-primary inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span id="scan-toggle-text">Mulai Scan</span>
+            </button>
+            <button type="button" onclick="closeScanModal()" class="btn btn-secondary">Tutup</button>
+        </div>
+    </div>
+</div>
+
 <?php if(session('import_errors')): ?>
 <div class="pt-2">
     <div class="gaming-card p-4" style="border-left:4px solid #f59e0b;">
@@ -719,12 +840,20 @@
 }
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
+@keyframes scanLine {
+    0% { top: 10%; }
+    50% { top: 85%; }
+    100% { top: 10%; }
+}
+#camera-container { position: relative; }
 </style>
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startPush('scripts'); ?>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script>
 const itemsData = <?php echo json_encode($itemsJson, 15, 512) ?>;
+const scanUrl = '<?php echo e(route("admin.peralatan-kantor.scan")); ?>';
 let currentStep = 1;
 const totalSteps = 6;
 let currentDetailId = null;
@@ -756,28 +885,7 @@ function openCreateModal() {
     showModal();
 }
 
-function showDetail(id) {
-    const i = itemsData.find(x => x.id === id);
-    if (!i) return;
-    currentDetailId = id;
-
-    document.getElementById('detail-title').textContent = i.nama_barang;
-
-    const kondisiMap = {
-        baik: { label: 'Baik', bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
-        perlu_servis: { label: 'Perlu Servis', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
-        rusak: { label: 'Rusak', bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
-    };
-    const k = kondisiMap[i.kondisi] || kondisiMap.baik;
-    const badgeEl = document.getElementById('detail-badge');
-    badgeEl.textContent = k.label;
-    badgeEl.style.background = k.bg;
-    badgeEl.style.color = k.text;
-    badgeEl.style.border = '1px solid ' + k.border;
-
-    const delForm = document.getElementById('detail-delete-form');
-    delForm.action = delForm.dataset.action + id;
-
+function renderDetailCards(i) {
     const fmtRp = (v) => v ? 'Rp ' + Number(v).toLocaleString('id-ID') : '-';
     const fmtTgl = (v) => v || '-';
 
@@ -848,8 +956,63 @@ function showDetail(id) {
         html += '</div></div>';
     });
     html += '</div>';
+    return html;
+}
 
-    document.getElementById('detail-body').innerHTML = html;
+function renderBarcode(containerId, code) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    if (!code) {
+        document.getElementById('detail-barcode-section').style.display = 'none';
+        return;
+    }
+    document.getElementById('detail-barcode-section').style.display = '';
+    document.getElementById('detail-kode-aset').textContent = code;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = 'barcode-svg';
+    container.appendChild(svg);
+    try {
+        JsBarcode(svg, code, {
+            format: 'CODE128',
+            width: 2,
+            height: 60,
+            displayValue: true,
+            fontSize: 14,
+            font: 'monospace',
+            margin: 8,
+            background: 'transparent',
+            lineColor: '#000000',
+            textColor: '#000000',
+        });
+    } catch (e) {
+        container.innerHTML = '<p style="color:var(--text-muted);font-size:12px;">Gagal render barcode</p>';
+    }
+}
+
+function showDetail(id) {
+    const i = itemsData.find(x => x.id === id);
+    if (!i) return;
+    currentDetailId = id;
+
+    document.getElementById('detail-title').textContent = i.nama_barang;
+
+    const kondisiMap = {
+        baik: { label: 'Baik', bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
+        perlu_servis: { label: 'Perlu Servis', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+        rusak: { label: 'Rusak', bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
+    };
+    const k = kondisiMap[i.kondisi] || kondisiMap.baik;
+    const badgeEl = document.getElementById('detail-badge');
+    badgeEl.textContent = k.label;
+    badgeEl.style.background = k.bg;
+    badgeEl.style.color = k.text;
+    badgeEl.style.border = '1px solid ' + k.border;
+
+    const delForm = document.getElementById('detail-delete-form');
+    delForm.action = delForm.dataset.action + id;
+
+    renderBarcode('detail-barcode-image', i.barcode || i.kode_aset);
+    document.getElementById('detail-body').innerHTML = renderDetailCards(i);
     openModal('detail-modal');
 }
 
@@ -958,10 +1121,12 @@ function updatePreview() {
         'pv-jabatan_atasan': 'f-jabatan_atasan',
     };
     for (const [pvId, inputName] of Object.entries(map)) {
-        const val = document.getElementById(inputName).value || '-';
-        document.getElementById(pvId).textContent = val;
+        const el = document.getElementById(pvId);
+        const inputEl = document.getElementById(inputName);
+        if (el && inputEl) {
+            el.textContent = inputEl.value || '-';
+        }
     }
-    // Update computed preview values
     const nilai = parseFloat(document.getElementById('f-nilai').value) || 0;
     const masaBarang = parseInt(document.getElementById('f-estimasi_waktu_barang').value) || 1;
     const tglBeli = document.getElementById('f-tanggal_pembelian').value;
@@ -1052,24 +1217,270 @@ document.getElementById('item-modal')?.addEventListener('click', function(e) {
 });
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeDetail(); closeModal('item-modal'); }
+    if (e.key === 'Escape') { closeDetail(); closeModal('item-modal'); closeScanModal(); }
 });
 
-function iconSvg(name) {
-    const icons = {
-        'package': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
-        'file-text': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
-        'building-2': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11M8 14v3m4-3v3m4-3v3"/></svg>',
-        'calendar': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
-        'credit-card': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>',
-        'wallet': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>',
-        'clock': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-        'user': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
-        'user-cog': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
-        'shield-check': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
-        'check-circle': '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+function prepareBlackBarcode() {
+    const svg = document.getElementById('barcode-svg');
+    if (!svg) return null;
+    const clone = svg.cloneNode(true);
+
+    clone.querySelectorAll('*').forEach(el => {
+        const tag = el.tagName.toLowerCase();
+
+        if (tag === 'rect' || tag === 'path') {
+            const fill = el.getAttribute('fill');
+            if (fill && fill !== 'none' && fill !== 'transparent') {
+                el.setAttribute('fill', '#000000');
+            }
+            const stroke = el.getAttribute('stroke');
+            if (stroke && stroke !== 'none') {
+                el.setAttribute('stroke', '#000000');
+            }
+        }
+
+        if (tag === 'text') {
+            el.setAttribute('fill', '#000000');
+            el.setAttribute('stroke', 'none');
+            el.setAttribute('font-family', 'monospace');
+            if (!el.getAttribute('font-size')) {
+                el.setAttribute('font-size', '14');
+            }
+        }
+
+        if (el.hasAttribute('style')) {
+            let s = el.getAttribute('style');
+            s = s.replace(/fill\s*:\s*[^;]+/gi, 'fill:#000000');
+            s = s.replace(/stroke\s*:\s*[^;]+/gi, 'stroke:#000000');
+            s = s.replace(/color\s*:\s*[^;]+/gi, 'color:#000000');
+            el.setAttribute('style', s);
+        }
+    });
+
+    clone.setAttribute('style', 'color:#000000;');
+    return clone;
+}
+
+function printBarcode() {
+    const clone = prepareBlackBarcode();
+    if (!clone) return;
+    const svgData = new XMLSerializer().serializeToString(clone);
+    const win = window.open('', '_blank');
+    win.document.write('<html><head><title>Cetak Barcode</title><style>body{display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;font-family:monospace;background:#fff;}svg{max-width:100%;}text,rect,path{fill:#000000 !important;stroke:#000000 !important;}</style></head><body>' + svgData + '<script>setTimeout(function(){window.print();window.close();},500);<\/script></body></html>');
+    win.document.close();
+}
+
+function downloadBarcode() {
+    const clone = prepareBlackBarcode();
+    if (!clone) return;
+    const svgData = new XMLSerializer().serializeToString(clone);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = function() {
+        canvas.width = img.width * 2;
+        canvas.height = img.height * 2;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const a = document.createElement('a');
+        a.download = 'barcode-' + (currentDetailId || 'aset') + '.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
     };
-    return icons[name] || icons['package'];
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+}
+
+/* ===== SCAN BARCODE ===== */
+let scanStream = null;
+let scanInterval = null;
+let scanActive = false;
+
+function openScanModal() {
+    document.getElementById('scan-status-idle').classList.remove('hidden');
+    document.getElementById('scan-status-scanning').classList.add('hidden');
+    document.getElementById('scan-status-success').classList.add('hidden');
+    document.getElementById('scan-status-error').classList.add('hidden');
+    document.getElementById('scan-line').classList.add('hidden');
+    document.getElementById('manual-code-input').value = '';
+    document.getElementById('no-camera-warning').classList.add('hidden');
+    document.getElementById('camera-placeholder').style.display = '';
+    document.getElementById('scan-toggle-text').textContent = 'Mulai Scan';
+    scanActive = false;
+    openModal('scan-modal');
+    checkCamera();
+}
+
+function closeScanModal() {
+    stopScan();
+    closeModal('scan-modal');
+}
+
+document.getElementById('scan-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeScanModal();
+});
+
+async function checkCamera() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+        if (videoDevices.length === 0) {
+            document.getElementById('no-camera-warning').classList.remove('hidden');
+        }
+    } catch (e) {
+        document.getElementById('no-camera-warning').classList.remove('hidden');
+    }
+}
+
+function toggleScan() {
+    if (scanActive) {
+        stopScan();
+    } else {
+        startScan();
+    }
+}
+
+async function startScan() {
+    const video = document.getElementById('camera-video');
+    try {
+        scanStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        video.srcObject = scanStream;
+        await video.play();
+        document.getElementById('camera-placeholder').style.display = 'none';
+        document.getElementById('scan-line').classList.remove('hidden');
+        document.getElementById('scan-toggle-text').textContent = 'Hentikan Scan';
+        document.getElementById('scan-status-idle').classList.add('hidden');
+        document.getElementById('scan-status-scanning').classList.remove('hidden');
+        scanActive = true;
+        scanInterval = setInterval(captureAndDecode, 1500);
+    } catch (err) {
+        document.getElementById('no-camera-warning').classList.remove('hidden');
+        console.warn('Camera access denied:', err);
+    }
+}
+
+function stopScan() {
+    scanActive = false;
+    if (scanInterval) { clearInterval(scanInterval); scanInterval = null; }
+    if (scanStream) {
+        scanStream.getTracks().forEach(t => t.stop());
+        scanStream = null;
+    }
+    const video = document.getElementById('camera-video');
+    video.srcObject = null;
+    document.getElementById('scan-line').classList.add('hidden');
+    document.getElementById('camera-placeholder').style.display = '';
+    document.getElementById('scan-toggle-text').textContent = 'Mulai Scan';
+    document.getElementById('scan-status-idle').classList.remove('hidden');
+    document.getElementById('scan-status-scanning').classList.add('hidden');
+}
+
+function captureAndDecode() {
+    if (!scanActive) return;
+    const video = document.getElementById('camera-video');
+    if (video.readyState < video.HAVE_ENOUGH_DATA) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+
+    const barcodeDetector = window.BarcodeDetector;
+    if (barcodeDetector) {
+        canvas.convertToBlob({ type: 'image/jpeg', quality: 0.8 }).then(blob => {
+            return barcodeDetector.detect(blob);
+        }).then(barcodes => {
+            if (barcodes.length > 0) {
+                const code = barcodes[0].rawValue;
+                handleScanResult(code);
+            }
+        }).catch(() => {});
+    }
+}
+
+function manualScan() {
+    const code = document.getElementById('manual-code-input').value.trim();
+    if (!code) {
+        showScanStatus('error', 'Masukkan kode aset atau barcode.');
+        return;
+    }
+    handleScanResult(code);
+}
+
+function handleScanResult(code) {
+    stopScan();
+    showScanStatus('scanning', 'Mencari data...');
+
+    fetch(scanUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '<?php echo e(csrf_token()); ?>',
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({ code: code }),
+    })
+    .then(res => {
+        if (!res.ok) return res.json().then(d => { throw new Error(d.message || 'Data aset tidak ditemukan.'); });
+        return res.json();
+    })
+    .then(data => {
+        showScanStatus('success', 'Barcode dikenali! Menampilkan detail...');
+        setTimeout(() => {
+            closeScanModal();
+            const item = itemsData.find(x => x.id === data.id);
+            if (item) {
+                showDetail(data.id);
+            } else {
+                showScannedDetail(data);
+            }
+        }, 1000);
+    })
+    .catch(err => {
+        showScanStatus('error', err.message || 'Data aset tidak ditemukan.');
+    });
+}
+
+function showScannedDetail(i) {
+    document.getElementById('detail-title').textContent = i.nama_barang;
+
+    const kondisiMap = {
+        baik: { label: 'Baik', bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
+        perlu_servis: { label: 'Perlu Servis', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+        rusak: { label: 'Rusak', bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
+    };
+    const k = kondisiMap[i.kondisi] || kondisiMap.baik;
+    const badgeEl = document.getElementById('detail-badge');
+    badgeEl.textContent = k.label;
+    badgeEl.style.background = k.bg;
+    badgeEl.style.color = k.text;
+    badgeEl.style.border = '1px solid ' + k.border;
+
+    currentDetailId = i.id;
+    const delForm = document.getElementById('detail-delete-form');
+    delForm.action = delForm.dataset.action + i.id;
+
+    renderBarcode('detail-barcode-image', i.barcode || i.kode_aset);
+    document.getElementById('detail-body').innerHTML = renderDetailCards(i);
+    openModal('detail-modal');
+}
+
+function showScanStatus(type, message) {
+    ['idle', 'scanning', 'success', 'error'].forEach(s => {
+        const el = document.getElementById('scan-status-' + s);
+        if (el) el.classList.add('hidden');
+    });
+    const el = document.getElementById('scan-status-' + type);
+    if (el) {
+        el.classList.remove('hidden');
+        if (type === 'error') {
+            const msgEl = document.getElementById('scan-status-error-text');
+            if (msgEl) msgEl.textContent = message;
+        }
+    }
 }
 
 function showToast(type, message) {

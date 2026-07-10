@@ -39,7 +39,19 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
         $hariTerpakai = $tanggalPembelian ? max(abs(now()->diffInDays(Carbon::parse($tanggalPembelian))), 0) : 0;
         $hargaPerHariIni = max($nilai - ($penguranganPerHari * $hariTerpakai), 0);
 
+        $kodeAset = $row['Kode Aset'] ?? null;
+        $barcode = $row['Barcode'] ?? null;
+
+        if (empty($kodeAset)) {
+            $kodeAset = PeralatanKantor::generateKodeAset();
+        }
+        if (empty($barcode)) {
+            $barcode = $kodeAset;
+        }
+
         return new PeralatanKantor([
+            'kode_aset' => $kodeAset,
+            'barcode' => $barcode,
             'nama_barang' => $row['Nama Barang'] ?? '',
             'jumlah' => (int) ($row['Jumlah'] ?? 1),
             'detail' => $row['Detail'] ?? null,
@@ -70,6 +82,8 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
         $maxYear = now()->year + 1;
 
         return [
+            'Kode Aset' => 'nullable|string|max:255|unique:peralatan_kantor,kode_aset',
+            'Barcode' => 'nullable|string|max:255|unique:peralatan_kantor,barcode',
             'Nama Barang' => 'required|string|max:255',
             'Jumlah' => 'required|integer|min:1',
             'Sub Kategori' => 'required|string|max:255',
@@ -94,6 +108,8 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
     public function customValidationMessages(): array
     {
         return [
+            'Kode Aset.unique' => 'Kode Aset sudah digunakan oleh data lain',
+            'Barcode.unique' => 'Barcode sudah digunakan oleh data lain',
             'Nama Barang.required' => 'Nama Barang wajib diisi',
             'Jumlah.required' => 'Jumlah wajib diisi',
             'Sub Kategori.required' => 'Sub Kategori wajib diisi',

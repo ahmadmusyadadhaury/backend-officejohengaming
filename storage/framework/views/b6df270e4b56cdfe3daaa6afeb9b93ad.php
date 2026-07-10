@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Login — JOHEN OFFICE MANAGEMENT SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ asset('css/gaming.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('css/gaming.css')); ?>">
     <style>
         /* Floating particles */
         .particle {
@@ -40,7 +40,7 @@
 </head>
 <body class="login-bg grid-pattern flex items-center justify-center min-h-screen p-4">
 
-    {{-- Decorative particles --}}
+    
     <div class="particle particle-1"></div>
     <div class="particle particle-2"></div>
     <div class="particle particle-3"></div>
@@ -51,13 +51,13 @@
 
     <div class="w-full max-w-sm relative z-10">
 
-        {{-- Logo & Branding --}}
+        
         <div class="text-center mb-8 animate-fade-in">
             <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 relative animate-float"
                 style="background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(0,212,255,0.1));border:1px solid rgba(124,58,237,0.3);">
-                <img src="{{ asset('images/logo/logo_web.png') }}" alt="JOHEN OFFICE"
+                <img src="<?php echo e(asset('images/logo/logo_web.png')); ?>" alt="JOHEN OFFICE"
                     class="w-12 h-12 object-contain">
-                {{-- Glow ring --}}
+                
                 <div class="absolute inset-0 rounded-2xl animate-glow-pulse" style="box-shadow:0 0 20px rgba(124,58,237,0.4);"></div>
             </div>
             <h1 class="font-gaming text-3xl font-bold tracking-wider"
@@ -69,7 +69,7 @@
             </p>
         </div>
 
-        {{-- Login Card --}}
+        
         <div class="login-card p-8">
 
             <h2 class="font-gaming text-xl font-semibold mb-1" style="color:var(--text-primary);">
@@ -79,18 +79,19 @@
                 Masukkan kredensial akun kamu
             </p>
 
-            @if($errors->any())
+            <?php if($errors->any()): ?>
                 <div class="mb-4 p-3 rounded-lg flex items-center gap-2"
                     style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;font-size:0.8rem;">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    {{ $errors->first() }}
-                </div>
-            @endif
+                    <?php echo e($errors->first()); ?>
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-4">
-                @csrf
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="<?php echo e(route('login')); ?>" class="space-y-4">
+                <?php echo csrf_field(); ?>
 
                 <div>
                     <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px;letter-spacing:0.05em;text-transform:uppercase;">
@@ -100,7 +101,7 @@
                         <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
-                        <input type="text" name="username" value="{{ old('username') }}" required autofocus
+                        <input type="text" name="username" value="<?php echo e(old('username')); ?>" required autofocus
                             placeholder="Masukkan username"
                             class="gaming-input" style="padding-left:2.5rem !important;">
                     </div>
@@ -151,7 +152,7 @@
         </div>
 
         <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-top:1.5rem;opacity:0.6;">
-            &copy; {{ date('Y') }} JOHEN OFFICE. All rights reserved.
+            &copy; <?php echo e(date('Y')); ?> JOHEN OFFICE. All rights reserved.
         </p>
     </div>
 
@@ -163,3 +164,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/auth/login.blade.php ENDPATH**/ ?>
