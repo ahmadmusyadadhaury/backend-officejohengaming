@@ -852,6 +852,7 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 const itemsData = @json($itemsJson);
 const scanUrl = '{{ route("admin.peralatan-kantor.scan") }}';
@@ -1316,6 +1317,8 @@ function downloadBarcode() {
 let scanStream = null;
 let scanInterval = null;
 let scanActive = false;
+let html5QrScanner = null;
+let scanInProgress = false;
 
 function openScanModal() {
     document.getElementById('scan-status-idle').classList.remove('hidden');
@@ -1330,6 +1333,11 @@ function openScanModal() {
     scanActive = false;
     openModal('scan-modal');
     checkCamera();
+    if (!window.BarcodeDetector && !window.Html5Qrcode) {
+        const warning = document.getElementById('no-camera-warning');
+        warning.innerHTML = '<div class="flex items-start gap-2"><svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><div><p class="font-semibold">Pemindaian barcode tidak didukung</p><p class="mt-1" style="color:var(--text-muted);">Browser Anda tidak mendukung pemindaian barcode otomatis. Gunakan Chrome atau Edge, atau masukkan kode secara manual di bawah.</p></div></div>';
+        warning.classList.remove('hidden');
+    }
 }
 
 function closeScanModal() {
@@ -1354,6 +1362,10 @@ async function checkCamera() {
 }
 
 function toggleScan() {
+    if (!window.BarcodeDetector && !window.Html5Qrcode) {
+        showScanStatus('error', 'Pemindaian barcode tidak didukung di browser ini. Gunakan input manual.');
+        return;
+    }
     if (scanActive) {
         stopScan();
     } else {
@@ -1384,7 +1396,12 @@ async function startScan() {
 
 function stopScan() {
     scanActive = false;
+    scanInProgress = false;
     if (scanInterval) { clearInterval(scanInterval); scanInterval = null; }
+    if (html5QrScanner) {
+        try { html5QrScanner.clear(); } catch(e) {}
+        html5QrScanner = null;
+    }
     if (scanStream) {
         scanStream.getTracks().forEach(t => t.stop());
         scanStream = null;
@@ -1398,27 +1415,57 @@ function stopScan() {
     document.getElementById('scan-status-scanning').classList.add('hidden');
 }
 
-function captureAndDecode() {
-    if (!scanActive) return;
+async function captureAndDecode() {
+    if (!scanActive || scanInProgress) return;
     const video = document.getElementById('camera-video');
     if (video.readyState < video.HAVE_ENOUGH_DATA) return;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0);
+    scanInProgress = true;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
 
-    const barcodeDetector = window.BarcodeDetector;
-    if (barcodeDetector) {
-        canvas.convertToBlob({ type: 'image/jpeg', quality: 0.8 }).then(blob => {
-            return barcodeDetector.detect(blob);
-        }).then(barcodes => {
-            if (barcodes.length > 0) {
-                const code = barcodes[0].rawValue;
-                handleScanResult(code);
-            }
-        }).catch(() => {});
+        // Method 1: Native BarcodeDetector API
+        if (window.BarcodeDetector) {
+            try {
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+                const barcodes = await new BarcodeDetector({ formats: ['code_128', 'ean_13', 'ean_8', 'qr_code', 'code_39'] }).detect(blob);
+                if (barcodes.length > 0) {
+                    handleScanResult(barcodes[0].rawValue);
+                    return;
+                }
+            } catch (e) {}
+        }
+
+        // Method 2: html5-qrcode fallback
+        if (window.Html5Qrcode) {
+            try {
+                if (!html5QrScanner) {
+                    let el = document.getElementById('html5qr-region');
+                    if (!el) {
+                        el = document.createElement('div');
+                        el.id = 'html5qr-region';
+                        el.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;';
+                        document.body.appendChild(el);
+                    }
+                    html5QrScanner = new Html5Qrcode(el.id);
+                }
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+                const file = new File([blob], 'scan-frame.jpg', { type: 'image/jpeg', lastModified: Date.now() });
+                const result = await html5QrScanner.scanFile(file, false);
+                if (result) {
+                    handleScanResult(result);
+                    return;
+                }
+            } catch (e) {}
+        }
+    } catch (e) {
+        // No barcode detected in this frame
+    } finally {
+        scanInProgress = false;
     }
 }
 
