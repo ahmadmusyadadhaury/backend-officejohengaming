@@ -404,16 +404,18 @@
                     {{ session('error') }}
                 </div>
             @endif
-            @if($errors->any())
-                <div class="flash-error rounded-lg px-4 py-3 mb-4 text-sm animate-fade-in"
-                    style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#ef4444;">
-                    <ul class="list-disc list-inside space-y-1">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            @isset($errors)
+                @if($errors->any())
+                    <div class="flash-error rounded-lg px-4 py-3 mb-4 text-sm animate-fade-in"
+                        style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#ef4444;">
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            @endisset
         </div>
 
         {{-- Page Content --}}
