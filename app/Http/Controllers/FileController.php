@@ -16,13 +16,19 @@ class FileController extends Controller
         }
 
         $fullPath = $disk->path($path);
-        $mimeType = mime_content_type($fullPath) ?: 'application/octet-stream';
 
-        $headers = [
+        if (! file_exists($fullPath) || ! is_readable($fullPath)) {
+            abort(404);
+        }
+
+        $mimeType = function_exists('mime_content_type')
+            ? (mime_content_type($fullPath) ?: 'application/octet-stream')
+            : 'application/octet-stream';
+
+        return response()->file($fullPath, [
             'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="'.basename($path).'"',
             'Cache-Control' => 'public, max-age=86400',
-        ];
-
-        return response()->file($fullPath, $headers);
+        ]);
     }
 }
