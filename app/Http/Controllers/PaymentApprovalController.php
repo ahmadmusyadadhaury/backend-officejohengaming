@@ -146,7 +146,7 @@ class PaymentApprovalController extends Controller
                     'jabatan' => $r->jabatan,
                     'period' => $r->period ?? 'bulanan',
                     'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
-                    'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
+                    'bukti_url' => $r->bukti_bayar ? route('files.show', $r->bukti_bayar) : null,
                     'approver_name' => $r->approver?->name,
                     'approved_at' => $r->approved_at?->format('d/m/Y H:i'),
                     'notes' => $r->notes,
@@ -171,7 +171,7 @@ class PaymentApprovalController extends Controller
                 'jabatan' => null,
                 'period' => null,
                 'tanggal_bayar' => $r->created_at->format('d/m/Y'),
-                'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
+                'bukti_url' => $r->bukti_bayar ? route('files.show', $r->bukti_bayar) : null,
                 'approver_name' => $r->approver?->name,
                 'approved_at' => $r->approved_at?->format('d/m/Y H:i'),
                 'notes' => $r->notes,
@@ -344,7 +344,7 @@ class PaymentApprovalController extends Controller
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
                     'status' => $r->status,
                     'tanggal_bayar' => $jenis === 'pajak_kendaraan' ? $r->created_at?->format('d/m/Y') : $r->tanggal_bayar?->format('d/m/Y'),
-                    'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
+                    'bukti_url' => $r->bukti_bayar ? route('files.show', $r->bukti_bayar) : null,
                     'requester_name' => $r->requester?->name ?? '-',
                     'pic' => $r->pic,
                     'jabatan' => $r->jabatan,
@@ -509,7 +509,7 @@ class PaymentApprovalController extends Controller
                         'rejected' => 'Ditolak',
                         default => ucfirst($r->status),
                     },
-                    'Bukti' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : '-',
+                    'Bukti' => $r->bukti_bayar ? route('files.show', $r->bukti_bayar) : '-',
                 ]);
             $all = $all->merge($records);
         }
@@ -531,7 +531,7 @@ class PaymentApprovalController extends Controller
                     'rejected' => 'Ditolak',
                     default => ucfirst($r->status),
                 },
-                'Bukti' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : '-',
+                'Bukti' => $r->bukti_bayar ? route('files.show', $r->bukti_bayar) : '-',
             ]);
         $all = $all->merge($pajakRecords);
 

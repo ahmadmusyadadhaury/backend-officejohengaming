@@ -65,7 +65,7 @@ class VehiclePajakRequestController extends Controller
                 'requester_name' => $r->requester->name,
                 'jenis' => $r->jenis,
                 'nominal' => (int) $r->nominal,
-                'bukti_url' => $r->bukti_bayar ? asset('storage/'.$r->bukti_bayar) : null,
+                'bukti_url' => $r->bukti_bayar ? route('files.show', $r->bukti_bayar) : null,
                 'created_at' => $r->created_at->format('d/m/Y H:i'),
             ]);
 

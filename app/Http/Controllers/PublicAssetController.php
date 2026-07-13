@@ -16,7 +16,7 @@ class PublicAssetController extends Controller
             return response()->view('public.asset-404', [], 404);
         }
 
-        $fotoUrl = $item->foto ? asset('storage/peralatan-kantor/'.$item->foto) : null;
+        $fotoUrl = $item->foto ? route('files.show', 'peralatan-kantor/'.$item->foto) : null;
 
         $statusMap = [
             'baik' => ['label' => 'Aktif', 'color' => '#10b981', 'bg' => 'rgba(16,185,129,0.12)', 'border' => 'rgba(16,185,129,0.3)'],

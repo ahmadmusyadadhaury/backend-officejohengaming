@@ -1826,4 +1826,4 @@ document.getElementById('f-foto')?.addEventListener('change', function(e) {
 </script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-officejohengaming\resources\views/admin/peralatan-kantor/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/peralatan-kantor/index.blade.php ENDPATH**/ ?>

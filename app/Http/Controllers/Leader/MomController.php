@@ -34,7 +34,7 @@ class MomController extends Controller
                 'mom_status' => $mom->status,
                 'file_path' => $mom->file_path,
                 'file_name' => $mom->file_path ? basename($mom->file_path) : null,
-                'file_url' => $mom->file_path ? asset('storage/'.$mom->file_path) : null,
+                'file_url' => $mom->file_path ? route('files.show', $mom->file_path) : null,
                 'why' => $mom->meeting->why ?? '',
                 'what' => $mom->meeting->what ?? '',
                 'how' => $mom->meeting->how_expected ?? '',

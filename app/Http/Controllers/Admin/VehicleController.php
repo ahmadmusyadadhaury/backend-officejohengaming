@@ -42,7 +42,7 @@ class VehicleController extends Controller
                 'warna' => $v->warna,
                 'nomor_rangka' => $v->nomor_rangka,
                 'nomor_mesin' => $v->nomor_mesin,
-                'foto' => $v->foto ? asset('storage/'.$v->foto) : null,
+                'foto' => $v->foto ? route('files.show', $v->foto) : null,
                 'pajak_tahunan' => $v->pajak_tahunan?->format('d/m/Y'),
                 'pajak_5_tahun' => $v->pajak_5_tahun?->format('d/m/Y'),
                 'kepemilikan_status' => $v->kepemilikan_status,

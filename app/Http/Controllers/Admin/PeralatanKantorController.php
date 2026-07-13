@@ -34,7 +34,7 @@ class PeralatanKantorController extends Controller
                 'id' => $i->id,
                 'kode_aset' => $i->kode_aset,
                 'barcode' => $i->barcode,
-                'foto' => $i->foto ? asset('storage/peralatan-kantor/'.$i->foto) : null,
+                'foto' => $i->foto ? route('files.show', $i->foto) : null,
                 'nama_barang' => $i->nama_barang,
                 'jumlah' => $i->jumlah,
                 'detail' => $i->detail,
@@ -105,7 +105,7 @@ class PeralatanKantorController extends Controller
 
         $fotoPath = null;
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('peralatan-kantor', 'public');
+            $fotoPath = $request->file('foto')->store('peralatan-kantor', 'public_storage');
         }
         $data['foto'] = $fotoPath;
 
@@ -153,9 +153,9 @@ class PeralatanKantorController extends Controller
 
         if ($request->hasFile('foto')) {
             if ($peralatanKantor->foto) {
-                Storage::disk('public')->delete($peralatanKantor->foto);
+                Storage::disk('public_storage')->delete($peralatanKantor->foto);
             }
-            $data['foto'] = $request->file('foto')->store('peralatan-kantor', 'public');
+            $data['foto'] = $request->file('foto')->store('peralatan-kantor', 'public_storage');
         } else {
             unset($data['foto']);
         }
@@ -172,7 +172,7 @@ class PeralatanKantorController extends Controller
     public function destroy(PeralatanKantor $peralatanKantor)
     {
         if ($peralatanKantor->foto) {
-            Storage::disk('public')->delete($peralatanKantor->foto);
+            Storage::disk('public_storage')->delete($peralatanKantor->foto);
         }
         $peralatanKantor->delete();
 
@@ -208,7 +208,7 @@ class PeralatanKantorController extends Controller
             'id' => $item->id,
             'kode_aset' => $item->kode_aset,
             'barcode' => $item->barcode,
-            'foto' => $item->foto ? asset('storage/peralatan-kantor/'.$item->foto) : null,
+            'foto' => $item->foto ? route('files.show', $item->foto) : null,
             'nama_barang' => $item->nama_barang,
             'jumlah' => $item->jumlah,
             'detail' => $item->detail,

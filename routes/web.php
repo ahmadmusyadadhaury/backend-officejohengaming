@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\Admin\VehiclePajakRequestController;
 use App\Http\Controllers\Admin\WeeklyMeetingController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\Leader\AsetMesController as KoordinatorAsetMesController;
 use App\Http\Controllers\Leader\AsetTimController as KoordinatorAsetTimController;
@@ -42,16 +43,8 @@ use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\WeeklySessionController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
-Route::get('storage/{path}', function (string $path) {
-    $fullPath = Storage::disk('public')->path($path);
-    if (! file_exists($fullPath)) {
-        abort(404);
-    }
-
-    return response()->file($fullPath);
-})->where('path', '.*');
+Route::get('files/{path}', [FileController::class, 'show'])->name('files.show')->where('path', '.*');
 
 // Public Asset Detail — tanpa login
 Route::get('/aset/{kode_aset}', [PublicAssetController::class, 'show'])->name('public.asset.show');
