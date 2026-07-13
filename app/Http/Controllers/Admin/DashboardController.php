@@ -9,7 +9,6 @@ use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
 use App\Models\PeralatanKantor;
@@ -54,9 +53,9 @@ class DashboardController extends Controller
                 + WeeklyMeetingSession::whereDate('session_date', today())->whereIn('status', ['active', 'extended'])->count(),
             'this_month' => Meeting::whereMonth('meeting_date', now()->month)->whereYear('meeting_date', now()->year)->count(),
             // Payment stats — dari semua tabel pembayaran
-            'total_payments' => Payment::where('jenis', 'listrik')->count() + PembayaranAsetDigital::count() + PembayaranIplRuko::count() + WifiPayment::count() + TokenPayment::count(),
-            'pending_payments' => Payment::where('jenis', 'listrik')->whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + PembayaranAsetDigital::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + PembayaranIplRuko::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + WifiPayment::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('masa_tenggang', '<=', today()->addDays(7))->count(),
-            'approval_pending_payments' => Payment::where('jenis', 'listrik')->where('status', 'pending')->count() + PembayaranAsetDigital::where('status', 'pending')->count() + PembayaranIplRuko::where('status', 'pending')->count() + WifiPayment::where('status', 'pending')->count(),
+            'total_payments' => PembayaranAsetDigital::count() + PembayaranIplRuko::count() + WifiPayment::count() + TokenPayment::count(),
+            'pending_payments' => PembayaranAsetDigital::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + PembayaranIplRuko::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + WifiPayment::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('masa_tenggang', '<=', today()->addDays(7))->count(),
+            'approval_pending_payments' => PembayaranAsetDigital::where('status', 'pending')->count() + PembayaranIplRuko::where('status', 'pending')->count() + WifiPayment::where('status', 'pending')->count(),
         ];
 
         app(WeeklyMeetingService::class)->generateTodaySessions();
@@ -106,7 +105,6 @@ class DashboardController extends Controller
         $sevenDaysFromNow = today()->addDays(7);
 
         $jenisLabels = [
-            'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
         ];
@@ -128,15 +126,6 @@ class DashboardController extends Controller
         };
 
         $allPayments = collect()
-            ->merge(
-                Payment::where('jenis', 'listrik')
-                    ->whereNull('requested_by')
-                    ->whereNotIn('status', ['lunas', 'rejected'])
-                    ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
-                    ->orderBy('jatuh_tempo')
-                    ->get()
-                    ->map(fn ($p) => $mapPayment($p, 'listrik', $jenisLabels['listrik'] ?? 'Listrik'))
-            )
             ->merge(
                 PembayaranAsetDigital::whereNull('requested_by')
                     ->whereNotIn('status', ['lunas', 'rejected'])
@@ -266,13 +255,11 @@ class DashboardController extends Controller
             $start = $month->copy()->startOfMonth();
             $end = $month->copy()->endOfMonth();
 
-            $tagihan = Payment::where('jenis', 'listrik')->where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + PembayaranAsetDigital::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+            $tagihan = PembayaranAsetDigital::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + PembayaranIplRuko::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + WifiPayment::where('status', '!=', 'rejected')->whereBetween('created_at', [$start, $end])->sum('biaya');
 
-            $bayar = Payment::where('jenis', 'listrik')->where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + PembayaranAsetDigital::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+            $bayar = PembayaranAsetDigital::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + PembayaranIplRuko::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + WifiPayment::where('status', 'lunas')->whereBetween('created_at', [$start, $end])->sum('biaya');
 

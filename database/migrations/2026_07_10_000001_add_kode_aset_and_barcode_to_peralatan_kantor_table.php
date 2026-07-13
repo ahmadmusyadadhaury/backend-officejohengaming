@@ -10,10 +10,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('peralatan_kantor', function (Blueprint $table) {
-            if (!Schema::hasColumn('peralatan_kantor', 'kode_aset')) {
+            if (! Schema::hasColumn('peralatan_kantor', 'kode_aset')) {
                 $table->string('kode_aset')->unique()->after('id');
             }
-            if (!Schema::hasColumn('peralatan_kantor', 'barcode')) {
+            if (! Schema::hasColumn('peralatan_kantor', 'barcode')) {
                 $table->string('barcode')->unique()->after('kode_aset');
             }
         });

@@ -8,6 +8,7 @@ use App\Imports\PeralatanKantorImport;
 use App\Models\PeralatanKantor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PeralatanKantorController extends Controller
@@ -33,6 +34,7 @@ class PeralatanKantorController extends Controller
                 'id' => $i->id,
                 'kode_aset' => $i->kode_aset,
                 'barcode' => $i->barcode,
+                'foto' => $i->foto ? asset('storage/peralatan-kantor/'.$i->foto) : null,
                 'nama_barang' => $i->nama_barang,
                 'jumlah' => $i->jumlah,
                 'detail' => $i->detail,
@@ -73,6 +75,7 @@ class PeralatanKantorController extends Controller
         $data = $request->validate([
             'kode_aset' => 'nullable|string|max:255|unique:peralatan_kantor,kode_aset',
             'barcode' => 'nullable|string|max:255|unique:peralatan_kantor,barcode',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
             'nama_barang' => 'required|string|max:255',
             'jumlah' => 'required|integer|min:1',
             'detail' => 'nullable|string',
@@ -99,6 +102,12 @@ class PeralatanKantorController extends Controller
         $data['pengurangan_harga_per_hari'] = $data['nilai'] / $masaBarang;
         $hariTerpakai = max(abs(now()->diffInDays(Carbon::parse($data['tanggal_pembelian']))), 0);
         $data['harga_per_hari_ini'] = max($data['nilai'] - ($data['pengurangan_harga_per_hari'] * $hariTerpakai), 0);
+
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('peralatan-kantor', 'public');
+        }
+        $data['foto'] = $fotoPath;
 
         $item = PeralatanKantor::create($data);
 
@@ -114,6 +123,7 @@ class PeralatanKantorController extends Controller
         $data = $request->validate([
             'kode_aset' => 'required|string|max:255|unique:peralatan_kantor,kode_aset,'.$peralatanKantor->id,
             'barcode' => 'required|string|max:255|unique:peralatan_kantor,barcode,'.$peralatanKantor->id,
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
             'nama_barang' => 'required|string|max:255',
             'jumlah' => 'required|integer|min:1',
             'detail' => 'nullable|string',
@@ -141,6 +151,15 @@ class PeralatanKantorController extends Controller
         $hariTerpakai = max(abs(now()->diffInDays(Carbon::parse($data['tanggal_pembelian']))), 0);
         $data['harga_per_hari_ini'] = max($data['nilai'] - ($data['pengurangan_harga_per_hari'] * $hariTerpakai), 0);
 
+        if ($request->hasFile('foto')) {
+            if ($peralatanKantor->foto) {
+                Storage::disk('public')->delete($peralatanKantor->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('peralatan-kantor', 'public');
+        } else {
+            unset($data['foto']);
+        }
+
         $peralatanKantor->update($data);
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -152,6 +171,9 @@ class PeralatanKantorController extends Controller
 
     public function destroy(PeralatanKantor $peralatanKantor)
     {
+        if ($peralatanKantor->foto) {
+            Storage::disk('public')->delete($peralatanKantor->foto);
+        }
         $peralatanKantor->delete();
 
         return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Peralatan kantor berhasil dihapus.');
@@ -164,6 +186,10 @@ class PeralatanKantorController extends Controller
         ]);
 
         $code = $request->input('code');
+
+        if (preg_match('#/aset/([^/?&#]+)#', $code, $m)) {
+            $code = urldecode($m[1]);
+        }
 
         $item = PeralatanKantor::where('barcode', $code)
             ->orWhere('kode_aset', $code)
@@ -182,6 +208,7 @@ class PeralatanKantorController extends Controller
             'id' => $item->id,
             'kode_aset' => $item->kode_aset,
             'barcode' => $item->barcode,
+            'foto' => $item->foto ? asset('storage/peralatan-kantor/'.$item->foto) : null,
             'nama_barang' => $item->nama_barang,
             'jumlah' => $item->jumlah,
             'detail' => $item->detail,

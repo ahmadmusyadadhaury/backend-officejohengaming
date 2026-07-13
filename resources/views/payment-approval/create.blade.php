@@ -22,7 +22,6 @@
                     <select name="jenis" id="f-jenis" required class="gaming-input" onchange="toggleJenis()">
                         <option value="">Pilih jenis</option>
                         <option value="internet" @selected(old('jenis') === 'internet')>Internet (WiFi)</option>
-                        <option value="listrik" @selected(old('jenis') === 'listrik')>Listrik Token</option>
                         <option value="aset_digital" @selected(old('jenis') === 'aset_digital')>Aset Digital</option>
                         <option value="ipl_ruko" @selected(old('jenis') === 'ipl_ruko')>IPL Ruko</option>
                     </select>
@@ -91,11 +90,6 @@
                         <label class="gaming-label">Jatuh Tempo <span class="field-req">*</span></label>
                         <input type="date" name="jatuh_tempo" class="gaming-input" value="{{ old('jatuh_tempo') }}">
                     </div>
-                </div>
-
-                {{-- Listrik only --}}
-                <div id="listrik-note" class="mb-4 p-3 rounded-xl" style="display:none;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);">
-                    <p class="text-xs" style="color:#3b82f6;">Untuk token listrik, isi periode, nominal token, dan tanggal pembelian.</p>
                 </div>
 
                 {{-- Tanggal Bayar --}}
@@ -179,7 +173,6 @@ function toggleJenis() {
     const jenis = document.getElementById('f-jenis').value;
     document.getElementById('internet-fields').style.display = jenis === 'internet' ? 'grid' : 'none';
     document.getElementById('other-fields').style.display = (jenis === 'internet' || !jenis) ? 'none' : 'grid';
-    document.getElementById('listrik-note').style.display = jenis === 'listrik' ? 'block' : 'none';
     document.getElementById('other-label').textContent = jenis === 'aset_digital' ? 'Nama Aset' : 'Periode';
     document.getElementById('f-periode').placeholder = jenis === 'aset_digital' ? 'Contoh: Adobe Photoshop' : 'Contoh: Januari 2026';
 }

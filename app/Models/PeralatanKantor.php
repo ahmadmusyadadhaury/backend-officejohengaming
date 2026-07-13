@@ -11,6 +11,7 @@ class PeralatanKantor extends Model
     protected $fillable = [
         'kode_aset',
         'barcode',
+        'foto',
         'nama_barang',
         'jumlah',
         'detail',

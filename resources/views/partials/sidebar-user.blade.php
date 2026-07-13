@@ -3,12 +3,7 @@
 
     $now = \Carbon\Carbon::today();
     $sevenDays = $now->copy()->addDays(7);
-    $totalTagihan = \App\Models\Payment::where('jenis', 'listrik')
-            ->whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count()
-        + \App\Models\WifiPayment::whereNull('requested_by')
+    $totalTagihan = \App\Models\WifiPayment::whereNull('requested_by')
             ->whereNotIn('status', ['lunas', 'rejected'])
             ->where('masa_tenggang', '<=', $sevenDays)
             ->count()

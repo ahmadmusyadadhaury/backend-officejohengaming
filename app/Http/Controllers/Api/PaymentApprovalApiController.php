@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetTim;
 use App\Models\PembayaranIplRuko;
@@ -20,7 +19,6 @@ class PaymentApprovalApiController extends Controller
     {
         return match ($jenis) {
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
@@ -34,7 +32,6 @@ class PaymentApprovalApiController extends Controller
 
         foreach ([
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
@@ -172,11 +169,10 @@ class PaymentApprovalApiController extends Controller
     {
         return match ($jenis) {
             'internet' => 'Internet',
-            'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
             'aset_tim' => 'Aset TIM',
-            default => $jenis,
+            default => ucfirst($jenis),
         };
     }
 }

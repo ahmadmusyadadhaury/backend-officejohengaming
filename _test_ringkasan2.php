@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
 use App\Models\WifiPayment;
@@ -10,13 +9,7 @@ require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
 
-echo "=== All Payments (Listrik) ===\n";
-$payments = Payment::where('jenis', 'listrik')->orderBy('tanggal_tagihan')->get();
-foreach ($payments as $p) {
-    echo "  #{$p->id} status={$p->status} tanggal={$p->tanggal_tagihan} nominal={$p->nominal}\n";
-}
-
-echo "\n=== All PembayaranAsetDigital ===\n";
+echo "=== All PembayaranAsetDigital ===\n";
 $ads = PembayaranAsetDigital::orderBy('tanggal_tagihan')->get();
 foreach ($ads as $a) {
     echo "  #{$a->id} status={$a->status} tanggal={$a->tanggal_tagihan} nominal={$a->nominal}\n";

@@ -7,7 +7,6 @@ use App\Models\AsetMes;
 use App\Models\AsetTim;
 use App\Models\DigitalAsset;
 use App\Models\Notification;
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetMes;
 use App\Models\PembayaranAsetTim;
@@ -32,7 +31,6 @@ class PaymentApprovalController extends Controller
     {
         return match ($jenis) {
             'internet' => new WifiPayment,
-            'listrik' => new Payment,
             'aset_digital' => new PembayaranAsetDigital,
             'ipl_ruko' => new PembayaranIplRuko,
             'aset_tim' => new PembayaranAsetTim,
@@ -46,7 +44,6 @@ class PaymentApprovalController extends Controller
     {
         return match ($jenis) {
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
@@ -74,7 +71,7 @@ class PaymentApprovalController extends Controller
                 'masa_tenggang' => 'required|date',
                 'biaya' => 'required|numeric|min:0',
             ],
-            'listrik', 'aset_digital', 'ipl_ruko', 'aset_tim', 'aset_mes' => [
+            'aset_digital', 'ipl_ruko', 'aset_tim', 'aset_mes' => [
                 'periode' => 'required|string|max:255',
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
@@ -97,10 +94,6 @@ class PaymentApprovalController extends Controller
 
         $model = $this->getModel($jenis);
         $model->fill($data);
-
-        if ($jenis === 'listrik') {
-            $model->jenis = 'listrik';
-        }
 
         $model->save();
 
@@ -127,7 +120,6 @@ class PaymentApprovalController extends Controller
 
         foreach ([
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
@@ -142,7 +134,6 @@ class PaymentApprovalController extends Controller
                     'jenis' => $jenis,
                     'jenis_label' => match ($jenis) {
                         'internet' => 'Internet',
-                        'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_tim' => 'Aset TIM',
@@ -204,7 +195,6 @@ class PaymentApprovalController extends Controller
 
         foreach ([
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
@@ -229,7 +219,6 @@ class PaymentApprovalController extends Controller
                     'jenis' => $jenis,
                     'jenis_label' => match ($jenis) {
                         'internet' => 'Internet',
-                        'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_tim' => 'Aset TIM',
@@ -298,11 +287,11 @@ class PaymentApprovalController extends Controller
         $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
         $jenisLabel = match ($jenis) {
             'internet' => 'Internet',
-            'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
             'aset_tim' => 'Aset TIM',
             'aset_mes' => 'Aset MES',
+            default => ucfirst($jenis),
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) menunggu approval.";
 
@@ -324,7 +313,6 @@ class PaymentApprovalController extends Controller
 
         foreach ([
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
@@ -341,7 +329,6 @@ class PaymentApprovalController extends Controller
                     'jenis' => $jenis,
                     'jenis_label' => match ($jenis) {
                         'internet' => 'Internet',
-                        'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_tim' => 'Aset TIM',
@@ -422,11 +409,11 @@ class PaymentApprovalController extends Controller
         $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
         $jenisLabel = match ($jenis) {
             'internet' => 'Internet',
-            'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
             'aset_tim' => 'Aset TIM',
             'aset_mes' => 'Aset MES',
+            default => ucfirst($jenis),
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) telah disetujui oleh ".auth()->user()->name.'.';
 
@@ -470,11 +457,11 @@ class PaymentApprovalController extends Controller
         $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
         $jenisLabel = match ($jenis) {
             'internet' => 'Internet',
-            'listrik' => 'Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
             'aset_tim' => 'Aset TIM',
             'aset_mes' => 'Aset MES',
+            default => ucfirst($jenis),
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) ditolak. Alasan: {$data['notes']}";
 
@@ -495,7 +482,6 @@ class PaymentApprovalController extends Controller
 
         foreach ([
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
@@ -509,7 +495,6 @@ class PaymentApprovalController extends Controller
                     'No' => null,
                     'Jenis' => match ($jenis) {
                         'internet' => 'Internet',
-                        'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_tim' => 'Aset TIM',
@@ -567,7 +552,6 @@ class PaymentApprovalController extends Controller
 
         foreach ([
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
@@ -581,7 +565,6 @@ class PaymentApprovalController extends Controller
                     'No' => null,
                     'Jenis' => match ($jenis) {
                         'internet' => 'Internet',
-                        'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_tim' => 'Aset TIM',
@@ -611,7 +594,6 @@ class PaymentApprovalController extends Controller
 
         foreach ([
             'internet' => WifiPayment::class,
-            'listrik' => Payment::class,
             'aset_digital' => PembayaranAsetDigital::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'pajak_kendaraan' => VehiclePajakRequest::class,
@@ -627,7 +609,6 @@ class PaymentApprovalController extends Controller
                     'Pengaju' => $r->requester?->name ?? '-',
                     'Jenis' => match ($jenis) {
                         'internet' => 'Internet',
-                        'listrik' => 'Listrik',
                         'aset_digital' => 'Aset Digital',
                         'ipl_ruko' => 'IPL Ruko',
                         'pajak_kendaraan' => 'Pajak Kendaraan',

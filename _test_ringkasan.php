@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
 use App\Models\WifiPayment;
@@ -22,13 +21,9 @@ for ($i = 5; $i >= 0; $i--) {
     $start = $month->copy()->startOfMonth();
     $end = $month->copy()->endOfMonth();
 
-    $tagihan = Payment::where('jenis', 'listrik')
-        ->where('status', '!=', 'rejected')
+    $tagihan = PembayaranAsetDigital::where('status', '!=', 'rejected')
         ->whereBetween('tanggal_tagihan', [$start, $end])
         ->sum('nominal')
-        + PembayaranAsetDigital::where('status', '!=', 'rejected')
-            ->whereBetween('tanggal_tagihan', [$start, $end])
-            ->sum('nominal')
         + PembayaranIplRuko::where('status', '!=', 'rejected')
             ->whereBetween('tanggal_tagihan', [$start, $end])
             ->sum('nominal')
@@ -36,13 +31,9 @@ for ($i = 5; $i >= 0; $i--) {
             ->whereBetween('created_at', [$start, $end])
             ->sum('biaya');
 
-    $bayar = Payment::where('jenis', 'listrik')
-        ->where('status', 'lunas')
+    $bayar = PembayaranAsetDigital::where('status', 'lunas')
         ->whereBetween('tanggal_tagihan', [$start, $end])
         ->sum('nominal')
-        + PembayaranAsetDigital::where('status', 'lunas')
-            ->whereBetween('tanggal_tagihan', [$start, $end])
-            ->sum('nominal')
         + PembayaranIplRuko::where('status', 'lunas')
             ->whereBetween('tanggal_tagihan', [$start, $end])
             ->sum('nominal')

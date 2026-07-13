@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
 use App\Models\WifiPayment;
@@ -24,16 +23,6 @@ class SyncPaymentStatus extends Command
         $this->line('Memperbarui status pembayaran...');
         $this->line("Hari ini: {$today->format('Y-m-d')}, threshold H-7: {$threshold->format('Y-m-d')}");
         $this->line('');
-
-        // Listrik
-        foreach (Payment::where('jenis', 'listrik')->whereNotIn('status', ['lunas', 'rejected'])->cursor() as $item) {
-            $newStatus = Carbon::parse($item->jatuh_tempo)->lte($threshold) ? 'jatuh_tempo' : 'pending';
-            if ($item->status !== $newStatus) {
-                $item->update(['status' => $newStatus]);
-                $this->line("  [Listrik] #{$item->id} {$item->periode}: {$item->status} → {$newStatus}");
-                $updated++;
-            }
-        }
 
         // Internet
         foreach (WifiPayment::whereNotIn('status', ['lunas', 'rejected'])->cursor() as $item) {

@@ -7,7 +7,6 @@ use App\Mail\TokenLowMail;
 use App\Models\ElectricityTokenReading;
 use App\Models\InternetUsageCheck;
 use App\Models\Notification;
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetMes;
 use App\Models\PembayaranAsetTim;
@@ -238,33 +237,10 @@ class PaymentController extends Controller
 
             $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
         } else {
-            $items = Payment::where('jenis', 'listrik')->orderBy('created_at', 'desc')->get();
-            $all = Payment::where('jenis', 'listrik')->get();
-
-            $stats = [
-                'total' => $all->count(),
-                'aktif' => $all->where('status', 'lunas')->count(),
-                'jatuh_tempo' => $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7) && $p->jatuh_tempo >= today())->count(),
-                'terlambat' => $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo < today())->count(),
-            ];
-
-            $itemsJson = $items->values()->map(function ($p) {
-                return [
-                    'id' => $p->id,
-                    'periode' => $p->periode,
-                    'tanggal_tagihan' => $p->tanggal_tagihan?->format('Y-m-d'),
-                    'jatuh_tempo' => $p->jatuh_tempo?->format('Y-m-d'),
-                    'nominal' => (float) $p->nominal,
-                    'status' => $p->status,
-                    'tanggal_bayar' => $p->tanggal_bayar?->format('Y-m-d'),
-                    'requested_by' => $p->requested_by,
-                    'approved_by' => $p->approved_by,
-                    'bukti_bayar' => $p->bukti_bayar,
-                    'notes' => $p->notes,
-                ];
-            });
-
-            $alertItems = $all->filter(fn ($p) => is_null($p->requested_by) && ! in_array($p->status, ['lunas', 'rejected']) && $p->jatuh_tempo && $p->jatuh_tempo <= today()->addDays(7))->values();
+            $items = collect();
+            $itemsJson = collect();
+            $stats = ['total' => 0, 'aktif' => 0, 'jatuh_tempo' => 0, 'terlambat' => 0];
+            $alertItems = collect();
         }
 
         $tokenReadings = collect();
@@ -354,7 +330,7 @@ class PaymentController extends Controller
 
         $jenisLabels = [
             'internet' => 'Internet',
-            'listrik' => 'Listrik',
+            'listrik' => 'Token Listrik',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
             'aset_tim' => 'Aset TIM',
@@ -442,16 +418,8 @@ class PaymentController extends Controller
             $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             PembayaranAsetTim::create($data);
         } else {
-            $data = $request->validate([
-                'periode' => 'required|string|max:255',
-                'tanggal_tagihan' => 'required|date',
-                'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
-                'nominal' => 'required|numeric|min:0',
-                'tanggal_bayar' => 'nullable|date',
-            ]);
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
-            $data['jenis'] = $jenis;
-            Payment::create($data);
+            return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
+                ->with('error', 'Jenis pembayaran tidak valid.');
         }
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
@@ -566,25 +534,8 @@ class PaymentController extends Controller
             $model = PembayaranAsetTim::findOrFail($id);
             $model->update($data);
         } else {
-            $data = $request->validate([
-                'periode' => 'required|string|max:255',
-                'tanggal_tagihan' => 'required|date',
-                'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
-                'nominal' => 'required|numeric|min:0',
-                'tanggal_bayar' => 'nullable|date',
-            ]);
-            if (! empty($data['tanggal_tagihan'])) {
-                $data['tanggal_tagihan'] = Carbon::parse($data['tanggal_tagihan'])->format('Y-m-d');
-            }
-            if (! empty($data['jatuh_tempo'])) {
-                $data['jatuh_tempo'] = Carbon::parse($data['jatuh_tempo'])->format('Y-m-d');
-            }
-            if (! empty($data['tanggal_bayar'])) {
-                $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
-            }
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
-            $model = Payment::findOrFail($id);
-            $model->update($data);
+            return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
+                ->with('error', 'Jenis pembayaran tidak valid.');
         }
 
         // Jika Bayar/Lunaskan → masuk ke approval queue (pending)
@@ -614,11 +565,11 @@ class PaymentController extends Controller
             $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
             $jenisLabel = match ($jenis) {
                 'internet' => 'Internet',
-                'listrik' => 'Listrik',
                 'aset_digital' => 'Aset Digital',
                 'ipl_ruko' => 'IPL Ruko',
                 'aset_tim' => 'Aset TIM',
                 'aset_mes' => 'Aset MES',
+                default => ucfirst($jenis),
             };
             $message = "Pembayaran {$jenisLabel} ({$detail}) menunggu approval.";
 
@@ -653,7 +604,8 @@ class PaymentController extends Controller
         } elseif ($jenis === 'aset_tim') {
             $model = PembayaranAsetTim::findOrFail($id);
         } else {
-            $model = Payment::findOrFail($id);
+            return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])
+                ->with('error', 'Jenis pembayaran tidak valid.');
         }
         $model->delete();
 

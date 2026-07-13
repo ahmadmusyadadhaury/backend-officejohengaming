@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
 use App\Models\Notification;
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
 use App\Models\User;
@@ -288,13 +287,12 @@ class RealtimeController extends Controller
         $sevenDaysFromNow = $today->copy()->addDays(7);
 
         $models = [
-            'payments' => ['class' => Payment::class, 'dateField' => 'jatuh_tempo', 'query' => fn ($q) => $q->where('jenis', 'listrik')],
             'wifi_payments' => ['class' => WifiPayment::class, 'dateField' => 'masa_tenggang', 'query' => null],
             'pembayaran_aset_digital' => ['class' => PembayaranAsetDigital::class, 'dateField' => 'jatuh_tempo', 'query' => null],
             'pembayaran_ipl_ruko' => ['class' => PembayaranIplRuko::class, 'dateField' => 'jatuh_tempo', 'query' => null],
         ];
 
-        $labelMap = ['payments' => 'Listrik', 'wifi_payments' => 'Internet', 'pembayaran_aset_digital' => 'Aset Digital', 'pembayaran_ipl_ruko' => 'IPL Ruko'];
+        $labelMap = ['wifi_payments' => 'Internet', 'pembayaran_aset_digital' => 'Aset Digital', 'pembayaran_ipl_ruko' => 'IPL Ruko'];
 
         $inserts = [];
 
@@ -358,13 +356,12 @@ class RealtimeController extends Controller
         }
 
         $models = [
-            'payments' => ['class' => Payment::class, 'query' => fn ($q) => $q->where('jenis', 'listrik')],
             'wifi_payments' => ['class' => WifiPayment::class, 'query' => null],
             'pembayaran_aset_digital' => ['class' => PembayaranAsetDigital::class, 'query' => null],
             'pembayaran_ipl_ruko' => ['class' => PembayaranIplRuko::class, 'query' => null],
         ];
 
-        $labelMap = ['payments' => 'Listrik', 'wifi_payments' => 'Internet', 'pembayaran_aset_digital' => 'Aset Digital', 'pembayaran_ipl_ruko' => 'IPL Ruko'];
+        $labelMap = ['wifi_payments' => 'Internet', 'pembayaran_aset_digital' => 'Aset Digital', 'pembayaran_ipl_ruko' => 'IPL Ruko'];
 
         $inserts = [];
 

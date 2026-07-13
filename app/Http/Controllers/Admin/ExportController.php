@@ -10,7 +10,6 @@ use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
 use App\Models\InternetUsageCheck;
 use App\Models\Meeting;
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranIplRuko;
 use App\Models\PeralatanKantor;
@@ -328,7 +327,7 @@ class ExportController extends Controller
         } elseif ($jenis === 'ipl_ruko') {
             $query = PembayaranIplRuko::orderBy('created_at', 'desc');
         } else {
-            $query = Payment::where('jenis', 'listrik')->orderBy('created_at', 'desc');
+            return redirect()->back()->with('error', 'Jenis export tidak valid.');
         }
         if ($filter !== 'all') {
             $query->where('status', $filter);
@@ -342,7 +341,7 @@ class ExportController extends Controller
             'Tgl Bayar' => $p->tanggal_bayar?->format('d/m/Y') ?? '-',
         ]);
 
-        $label = $jenis === 'listrik' ? 'Listrik' : ($jenis === 'aset_digital' ? 'Aset Digital' : ($jenis === 'ipl_ruko' ? 'IPL Ruko' : 'Tagihan'));
+        $label = $jenis === 'aset_digital' ? 'Aset Digital' : ($jenis === 'ipl_ruko' ? 'IPL Ruko' : 'Tagihan');
 
         return Excel::download(
             new DataExport(collect($data), array_keys($data->first() ?? []), "Data Pembayaran {$label}", $label),

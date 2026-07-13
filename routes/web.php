@@ -35,6 +35,7 @@ use App\Http\Controllers\MomExportController;
 use App\Http\Controllers\OverrideRequestController;
 use App\Http\Controllers\PaymentApprovalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicAssetController;
 use App\Http\Controllers\PushController;
 use App\Http\Controllers\RealtimeController;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
@@ -51,6 +52,10 @@ Route::get('storage/{path}', function (string $path) {
 
     return response()->file($fullPath);
 })->where('path', '.*');
+
+// Public Asset Detail — tanpa login
+Route::get('/aset/{kode_aset}', [PublicAssetController::class, 'show'])->name('public.asset.show');
+Route::get('/aset/{kode_aset}/qr', [PublicAssetController::class, 'qrCode'])->name('public.asset.qr');
 
 Route::get('/', function () {
     if (auth()->check()) {

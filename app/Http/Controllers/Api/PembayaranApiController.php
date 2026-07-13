@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ElectricityTokenReading;
 use App\Models\InternetUsageCheck;
-use App\Models\Payment;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetTim;
 use App\Models\PembayaranIplRuko;
@@ -69,9 +68,9 @@ class PembayaranApiController extends Controller
             $stats = $this->paymentStats($all, 'jatuh_tempo');
             $items = $all->values()->map(fn ($p) => $this->paymentItem($p, 'aset_tim'));
         } else {
-            $all = Payment::where('jenis', 'listrik')->orderBy('created_at', 'desc')->get();
-            $stats = $this->paymentStats($all, 'jatuh_tempo');
-            $items = $all->values()->map(fn ($p) => $this->paymentItem($p, 'listrik'));
+            $all = collect();
+            $stats = ['total' => 0, 'aktif' => 0, 'jatuh_tempo' => 0, 'terlambat' => 0];
+            $items = collect();
         }
 
         return response()->json([
@@ -128,16 +127,7 @@ class PembayaranApiController extends Controller
             $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $record = PembayaranAsetTim::create($data);
         } else {
-            $data = $request->validate([
-                'periode' => 'required|string|max:255',
-                'tanggal_tagihan' => 'required|date',
-                'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
-                'nominal' => 'required|numeric|min:0',
-                'tanggal_bayar' => 'nullable|date',
-            ]);
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
-            $data['jenis'] = $jenis;
-            $record = Payment::create($data);
+            return response()->json(['message' => 'Jenis tidak valid'], 400);
         }
 
         return response()->json([
@@ -197,16 +187,7 @@ class PembayaranApiController extends Controller
             $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model->update($data);
         } else {
-            $data = $request->validate([
-                'periode' => 'required|string|max:255',
-                'tanggal_tagihan' => 'required|date',
-                'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
-                'nominal' => 'required|numeric|min:0',
-                'tanggal_bayar' => 'nullable|date',
-            ]);
-            $model = Payment::where('jenis', 'listrik')->findOrFail($id);
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
-            $model->update($data);
+            return response()->json(['message' => 'Jenis tidak valid'], 400);
         }
 
         if ($request->input('status') === 'lunas') {
@@ -215,7 +196,7 @@ class PembayaranApiController extends Controller
                 'aset_digital' => PembayaranAsetDigital::class,
                 'ipl_ruko' => PembayaranIplRuko::class,
                 'aset_tim' => PembayaranAsetTim::class,
-                default => Payment::class,
+                default => WifiPayment::class,
             };
             $record = $class::findOrFail($id);
 
@@ -249,7 +230,7 @@ class PembayaranApiController extends Controller
             'aset_digital' => PembayaranAsetDigital::findOrFail($id),
             'ipl_ruko' => PembayaranIplRuko::findOrFail($id),
             'aset_tim' => PembayaranAsetTim::findOrFail($id),
-            default => Payment::findOrFail($id),
+            default => abort(400, 'Jenis tidak valid'),
         };
 
         $model->delete();
