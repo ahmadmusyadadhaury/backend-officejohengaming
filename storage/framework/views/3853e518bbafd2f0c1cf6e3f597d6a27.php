@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title><?php echo $__env->yieldContent('title', 'JOHEN OFFICE Management System'); ?></title>
-    <link rel="icon" type="image/x-icon" href="<?php echo e(asset('favicon.ico')); ?>?v=<?php echo e(filemtime(public_path('favicon.ico'))); ?>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('favicon-32x32.png')); ?>?v=<?php echo e(filemtime(public_path('favicon-32x32.png'))); ?>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo e(asset('favicon-16x16.png')); ?>?v=<?php echo e(filemtime(public_path('favicon-16x16.png'))); ?>">
-    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('apple-touch-icon.png')); ?>?v=<?php echo e(filemtime(public_path('apple-touch-icon.png'))); ?>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="<?php echo e(asset('css/gaming.css')); ?>?v=<?php echo e(md5_file(public_path('css/gaming.css'))); ?>">
+    <link rel="icon" type="image/x-icon" href="<?php echo e(asset('favicon.ico')); ?>?v=<?php echo e(file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : '1'); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('favicon-32x32.png')); ?>?v=<?php echo e(file_exists(public_path('favicon-32x32.png')) ? filemtime(public_path('favicon-32x32.png')) : '1'); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo e(asset('favicon-16x16.png')); ?>?v=<?php echo e(file_exists(public_path('favicon-16x16.png')) ? filemtime(public_path('favicon-16x16.png')) : '1'); ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('apple-touch-icon.png')); ?>?v=<?php echo e(file_exists(public_path('apple-touch-icon.png')) ? filemtime(public_path('apple-touch-icon.png')) : '1'); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('css/tailwind.css')); ?>?v=<?php echo e(file_exists(public_path('css/tailwind.css')) ? md5_file(public_path('css/tailwind.css')) : '1'); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('css/gaming.css')); ?>?v=<?php echo e(file_exists(public_path('css/gaming.css')) ? md5_file(public_path('css/gaming.css')) : '1'); ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .sidebar-safe  { padding-bottom: env(safe-area-inset-bottom, 16px); }

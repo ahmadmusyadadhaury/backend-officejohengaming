@@ -531,7 +531,6 @@ h1, h2, h3, h4, h5, h6,
 .gaming-sidebar {
     background: var(--sidebar-bg);
     border-right: 1px solid var(--sidebar-border);
-    position: relative;
 }
 
 .gaming-sidebar::before {

@@ -204,7 +204,7 @@ class PaymentApprovalController extends Controller
 
             $query = $class::with('requester')
                 ->whereNull('requested_by')
-                ->whereNotIn('status', ['lunas', 'rejected'])
+                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
                 ->where($dateField, '<', $today);
 
             if ($jenis === 'aset_tim') {
@@ -262,9 +262,9 @@ class PaymentApprovalController extends Controller
         $class = $this->getModelClass($jenis);
         $record = $class::findOrFail($id);
 
-        if (in_array($record->status, ['lunas', 'rejected'])) {
+        if (in_array($record->status, ['lunas', 'rejected', 'menunggu'])) {
             return redirect()->route('payment-approval.tagihan')
-                ->with('error', 'Tagihan sudah diproses.');
+                ->with('error', 'Tagihan belum memasuki masa pembayaran.');
         }
         if ($record->status === 'pending' && $record->requested_by !== null) {
             return redirect()->route('payment-approval.tagihan')

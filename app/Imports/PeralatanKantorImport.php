@@ -25,21 +25,21 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
 
     public function model(array $row)
     {
-        if (empty($row['Nama Barang']) && empty($row['Jumlah']) && empty($row['Sub Kategori'])) {
+        if (empty($row['Nama Barang']) && empty($row['Jumlah']) && empty($row['Sub-Kategori'])) {
             return null;
         }
 
         $this->successCount++;
 
         $masaBarang = max((int) ($row['Estimasi Waktu Barang'] ?? 360), 1);
-        $nilai = (float) ($row['Nilai'] ?? 0);
+        $nilai = (float) ($row['Nilai (Rp)'] ?? 0);
         $penguranganPerHari = $nilai / $masaBarang;
 
         $tanggalPembelian = ! empty($row['Tanggal Pembelian']) ? $row['Tanggal Pembelian'] : null;
         $hariTerpakai = $tanggalPembelian ? max(abs(now()->diffInDays(Carbon::parse($tanggalPembelian))), 0) : 0;
         $hargaPerHariIni = max($nilai - ($penguranganPerHari * $hariTerpakai), 0);
 
-        $kodeAset = $row['Kode Aset'] ?? null;
+        $kodeAset = $row['Kode Asset'] ?? null;
         $barcode = $row['Barcode'] ?? null;
 
         if (empty($kodeAset)) {
@@ -55,25 +55,25 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
             'nama_barang' => $row['Nama Barang'] ?? '',
             'jumlah' => (int) ($row['Jumlah'] ?? 1),
             'detail' => $row['Detail'] ?? null,
-            'sub_kategori' => $row['Sub Kategori'] ?? '',
             'keterangan' => $row['Keterangan'] ?? null,
             'lokasi_unit' => $row['Lokasi Unit'] ?? '',
             'ruangan' => $row['Ruangan'] ?? '',
-            'milik' => $row['Milik'] ?? '',
-            'pengadaan_tahun' => (int) ($row['Pengadaan Tahun'] ?? now()->year),
+            'pengadaan_tahun' => (int) ($row['Pengadaan (in tahun)'] ?? now()->year),
             'tanggal_pembelian' => $tanggalPembelian,
             'kategori_nilai' => $row['Kategori Nilai'] ?? '',
             'kategori_ukuran' => $row['Kategori Ukuran'] ?? '',
+            'sub_kategori' => $row['Sub-Kategori'] ?? '',
+            'milik' => $row['Milik'] ?? '',
             'nilai' => $nilai,
-            'waktu_pakai_per_hari' => (int) ($row['Waktu Pakai Per Hari'] ?? 0),
+            'waktu_pakai_per_hari' => (int) ($row['Waktu Pakai Barang Perhari Ini'] ?? 0),
             'estimasi_waktu_barang' => (int) ($row['Estimasi Waktu Barang'] ?? 360),
             'pengurangan_harga_per_hari' => $penguranganPerHari,
             'harga_per_hari_ini' => $hargaPerHariIni,
             'pic' => $row['PIC'] ?? '',
-            'jabatan' => $row['Jabatan'] ?? '',
+            'jabatan' => $row['Jabatan PIC'] ?? '',
             'atasan' => $row['Atasan'] ?? '',
             'jabatan_atasan' => $row['Jabatan Atasan'] ?? '',
-            'kondisi' => $row['Kondisi'] ?? 'baik',
+            'kondisi' => 'baik',
         ]);
     }
 
@@ -82,54 +82,53 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
         $maxYear = now()->year + 1;
 
         return [
-            'Kode Aset' => 'nullable|string|max:255|unique:peralatan_kantor,kode_aset',
+            'Kode Asset' => 'nullable|string|max:255|unique:peralatan_kantor,kode_aset',
             'Barcode' => 'nullable|string|max:255|unique:peralatan_kantor,barcode',
             'Nama Barang' => 'required|string|max:255',
             'Jumlah' => 'required|integer|min:1',
-            'Sub Kategori' => 'required|string|max:255',
+            'Detail' => 'nullable|string',
+            'Keterangan' => 'nullable|string',
             'Lokasi Unit' => 'required|string|max:255',
             'Ruangan' => 'required|string|max:255',
-            'Milik' => 'required|string|max:255',
-            'Pengadaan Tahun' => 'required|integer|min:1900|max:'.$maxYear,
+            'Pengadaan (in tahun)' => 'required|integer|min:1900|max:'.$maxYear,
             'Tanggal Pembelian' => 'required',
             'Kategori Nilai' => 'required|string|max:255',
             'Kategori Ukuran' => 'required|string|max:255',
-            'Nilai' => 'required|numeric|min:0',
-            'Waktu Pakai Per Hari' => 'required|integer|min:0',
+            'Sub-Kategori' => 'required|string|max:255',
+            'Milik' => 'required|string|max:255',
+            'Nilai (Rp)' => 'required|numeric|min:0',
+            'Waktu Pakai Barang Perhari Ini' => 'required|integer|min:0',
             'Estimasi Waktu Barang' => 'required|integer|min:0',
             'PIC' => 'required|string|max:255',
-            'Jabatan' => 'required|string|max:255',
+            'Jabatan PIC' => 'required|string|max:255',
             'Atasan' => 'required|string|max:255',
             'Jabatan Atasan' => 'required|string|max:255',
-            'Kondisi' => 'required|string|in:baik,perlu_servis,rusak',
         ];
     }
 
     public function customValidationMessages(): array
     {
         return [
-            'Kode Aset.unique' => 'Kode Aset sudah digunakan oleh data lain',
+            'Kode Asset.unique' => 'Kode Asset sudah digunakan oleh data lain',
             'Barcode.unique' => 'Barcode sudah digunakan oleh data lain',
             'Nama Barang.required' => 'Nama Barang wajib diisi',
             'Jumlah.required' => 'Jumlah wajib diisi',
-            'Sub Kategori.required' => 'Sub Kategori wajib diisi',
             'Lokasi Unit.required' => 'Lokasi Unit wajib diisi',
             'Ruangan.required' => 'Ruangan wajib diisi',
-            'Milik.required' => 'Milik wajib diisi',
-            'Pengadaan Tahun.required' => 'Pengadaan Tahun wajib diisi',
+            'Pengadaan (in tahun).required' => 'Pengadaan (in tahun) wajib diisi',
             'Tanggal Pembelian.required' => 'Tanggal Pembelian wajib diisi',
             'Kategori Nilai.required' => 'Kategori Nilai wajib diisi',
             'Kategori Ukuran.required' => 'Kategori Ukuran wajib diisi',
-            'Nilai.required' => 'Nilai wajib diisi',
-            'Nilai.numeric' => 'Nilai harus berupa angka',
-            'Waktu Pakai Per Hari.required' => 'Waktu Pakai Per Hari wajib diisi',
+            'Sub-Kategori.required' => 'Sub-Kategori wajib diisi',
+            'Milik.required' => 'Milik wajib diisi',
+            'Nilai (Rp).required' => 'Nilai (Rp) wajib diisi',
+            'Nilai (Rp).numeric' => 'Nilai (Rp) harus berupa angka',
+            'Waktu Pakai Barang Perhari Ini.required' => 'Waktu Pakai Barang Perhari Ini wajib diisi',
             'Estimasi Waktu Barang.required' => 'Estimasi Waktu Barang wajib diisi',
             'PIC.required' => 'PIC wajib diisi',
-            'Jabatan.required' => 'Jabatan wajib diisi',
+            'Jabatan PIC.required' => 'Jabatan PIC wajib diisi',
             'Atasan.required' => 'Atasan wajib diisi',
             'Jabatan Atasan.required' => 'Jabatan Atasan wajib diisi',
-            'Kondisi.required' => 'Kondisi wajib diisi',
-            'Kondisi.in' => 'Kondisi harus salah satu: baik, perlu_servis, atau rusak',
         ];
     }
 

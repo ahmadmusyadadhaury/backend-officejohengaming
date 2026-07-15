@@ -19,11 +19,15 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
     {
         return collect([
             [
-                'PK-2026-0001', 'PK-2026-0001',
-                'Meja Kantor', '5', 'Meja kayu uk. 120x60cm', 'Furniture', 'Meja untuk staf',
-                'Johen Office', 'Ruang Staf', 'Perusahaan', '2025', '2025-06-01',
-                'Kurang dari 5 Juta', 'Sedang', '3500000', '8', '720',
-                'Ahmad', 'Koordinator', 'Budi', 'General Manager (GM)', 'baik',
+                'Penanda Buku', '1',
+                'Merah, orange, pink, kuning, hijau, neon, cyan, biru dan ungu', 'Bagus',
+                'Lantai 1', 'Resepsionis', '2026', '2026-01-01',
+                'Kecil', 'Kecil', 'ATK (Alat Tulis Kantor)', 'Perusahaan',
+                '15000', '8', '720',
+                '18.75', '14981.25',
+                'Yuliana Sventy Yasmine Aulhia Sugiat', 'Human Resources Generalist',
+                'Gonzaga Gogo Silalahi', 'GM',
+                'JSAAtk9', 'JSAAtk9',
             ],
         ]);
     }
@@ -31,34 +35,35 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
     public function headings(): array
     {
         return [
-            'Kode Aset',
-            'Barcode',
             'Nama Barang',
             'Jumlah',
             'Detail',
-            'Sub Kategori',
             'Keterangan',
             'Lokasi Unit',
             'Ruangan',
-            'Milik',
-            'Pengadaan Tahun',
+            'Pengadaan (in tahun)',
             'Tanggal Pembelian',
             'Kategori Nilai',
             'Kategori Ukuran',
-            'Nilai',
-            'Waktu Pakai Per Hari',
+            'Sub-Kategori',
+            'Milik',
+            'Nilai (Rp)',
+            'Waktu Pakai Barang Perhari Ini',
             'Estimasi Waktu Barang',
+            'Pengurangan Harga Aset Perhari',
+            'Harga Barang Perhari Ini',
             'PIC',
-            'Jabatan',
+            'Jabatan PIC',
             'Atasan',
             'Jabatan Atasan',
-            'Kondisi',
+            'Kode Asset',
+            'Barcode',
         ];
     }
 
     public function styles(Worksheet $sheet): array
     {
-        $lastCol = 'V';
+        $lastCol = 'W';
 
         $sheet->getStyle("A1:{$lastCol}1")->applyFromArray([
             'font' => [
@@ -98,28 +103,29 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
     public function columnWidths(): array
     {
         return [
-            'A' => 20,
-            'B' => 20,
-            'C' => 22,
-            'D' => 10,
-            'E' => 30,
-            'F' => 18,
-            'G' => 22,
+            'A' => 22,
+            'B' => 10,
+            'C' => 35,
+            'D' => 20,
+            'E' => 16,
+            'F' => 16,
+            'G' => 20,
             'H' => 20,
-            'I' => 18,
-            'J' => 18,
-            'K' => 18,
-            'L' => 20,
-            'M' => 22,
-            'N' => 18,
-            'O' => 16,
-            'P' => 22,
-            'Q' => 24,
-            'R' => 20,
+            'I' => 16,
+            'J' => 16,
+            'K' => 28,
+            'L' => 16,
+            'M' => 16,
+            'N' => 28,
+            'O' => 22,
+            'P' => 28,
+            'Q' => 26,
+            'R' => 35,
             'S' => 28,
-            'T' => 20,
-            'U' => 28,
-            'V' => 14,
+            'T' => 28,
+            'U' => 22,
+            'V' => 16,
+            'W' => 16,
         ];
     }
 

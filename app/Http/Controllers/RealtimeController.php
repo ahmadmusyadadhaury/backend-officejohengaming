@@ -298,7 +298,7 @@ class RealtimeController extends Controller
 
         foreach ($models as $table => $cfg) {
             $dueColumn = $table === 'wifi_payments' ? 'masa_tenggang' : 'jatuh_tempo';
-            $q = $cfg['class']::whereNotIn('status', ['lunas', 'rejected', 'pending'])
+            $q = $cfg['class']::whereNotIn('status', ['lunas', 'rejected', 'pending', 'menunggu'])
                 ->where($dueColumn, '>=', $sevenDaysAgo)
                 ->where($dueColumn, '<=', $sevenDaysFromNow);
 

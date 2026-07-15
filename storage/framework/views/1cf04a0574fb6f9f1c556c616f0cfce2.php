@@ -118,16 +118,33 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table class="gaming-table min-w-[1100px]" id="item-table">
+            <table class="gaming-table min-w-[2600px]" id="item-table">
                 <thead>
                     <tr>
                         <th style="width:40px;">No</th>
                         <th>Nama Barang</th>
                         <th>Jumlah</th>
-                        <th>PIC</th>
+                        <th class="hidden xl:table-cell">Detail</th>
+                        <th class="hidden xl:table-cell">Keterangan</th>
                         <th class="hidden lg:table-cell">Lokasi Unit</th>
-                        <th class="hidden md:table-cell">Kode Aset</th>
-                        <th class="hidden md:table-cell">Nilai (Setelah Penyusutan)</th>
+                        <th class="hidden lg:table-cell">Ruangan</th>
+                        <th class="hidden xl:table-cell">Pengadaan (in tahun)</th>
+                        <th class="hidden xl:table-cell">Tanggal Pembelian</th>
+                        <th class="hidden xl:table-cell">Kategori Nilai</th>
+                        <th class="hidden xl:table-cell">Kategori Ukuran</th>
+                        <th class="hidden xl:table-cell">Sub-Kategori</th>
+                        <th class="hidden xl:table-cell">Milik</th>
+                        <th>Nilai (Rp)</th>
+                        <th class="hidden xl:table-cell">Waktu Pakai Perhari Ini</th>
+                        <th class="hidden xl:table-cell">Estimasi Waktu Barang</th>
+                        <th class="hidden xl:table-cell">Pengurangan Harga Aset Perhari</th>
+                        <th class="hidden xl:table-cell">Harga Barang Perhari Ini</th>
+                        <th class="hidden lg:table-cell">PIC</th>
+                        <th class="hidden xl:table-cell">Jabatan PIC</th>
+                        <th class="hidden xl:table-cell">Atasan</th>
+                        <th class="hidden xl:table-cell">Jabatan Atasan</th>
+                        <th>Kode Asset</th>
+                        <th class="hidden md:table-cell">Barcode</th>
                         <th>Kondisi</th>
                         <?php if(auth()->user()->role !== 'gm'): ?>
                         <th>Aksi</th>
@@ -158,10 +175,27 @@
                         <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
                         <td style="color:var(--text-primary);font-weight:500;"><?php echo e($i->nama_barang); ?></td>
                         <td style="color:var(--text-muted);"><?php echo e($i->jumlah); ?></td>
-                        <td style="color:var(--text-muted);"><?php echo e($i->pic); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->detail ?? '-'); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->keterangan ?? '-'); ?></td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($i->lokasi_unit); ?></td>
-                        <td class="hidden md:table-cell" style="color:var(--color-accent);font-weight:500;font-family:monospace;font-size:0.75rem;"><?php echo e($i->kode_aset); ?></td>
-                        <td class="hidden md:table-cell" style="color:<?php echo e($nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444'); ?>;font-weight:500;">Rp <?php echo e(number_format($nilaiSekarang, 0, ',', '.')); ?></td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($i->ruangan); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->pengadaan_tahun); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->tanggal_pembelian?->format('d/m/Y') ?? '-'); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->kategori_nilai); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->kategori_ukuran); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->sub_kategori); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->milik); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;">Rp<?php echo e(number_format($i->nilai, 0, ',', '.')); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->waktu_pakai_per_hari); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->estimasi_waktu_barang); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e(number_format($i->pengurangan_harga_per_hari, 2, ',', '.')); ?></td>
+                        <td class="hidden xl:table-cell" style="color:<?php echo e($nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444'); ?>;font-weight:500;">Rp<?php echo e(number_format($nilaiSekarang, 0, ',', '.')); ?></td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);"><?php echo e($i->pic); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->jabatan); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->atasan); ?></td>
+                        <td class="hidden xl:table-cell" style="color:var(--text-muted);"><?php echo e($i->jabatan_atasan); ?></td>
+                        <td style="color:var(--color-accent);font-weight:500;font-family:monospace;font-size:0.75rem;"><?php echo e($i->kode_aset); ?></td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);font-family:monospace;font-size:0.75rem;"><?php echo e($i->barcode); ?></td>
                         <td><span class="badge <?php echo e($kondisiBadge); ?>"><?php echo e($kondisiLabel); ?></span></td>
                         <?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
@@ -187,7 +221,7 @@
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr id="empty-row">
-                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data peralatan kantor.</td>
+                        <td colspan="<?php echo e(auth()->user()->role !== 'gm' ? 27 : 26); ?>" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data peralatan kantor.</td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
@@ -359,16 +393,6 @@
                                 <label class="gaming-label">Jumlah <span style="color:#f87171;">*</span></label>
                                 <input type="number" name="jumlah" id="f-jumlah" required placeholder="Masukan jumlah unit" class="gaming-input" min="1">
                             </div>
-                            <div>
-                                <label class="gaming-label">Sub Kategori <span style="color:#f87171;">*</span></label>
-                                <select name="sub_kategori" id="f-sub_kategori" required class="gaming-input">
-                                    <option value="Peralatan Kantor">Peralatan Kantor</option>
-                                    <option value="Alat Tulis">Alat Tulis</option>
-                                    <option value="Elektronik">Elektronik</option>
-                                    <option value="Furniture">Furniture</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                </select>
-                            </div>
                         </div>
                         <div>
                             <label class="gaming-label">Detail <span style="color:#f87171;">*</span></label>
@@ -391,8 +415,8 @@
 
                 
                 <div class="step-content hidden" id="step-2">
-                    <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Lokasi & Kepemilikan</p>
-                    <p class="text-xs mb-4" style="color:var(--text-muted);">Lokasi dan status kepemilikan</p>
+                    <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Lokasi</p>
+                    <p class="text-xs mb-4" style="color:var(--text-muted);">Lokasi penempatan barang</p>
                     <div class="space-y-4">
                         <div>
                             <label class="gaming-label">Lokasi Unit <span style="color:#f87171;">*</span></label>
@@ -402,25 +426,17 @@
                             <label class="gaming-label">Ruangan <span style="color:#f87171;">*</span></label>
                             <input type="text" name="ruangan" id="f-ruangan" required placeholder="Masukan ruangan" class="gaming-input">
                         </div>
-                        <div>
-                            <label class="gaming-label">Milik <span style="color:#f87171;">*</span></label>
-                            <select name="milik" id="f-milik" required class="gaming-input">
-                                <option value="Milik Perusahaan">Milik Perusahaan</option>
-                                <option value="Sewa">Sewa</option>
-                                <option value="Pinjaman">Pinjaman</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
 
                 
                 <div class="step-content hidden" id="step-3">
-                    <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Pengadaan & Nilai Aset</p>
-                    <p class="text-xs mb-4" style="color:var(--text-muted);">Data pengadaan dan nilai</p>
+                    <p class="text-sm font-bold mb-1" style="color:var(--text-primary);">Pengadaan & Nilai</p>
+                    <p class="text-xs mb-4" style="color:var(--text-muted);">Data pengadaan, kategori, dan nilai</p>
                     <div class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="gaming-label">Pengadaan (Tahun) <span style="color:#f87171;">*</span></label>
+                                <label class="gaming-label">Pengadaan (in tahun) <span style="color:#f87171;">*</span></label>
                                 <input type="number" name="pengadaan_tahun" id="f-pengadaan_tahun" required placeholder="Masukan tahun pengadaan" class="gaming-input" min="1900" max="<?php echo e(now()->year + 1); ?>">
                             </div>
                             <div>
@@ -447,7 +463,25 @@
                             </div>
                         </div>
                         <div>
-                            <label class="gaming-label">Nilai <span style="color:#f87171;">*</span></label>
+                            <label class="gaming-label">Sub-Kategori <span style="color:#f87171;">*</span></label>
+                            <select name="sub_kategori" id="f-sub_kategori" required class="gaming-input">
+                                <option value="Peralatan Kantor">Peralatan Kantor</option>
+                                <option value="Alat Tulis">Alat Tulis</option>
+                                <option value="Elektronik">Elektronik</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="gaming-label">Milik <span style="color:#f87171;">*</span></label>
+                            <select name="milik" id="f-milik" required class="gaming-input">
+                                <option value="Milik Perusahaan">Milik Perusahaan</option>
+                                <option value="Sewa">Sewa</option>
+                                <option value="Pinjaman">Pinjaman</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="gaming-label">Nilai (Rp) <span style="color:#f87171;">*</span></label>
                             <input type="number" name="nilai" id="f-nilai" required placeholder="Masukan nilai aset" class="gaming-input" min="0" step="0.01" oninput="hitungPenyusutan()">
                         </div>
                     </div>
@@ -460,22 +494,22 @@
                     <div class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="gaming-label">Waktu Pakai Per Hari (Jam) <span style="color:#f87171;">*</span></label>
+                                <label class="gaming-label">Waktu Pakai Barang Perhari Ini <span style="color:#f87171;">*</span></label>
                                 <input type="number" name="waktu_pakai_per_hari" id="f-waktu_pakai_per_hari" required value="2" class="gaming-input" min="0">
                             </div>
                             <div>
-                                <label class="gaming-label">Masa Barang (Hari) <span style="color:#f87171;">*</span></label>
+                                <label class="gaming-label">Estimasi Waktu Barang <span style="color:#f87171;">*</span></label>
                                 <input type="number" name="estimasi_waktu_barang" id="f-estimasi_waktu_barang" required value="360" class="gaming-input" min="1" oninput="hitungPenyusutan()">
                                 <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Contoh: 360 hari (1 tahun)</div>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="gaming-label">Penyusutan Per Hari (Rp)</label>
+                                <label class="gaming-label">Pengurangan Harga Aset Perhari (Rp)</label>
                                 <div id="penyusutan-display" class="gaming-input" style="padding:8px 12px;background:var(--bg-surface-2);color:var(--text-muted);border-radius:8px;font-size:13px;cursor:default;">—</div>
                             </div>
                             <div>
-                                <label class="gaming-label">Nilai Saat Ini (Rp)</label>
+                                <label class="gaming-label">Harga Barang Perhari Ini (Rp)</label>
                                 <div id="nilai-sekarang-display" class="gaming-input" style="padding:8px 12px;background:var(--bg-surface-2);color:var(--text-muted);border-radius:8px;font-size:13px;cursor:default;">—</div>
                             </div>
                         </div>
@@ -493,7 +527,7 @@
                                 <input type="text" name="pic" id="f-pic" required placeholder="Masukan nama PIC" class="gaming-input">
                             </div>
                             <div>
-                                <label class="gaming-label">Jabatan <span style="color:#f87171;">*</span></label>
+                                <label class="gaming-label">Jabatan PIC <span style="color:#f87171;">*</span></label>
                                 <select name="jabatan" id="f-jabatan" required class="gaming-input gaming-select">
                                     <option value="">Pilih Jabatan</option>
                                     <option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option>
@@ -549,10 +583,6 @@
                                     <span style="color:var(--text-muted);font-size:0.75rem;">Detail</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-detail">-</span>
                                 </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Sub Kategori</span>
-                                    <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-sub_kategori">-</span>
-                                </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
                                     <span style="color:var(--text-muted);font-size:0.75rem;">Keterangan</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-keterangan">-</span>
@@ -561,19 +591,15 @@
                         </div>
                         
                         <div style="background:var(--bg-surface-2);border:1px solid var(--border-color);border-radius:14px;padding:14px;">
-                            <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Lokasi &amp; Kepemilikan</p>
+                            <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Lokasi</p>
                             <div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
                                     <span style="color:var(--text-muted);font-size:0.75rem;">Lokasi Unit</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-lokasi_unit">-</span>
                                 </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
                                     <span style="color:var(--text-muted);font-size:0.75rem;">Ruangan</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-ruangan">-</span>
-                                </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Milik</span>
-                                    <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-milik">-</span>
                                 </div>
                             </div>
                         </div>
@@ -582,11 +608,11 @@
                             <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Pengadaan &amp; Nilai</p>
                             <div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Pengadaan</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Pengadaan (in tahun)</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-pengadaan_tahun">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Tgl Pembelian</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Tanggal Pembelian</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-tanggal_pembelian">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
@@ -597,8 +623,16 @@
                                     <span style="color:var(--text-muted);font-size:0.75rem;">Kategori Ukuran</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-kategori_ukuran">-</span>
                                 </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Sub-Kategori</span>
+                                    <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-sub_kategori">-</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Milik</span>
+                                    <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-milik">-</span>
+                                </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Nilai</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Nilai (Rp)</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-nilai">-</span>
                                 </div>
                             </div>
@@ -608,11 +642,11 @@
                             <p style="color:var(--color-accent);font-size:0.75rem;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase;">Penyusutan Umur Aset</p>
                             <div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Waktu Pakai/Hari</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Waktu Pakai Barang Perhari Ini</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-waktu_pakai_per_hari">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Masa Barang</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Estimasi Waktu Barang</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-estimasi_waktu_barang">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
@@ -620,7 +654,7 @@
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-hari_terpakai">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Penyusutan/Hari</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Pengurangan Harga Aset Perhari</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-pengurangan_harga_per_hari">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
@@ -628,7 +662,7 @@
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-nilai_awal">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Nilai Saat Ini</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Harga Barang Perhari Ini</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-harga_per_hari_ini">-</span>
                                 </div>
                             </div>
@@ -642,7 +676,7 @@
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-pic">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Jabatan</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Jabatan PIC</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-jabatan">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
@@ -650,7 +684,7 @@
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-atasan">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
-                                    <span style="color:var(--text-muted);font-size:0.75rem;">Jab Atasan</span>
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Jabatan Atasan</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-jabatan_atasan">-</span>
                                 </div>
                             </div>
@@ -971,7 +1005,7 @@ function openCreateModal() {
 }
 
 function renderDetailCards(i) {
-    const fmtRp = (v) => v ? 'Rp ' + Number(v).toLocaleString('id-ID') : '-';
+    const fmtRp = (v) => v ? 'Rp' + Number(v).toLocaleString('id-ID') : '-';
     const fmtTgl = (v) => v || '-';
 
     const cards = [
@@ -981,46 +1015,46 @@ function renderDetailCards(i) {
                 { label: 'Nama Barang', value: i.nama_barang },
                 { label: 'Jumlah', value: i.jumlah },
                 { label: 'Detail', value: i.detail || '-' },
-                { label: 'Sub Kategori', value: i.sub_kategori },
                 { label: 'Keterangan', value: i.keterangan || '-' },
             ]
         },
         {
-            title: 'Lokasi & Kepemilikan',
+            title: 'Lokasi',
             rows: [
                 { label: 'Lokasi Unit', value: i.lokasi_unit },
                 { label: 'Ruangan', value: i.ruangan },
-                { label: 'Milik', value: i.milik },
             ]
         },
         {
             title: 'Pengadaan & Nilai',
             rows: [
-                { label: 'Pengadaan', value: i.pengadaan_tahun },
-                { label: 'Tgl Pembelian', value: fmtTgl(i.tanggal_pembelian) },
+                { label: 'Pengadaan (in tahun)', value: i.pengadaan_tahun },
+                { label: 'Tanggal Pembelian', value: fmtTgl(i.tanggal_pembelian) },
                 { label: 'Kategori Nilai', value: i.kategori_nilai },
                 { label: 'Kategori Ukuran', value: i.kategori_ukuran },
-                { label: 'Nilai', value: fmtRp(i.nilai) },
+                { label: 'Sub-Kategori', value: i.sub_kategori },
+                { label: 'Milik', value: i.milik },
+                { label: 'Nilai (Rp)', value: fmtRp(i.nilai) },
             ]
         },
         {
             title: 'Penyusutan Umur Aset',
             rows: [
-                { label: 'Waktu Pakai/Hari', value: (i.waktu_pakai_per_hari || 0) + ' Jam' },
-                { label: 'Masa Barang', value: (i.estimasi_waktu_barang || 0) + ' Hari' },
+                { label: 'Waktu Pakai Barang Perhari Ini', value: (i.waktu_pakai_per_hari || 0) },
+                { label: 'Estimasi Waktu Barang', value: (i.estimasi_waktu_barang || 0) + ' Hari' },
                 { label: 'Hari Terpakai', value: (i.hari_terpakai || 0) + ' Hari' },
-                { label: 'Penyusutan/Hari', value: fmtRp(i.penyusutan_per_hari) },
+                { label: 'Pengurangan Harga Aset Perhari', value: fmtRp(i.penyusutan_per_hari) },
                 { label: 'Nilai Awal', value: fmtRp(i.nilai) },
-                { label: 'Nilai Saat Ini', value: fmtRp(i.nilai_sekarang) },
+                { label: 'Harga Barang Perhari Ini', value: fmtRp(i.nilai_sekarang) },
             ]
         },
         {
             title: 'Penanggung Jawab',
             rows: [
                 { label: 'PIC', value: i.pic },
-                { label: 'Jabatan', value: i.jabatan },
+                { label: 'Jabatan PIC', value: i.jabatan },
                 { label: 'Atasan', value: i.atasan || '-' },
-                { label: 'Jab Atasan', value: i.jabatan_atasan || '-' },
+                { label: 'Jabatan Atasan', value: i.jabatan_atasan || '-' },
             ]
         },
     ];
@@ -1276,15 +1310,15 @@ function updatePreview() {
         'pv-nama_barang': 'f-nama_barang',
         'pv-jumlah': 'f-jumlah',
         'pv-detail': 'f-detail',
-        'pv-sub_kategori': 'f-sub_kategori',
         'pv-keterangan': 'f-keterangan',
         'pv-lokasi_unit': 'f-lokasi_unit',
         'pv-ruangan': 'f-ruangan',
-        'pv-milik': 'f-milik',
         'pv-pengadaan_tahun': 'f-pengadaan_tahun',
         'pv-tanggal_pembelian': 'f-tanggal_pembelian',
         'pv-kategori_nilai': 'f-kategori_nilai',
         'pv-kategori_ukuran': 'f-kategori_ukuran',
+        'pv-sub_kategori': 'f-sub_kategori',
+        'pv-milik': 'f-milik',
         'pv-nilai': 'f-nilai',
         'pv-waktu_pakai_per_hari': 'f-waktu_pakai_per_hari',
         'pv-estimasi_waktu_barang': 'f-estimasi_waktu_barang',
@@ -1311,10 +1345,10 @@ function updatePreview() {
         hariTerpakai = Math.max(Math.floor(Math.abs(now - beli) / (1000 * 60 * 60 * 24)), 0);
     }
     const nilaiSekarang = Math.max(nilai - (penyusutan * hariTerpakai), 0);
-    document.getElementById('pv-pengurangan_harga_per_hari').textContent = 'Rp ' + Math.round(penyusutan).toLocaleString('id-ID');
-    document.getElementById('pv-harga_per_hari_ini').textContent = 'Rp ' + Math.round(nilaiSekarang).toLocaleString('id-ID');
+    document.getElementById('pv-pengurangan_harga_per_hari').textContent = 'Rp' + Math.round(penyusutan).toLocaleString('id-ID');
+    document.getElementById('pv-harga_per_hari_ini').textContent = 'Rp' + Math.round(nilaiSekarang).toLocaleString('id-ID');
     document.getElementById('pv-hari_terpakai').textContent = hariTerpakai + ' Hari';
-    document.getElementById('pv-nilai_awal').textContent = 'Rp ' + Math.round(nilai).toLocaleString('id-ID');
+    document.getElementById('pv-nilai_awal').textContent = 'Rp' + Math.round(nilai).toLocaleString('id-ID');
 }
 
 function validateStep(step) {
@@ -1364,8 +1398,8 @@ function hitungPenyusutan() {
         hariTerpakai = Math.max(Math.floor(Math.abs(now - beli) / (1000 * 60 * 60 * 24)), 0);
     }
     const nilaiSekarang = Math.max(nilai - (penyusutan * hariTerpakai), 0);
-    document.getElementById('penyusutan-display').textContent = 'Rp ' + Math.round(penyusutan).toLocaleString('id-ID');
-    document.getElementById('nilai-sekarang-display').textContent = 'Rp ' + Math.round(nilaiSekarang).toLocaleString('id-ID');
+    document.getElementById('penyusutan-display').textContent = 'Rp' + Math.round(penyusutan).toLocaleString('id-ID');
+    document.getElementById('nilai-sekarang-display').textContent = 'Rp' + Math.round(nilaiSekarang).toLocaleString('id-ID');
 }
 
 function submitForm() {
@@ -1413,6 +1447,15 @@ function prepareBlackBarcode() {
     if (!svg) return null;
     const clone = svg.cloneNode(true);
 
+    clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+    if (!clone.getAttribute('width') || !clone.getAttribute('height')) {
+        const w = clone.getAttribute('width') || svg.getBBox().width + 10 || 200;
+        const h = clone.getAttribute('height') || svg.getBBox().height + 10 || 80;
+        clone.setAttribute('width', w);
+        clone.setAttribute('height', h);
+    }
+
     clone.querySelectorAll('*').forEach(el => {
         const tag = el.tagName.toLowerCase();
 
@@ -1449,12 +1492,19 @@ function prepareBlackBarcode() {
     return clone;
 }
 
+function getBarcodeSvgDataUrl(clone) {
+    const svgData = new XMLSerializer().serializeToString(clone);
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
+}
+
 function printBarcode() {
     const clone = prepareBlackBarcode();
     if (!clone) return;
     const svgData = new XMLSerializer().serializeToString(clone);
-    const win = window.open('', '_blank');
-    win.document.write('<html><head><title>Cetak Barcode</title><style>body{display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;font-family:monospace;background:#fff;}svg{max-width:100%;}text,rect,path{fill:#000000 !important;stroke:#000000 !important;}</style></head><body>' + svgData + '<script>setTimeout(function(){window.print();window.close();},500);<\/script></body></html>');
+    const w = clone.getAttribute('width') || 300;
+    const h = clone.getAttribute('height') || 120;
+    const win = window.open('', '_blank', 'width=' + w + ',height=' + h);
+    win.document.write('<!DOCTYPE html><html><head><title>Cetak Barcode</title></head><body style="display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;font-family:monospace;background:#fff;">' + svgData + '<script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>');
     win.document.close();
 }
 
@@ -1462,21 +1512,32 @@ function downloadBarcode() {
     const clone = prepareBlackBarcode();
     if (!clone) return;
     const svgData = new XMLSerializer().serializeToString(clone);
+    const w = parseInt(clone.getAttribute('width')) || 300;
+    const h = parseInt(clone.getAttribute('height')) || 120;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    canvas.width = w * 2;
+    canvas.height = h * 2;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     const img = new Image();
     img.onload = function() {
-        canvas.width = img.width * 2;
-        canvas.height = img.height * 2;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         const a = document.createElement('a');
         a.download = 'barcode-' + (currentDetailId || 'aset') + '.png';
         a.href = canvas.toDataURL('image/png');
         a.click();
     };
-    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    img.onerror = function() {
+        const blob = new Blob([svgData], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = 'barcode-' + (currentDetailId || 'aset') + '.svg';
+        a.href = url;
+        a.click();
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    };
+    img.src = getBarcodeSvgDataUrl(clone);
 }
 
 /* ===== SCAN BARCODE ===== */

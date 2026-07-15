@@ -49,7 +49,7 @@ class PembayaranIplRuko extends Model
 
     public function getStatusIplAttribute(): string
     {
-        if (in_array($this->status, ['lunas', 'pending', 'rejected'])) {
+        if (in_array($this->status, ['lunas', 'pending', 'rejected', 'menunggu'])) {
             return $this->status;
         }
 

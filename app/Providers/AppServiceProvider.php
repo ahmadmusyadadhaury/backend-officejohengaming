@@ -35,6 +35,23 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
+        // Auto-sync Tailwind CSS dari Vite build output ke public/css/tailwind.css
+        $twDest = public_path('css/tailwind.css');
+        $buildDir = public_path('build/assets');
+        if (is_dir($buildDir)) {
+            $cssFiles = glob($buildDir.'/app-*.css');
+            if (! empty($cssFiles)) {
+                usort($cssFiles, function ($a, $b) {
+                    return filemtime($b) - filemtime($a);
+                });
+                $twSrc = $cssFiles[0];
+                if (! file_exists($twDest) || md5_file($twSrc) !== md5_file($twDest)) {
+                    @mkdir(public_path('css'), 0755, true);
+                    @copy($twSrc, $twDest);
+                }
+            }
+        }
+
         // Share notification data hanya untuk layout utama (bukan partials/ajax)
         View::composer('layouts.app', function ($view) {
             if (auth()->check()) {

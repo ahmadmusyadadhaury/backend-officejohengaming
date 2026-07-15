@@ -551,6 +551,7 @@
                     <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
                     <button type="button" data-value="segera_habis" onclick="setFilter('segera_habis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Segera Habis</button>
                     <button type="button" data-value="mati" onclick="setFilter('mati')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Mati</button>
+                    <button type="button" data-value="menunggu" onclick="setFilter('menunggu')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Belum Aktif</button>
                     @else
                     <button type="button" data-value="jatuh_tempo" onclick="setFilter('jatuh_tempo')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Jatuh Tempo</button>
                     @endif
@@ -646,6 +647,7 @@
                                 'lunas' => 'badge-green',
                                 'pending' => 'badge-blue',
                                 'rejected' => 'badge-red',
+                                'menunggu' => 'badge-gray',
                                 'aktif' => 'badge-green',
                                 'jatuh_tempo' => 'badge-orange',
                                 'segera_habis' => 'badge-yellow',
@@ -656,6 +658,7 @@
                                 'lunas' => 'Lunas',
                                 'pending' => 'Menunggu',
                                 'rejected' => 'Ditolak',
+                                'menunggu' => 'Belum Aktif',
                                 'aktif' => 'Aktif',
                                 'jatuh_tempo' => 'Jatuh Tempo',
                                 'segera_habis' => 'Segera Habis',
@@ -1349,9 +1352,38 @@
                 </div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-color);">
                     <button type="button" onclick="closeBulkIplModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onclick="return confirm('Generate 12 tagihan IPL untuk tahun '+document.getElementById('f-bulk-year').value+'?')">Generate</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onclick="return showBulkIplConfirm(event)">Generate</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+{{-- Bulk IPL Confirm Modal --}}
+<div id="bulk-ipl-confirm-modal" style="display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[400px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Konfirmasi Generate</h3>
+            <button type="button" onclick="closeBulkIplConfirm()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 text-center">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style="background:rgba(108,92,255,0.1);border:1px solid rgba(108,92,255,0.2);">
+                <svg class="w-7 h-7" style="color:#6c5cff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <p style="color:var(--text-primary);font-weight:600;font-size:15px;margin-bottom:6px;">Generate 12 Tagihan IPL?</p>
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:4px;">Tahun: <strong id="confirm-bulk-year" style="color:var(--text-primary);">-</strong></p>
+            <p style="color:var(--text-muted);font-size:13px;margin-bottom:4px;">Nominal: <strong id="confirm-bulk-nominal" style="color:var(--text-primary);">-</strong></p>
+            <p style="color:var(--text-muted);font-size:12px;margin-top:12px;">12 tagihan akan dibuat untuk setiap bulan di tahun tersebut.</p>
+        </div>
+        <div class="px-6 py-4 flex gap-3 justify-end" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeBulkIplConfirm()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;">Batal</button>
+            <button type="button" onclick="submitBulkIpl()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;border:none;box-shadow:0 4px 15px rgba(16,185,129,0.3);cursor:pointer;">Ya, Generate</button>
         </div>
     </div>
 </div>
@@ -1948,12 +1980,36 @@ function closeBulkIplModal() {
     document.body.style.overflow = '';
 }
 
+function showBulkIplConfirm(e) {
+    e.preventDefault();
+    var year = document.getElementById('f-bulk-year').value;
+    var nominal = document.getElementById('f-bulk-nominal').value;
+    if (!year || !nominal) return false;
+    document.getElementById('confirm-bulk-year').textContent = year;
+    document.getElementById('confirm-bulk-nominal').textContent = 'Rp ' + Number(nominal).toLocaleString('id-ID') + ' / bulan';
+    document.getElementById('bulk-ipl-confirm-modal').style.display = 'flex';
+    return false;
+}
+
+function closeBulkIplConfirm() {
+    document.getElementById('bulk-ipl-confirm-modal').style.display = 'none';
+}
+
+function submitBulkIpl() {
+    document.getElementById('bulk-ipl-confirm-modal').style.display = 'none';
+    closeBulkIplModal();
+    document.querySelector('#bulk-ipl-modal form').submit();
+}
+
+document.getElementById('bulk-ipl-confirm-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBulkIplConfirm(); });
+
 document.getElementById('bulk-ipl-modal')?.addEventListener('click', function(e) { if (e.target === this) closeBulkIplModal(); });
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeTokenModal();
         closeTopupModal();
+        closeBulkIplConfirm();
         closeBulkIplModal();
         closeAlertPopup();
         closeBayarModal();

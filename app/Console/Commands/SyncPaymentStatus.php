@@ -46,11 +46,23 @@ class SyncPaymentStatus extends Command
 
         // IPL Ruko
         foreach (PembayaranIplRuko::whereNotIn('status', ['lunas', 'rejected'])->cursor() as $item) {
-            $newStatus = Carbon::parse($item->jatuh_tempo)->lte($threshold) ? 'jatuh_tempo' : 'pending';
-            if ($item->status !== $newStatus) {
-                $item->update(['status' => $newStatus]);
-                $this->line("  [IPL Ruko] #{$item->id} {$item->periode}: {$item->status} → {$newStatus}");
-                $updated++;
+            $jatuhTempo = Carbon::parse($item->jatuh_tempo);
+
+            if ($item->status === 'menunggu') {
+                // Transition dari menunggu ke pending/jatuh_tempo jika sudah mendekati jatuh tempo
+                if ($jatuhTempo->lte($threshold)) {
+                    $newStatus = $jatuhTempo->lte($today) ? 'jatuh_tempo' : 'pending';
+                    $item->update(['status' => $newStatus]);
+                    $this->line("  [IPL Ruko] #{$item->id} {$item->periode}: {$item->status} → {$newStatus}");
+                    $updated++;
+                }
+            } else {
+                $newStatus = $jatuhTempo->lte($threshold) ? 'jatuh_tempo' : 'pending';
+                if ($item->status !== $newStatus) {
+                    $item->update(['status' => $newStatus]);
+                    $this->line("  [IPL Ruko] #{$item->id} {$item->periode}: {$item->status} → {$newStatus}");
+                    $updated++;
+                }
             }
         }
 

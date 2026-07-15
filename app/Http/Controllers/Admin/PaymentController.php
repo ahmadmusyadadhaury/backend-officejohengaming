@@ -641,7 +641,7 @@ class PaymentController extends Controller
 
             $status = ($tahun < $now->year || ($tahun === $now->year && $bulan < $now->month))
                 ? 'jatuh_tempo'
-                : 'pending';
+                : 'menunggu';
 
             $existing = PembayaranIplRuko::whereYear('tanggal_tagihan', $tahun)
                 ->whereMonth('tanggal_tagihan', $bulan)
@@ -769,9 +769,9 @@ class PaymentController extends Controller
             $tglTagihan = Carbon::create($year, $month, min(30, $lastDay));
             $tglJatuhTempo = Carbon::create($year, $month, min(22, $lastDay));
 
-            // Status: pending untuk bulan depan & seterusnya, jatuh_tempo untuk bulan berjalan & sebelumnya
+            // Status: menunggu untuk bulan depan & seterusnya, jatuh_tempo untuk bulan berjalan & sebelumnya
             $isFuture = $year > $now->year || ($year === $now->year && $month > $now->month);
-            $status = $isFuture ? 'pending' : 'jatuh_tempo';
+            $status = $isFuture ? 'menunggu' : 'jatuh_tempo';
 
             PembayaranIplRuko::create([
                 'periode' => $periode,

@@ -121,8 +121,8 @@ class PeralatanKantorController extends Controller
     public function update(Request $request, PeralatanKantor $peralatanKantor)
     {
         $data = $request->validate([
-            'kode_aset' => 'required|string|max:255|unique:peralatan_kantor,kode_aset,'.$peralatanKantor->id,
-            'barcode' => 'required|string|max:255|unique:peralatan_kantor,barcode,'.$peralatanKantor->id,
+            'kode_aset' => 'nullable|string|max:255|unique:peralatan_kantor,kode_aset,'.$peralatanKantor->id,
+            'barcode' => 'nullable|string|max:255|unique:peralatan_kantor,barcode,'.$peralatanKantor->id,
             'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
             'nama_barang' => 'required|string|max:255',
             'jumlah' => 'required|integer|min:1',
