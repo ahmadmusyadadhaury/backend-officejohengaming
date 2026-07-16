@@ -1,4 +1,15 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^(.*)$ public/$1 [L]
+
+    # If the request already targets public/, let public/.htaccess handle it
+    RewriteCond %{REQUEST_URI} ^/public/
+    RewriteRule ^ - [L]
+
+    # If the file or directory exists in public/, serve it from there
+    RewriteCond %{DOCUMENT_ROOT}/public/%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/public/%{REQUEST_URI} -d
+    RewriteRule ^ public/%{REQUEST_URI} [L]
+
+    # Otherwise, route everything through public/index.php (Laravel)
+    RewriteRule ^ public/index.php [L]
 </IfModule>
