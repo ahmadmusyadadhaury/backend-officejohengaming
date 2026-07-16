@@ -261,7 +261,7 @@ class ExportController extends Controller
             'Kategori Ukuran' => $p->kategori_ukuran,
             'Sub-Kategori' => $p->sub_kategori,
             'Milik' => $p->milik,
-            'Nilai (Rp)' => $p->nilai ? 'Rp'.number_format($p->nilai, 0, ',', '.') : '-',
+            'Nilai (in Rupiah)' => $p->nilai ? 'Rp'.number_format($p->nilai, 0, ',', '.') : '-',
             'Waktu Pakai Barang Perhari Ini' => $p->waktu_pakai_per_hari,
             'Estimasi Waktu Barang' => $p->estimasi_waktu_barang,
             'Pengurangan Harga Aset Perhari' => $p->pengurangan_harga_per_hari,

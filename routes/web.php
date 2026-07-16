@@ -85,6 +85,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('peralatan-kantor/import', [PeralatanKantorController::class, 'import'])->name('peralatan-kantor.import');
     Route::get('peralatan-kantor/template', [PeralatanKantorController::class, 'downloadTemplate'])->name('peralatan-kantor.template');
     Route::post('peralatan-kantor/scan', [PeralatanKantorController::class, 'scan'])->name('peralatan-kantor.scan');
+    Route::post('peralatan-kantor/reset', [PeralatanKantorController::class, 'resetData'])->name('peralatan-kantor.reset');
     Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-tim', AsetTimController::class)->except(['create', 'show', 'edit']);
@@ -105,6 +106,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('payment-approvals/{id}/approve', [PaymentApprovalController::class, 'approve'])->name('payment-approvals.approve');
     Route::post('payment-approvals/{id}/reject', [PaymentApprovalController::class, 'reject'])->name('payment-approvals.reject');
     Route::get('payment-approvals/export', [PaymentApprovalController::class, 'exportApprovals'])->name('payment-approvals.export');
+    Route::post('payment-approvals/reset', [PaymentApprovalController::class, 'resetData'])->name('payment-approvals.reset');
     Route::get('export', [ExportController::class, 'export'])->name('export');
 
     // // Chat — hidden

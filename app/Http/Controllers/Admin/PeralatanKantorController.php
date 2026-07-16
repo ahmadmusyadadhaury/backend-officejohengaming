@@ -13,8 +13,9 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class PeralatanKantorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $showAll = $request->boolean('show_all');
         $items = PeralatanKantor::orderBy('created_at', 'desc')->get();
 
         $stats = [
@@ -67,6 +68,7 @@ class PeralatanKantorController extends Controller
             'items' => $items,
             'itemsJson' => $itemsJson,
             'stats' => $stats,
+            'showAll' => $showAll,
         ]);
     }
 
@@ -179,6 +181,13 @@ class PeralatanKantorController extends Controller
         return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Peralatan kantor berhasil dihapus.');
     }
 
+    public function resetData()
+    {
+        PeralatanKantor::query()->delete();
+
+        return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Semua data peralatan kantor berhasil dihapus. Silakan import ulang.');
+    }
+
     public function scan(Request $request)
     {
         $request->validate([
@@ -255,23 +264,14 @@ class PeralatanKantorController extends Controller
         Excel::import($import, $request->file('file'));
 
         $successCount = $import->getSuccessCount();
-        $failures = $import->failures();
+        $errors = $import->getErrors();
 
-        $totalErrors = count($failures);
-        $errorMessages = [];
-
-        foreach ($failures as $failure) {
-            $row = $failure->row();
-            $errors = $failure->errors();
-            $values = $failure->values();
-            $nama = $values['Nama Barang'] ?? '-';
-            $errorMessages[] = "Baris {$row} ({$nama}): ".implode(', ', $errors);
-        }
+        $totalErrors = count($errors);
 
         if ($totalErrors > 0) {
             $message = "Berhasil import {$successCount} data.";
             $message .= " {$totalErrors} baris gagal.";
-            session()->flash('import_errors', $errorMessages);
+            session()->flash('import_errors', $errors);
             session()->flash('import_success_count', $successCount);
             session()->flash('import_error_count', $totalErrors);
 

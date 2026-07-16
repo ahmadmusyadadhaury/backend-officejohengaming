@@ -101,6 +101,13 @@
                     Import Excel
                 </button>
                 <a href="{{ route('admin.export', ['type' => 'peralatan-kantor', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
+                @if(auth()->user()->role === 'admin')
+                <button type="button" onclick="confirmResetData()" class="btn btn-sm inline-flex items-center gap-1.5" style="color:#ef4444;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Reset Data
+                </button>
+                <form id="reset-data-form" method="POST" action="{{ route('admin.peralatan-kantor.reset') }}" style="display:none;">@csrf</form>
+                @endif
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -119,36 +126,36 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table class="gaming-table min-w-[2600px]" id="item-table">
+            <table class="gaming-table min-w-[3200px]" id="item-table">
                 <thead>
                     <tr>
-                        <th style="width:40px;">No</th>
-                        <th>Nama Barang</th>
-                        <th>Jumlah</th>
-                        <th class="hidden xl:table-cell">Detail</th>
-                        <th class="hidden xl:table-cell">Keterangan</th>
-                        <th class="hidden lg:table-cell">Lokasi Unit</th>
-                        <th class="hidden lg:table-cell">Ruangan</th>
-                        <th class="hidden xl:table-cell">Pengadaan (in tahun)</th>
-                        <th class="hidden xl:table-cell">Tanggal Pembelian</th>
-                        <th class="hidden xl:table-cell">Kategori Nilai</th>
-                        <th class="hidden xl:table-cell">Kategori Ukuran</th>
-                        <th class="hidden xl:table-cell">Sub-Kategori</th>
-                        <th class="hidden xl:table-cell">Milik</th>
-                        <th>Nilai (Rp)</th>
-                        <th class="hidden xl:table-cell">Waktu Pakai Perhari Ini</th>
-                        <th class="hidden xl:table-cell">Estimasi Waktu Barang</th>
-                        <th class="hidden xl:table-cell">Pengurangan Harga Aset Perhari</th>
-                        <th class="hidden xl:table-cell">Harga Barang Perhari Ini</th>
-                        <th class="hidden lg:table-cell">PIC</th>
-                        <th class="hidden xl:table-cell">Jabatan PIC</th>
-                        <th class="hidden xl:table-cell">Atasan</th>
-                        <th class="hidden xl:table-cell">Jabatan Atasan</th>
-                        <th>Kode Asset</th>
-                        <th class="hidden md:table-cell">Barcode</th>
-                        <th>Kondisi</th>
+                        <th style="width:40px;white-space:nowrap;font-size:0.7rem;">No</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Nama Barang</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Jumlah</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Detail</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Keterangan</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Lokasi Unit</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Ruangan</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Pengadaan (Tahun)</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Tgl Pembelian</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Kategori Nilai</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Kategori Ukuran</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Sub-Kategori</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Milik</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Nilai (Rupiah)</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Waktu Pakai/Hari</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Estimasi Waktu</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Pengurangan/Hari</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Harga Saat Ini</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">PIC</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Jabatan PIC</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Atasan</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Jabatan Atasan</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Kode Asset</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Barcode</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Kondisi</th>
                         @if(auth()->user()->role !== 'gm')
-                        <th>Aksi</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Aksi</th>
                         @endif
                     </tr>
                 </thead>
@@ -173,30 +180,30 @@
                         $nilaiSekarang = max($i->nilai - ($penyusutanPerHari * $hariTerpakai), 0);
                     @endphp
                     <tr data-kondisi="{{ $i->kondisi }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $i->nama_barang }}</td>
-                        <td style="color:var(--text-muted);">{{ $i->jumlah }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->detail ?? '-' }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->keterangan ?? '-' }}</td>
-                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $i->lokasi_unit }}</td>
-                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $i->ruangan }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->pengadaan_tahun }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->tanggal_pembelian?->format('d/m/Y') ?? '-' }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->kategori_nilai }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->kategori_ukuran }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->sub_kategori }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->milik }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">Rp{{ number_format($i->nilai, 0, ',', '.') }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->waktu_pakai_per_hari }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->estimasi_waktu_barang }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ number_format($i->pengurangan_harga_per_hari, 2, ',', '.') }}</td>
-                        <td class="hidden xl:table-cell" style="color:{{ $nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444' }};font-weight:500;">Rp{{ number_format($nilaiSekarang, 0, ',', '.') }}</td>
-                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $i->pic }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->jabatan }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->atasan }}</td>
-                        <td class="hidden xl:table-cell" style="color:var(--text-muted);">{{ $i->jabatan_atasan }}</td>
-                        <td style="color:var(--color-accent);font-weight:500;font-family:monospace;font-size:0.75rem;">{{ $i->kode_aset }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);font-family:monospace;font-size:0.75rem;">{{ $i->barcode }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;white-space:nowrap;font-size:0.75rem;">{{ $i->nama_barang }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->jumlah }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->detail ?? '-' }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->keterangan ?? '-' }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->lokasi_unit }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->ruangan }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->pengadaan_tahun }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->tanggal_pembelian?->format('d/m/Y') ?? '-' }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->kategori_nilai }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->kategori_ukuran }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->sub_kategori }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->milik }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;white-space:nowrap;font-size:0.75rem;">Rp{{ number_format($i->nilai, 0, ',', '.') }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->waktu_pakai_per_hari }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->estimasi_waktu_barang }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ number_format($i->pengurangan_harga_per_hari, 2, ',', '.') }}</td>
+                        <td style="color:{{ $nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444' }};font-weight:500;white-space:nowrap;font-size:0.75rem;">Rp{{ number_format($nilaiSekarang, 0, ',', '.') }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->pic }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->jabatan }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->atasan }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->jabatan_atasan }}</td>
+                        <td style="color:var(--color-accent);font-weight:500;font-family:monospace;font-size:0.7rem;white-space:nowrap;">{{ $i->kode_aset }}</td>
+                        <td style="color:var(--text-muted);font-family:monospace;font-size:0.7rem;white-space:nowrap;">{{ $i->barcode }}</td>
                         <td><span class="badge {{ $kondisiBadge }}">{{ $kondisiLabel }}</span></td>
                         @if(auth()->user()->role !== 'gm')
                         <td>
@@ -228,6 +235,20 @@
                 </tbody>
             </table>
         </div>
+        @if(!$showAll)
+        <div id="pagination-info" class="px-5 py-2.5 flex items-center justify-between" style="border-top:1px solid var(--border-color);">
+            <span id="pagination-text" style="font-size:0.75rem;color:var(--text-muted);"></span>
+            <div class="flex items-center gap-2">
+                <div id="pagination-controls" class="flex items-center gap-1"></div>
+                <a href="{{ route('admin.peralatan-kantor.index') }}?show_all=1" style="margin-left:8px;font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+            </div>
+        </div>
+        @else
+        <div class="px-5 py-2.5 flex items-center justify-between" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);">Menampilkan semua {{ $items->count() }} item</span>
+            <a href="{{ route('admin.peralatan-kantor.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;">&larr; Kembali ke Ringkasan</a>
+        </div>
+        @endif
     </div>
 
 </div>
@@ -343,7 +364,7 @@
 
 {{-- Modal Tambah / Edit Peralatan Kantor (6 Step) --}}
 <div id="item-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[520px] rounded-3xl shadow-2xl flex flex-col" style="max-height:95vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-3xl rounded-3xl shadow-2xl flex flex-col" style="max-height:95vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
@@ -712,7 +733,7 @@
 
 {{-- Modal Import Excel --}}
 <div id="import-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[480px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-lg rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <h3 class="text-base font-bold" style="color:var(--text-primary);">Import Excel Peralatan Kantor</h3>
             <button type="button" onclick="closeModal('import-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
@@ -972,9 +993,13 @@
 <script>
 const itemsData = @json($itemsJson);
 const scanUrl = '{{ route("admin.peralatan-kantor.scan") }}';
+const showAll = @json($showAll);
 let currentStep = 1;
 const totalSteps = 6;
 let currentDetailId = null;
+let currentPage = 1;
+const perPage = 10;
+let filteredRows = [];
 
 function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah Peralatan';
@@ -1829,6 +1854,16 @@ function openImportModal() {
     openModal('import-modal');
 }
 
+function confirmResetData() {
+    showConfirmModal(
+        'Semua data peralatan kantor (' + itemsData.length + ' item) akan dihapus permanen. Setelah itu, silakan import ulang dari file Excel. Lanjutkan?',
+        function() {
+            document.getElementById('reset-data-form').submit();
+        },
+        { buttonText: 'Ya, Hapus Semua' }
+    );
+}
+
 document.getElementById('import-modal')?.addEventListener('click', function(e) {
     if (e.target === this) closeModal('import-modal');
 });
@@ -1864,13 +1899,66 @@ document.addEventListener('click', function(e) {
 function filterItems() {
     const search = (document.getElementById('search-item')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('#item-tbody tr:not(#empty-row)');
+    filteredRows = [];
     rows.forEach(row => {
         const rowKondisi = row.dataset.kondisi;
         const text = row.textContent.toLowerCase();
         const matchKondisi = currentFilter === 'all' || rowKondisi === currentFilter;
         const matchSearch = !search || text.includes(search);
-        row.style.display = matchKondisi && matchSearch ? '' : 'none';
+        if (matchKondisi && matchSearch) {
+            filteredRows.push(row);
+        }
     });
+    if (!showAll) {
+        currentPage = 1;
+        renderPaginatedRows();
+    } else {
+        rows.forEach(row => row.style.display = '');
+    }
+}
+
+function renderPaginatedRows() {
+    const allRows = document.querySelectorAll('#item-tbody tr:not(#empty-row)');
+    allRows.forEach(row => row.style.display = 'none');
+    const start = (currentPage - 1) * perPage;
+    const end = start + perPage;
+    const pageRows = filteredRows.slice(start, end);
+    pageRows.forEach(row => row.style.display = '');
+    renderPagination();
+}
+
+function renderPagination() {
+    const total = filteredRows.length;
+    const totalPages = Math.max(Math.ceil(total / perPage), 1);
+    const infoEl = document.getElementById('pagination-text');
+    const controlsEl = document.getElementById('pagination-controls');
+    if (!infoEl || !controlsEl) return;
+    if (total === 0) {
+        infoEl.textContent = 'Tidak ada data';
+        controlsEl.innerHTML = '';
+        return;
+    }
+    const start = (currentPage - 1) * perPage + 1;
+    const end = Math.min(currentPage * perPage, total);
+    infoEl.textContent = 'Menampilkan ' + start + '-' + end + ' dari ' + total + ' item';
+    let html = '';
+    html += '<button onclick="goToPage(' + (currentPage - 1) + ')" ' + (currentPage <= 1 ? 'disabled' : '') + ' class="btn btn-secondary btn-sm" style="padding:4px 10px;font-size:0.7rem;opacity:' + (currentPage <= 1 ? '0.4' : '1') + ';">&lsaquo; Sebelumnya</button>';
+    for (let p = 1; p <= totalPages; p++) {
+        if (totalPages > 7 && p > 3 && p < totalPages - 1 && Math.abs(p - currentPage) > 1) {
+            if (p === 4 || p === totalPages - 2) html += '<span style="color:var(--text-muted);padding:0 4px;">...</span>';
+            continue;
+        }
+        html += '<button onclick="goToPage(' + p + ')" class="btn btn-sm" style="padding:4px 9px;font-size:0.7rem;' + (p === currentPage ? 'background:var(--color-accent);color:#fff;' : 'background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border-color);') + '">' + p + '</button>';
+    }
+    html += '<button onclick="goToPage(' + (currentPage + 1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + ' class="btn btn-secondary btn-sm" style="padding:4px 10px;font-size:0.7rem;opacity:' + (currentPage >= totalPages ? '0.4' : '1') + ';">Berikutnya &rsaquo;</button>';
+    controlsEl.innerHTML = html;
+}
+
+function goToPage(page) {
+    const totalPages = Math.max(Math.ceil(filteredRows.length / perPage), 1);
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderPaginatedRows();
 }
 
 document.getElementById('f-foto')?.addEventListener('change', function(e) {
@@ -1885,5 +1973,9 @@ document.getElementById('f-foto')?.addEventListener('change', function(e) {
         preview.classList.add('hidden');
     }
 });
+
+if (!showAll) {
+    filterItems();
+}
 </script>
 @endpush

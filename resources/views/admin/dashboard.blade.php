@@ -110,7 +110,6 @@
                 $hasToday   = $todayPayments->isNotEmpty();
                 $hasWarning = $warningPayments->isNotEmpty();
             @endphp
-            @if($hasOverdue || $hasToday || $hasWarning)
             <div class="gaming-card overflow-hidden flex flex-col">
                 <div class="card-header flex-shrink-0">
                     <span class="card-header-title">
@@ -141,6 +140,16 @@
                     </div>
                 </a>
                 @endif
+                @unless($hasOverdue || $hasToday || $hasWarning)
+                <div class="flex flex-col items-center justify-center py-8 px-4">
+                    <svg class="w-8 h-8 mb-2" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-xs font-medium" style="color:var(--text-muted);">Tidak ada pembayaran mendatang</p>
+                    <p class="text-[0.6rem] mt-0.5" style="color:var(--text-muted);">Semua tagihan sudah terbayar atau belum jatuh tempo</p>
+                </div>
+                @endunless
+                @if($hasOverdue || $hasToday || $hasWarning)
                 <div class="overflow-y-auto" style="max-height:340px;">
                     <div class="p-2 space-y-1.5">
                         @if($hasOverdue)
@@ -207,8 +216,8 @@
                         @endif
                     </div>
                 </div>
+                @endif
             </div>
-            @endif
         </div>
     </div>
 

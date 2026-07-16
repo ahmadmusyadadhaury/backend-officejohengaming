@@ -107,7 +107,17 @@
     <a href="<?php echo e(route('admin.peralatan-kantor.index')); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request()->routeIs('admin.peralatan-kantor.*') ? 'active' : ''); ?>"><span class="truncate">Peralatan Kantor</span></a>
     <a href="<?php echo e(route('admin.ruko.index')); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request()->routeIs('admin.ruko.*') ? 'active' : ''); ?>"><span class="truncate">Aset Ruko</span></a>
     <a href="<?php echo e(route('admin.aset-mes.index')); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request()->routeIs('admin.aset-mes.*') ? 'active' : ''); ?>"><span class="truncate">Aset MES</span></a>
-    <a href="<?php echo e(route('admin.aset-tim.index')); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request()->routeIs('admin.aset-tim.*') ? 'active' : ''); ?>"><span class="truncate">Aset TIM</span></a>
+    <?php
+        $sidebarTeams = \App\Models\AsetTim::whereNotNull('tim')->where('tim', '!=', '')->distinct()->pluck('tim')->sort()->values();
+    ?>
+    <a href="<?php echo e(route('admin.aset-tim.index')); ?>" class="sidebar-item sidebar-submenu-item <?php echo e(request()->routeIs('admin.aset-tim.*') && !request('tim') ? 'active' : ''); ?>"><span class="truncate">Aset TIM</span></a>
+    <?php $__currentLoopData = $sidebarTeams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $teamName): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <?php $isActive = request('tim') === $teamName; ?>
+    <a href="<?php echo e(route('admin.aset-tim.index', ['tim' => $teamName])); ?>" class="sidebar-item sidebar-submenu-item <?php echo e($isActive ? 'active' : ''); ?>" style="padding-left:2.5rem;font-size:0.7rem;gap:6px;">
+        <span style="width:5px;height:5px;border-radius:50%;background:<?php echo e($isActive ? 'var(--color-accent)' : 'var(--text-muted)'); ?>;flex-shrink:0;"></span>
+        <span class="truncate"><?php echo e($teamName); ?></span>
+    </a>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 </div>
 
 <div class="sidebar-section">

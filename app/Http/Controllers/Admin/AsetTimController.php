@@ -4,20 +4,29 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AsetTim;
-use App\Models\PembayaranAsetTim;
 use Illuminate\Http\Request;
 
 class AsetTimController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $assets = AsetTim::with('penanggungJawab')->orderBy('created_at', 'desc')->get();
+        $activeTim = $request->input('tim');
+
+        $query = AsetTim::with('penanggungJawab');
+
+        if ($activeTim) {
+            $query->where('tim', $activeTim);
+        }
+
+        $assets = $query->orderBy('created_at', 'desc')->get();
 
         $stats = [
             'total' => $assets->count(),
             'aktif' => $assets->where('is_active', true)->count(),
             'nonaktif' => $assets->where('is_active', false)->count(),
         ];
+
+        $allTim = AsetTim::whereNotNull('tim')->where('tim', '!=', '')->distinct()->pluck('tim')->sort()->values();
 
         $assetsJson = $assets->values()->map(function ($a) {
             return [
@@ -38,6 +47,8 @@ class AsetTimController extends Controller
             'assets' => $assets,
             'assetsJson' => $assetsJson,
             'stats' => $stats,
+            'allTim' => $allTim,
+            'activeTim' => $activeTim,
         ]);
     }
 
@@ -57,18 +68,11 @@ class AsetTimController extends Controller
 
         $asset = AsetTim::create($data);
 
-        $jatuhTempo = now()->addDays(30);
-        PembayaranAsetTim::create([
-            'aset_tim_id' => $asset->id,
-            'periode' => $asset->nama_aset,
-            'tanggal_tagihan' => now()->toDateString(),
-            'jatuh_tempo' => $jatuhTempo->toDateString(),
-            'nominal' => 0,
-            'status' => 'pending',
-            'tanggal_bayar' => null,
-        ]);
+        $redirect = $request->input('tim')
+            ? route('admin.aset-tim.index', ['tim' => $request->input('tim')])
+            : route('admin.aset-tim.index');
 
-        return redirect()->route('admin.aset-tim.index')->with('success', 'Aset TIM berhasil ditambahkan.');
+        return redirect($redirect)->with('success', 'Aset TIM berhasil ditambahkan.');
     }
 
     public function update(Request $request, AsetTim $asetTim)
@@ -91,13 +95,22 @@ class AsetTimController extends Controller
             return response()->json(['success' => true, 'keterangan' => $asetTim->fresh()->keterangan]);
         }
 
-        return redirect()->route('admin.aset-tim.index')->with('success', 'Aset TIM berhasil diperbarui.');
+        $redirect = $request->input('tim')
+            ? route('admin.aset-tim.index', ['tim' => $request->input('tim')])
+            : route('admin.aset-tim.index');
+
+        return redirect($redirect)->with('success', 'Aset TIM berhasil diperbarui.');
     }
 
-    public function destroy(AsetTim $asetTim)
+    public function destroy(Request $request, AsetTim $asetTim)
     {
+        $tim = $request->input('tim');
         $asetTim->delete();
 
-        return redirect()->route('admin.aset-tim.index')->with('success', 'Aset TIM berhasil dihapus.');
+        $redirect = $tim
+            ? route('admin.aset-tim.index', ['tim' => $tim])
+            : route('admin.aset-tim.index');
+
+        return redirect($redirect)->with('success', 'Aset TIM berhasil dihapus.');
     }
 }

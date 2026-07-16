@@ -62,6 +62,14 @@
             </button>
             @endif
         </div>
+        @if($allTim->count() > 0)
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-2" style="border-bottom:1px solid var(--border-color);">
+            <a href="{{ route('admin.aset-tim.index') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition" style="background:{{ !$activeTim ? 'var(--color-accent)' : 'var(--bg-surface-2)' }};color:{{ !$activeTim ? '#fff' : 'var(--text-secondary)' }};border:1px solid {{ !$activeTim ? 'var(--color-accent)' : 'var(--border-color)' }};text-decoration:none;">Semua</a>
+            @foreach($allTim as $t)
+            <a href="{{ route('admin.aset-tim.index', ['tim' => $t]) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition" style="background:{{ $activeTim === $t ? 'var(--color-accent)' : 'var(--bg-surface-2)' }};color:{{ $activeTim === $t ? '#fff' : 'var(--text-secondary)' }};border:1px solid {{ $activeTim === $t ? 'var(--color-accent)' : 'var(--border-color)' }};text-decoration:none;">{{ $t }}</a>
+            @endforeach
+        </div>
+        @endif
         <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,6 +117,7 @@
                                         <button type="button" onclick="openEditModal({{ $a->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.aset-tim.destroy', $a) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus aset tim ini?" style="margin:0;">
                                             @csrf @method('DELETE')
+                                            <input type="hidden" name="tim" value="{{ $activeTim ?? '' }}">
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
                                     </div>
@@ -150,6 +159,7 @@
             @csrf
             <input type="hidden" name="_method" id="form-method" value="POST">
             <input type="hidden" name="id" id="form-id" value="">
+            <input type="hidden" name="tim" id="form-tim-preserve" value="{{ $activeTim ?? '' }}">
             <div class="modal-modern-body">
                 <div class="form-grid-2">
                     <div class="field-group">
@@ -216,6 +226,12 @@
 <script>
 const assets = @json($assetsJson);
 
+const activeTim = @json($activeTim);
+
+function getTimParam() {
+    return activeTim ? '?tim=' + encodeURIComponent(activeTim) : '';
+}
+
 function filterTable() {
     const q = (document.getElementById('search-aset')?.value || '').toLowerCase();
     document.querySelectorAll('#aset-tbody tr').forEach(row => {
@@ -264,7 +280,7 @@ function openCreateModal() {
     document.getElementById('form-method').value = 'POST';
     document.getElementById('form-id').value = '';
     document.getElementById('form-submit-btn').textContent = 'Tambah';
-    document.getElementById('aset-form').action = '{{ route("admin.aset-tim.index") }}';
+    document.getElementById('aset-form').action = '{{ route("admin.aset-tim.index") }}' + getTimParam();
     document.getElementById('f-nama_aset').value = '';
     document.getElementById('f-tim').value = '';
     document.getElementById('f-jumlah').value = '1';
@@ -283,7 +299,7 @@ function openEditModal(id) {
     document.getElementById('form-method').value = 'PUT';
     document.getElementById('form-id').value = a.id;
     document.getElementById('form-submit-btn').textContent = 'Simpan';
-    document.getElementById('aset-form').action = '{{ url("admin/aset-tim") }}/' + a.id;
+    document.getElementById('aset-form').action = '{{ url("admin/aset-tim") }}/' + a.id + getTimParam();
     document.getElementById('f-nama_aset').value = a.nama_aset;
     document.getElementById('f-tim').value = a.tim || '';
     document.getElementById('f-jumlah').value = a.jumlah || '1';

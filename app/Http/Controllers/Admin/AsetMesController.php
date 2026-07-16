@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AsetMes;
-use App\Models\PembayaranAsetMes;
 use Illuminate\Http\Request;
 
 class AsetMesController extends Controller
@@ -54,17 +53,6 @@ class AsetMesController extends Controller
         $data['is_active'] = true;
 
         $asset = AsetMes::create($data);
-
-        $jatuhTempo = now()->addDays(30);
-        PembayaranAsetMes::create([
-            'aset_mes_id' => $asset->id,
-            'periode' => $asset->nama_aset,
-            'tanggal_tagihan' => now()->toDateString(),
-            'jatuh_tempo' => $jatuhTempo->toDateString(),
-            'nominal' => 0,
-            'status' => 'pending',
-            'tanggal_bayar' => null,
-        ]);
 
         return redirect()->route('admin.aset-mes.index')->with('success', 'Aset MES berhasil ditambahkan.');
     }

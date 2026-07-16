@@ -679,4 +679,45 @@ class PaymentApprovalController extends Controller
         imagedestroy($src);
         imagedestroy($dst);
     }
+
+    public function resetData()
+    {
+        $tables = [
+            'wifi_payments',
+            'pembayaran_aset_digital',
+            'pembayaran_ipl_ruko',
+            'pembayaran_aset_tim',
+            'pembayaran_aset_mes',
+        ];
+
+        foreach ($tables as $table) {
+            if (\Illuminate\Support\Facades\Schema::hasTable($table)) {
+                \Illuminate\Support\Facades\DB::table($table)->update([
+                    'status' => 'belum lunas',
+                    'requested_by' => null,
+                    'approved_by' => null,
+                    'approved_at' => null,
+                    'bukti_bayar' => null,
+                    'notes' => null,
+                ]);
+            }
+        }
+
+        if (\Illuminate\Support\Facades\Schema::hasTable('vehicle_pajak_requests')) {
+            \Illuminate\Support\Facades\DB::table('vehicle_pajak_requests')->update([
+                'status' => 'pending',
+                'requested_by' => null,
+                'approved_by' => null,
+                'approved_at' => null,
+                'bukti_bayar' => null,
+                'notes' => null,
+            ]);
+        }
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['message' => 'Semua data persetujuan berhasil di-reset.']);
+        }
+
+        return redirect()->route('admin.payment-approvals.index')->with('success', 'Semua data persetujuan berhasil di-reset ke status awal.');
+    }
 }

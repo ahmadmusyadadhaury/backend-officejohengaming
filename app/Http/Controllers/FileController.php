@@ -24,7 +24,7 @@ class FileController extends Controller
             'Content-Type' => $mime,
             'Content-Length' => strlen($file),
             'Cache-Control' => 'public, max-age=86400',
-            'Content-Disposition' => $isImage ? 'inline' : 'attachment; filename="' . basename($path) . '"',
+            'Content-Disposition' => $isImage ? 'inline' : 'attachment; filename="'.basename($path).'"',
         ];
 
         return response($file, 200, $headers);

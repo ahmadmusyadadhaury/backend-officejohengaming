@@ -1,7 +1,7 @@
 <?php $__env->startSection('body-class', 'page-admin'); ?>
-<?php $__env->startSection('title', 'Aset MES'); ?>
-<?php $__env->startSection('page-title', 'Data Aset > Aset MES'); ?>
-<?php $__env->startSection('page-subtitle', 'Daftar aset MES dan perlengkapan perusahaan'); ?>
+<?php $__env->startSection('title', 'Aset TIM'); ?>
+<?php $__env->startSection('page-title', 'Data Aset > Aset TIM'); ?>
+<?php $__env->startSection('page-subtitle', 'Daftar aset tim dan divisi perusahaan'); ?>
 <?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -16,7 +16,7 @@
             </div>
             <div class="min-w-0">
                 <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);"><?php echo e($stats['total']); ?></div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Aset MES</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Aset TIM</div>
                 <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
@@ -49,18 +49,26 @@
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
-                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Aset MES</div>
-                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Aset MES dan perlengkapan perusahaan.</div>
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Aset TIM</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Aset per tim/divisi perusahaan.</div>
             </div>
             <?php if(auth()->user()->role !== 'gm'): ?>
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Tambah Aset MES
+                Tambah Aset TIM
             </button>
             <?php endif; ?>
         </div>
+        <?php if($allTim->count() > 0): ?>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-2" style="border-bottom:1px solid var(--border-color);">
+            <a href="<?php echo e(route('admin.aset-tim.index')); ?>" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition" style="background:<?php echo e(!$activeTim ? 'var(--color-accent)' : 'var(--bg-surface-2)'); ?>;color:<?php echo e(!$activeTim ? '#fff' : 'var(--text-secondary)'); ?>;border:1px solid <?php echo e(!$activeTim ? 'var(--color-accent)' : 'var(--border-color)'); ?>;text-decoration:none;">Semua</a>
+            <?php $__currentLoopData = $allTim; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <a href="<?php echo e(route('admin.aset-tim.index', ['tim' => $t])); ?>" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition" style="background:<?php echo e($activeTim === $t ? 'var(--color-accent)' : 'var(--bg-surface-2)'); ?>;color:<?php echo e($activeTim === $t ? '#fff' : 'var(--text-secondary)'); ?>;border:1px solid <?php echo e($activeTim === $t ? 'var(--color-accent)' : 'var(--border-color)'); ?>;text-decoration:none;"><?php echo e($t); ?></a>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+        <?php endif; ?>
         <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,6 +85,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Aset</th>
+                        <th>Tim</th>
                         <th>Jumlah</th>
                         <th>Penanggung Jawab</th>
                         <th>Status</th>
@@ -89,6 +98,7 @@
                     <tr>
                         <td style="color:var(--text-muted);"><?php echo e($loop->iteration); ?></td>
                         <td style="color:var(--text-primary);font-weight:500;"><?php echo e($a->nama_aset); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($a->tim ?? '-'); ?></td>
                         <td style="color:var(--text-muted);"><?php echo e($a->jumlah); ?></td>
                         <td style="color:var(--text-muted);"><?php echo e($a->penanggungJawab?->name ?? '-'); ?></td>
                         <td><span class="badge <?php echo e($a->is_active ? 'badge-green' : 'badge-red'); ?>"><?php echo e($a->is_active ? 'Aktif' : 'Tidak Aktif'); ?></span></td>
@@ -96,16 +106,17 @@
                         <?php if(auth()->user()->role !== 'gm'): ?><td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail(<?php echo e($a->id); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                    Lihat Detail
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
                                     <button type="button" onclick="toggleDropdown(this, <?php echo e($a->id); ?>)" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-<?php echo e($a->id); ?>" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail(<?php echo e($a->id); ?>)" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         <button type="button" onclick="openEditModal(<?php echo e($a->id); ?>)" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="<?php echo e(route('admin.aset-mes.destroy', $a)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus aset MES ini?" style="margin:0;">
+                                        <form method="POST" action="<?php echo e(route('admin.aset-tim.destroy', $a)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus aset tim ini?" style="margin:0;">
                                             <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                                            <input type="hidden" name="tim" value="<?php echo e($activeTim ?? ''); ?>">
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
                                     </div>
@@ -114,7 +125,7 @@
                         </td><?php endif; ?>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset MES.</td></tr>
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset tim.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -123,19 +134,15 @@
 </div>
 
 
-<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[460px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Aset MES</h3>
-            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+<div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetail()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3 id="detail-title">Detail Aset TIM</h3>
+            <button type="button" onclick="closeDetail()" class="modal-modern-close">&times;</button>
         </div>
-        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
-        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
-            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        <div class="modal-modern-body" id="detail-body"></div>
+        <div class="modal-modern-footer">
+            <button type="button" onclick="closeDetail()" class="btn btn-secondary">Tutup</button>
         </div>
     </div>
 </div>
@@ -144,13 +151,14 @@
 <div id="aset-modal" class="modal-modern" onclick="if(event.target===this)closeModal('aset-modal')">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
-            <h3 id="modal-title">Tambah Aset MES</h3>
+            <h3 id="modal-title">Tambah Aset TIM</h3>
             <button type="button" onclick="closeModal('aset-modal')" class="modal-modern-close">&times;</button>
         </div>
         <form id="aset-form" method="POST">
             <?php echo csrf_field(); ?>
             <input type="hidden" name="_method" id="form-method" value="POST">
             <input type="hidden" name="id" id="form-id" value="">
+            <input type="hidden" name="tim" id="form-tim-preserve" value="<?php echo e($activeTim ?? ''); ?>">
             <div class="modal-modern-body">
                 <div class="form-grid-2">
                     <div class="field-group">
@@ -158,8 +166,12 @@
                         <input type="text" name="nama_aset" id="f-nama_aset" required placeholder="Masukan nama aset" class="gaming-input">
                     </div>
                     <div class="field-group">
+                        <label class="gaming-label">Tim</label>
+                        <input type="text" name="tim" id="f-tim" placeholder="Nama tim/divisi" class="gaming-input">
+                    </div>
+                    <div class="field-group">
                         <label class="gaming-label">Jumlah</label>
-                        <input type="number" name="jumlah" id="f-jumlah" placeholder="Jumlah" min="1" class="gaming-input">
+                        <input type="number" name="jumlah" id="f-jumlah" value="1" min="1" class="gaming-input">
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Penanggung Jawab</label>
@@ -183,7 +195,7 @@
                         <textarea name="keterangan" id="f-keterangan" placeholder="Keterangan" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
                     </div>
                 </div>
-            </div>
+
             <div class="modal-modern-footer gap-2">
                 <button type="button" onclick="closeModal('aset-modal')" class="btn btn-secondary">Batal</button>
                 <button type="submit" class="btn btn-primary" id="form-submit-btn">Tambah</button>
@@ -206,13 +218,18 @@
 .btn-form-batal { color: var(--text-primary); border: 1px solid var(--border-color); background: var(--bg-surface); }
 .btn-form-simpan { background: linear-gradient(135deg,#6c5cff,#8b7bff); color: #fff; border: none; box-shadow: 0 4px 15px rgba(108,92,255,0.3); }
 .btn-form-simpan:hover { transform: translateY(-1px); }
-
 </style>
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startPush('scripts'); ?>
 <script>
 const assets = <?php echo json_encode($assetsJson, 15, 512) ?>;
+
+const activeTim = <?php echo json_encode($activeTim, 15, 512) ?>;
+
+function getTimParam() {
+    return activeTim ? '?tim=' + encodeURIComponent(activeTim) : '';
+}
 
 function filterTable() {
     const q = (document.getElementById('search-aset')?.value || '').toLowerCase();
@@ -240,49 +257,32 @@ document.querySelectorAll('[id$="-modal"]').forEach(m => {
 function showDetail(id) {
     const a = assets.find(x => x.id === id);
     if (!a) return;
-    document.getElementById('detail-title').textContent = a.nama_aset;
-
-    const rows = [
-        { label: 'Nama Aset', value: a.nama_aset },
-        { label: 'Jumlah', value: a.jumlah },
-        { label: 'Penanggung Jawab', value: a.penanggung_jawab_nama },
-        { label: 'PIC', value: a.pic || '-' },
-        { label: 'Jabatan', value: a.jabatan || '-' },
-    ];
-
+    document.getElementById('detail-title').textContent = 'Detail Aset TIM';
     document.getElementById('detail-body').innerHTML = `
-        <div class="space-y-1">
-            ${rows.map((r, i) => `
-                <div class="flex items-center justify-between py-2.5" ${i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
-                    <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
-                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.value}</p>
-                </div>
-            `).join('')}
-            <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
-                <p class="text-sm" style="color:var(--text-muted);">Status</p>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${a.is_active ? '#ecfdf5' : '#fef2f2'};color:${a.is_active ? '#059669' : '#dc2626'};border:1px solid ${a.is_active ? '#a7f3d0' : '#fecaca'};">${a.is_active ? 'Aktif' : 'Tidak Aktif'}</span>
-            </div>
-            <div class="flex items-center justify-between py-2.5">
-                <p class="text-sm" style="color:var(--text-muted);">Keterangan</p>
-                <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${a.keterangan || '-'}</p>
-            </div>
-        </div>
-    `;
-    openModal('detail-modal');
+        <div class="detail-grid">
+            <div class="detail-item"><span class="detail-label">Nama Aset</span><span class="detail-value">${a.nama_aset}</span></div>
+            <div class="detail-item"><span class="detail-label">Tim</span><span class="detail-value">${a.tim || '-'}</span></div>
+            <div class="detail-item"><span class="detail-label">Jumlah</span><span class="detail-value">${a.jumlah}</span></div>
+            <div class="detail-item"><span class="detail-label">Penanggung Jawab</span><span class="detail-value">${a.penanggung_jawab_nama}</span></div>
+            <div class="detail-item"><span class="detail-label">PIC</span><span class="detail-value">${a.pic || '-'}</span></div>
+            <div class="detail-item"><span class="detail-label">Jabatan</span><span class="detail-value">${a.jabatan || '-'}</span></div>
+            <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value">${a.is_active ? 'Aktif' : 'Tidak Aktif'}</span></div>
+            <div class="detail-item" style="grid-column:1/-1;"><span class="detail-label">Keterangan</span><span class="detail-value">${a.keterangan || '-'}</span></div>
+        </div>`;
+    document.getElementById('detail-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
 }
-function closeDetail() { closeModal('detail-modal'); }
-document.getElementById('detail-modal')?.addEventListener('click', function(e) {
-    if (e.target === this) closeDetail();
-});
+function closeDetail() { document.getElementById('detail-modal').style.display = 'none'; document.body.style.overflow = ''; }
 
 function openCreateModal() {
-    document.getElementById('modal-title').textContent = 'Tambah Aset MES';
+    document.getElementById('modal-title').textContent = 'Tambah Aset TIM';
     document.getElementById('form-method').value = 'POST';
     document.getElementById('form-id').value = '';
     document.getElementById('form-submit-btn').textContent = 'Tambah';
-    document.getElementById('aset-form').action = '<?php echo e(route("admin.aset-mes.index")); ?>';
+    document.getElementById('aset-form').action = '<?php echo e(route("admin.aset-tim.index")); ?>' + getTimParam();
     document.getElementById('f-nama_aset').value = '';
-    document.getElementById('f-jumlah').value = '';
+    document.getElementById('f-tim').value = '';
+    document.getElementById('f-jumlah').value = '1';
     document.getElementById('f-penanggung_jawab').value = '';
     document.getElementById('f-pic').value = '';
     document.getElementById('f-jabatan').value = '';
@@ -294,13 +294,14 @@ function openCreateModal() {
 function openEditModal(id) {
     const a = assets.find(x => x.id === id);
     if (!a) return;
-    document.getElementById('modal-title').textContent = 'Edit Aset MES';
+    document.getElementById('modal-title').textContent = 'Edit Aset TIM';
     document.getElementById('form-method').value = 'PUT';
     document.getElementById('form-id').value = a.id;
     document.getElementById('form-submit-btn').textContent = 'Simpan';
-    document.getElementById('aset-form').action = '<?php echo e(url("admin/aset-mes")); ?>/' + a.id;
+    document.getElementById('aset-form').action = '<?php echo e(url("admin/aset-tim")); ?>/' + a.id + getTimParam();
     document.getElementById('f-nama_aset').value = a.nama_aset;
-    document.getElementById('f-jumlah').value = a.jumlah || '';
+    document.getElementById('f-tim').value = a.tim || '';
+    document.getElementById('f-jumlah').value = a.jumlah || '1';
     document.getElementById('f-penanggung_jawab').value = a.penanggung_jawab || '';
     document.getElementById('f-pic').value = a.pic || '';
     document.getElementById('f-jabatan').value = a.jabatan || '';
@@ -311,4 +312,4 @@ function openEditModal(id) {
 </script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/aset-mes/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/aset-tim/index.blade.php ENDPATH**/ ?>
