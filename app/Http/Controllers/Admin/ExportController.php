@@ -228,6 +228,7 @@ class ExportController extends Controller
         $data = $query->get()->map(fn ($s) => [
             'Nomor SIM Card' => $s->nomor_sim_card,
             'PIC' => $s->pic,
+            'Atasan' => $s->atasan ?? '-',
             'Jabatan' => $s->jabatan,
             'Masa Aktif' => $s->masa_aktif?->format('d/m/Y'),
             'Masa Tenggang' => $s->masa_tenggang?->format('d/m/Y'),

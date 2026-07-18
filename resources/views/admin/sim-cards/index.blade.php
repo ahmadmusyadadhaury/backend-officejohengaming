@@ -174,6 +174,7 @@
                         <th>No</th>
                         <th>No SIM Card</th>
                         <th>PIC</th>
+                        <th>Atasan</th>
                         <th class="hidden md:table-cell">Keperluan</th>
                         <th class="hidden md:table-cell">Masa Aktif</th>
                         <th class="hidden lg:table-cell">Masa Tenggang</th>
@@ -205,6 +206,7 @@
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:600;font-family:monospace;">{{ $c->nomor_sim_card }}</td>
                         <td style="color:var(--text-muted);">{{ $c->pic }}</td>
+                        <td style="color:var(--text-muted);">{{ $c->atasan ?? '—' }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $c->keperluan }}">{{ $c->keperluan ?? '—' }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $c->masa_aktif?->format('d M Y') }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $c->masa_tenggang?->format('d M Y') }}</td>
@@ -232,7 +234,7 @@
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data SIM Card.</td>
+                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data SIM Card.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -287,6 +289,10 @@
                     <div class="field-group">
                         <label class="gaming-label">PIC <span class="field-req">*</span></label>
                         <input type="text" name="pic" id="f-pic" required placeholder="Masukan nama PIC" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Atasan</label>
+                        <input type="text" name="atasan" id="f-atasan" placeholder="Masukan nama atasan" class="gaming-input">
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Jabatan <span class="field-req">*</span></label>
@@ -425,6 +431,7 @@ function showDetail(id) {
     const rows = [
         { label: 'Nomor SIM Card', value: c.nomor_sim_card },
         { label: 'PIC', value: c.pic },
+        { label: 'Atasan', value: c.atasan || '-' },
         { label: 'Jabatan', value: c.jabatan },
         { label: 'Masa Aktif', value: c.masa_aktif },
         { label: 'Masa Tenggang', value: c.masa_tenggang },
@@ -484,6 +491,7 @@ function openEditModal(id) {
 
     document.getElementById('f-nomor_sim_card').value = c.nomor_sim_card;
     document.getElementById('f-pic').value = c.pic;
+    document.getElementById('f-atasan').value = c.atasan || '';
     document.getElementById('f-jabatan').value = c.jabatan;
     document.getElementById('f-masa_aktif').value = c.masa_aktif ? c.masa_aktif.split('/').reverse().join('-') : '';
     document.getElementById('f-masa_tenggang').value = c.masa_tenggang ? c.masa_tenggang.split('/').reverse().join('-') : '';

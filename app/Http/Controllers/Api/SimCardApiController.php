@@ -16,6 +16,7 @@ class SimCardApiController extends Controller
                 'id' => $c->id,
                 'nomor_sim_card' => $c->nomor_sim_card,
                 'pic' => $c->pic,
+                'atasan' => $c->atasan,
                 'jabatan' => $c->jabatan,
                 'masa_aktif' => $c->masa_aktif?->format('Y-m-d'),
                 'status_kartu' => $c->status_kartu,

@@ -9,6 +9,7 @@ class SimCard extends Model
     protected $fillable = [
         'nomor_sim_card',
         'pic',
+        'atasan',
         'jabatan',
         'masa_aktif',
         'masa_tenggang',

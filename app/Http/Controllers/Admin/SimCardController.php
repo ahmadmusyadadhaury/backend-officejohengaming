@@ -29,6 +29,7 @@ class SimCardController extends Controller
                 'id' => $c->id,
                 'nomor_sim_card' => $c->nomor_sim_card,
                 'pic' => $c->pic,
+                'atasan' => $c->atasan,
                 'jabatan' => $c->jabatan,
                 'masa_aktif' => $c->masa_aktif?->format('d/m/Y'),
                 'masa_tenggang' => $c->masa_tenggang?->format('d/m/Y'),
@@ -53,6 +54,7 @@ class SimCardController extends Controller
         $data = $request->validate([
             'nomor_sim_card' => 'required|string|max:50',
             'pic' => 'required|string|max:255',
+            'atasan' => 'nullable|string|max:255',
             'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'masa_aktif' => 'required|date',
             'masa_tenggang' => 'required|date',
@@ -72,6 +74,7 @@ class SimCardController extends Controller
         $data = $request->validate([
             'nomor_sim_card' => 'required|string|max:50',
             'pic' => 'required|string|max:255',
+            'atasan' => 'nullable|string|max:255',
             'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'masa_aktif' => 'required|date',
             'masa_tenggang' => 'required|date',
