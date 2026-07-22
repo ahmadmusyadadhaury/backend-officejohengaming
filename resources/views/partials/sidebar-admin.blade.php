@@ -2,7 +2,7 @@
     $isMeetingActive = request()->routeIs('admin.meetings.*', 'admin.moms.*', 'calendar', 'koordinator.meetings.*', 'koordinator.mom.*');
     $isAssetActive = request()->routeIs('admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*', 'admin.sosial-media.*', 'admin.aset-mes.*', 'admin.aset-tim.*');
     $isPaymentActive = request()->routeIs('admin.pembayaran.*', 'admin.payment-approvals.*', 'payment-approval.*');
-    $isAdminActive = request()->routeIs('admin.users.*', 'admin.admins.*', 'admin.assets.*', 'admin.teams.*', 'admin.rooms.*');
+    $isAdminActive = request()->routeIs('admin.users.*', 'admin.admins.*', 'admin.assets.*', 'admin.teams.*', 'admin.rooms.*', 'admin.team-compositions.*');
 
     $isFullAccess = in_array(auth()->user()->role, \App\Models\User::FULL_ACCESS_ROLES);
 
@@ -172,6 +172,9 @@
     @endif
     <a href="{{ route('admin.assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.assets.*') ? 'active' : '' }}"><span class="truncate">Kelola Aset Meeting</span></a>
     <a href="{{ route('admin.teams.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.teams.*') ? 'active' : '' }}"><span class="truncate">Kelola Tim</span></a>
+    @if(in_array(auth()->user()->role, ['admin', 'hr']))
+    <a href="{{ route('admin.team-compositions.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.team-compositions.*') ? 'active' : '' }}"><span class="truncate">Komposisi Tim</span></a>
+    @endif
     <a href="{{ route('admin.rooms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}"><span class="truncate">Kelola Ruangan</span></a>
     <a href="{{ route('admin.settings.email') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.settings.email') ? 'active' : '' }}"><span class="truncate">Pengaturan Email</span></a>
 </div>

@@ -1,6 +1,6 @@
 @php
     $isMeetingActive = request()->routeIs('koordinator.meetings.*', 'koordinator.mom.*', 'calendar');
-    $isOperationalActive = request()->routeIs('koordinator.data-saya.*', 'koordinator.aset-tim.*', 'koordinator.aset-mes.*');
+    $isOperationalActive = request()->routeIs('koordinator.data-saya.*', 'koordinator.asset-saya.*', 'koordinator.aset-tim.*', 'koordinator.aset-mes.*');
     $isPaymentActive = request()->routeIs('payment-approval.*');
 
     $now = \Carbon\Carbon::today();
@@ -69,6 +69,9 @@
 <div class="sidebar-submenu {{ $isOperationalActive ? '' : 'hidden' }}">
     <a href="{{ route('koordinator.data-saya.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.data-saya.index') ? 'active' : '' }}">
         <span class="truncate">Aset Saya</span>
+    </a>
+    <a href="{{ route('koordinator.asset-saya.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.asset-saya.*') ? 'active' : '' }}">
+        <span class="truncate">Data Aset Saya</span>
     </a>
     <a href="{{ route('koordinator.aset-tim.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.aset-tim.index') ? 'active' : '' }}"><span class="truncate">Aset TIM</span></a>
     <a href="{{ route('koordinator.aset-mes.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.aset-mes.index') ? 'active' : '' }}"><span class="truncate">Aset MES</span></a>

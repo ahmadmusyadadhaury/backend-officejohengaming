@@ -68,5 +68,6 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call(WeeklyMeetingSeeder::class);
+        $this->call(TeamCompositionSeeder::class);
     }
 }

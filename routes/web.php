@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SimCardController;
 use App\Http\Controllers\Admin\SosialMediaController;
+use App\Http\Controllers\Admin\TeamCompositionController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VehicleController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\Leader\AsetMesController as KoordinatorAsetMesController;
 use App\Http\Controllers\Leader\AsetTimController as KoordinatorAsetTimController;
+use App\Http\Controllers\Leader\AssetSayaController;
 use App\Http\Controllers\Leader\DashboardController as KoordinatorDashboard;
 use App\Http\Controllers\Leader\DataSayaController;
 use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingController;
@@ -121,6 +123,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 // Hanya Admin & HR
 Route::middleware(['auth', 'admin_hr'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('team-compositions', [TeamCompositionController::class, 'index'])->name('team-compositions.index');
+    Route::put('team-compositions', [TeamCompositionController::class, 'update'])->name('team-compositions.update');
     Route::resource('rooms', AdminRoomController::class);
     Route::get('meetings', [AdminMeetingController::class, 'index'])->name('meetings.index');
     Route::get('meetings/{meeting}', [AdminMeetingController::class, 'show'])->name('meetings.show');
@@ -151,6 +155,7 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::post('data-saya', [DataSayaController::class, 'store'])->name('data-saya.store');
     Route::put('data-saya/{asetDaya}', [DataSayaController::class, 'update'])->name('data-saya.update');
     Route::delete('data-saya/{asetDaya}', [DataSayaController::class, 'destroy'])->name('data-saya.destroy');
+    Route::get('asset-saya', [AssetSayaController::class, 'index'])->name('asset-saya.index');
     Route::get('aset-tim', [KoordinatorAsetTimController::class, 'index'])->name('aset-tim.index');
     Route::post('aset-tim', [KoordinatorAsetTimController::class, 'store'])->name('aset-tim.store');
     Route::put('aset-tim/{asetTim}', [KoordinatorAsetTimController::class, 'update'])->name('aset-tim.update');
