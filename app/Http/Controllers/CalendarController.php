@@ -38,7 +38,14 @@ class CalendarController extends Controller
             ->get();
 
         $weeklyMeetings = WeeklyMeeting::with('room')->get();
-        $rooms = Room::where('is_active', true)->get();
+        $roomsQuery = Room::where('is_active', true);
+        if (auth()->user()->role === 'koordinator') {
+            $roomsQuery->where(function ($q) {
+                $q->where('team_id', auth()->user()->team_id)
+                  ->orWhereNull('team_id');
+            });
+        }
+        $rooms = $roomsQuery->get();
         $days = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
 
         $weeklyData = $weeklyMeetings->map(fn ($w) => [

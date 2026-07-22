@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Room extends Model
 {
-    protected $fillable = ['name', 'capacity', 'facilities', 'location', 'description', 'is_active'];
+    protected $fillable = ['name', 'capacity', 'facilities', 'location', 'description', 'is_active', 'team_id'];
 
     protected $casts = [
         'facilities' => 'array',
@@ -16,6 +16,11 @@ class Room extends Model
     public function meetings()
     {
         return $this->hasMany(Meeting::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 
     public function isAvailable($date, $startTime, $endTime, $excludeMeetingId = null): bool

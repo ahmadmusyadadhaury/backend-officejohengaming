@@ -55,6 +55,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Ruangan</th>
+                        <th>Divisi</th>
                         <th>Lokasi</th>
                         <th>Kapasitas</th>
                         <th>Fasilitas</th>
@@ -67,6 +68,13 @@
                     <tr>
                         <td style="color:var(--text-muted);">{{ $rooms->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $room->name }}</td>
+                        <td>
+                            @if($room->team)
+                                <span class="badge badge-primary">{{ $room->team->name }}</span>
+                            @else
+                                <span style="color:var(--text-muted);">Umum</span>
+                            @endif
+                        </td>
                         <td style="color:var(--text-muted);">{{ $room->location ?? '—' }}</td>
                         <td>
                             <span class="badge badge-cyan">{{ $room->capacity }} orang</span>
@@ -93,7 +101,7 @@
 @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex gap-2">
-                                <button type="button" onclick="openEditModal({{ json_encode(['id'=>$room->id,'name'=>$room->name,'capacity'=>$room->capacity,'location'=>$room->location ?? '','facilities'=>is_array($room->facilities) ? implode("\n",$room->facilities) : '','description'=>$room->description ?? '','is_active'=>$room->is_active]) }})" class="btn btn-secondary btn-sm">Edit</button>
+                                <button type="button" onclick="openEditModal({{ json_encode(['id'=>$room->id,'name'=>$room->name,'capacity'=>$room->capacity,'location'=>$room->location ?? '','facilities'=>is_array($room->facilities) ? implode("\n",$room->facilities) : '','description'=>$room->description ?? '','is_active'=>$room->is_active,'team_id'=>$room->team_id]) }})" class="btn btn-secondary btn-sm">Edit</button>
                                 <form method="POST" action="{{ route('admin.rooms.destroy', $room) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus ruangan ini?">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-danger btn-sm">Hapus</button>
@@ -103,7 +111,7 @@
 @endif
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada ruangan ditemukan.</td></tr>
+                    <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada ruangan ditemukan.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -142,6 +150,15 @@
                 <div>
                     <label class="gaming-label">Deskripsi</label>
                     <textarea name="description" id="edit-description" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
+                </div>
+                <div>
+                    <label class="gaming-label">Khusus Divisi</label>
+                    <select name="team_id" id="edit-team-id" class="gaming-input gaming-select">
+                        <option value="">— Umum (Semua Akses) —</option>
+                        @foreach($teams as $team)
+                            <option value="{{ $team->id }}">{{ $team->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="flex items-center gap-2">
                     <input type="checkbox" name="is_active" id="edit-is-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
@@ -188,6 +205,15 @@
                     <label class="gaming-label">Deskripsi</label>
                     <textarea name="description" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
                 </div>
+                <div>
+                    <label class="gaming-label">Khusus Divisi</label>
+                    <select name="team_id" class="gaming-input gaming-select">
+                        <option value="">— Umum (Semua Akses) —</option>
+                        @foreach($teams as $team)
+                            <option value="{{ $team->id }}">{{ $team->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Buat Ruangan</button>
@@ -223,6 +249,7 @@ function openEditModal(data) {
     document.getElementById('edit-facilities').value = data.facilities;
     document.getElementById('edit-description').value = data.description;
     document.getElementById('edit-is-active').checked = data.is_active == 1;
+    document.getElementById('edit-team-id').value = data.team_id || '';
     openModal('edit-modal');
 }
 function closeEditModal() {

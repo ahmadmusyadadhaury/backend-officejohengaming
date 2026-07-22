@@ -81,7 +81,15 @@ class MeetingController extends Controller
         $disetujuiMeeting = Meeting::where('requested_by', $userId)->whereIn('status', ['approved', 'confirmed', 'in_progress', 'completed'])->count();
         $ditolakMeeting = Meeting::where('requested_by', $userId)->where('status', 'rejected')->count();
 
-        $rooms = Room::where('is_active', true)->get();
+        $user = auth()->user();
+        $roomsQuery = Room::where('is_active', true);
+        if ($user->role === 'koordinator') {
+            $roomsQuery->where(function ($q) use ($user) {
+                $q->where('team_id', $user->team_id)
+                  ->orWhereNull('team_id');
+            });
+        }
+        $rooms = $roomsQuery->get();
         $teams = Team::where('is_active', true)->get();
         $assets = Asset::where('is_active', true)->get();
         $users = User::where('is_active', true)->orderBy('name')->get(['id', 'name']);
@@ -94,8 +102,17 @@ class MeetingController extends Controller
 
     public function create()
     {
+        $user = auth()->user();
+        $roomsQuery = Room::where('is_active', true);
+        if ($user->role === 'koordinator') {
+            $roomsQuery->where(function ($q) use ($user) {
+                $q->where('team_id', $user->team_id)
+                  ->orWhereNull('team_id');
+            });
+        }
+
         return view('leader.meetings.create', [
-            'rooms' => Room::where('is_active', true)->get(),
+            'rooms' => $roomsQuery->get(),
             'teams' => Team::where('is_active', true)->get(),
             'assets' => Asset::where('is_active', true)->get(),
         ]);

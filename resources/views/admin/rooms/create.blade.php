@@ -30,6 +30,16 @@
                 <label class="gaming-label">Deskripsi</label>
                 <textarea name="description" rows="2" class="gaming-input" style="resize:vertical;">{{ old('description') }}</textarea>
             </div>
+            <div>
+                <label class="gaming-label">Khusus Divisi <span style="color:var(--text-muted);font-weight:400;">(biarkan Umum jika tidak dipilih)</span></label>
+                <select name="team_id" class="gaming-input gaming-select">
+                    <option value="">— Umum (Semua Akses) —</option>
+                    @foreach($teams as $team)
+                        <option value="{{ $team->id }}" {{ old('team_id') == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
+                    @endforeach
+                </select>
+                <p class="text-xs mt-1" style="color:var(--text-muted);">Hanya koordinator dari divisi ini yang bisa melihat dan memesan ruangan.</p>
+            </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="is_active" id="is_active" value="1" checked style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
                 <label for="is_active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Ruangan Aktif</label>
