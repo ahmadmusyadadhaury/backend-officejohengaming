@@ -43,8 +43,8 @@ class DatabaseSeeder extends Seeder
         User::create(['name' => 'Koordinator Roblox',       'username' => 'Johen.roblox',  'email' => 'johen.roblox@johen.com',  'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 2]);
         User::create(['name' => 'Koordinator PUBG',         'username' => 'Johen.PUBG',    'email' => 'johen.pubg@johen.com',    'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 3]);
         User::create(['name' => 'Koordinator MLBB',         'username' => 'Johen.MLBB',    'email' => 'johen.mlbb@johen.com',    'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 4]);
-        User::create(['name' => 'Koordinator Free Fire',    'username' => 'Johen.FreeFire','email' => 'johen.freefire@johen.com','password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 5]);
-        User::create(['name' => 'Koordinator E-Football',   'username' => 'Johen.EFootbal','email' => 'johen.efootbal@johen.com','password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 6]);
+        User::create(['name' => 'Koordinator Free Fire',    'username' => 'Johen.FreeFire', 'email' => 'johen.freefire@johen.com', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 5]);
+        User::create(['name' => 'Koordinator E-Football',   'username' => 'Johen.EFootbal', 'email' => 'johen.efootbal@johen.com', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 6]);
         User::create(['name' => 'Koordinator Kreatif',      'username' => 'creatif',       'email' => 'creatif@johen.com',       'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 7]);
         User::create(['name' => 'Koordinator IT',           'username' => 'it',            'email' => 'it@johen.com',            'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 8]);
 

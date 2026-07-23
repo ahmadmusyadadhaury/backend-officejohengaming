@@ -446,8 +446,12 @@ class PaymentController extends Controller
             if (! empty($data['tanggal_bayar'])) {
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
-            $data['status'] = $this->resolvePaymentStatus($data['masa_tenggang']);
             $model = WifiPayment::findOrFail($id);
+            if ($model->status !== 'lunas') {
+                $data['status'] = $this->resolvePaymentStatus($data['masa_tenggang']);
+            } else {
+                unset($data['status']);
+            }
             $model->update($data);
         } elseif ($jenis === 'aset_digital') {
             $data = $request->validate([
@@ -466,8 +470,12 @@ class PaymentController extends Controller
             if (! empty($data['tanggal_bayar'])) {
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model = PembayaranAsetDigital::findOrFail($id);
+            if ($model->status !== 'lunas') {
+                $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
+            } else {
+                unset($data['status']);
+            }
             $model->update($data);
         } elseif ($jenis === 'ipl_ruko') {
             $data = $request->validate([
@@ -490,8 +498,12 @@ class PaymentController extends Controller
             if ($request->hasFile('bukti_bayar')) {
                 $data['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
             }
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model = PembayaranIplRuko::findOrFail($id);
+            if ($model->status !== 'lunas') {
+                $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
+            } else {
+                unset($data['status']);
+            }
             $model->update($data);
         } elseif ($jenis === 'aset_mes') {
             $data = $request->validate([
@@ -510,8 +522,12 @@ class PaymentController extends Controller
             if (! empty($data['tanggal_bayar'])) {
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model = PembayaranAsetMes::findOrFail($id);
+            if ($model->status !== 'lunas') {
+                $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
+            } else {
+                unset($data['status']);
+            }
             $model->update($data);
         } elseif ($jenis === 'aset_tim') {
             $data = $request->validate([
@@ -530,8 +546,12 @@ class PaymentController extends Controller
             if (! empty($data['tanggal_bayar'])) {
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
-            $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             $model = PembayaranAsetTim::findOrFail($id);
+            if ($model->status !== 'lunas') {
+                $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
+            } else {
+                unset($data['status']);
+            }
             $model->update($data);
         } else {
             return redirect()->route('admin.pembayaran.index', ['jenis' => $jenis])

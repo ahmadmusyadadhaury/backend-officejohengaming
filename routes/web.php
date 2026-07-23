@@ -106,6 +106,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('pembayaran/ipl-ruko/bulk', [PaymentController::class, 'storeBulkIplRuko'])->name('pembayaran.ipl-ruko.bulk');
     Route::get('payment-approvals', [PaymentApprovalController::class, 'index'])->name('payment-approvals.index');
     Route::post('payment-approvals/{id}/approve', [PaymentApprovalController::class, 'approve'])->name('payment-approvals.approve');
+    Route::post('payment-approvals/approve-all', [PaymentApprovalController::class, 'approveAll'])->name('payment-approvals.approve-all');
     Route::post('payment-approvals/{id}/reject', [PaymentApprovalController::class, 'reject'])->name('payment-approvals.reject');
     Route::get('payment-approvals/export', [PaymentApprovalController::class, 'exportApprovals'])->name('payment-approvals.export');
     Route::post('payment-approvals/reset', [PaymentApprovalController::class, 'resetData'])->name('payment-approvals.reset');

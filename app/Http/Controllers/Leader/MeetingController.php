@@ -86,7 +86,7 @@ class MeetingController extends Controller
         if ($user->role === 'koordinator') {
             $roomsQuery->where(function ($q) use ($user) {
                 $q->where('team_id', $user->team_id)
-                  ->orWhereNull('team_id');
+                    ->orWhereNull('team_id');
             });
         }
         $rooms = $roomsQuery->get();
@@ -107,7 +107,7 @@ class MeetingController extends Controller
         if ($user->role === 'koordinator') {
             $roomsQuery->where(function ($q) use ($user) {
                 $q->where('team_id', $user->team_id)
-                  ->orWhereNull('team_id');
+                    ->orWhereNull('team_id');
             });
         }
 

@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\PeralatanKantor;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -11,6 +12,7 @@ use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 HeadingRowFormatter::default('none');
 
@@ -36,9 +38,9 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
             self::$debugKeys[] = $row;
             self::$debugCount++;
             if (self::$debugCount === 3) {
-                \Illuminate\Support\Facades\Log::info('IMPORT DEBUG KEYS:', array_map(fn($r) => array_keys($r), self::$debugKeys));
-                \Illuminate\Support\Facades\Log::info('IMPORT DEBUG ROW 1:', self::$debugKeys[0]);
-                file_put_contents(storage_path('logs/import_debug.json'), json_encode(array_map(fn($r) => array_keys($r), self::$debugKeys), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                Log::info('IMPORT DEBUG KEYS:', array_map(fn ($r) => array_keys($r), self::$debugKeys));
+                Log::info('IMPORT DEBUG ROW 1:', self::$debugKeys[0]);
+                file_put_contents(storage_path('logs/import_debug.json'), json_encode(array_map(fn ($r) => array_keys($r), self::$debugKeys), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             }
         }
 
@@ -53,6 +55,7 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
             foreach ($errors as $error) {
                 $this->errors[] = $error;
             }
+
             return null;
         }
 
@@ -125,7 +128,7 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
                 $row[$key] = $value->format('Y-m-d');
             } elseif (is_float($value) && floor($value) == $value && $value > 40000 && $value < 60000) {
                 try {
-                    $row[$key] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format('Y-m-d');
+                    $row[$key] = Date::excelToDateTimeObject($value)->format('Y-m-d');
                 } catch (\Exception $e) {
                     $row[$key] = (string) $value;
                 }
@@ -165,7 +168,7 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
 
         if (! empty($row['Tanggal Pembelian']) && is_numeric($row['Tanggal Pembelian'])) {
             try {
-                $row['Tanggal Pembelian'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $row['Tanggal Pembelian'])->format('Y-m-d');
+                $row['Tanggal Pembelian'] = Date::excelToDateTimeObject((float) $row['Tanggal Pembelian'])->format('Y-m-d');
             } catch (\Exception $e) {
             }
         }

@@ -36,6 +36,7 @@ class RoomController extends Controller
     public function create()
     {
         $teams = Team::where('is_active', true)->orderBy('name')->get();
+
         return view('admin.rooms.create', compact('teams'));
     }
 
@@ -64,6 +65,7 @@ class RoomController extends Controller
     public function edit(Room $room)
     {
         $teams = Team::where('is_active', true)->orderBy('name')->get();
+
         return view('admin.rooms.edit', compact('room', 'teams'));
     }
 

@@ -1,21 +1,20 @@
-@extends('layouts.app')
-@section('body-class', 'page-admin')
-@section('title', 'Persetujuan Pembayaran')
-@section('page-title', 'Persetujuan Pembayaran')
-@section('page-subtitle', 'Pengajuan pembayaran yang menunggu persetujuan')
+<?php $__env->startSection('body-class', 'page-admin'); ?>
+<?php $__env->startSection('title', 'Persetujuan Pembayaran'); ?>
+<?php $__env->startSection('page-title', 'Persetujuan Pembayaran'); ?>
+<?php $__env->startSection('page-subtitle', 'Pengajuan pembayaran yang menunggu persetujuan'); ?>
 
-@section('sidebar-menu') @include('partials.sidebar-admin') @endsection
+<?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="pt-2 space-y-4 animate-fade-in">
-    @if($requests->isEmpty())
+    <?php if($requests->isEmpty()): ?>
     <div class="gaming-card p-8 text-center">
         <svg class="w-16 h-16 mx-auto mb-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <p style="color:var(--text-secondary);font-size:14px;">Tidak ada pengajuan yang menunggu persetujuan.</p>
     </div>
-    @else
+    <?php else: ?>
     <div class="gaming-card" style="overflow:hidden;">
         <div class="card-header">
             <div>
@@ -32,20 +31,20 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
-                <a href="{{ route('admin.payment-approvals.export') }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
-                @if($isApprover && $requests->isNotEmpty())
+                <a href="<?php echo e(route('admin.payment-approvals.export')); ?>" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
+                <?php if($isApprover && $requests->isNotEmpty()): ?>
                 <button type="button" onclick="confirmApproveAll()" class="btn btn-sm inline-flex items-center gap-1.5" style="background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     Setujui Semua
                 </button>
-                @endif
-                @if(auth()->user()->role === 'admin')
+                <?php endif; ?>
+                <?php if(auth()->user()->role === 'admin'): ?>
                 <button type="button" onclick="confirmResetData()" class="btn btn-sm inline-flex items-center gap-1.5" style="color:#ef4444;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     Reset Data
                 </button>
-                <form id="reset-data-form" method="POST" action="{{ route('admin.payment-approvals.reset') }}" style="display:none;">@csrf</form>
-                @endif
+                <form id="reset-data-form" method="POST" action="<?php echo e(route('admin.payment-approvals.reset')); ?>" style="display:none;"><?php echo csrf_field(); ?></form>
+                <?php endif; ?>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                     <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                         style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -88,50 +87,50 @@
                         <th style="width:110px">Nominal</th>
                         <th style="width:75px">Tgl Bayar</th>
                         <th style="width:50px">Bukti</th>
-                        @if(auth()->user()->role !== 'gm')
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <th style="width:115px">Aksi</th>
-                        @endif
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody id="approval-tbody">
-                    @foreach($requests as $i => $r)
-                    <tr data-jenis="{{ $r['jenis'] }}">
-                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
-                        <td style="font-size:12px;color:var(--text-secondary);">{{ $r['created_at'] }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $r['requester_name'] }}</td>
-                        <td><span class="text-xs font-semibold" style="color:var(--text-secondary);">{{ $r['jenis_label'] }}</span></td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $r['detail'] }}</td>
-                        <td style="color:var(--text-primary);white-space:nowrap;">Rp {{ number_format($r['nominal'], 0, ',', '.') }}</td>
-                        <td style="font-size:13px;color:var(--text-secondary);">{{ $r['tanggal_bayar'] }}</td>
+                    <?php $__currentLoopData = $requests; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <tr data-jenis="<?php echo e($r['jenis']); ?>">
+                        <td style="color:var(--text-muted);"><?php echo e($i + 1); ?></td>
+                        <td style="font-size:12px;color:var(--text-secondary);"><?php echo e($r['created_at']); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($r['requester_name']); ?></td>
+                        <td><span class="text-xs font-semibold" style="color:var(--text-secondary);"><?php echo e($r['jenis_label']); ?></span></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($r['detail']); ?></td>
+                        <td style="color:var(--text-primary);white-space:nowrap;">Rp <?php echo e(number_format($r['nominal'], 0, ',', '.')); ?></td>
+                        <td style="font-size:13px;color:var(--text-secondary);"><?php echo e($r['tanggal_bayar']); ?></td>
                         <td>
-                            @if($r['bukti_url'])
-                            <a href="{{ $r['bukti_url'] }}" target="_blank" class="btn btn-secondary btn-sm" style="padding:4px 10px;font-size:11px;">Lihat</a>
-                            @else
+                            <?php if($r['bukti_url']): ?>
+                            <a href="<?php echo e($r['bukti_url']); ?>" target="_blank" class="btn btn-secondary btn-sm" style="padding:4px 10px;font-size:11px;">Lihat</a>
+                            <?php else: ?>
                             <span class="text-xs" style="color:var(--text-muted);">-</span>
-                            @endif
+                            <?php endif; ?>
                         </td>
-                        @if(auth()->user()->role !== 'gm')
+                        <?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
-                            @if($isApprover)
+                            <?php if($isApprover): ?>
                             <div class="flex gap-2">
-                                <button type="button" onclick="approve({{ $r['id'] }}, '{{ $r['jenis'] }}')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Setujui</button>
-                                <button type="button" onclick="openReject({{ $r['id'] }}, '{{ $r['jenis'] }}')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#ef4444;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Tolak</button>
+                                <button type="button" onclick="approve(<?php echo e($r['id']); ?>, '<?php echo e($r['jenis']); ?>')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Setujui</button>
+                                <button type="button" onclick="openReject(<?php echo e($r['id']); ?>, '<?php echo e($r['jenis']); ?>')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#ef4444;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Tolak</button>
                             </div>
-                            @else
+                            <?php else: ?>
                             <span class="text-xs" style="color:var(--text-muted);">-</span>
-                            @endif
+                            <?php endif; ?>
                         </td>
-                        @endif
+                        <?php endif; ?>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
 
-{{-- Modal Approve --}}
+
 <div id="approve-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[380px] rounded-2xl shadow-2xl flex flex-col p-6" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex flex-col items-center text-center mb-5">
@@ -150,7 +149,7 @@
     </div>
 </div>
 
-{{-- Modal Reject --}}
+
 <div id="reject-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--border-color);">
@@ -173,15 +172,15 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>
-@endpush
-@push('scripts')
+<?php $__env->stopPush(); ?>
+<?php $__env->startPush('scripts'); ?>
 <script>
 let currentFilter = 'all';
 let approveId = null;
@@ -266,10 +265,10 @@ function executeApprove() {
     closeApprove();
 
     const form = new FormData();
-    form.append('_token', '{{ csrf_token() }}');
+    form.append('_token', '<?php echo e(csrf_token()); ?>');
     form.append('jenis', jenis);
 
-    fetch('{{ url('admin/payment-approvals') }}/' + id + '/approve', {
+    fetch('<?php echo e(url('admin/payment-approvals')); ?>/' + id + '/approve', {
         method: 'POST',
         headers: { 'Accept': 'application/json' },
         body: form,
@@ -312,11 +311,11 @@ function reject() {
     closeReject();
 
     const form = new FormData();
-    form.append('_token', '{{ csrf_token() }}');
+    form.append('_token', '<?php echo e(csrf_token()); ?>');
     form.append('jenis', jenis);
     form.append('notes', notes);
 
-    fetch('{{ url('admin/payment-approvals') }}/' + id + '/reject', {
+    fetch('<?php echo e(url('admin/payment-approvals')); ?>/' + id + '/reject', {
         method: 'POST',
         headers: { 'Accept': 'application/json' },
         body: form,
@@ -365,10 +364,10 @@ function executeApproveAll() {
     const currentFilterVal = currentFilter !== 'all' ? currentFilter : '';
     const params = currentFilterVal ? '?jenis=' + currentFilterVal : '';
 
-    fetch('{{ url('admin/payment-approvals/approve-all') }}' + params, {
+    fetch('<?php echo e(url('admin/payment-approvals/approve-all')); ?>' + params, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-        body: new URLSearchParams({ '_token': '{{ csrf_token() }}' }),
+        body: new URLSearchParams({ '_token': '<?php echo e(csrf_token()); ?>' }),
     }).then(r => r.json()).then(data => {
         if (data.success) {
             showSuccessModal(data.message || 'Semua pembayaran berhasil disetujui.');
@@ -381,4 +380,5 @@ function executeApproveAll() {
     });
 }
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/payment-approvals/index.blade.php ENDPATH**/ ?>

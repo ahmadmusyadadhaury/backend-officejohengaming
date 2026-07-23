@@ -53,12 +53,12 @@
 
             {{-- Table --}}
             <div class="overflow-x-auto">
-                <table class="gaming-table min-w-[500px]">
+                <table class="gaming-table w-full" style="table-layout:fixed;">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Posisi</th>
-                            <th>Jumlah</th>
+                            <th style="width:8%;">No</th>
+                            <th style="width:55%;">Posisi</th>
+                            <th style="width:37%;">Jumlah</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,7 +68,7 @@
                             <td style="color:var(--text-primary);font-weight:500;">{{ $comp->label }}</td>
                             <td>
                                 <input type="number" name="max_count[{{ $comp->id }}]" value="{{ $comp->max_count }}" min="0"
-                                    class="gaming-input" style="width:100px;text-align:center;padding:6px 10px;font-size:0.8rem;">
+                                    class="gaming-input" style="width:100%;max-width:120px;text-align:center;padding:6px 10px;font-size:0.8rem;">
                             </td>
                         </tr>
                         @empty

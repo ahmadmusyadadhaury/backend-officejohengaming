@@ -11,6 +11,7 @@ use App\Models\SimCard;
 use App\Models\SosialMedia;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class AssetSayaController extends Controller
@@ -46,7 +47,7 @@ class AssetSayaController extends Controller
         $page = $request->input('page', 1);
         $total = $assets->count();
         $items = $assets->slice(($page - 1) * $perPage, $perPage);
-        $paginator = new \Illuminate\Pagination\LengthAwarePaginator($items, $total, $perPage, $page, [
+        $paginator = new LengthAwarePaginator($items, $total, $perPage, $page, [
             'path' => $request->url(),
             'query' => $request->query(),
         ]);

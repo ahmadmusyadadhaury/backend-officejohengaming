@@ -20,6 +20,8 @@ use App\Models\WifiPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -385,26 +387,31 @@ class PaymentApprovalController extends Controller
             'approved_at' => now(),
         ]);
 
-        // Auto-create tagihan baru dengan jatuh tempo di-offset
-        $fillable = $record->getFillable();
-        $newData = [];
-        foreach ($fillable as $col) {
-            if (in_array($col, ['id', 'status', 'tanggal_bayar', 'requested_by', 'approved_by', 'approved_at', 'bukti_bayar', 'notes', 'created_at', 'updated_at', 'period'])) {
-                continue;
-            }
-            $newData[$col] = $record->$col;
-        }
-        $newData['period'] = 'bulanan'; // tagihan baru default bulanan
-
-        // Set tanggal = original + offset
+        // Auto-create tagihan baru hanya jika tanggal baru masih di masa depan
         $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
-        $newData[$dateField] = $record->{$dateField}->copy()->addMonths($offsetMonths);
-        $newData['status'] = $newData[$dateField]->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
-        if ($jenis !== 'internet') {
-            $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
-        }
+        $nextDate = $record->{$dateField}->copy()->addMonths($offsetMonths);
 
-        $class::create($newData);
+        if ($nextDate->isFuture()) {
+            $fillable = $record->getFillable();
+            $newData = [];
+            foreach ($fillable as $col) {
+                if (in_array($col, ['id', 'status', 'tanggal_bayar', 'requested_by', 'approved_by', 'approved_at', 'bukti_bayar', 'notes', 'created_at', 'updated_at', 'period'])) {
+                    continue;
+                }
+                $newData[$col] = $record->$col;
+            }
+
+            $newData['period'] = $period;
+            $newData[$dateField] = $nextDate;
+            $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+
+            if ($jenis !== 'internet') {
+                $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
+                $newData['periode'] = $nextDate->locale('id')->translatedFormat('F Y');
+            }
+
+            $class::create($newData);
+        }
 
         $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
         $jenisLabel = match ($jenis) {
@@ -425,6 +432,99 @@ class PaymentApprovalController extends Controller
         Cache::forget('approval_check_'.auth()->id());
 
         return response()->json(['success' => true]);
+    }
+
+    public function approveAll(Request $request)
+    {
+        if (! in_array(auth()->user()->role, self::APPROVER_ROLES)) {
+            return response()->json(['error' => 'Anda tidak memiliki hak akses.'], 403);
+        }
+
+        $jenisFilter = $request->input('jenis');
+        $approved = 0;
+        $skipped = 0;
+
+        $typeMap = [
+            'internet' => WifiPayment::class,
+            'aset_digital' => PembayaranAsetDigital::class,
+            'ipl_ruko' => PembayaranIplRuko::class,
+            'aset_tim' => PembayaranAsetTim::class,
+            'aset_mes' => PembayaranAsetMes::class,
+        ];
+
+        $types = $jenisFilter && isset($typeMap[$jenisFilter]) ? [$jenisFilter => $typeMap[$jenisFilter]] : $typeMap;
+
+        foreach ($types as $jenis => $class) {
+            $records = $class::where('status', 'pending')->get();
+
+            foreach ($records as $record) {
+                if ($record->requested_by === auth()->id()) {
+                    $skipped++;
+                    continue;
+                }
+
+                $period = $record->period ?? 'bulanan';
+                $offsetMonths = $period === 'tahunan' ? 12 : 1;
+
+                $record->update([
+                    'status' => 'lunas',
+                    'approved_by' => auth()->id(),
+                    'approved_at' => now(),
+                ]);
+
+                $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+                $nextDate = $record->{$dateField}?->copy()->addMonths($offsetMonths);
+
+                if ($nextDate && $nextDate->isFuture()) {
+                    $fillable = $record->getFillable();
+                    $newData = [];
+                    foreach ($fillable as $col) {
+                        if (in_array($col, ['id', 'status', 'tanggal_bayar', 'requested_by', 'approved_by', 'approved_at', 'bukti_bayar', 'notes', 'created_at', 'updated_at', 'period'])) {
+                            continue;
+                        }
+                        $newData[$col] = $record->$col;
+                    }
+
+                    $newData['period'] = $period;
+                    $newData[$dateField] = $nextDate;
+                    $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+
+                    if ($jenis !== 'internet') {
+                        $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
+                        $newData['periode'] = $nextDate->locale('id')->translatedFormat('F Y');
+                    }
+
+                    $class::create($newData);
+                }
+
+                $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
+                $jenisLabel = match ($jenis) {
+                    'internet' => 'Internet',
+                    'aset_digital' => 'Aset Digital',
+                    'ipl_ruko' => 'IPL Ruko',
+                    'aset_tim' => 'Aset TIM',
+                    'aset_mes' => 'Aset MES',
+                    default => ucfirst($jenis),
+                };
+                $message = "Pembayaran {$jenisLabel} ({$detail}) telah disetujui oleh ".auth()->user()->name.'.';
+
+                if ($record->requested_by) {
+                    Notification::send($record->requested_by, 'activity', 'Pembayaran Disetujui', $message, route('payment-approval.status'));
+                    Cache::forget('tagihan_check_'.$record->requested_by);
+                }
+
+                $approved++;
+            }
+        }
+
+        Cache::forget('approval_check_'.auth()->id());
+
+        $msg = "{$approved} pembayaran berhasil disetujui.";
+        if ($skipped > 0) {
+            $msg .= " ({$skipped} dilewati karena diajukan sendiri)";
+        }
+
+        return response()->json(['success' => true, 'message' => $msg, 'approved' => $approved, 'skipped' => $skipped]);
     }
 
     public function reject($id, Request $request)
@@ -691,8 +791,8 @@ class PaymentApprovalController extends Controller
         ];
 
         foreach ($tables as $table) {
-            if (\Illuminate\Support\Facades\Schema::hasTable($table)) {
-                \Illuminate\Support\Facades\DB::table($table)->update([
+            if (Schema::hasTable($table)) {
+                DB::table($table)->update([
                     'status' => 'belum lunas',
                     'requested_by' => null,
                     'approved_by' => null,
@@ -703,8 +803,8 @@ class PaymentApprovalController extends Controller
             }
         }
 
-        if (\Illuminate\Support\Facades\Schema::hasTable('vehicle_pajak_requests')) {
-            \Illuminate\Support\Facades\DB::table('vehicle_pajak_requests')->update([
+        if (Schema::hasTable('vehicle_pajak_requests')) {
+            DB::table('vehicle_pajak_requests')->update([
                 'status' => 'pending',
                 'requested_by' => null,
                 'approved_by' => null,

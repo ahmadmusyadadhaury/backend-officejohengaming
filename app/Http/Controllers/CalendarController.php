@@ -42,7 +42,7 @@ class CalendarController extends Controller
         if (auth()->user()->role === 'koordinator') {
             $roomsQuery->where(function ($q) {
                 $q->where('team_id', auth()->user()->team_id)
-                  ->orWhereNull('team_id');
+                    ->orWhereNull('team_id');
             });
         }
         $rooms = $roomsQuery->get();
