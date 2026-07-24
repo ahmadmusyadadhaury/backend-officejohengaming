@@ -75,7 +75,7 @@
                     <tr>
                         <td style="color:var(--text-muted);">{{ $teams->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $team->name }}</td>
-                        <td style="color:var(--text-muted);max-width:250px;word-wrap:break-word;white-space:normal;">{{ $team->description ?? '—' }}</td>
+                        <td style="color:var(--text-muted);max-width:250px;word-wrap:break-word;white-space:normal;text-align:justify;">{{ $team->description ?? '—' }}</td>
                         <td>
                             <span class="badge badge-blue">{{ $team->members_count }} orang</span>
                         </td>
