@@ -49,6 +49,8 @@ class MeetingController extends Controller
             'queue_position' => $m->queue_position,
             'rt_label' => MeetingQueueService::realtimeStatus($m)['label'] ?? '-',
             'reject_reason' => $m->reject_reason,
+            'file_path' => $m->file_path,
+            'file_url' => $m->file_path ? route('files.show', $m->file_path) : null,
             'teams' => $m->teams->map(fn ($t) => $t->name),
             'assets' => $m->assets->map(fn ($a) => [
                 'name' => $a->name,
@@ -62,8 +64,10 @@ class MeetingController extends Controller
                 'pic' => $m->mom->pic,
                 'creator_name' => $m->mom->creator->name ?? null,
                 'sent_at' => $m->mom->sent_at?->format('d M Y H:i'),
+                'file_path' => $m->mom->file_path,
                 'file_url' => $m->mom->file_path ? route('files.show', $m->mom->file_path) : null,
                 'file_name' => $m->mom->file_path ? basename($m->mom->file_path) : null,
+                'upload_url' => $m->mom->file_path ? route('koordinator.mom.upload-file', $m->mom->id) : null,
             ] : null,
         ]);
 

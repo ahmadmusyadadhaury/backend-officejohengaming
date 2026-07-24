@@ -446,8 +446,26 @@
 
 @endsection
 
+@include('partials.file-preview-modal')
+@include('partials.file-upload-modal')
+
 @push('scripts')
 <script>
+function checkAndOpenFile(filePath, fileUrl, uploadUrl) {
+    fetch('/files/check/' + encodeURIComponent(filePath))
+        .then(r => r.json())
+        .then(data => {
+            if (data.exists) {
+                openFilePreviewModal(filePath, fileUrl);
+            } else if (uploadUrl) {
+                openFileUploadModal(uploadUrl, filePath);
+            } else {
+                window.open(fileUrl, '_blank');
+            }
+        })
+        .catch(() => { window.open(fileUrl, '_blank'); });
+}
+
 // Flatpickr for request modal
 let modalStartFp = null;
 let modalEndFp = null;
@@ -654,7 +672,7 @@ function showDetail(id) {
         if (m.mom.action_plan) momHtml += `<div class="mb-3 p-4 rounded-xl" style="background:var(--bg-surface);border:1px solid var(--border-color);"><p class="text-xs font-bold mb-1" style="color:#059669;">Action Plan</p><p class="text-sm" style="color:var(--text-secondary);line-height:1.6;">${escHtml(m.mom.action_plan)}</p></div>`;
         momHtml += `<div class="grid grid-cols-2 gap-3 text-sm"><div><span class="text-xs font-bold" style="color:#059669;">PIC</span><p class="font-semibold mt-0.5" style="color:var(--text-primary);">${escHtml(m.mom.pic || '-')}</p></div><div><span class="text-xs font-bold" style="color:#059669;">Dibuat</span><p class="font-semibold mt-0.5" style="color:var(--text-primary);">${escHtml(m.mom.creator_name || '-')}</p></div></div>`;
         if (m.mom.file_url) {
-            momHtml += `<div class="mt-3"><a href="${m.mom.file_url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download</a></div>`;
+            momHtml += `<div class="mt-3"><a href="javascript:void(0)" onclick="checkAndOpenFile('${m.mom.file_path}','${m.mom.file_url}','${m.mom.upload_url}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download</a></div>`;
         }
         if (m.mom.sent_at) momHtml += `<p class="text-xs mt-2" style="color:var(--text-muted);">Dikirim ${escHtml(m.mom.sent_at)}</p>`;
     }

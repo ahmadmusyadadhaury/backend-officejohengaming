@@ -305,7 +305,11 @@
 
                     <div class="relative">
                         <button type="button" class="topbar-profile-btn" onclick="this.parentElement.querySelector('[data-profile-dropdown]').classList.toggle('hidden')">
-                            <span class="topbar-profile-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</span>
+                            @if(auth()->user()->avatar_url)
+                                <span class="topbar-profile-avatar"><img src="{{ auth()->user()->avatar_url }}?v={{ time() }}" alt="" class="topbar-avatar-img"></span>
+                            @else
+                                <span class="topbar-profile-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</span>
+                            @endif
                             <span class="hidden sm:inline font-semibold" style="font-size:0.75rem;color:var(--text-primary);">{{ auth()->user()->role_label }}</span>
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -313,9 +317,18 @@
                         </button>
                         <div data-profile-dropdown class="hidden absolute right-0 top-12 w-48 rounded-xl z-50 topbar-dropdown"
                             style="background:var(--bg-surface);border:1px solid var(--border-color);box-shadow:var(--shadow-lg);overflow:hidden;">
-                            <div class="px-4 py-3 border-b" style="border-color:var(--border-color);">
-                                <p class="text-sm font-semibold" style="color:var(--text-primary);">{{ auth()->user()->name }}</p>
-                                <p class="text-xs" style="color:var(--text-muted);">{{ auth()->user()->email }}</p>
+                            <div class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:var(--border-color);">
+                                <div class="dropdown-avatar-wrapper flex-shrink-0">
+                                    @if(auth()->user()->avatar_url)
+                                        <img src="{{ auth()->user()->avatar_url }}?v={{ time() }}" alt="" class="dropdown-avatar-img">
+                                    @else
+                                        <span class="dropdown-avatar-initials">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</span>
+                                    @endif
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold truncate" style="color:var(--text-primary);">{{ auth()->user()->name }}</p>
+                                    <p class="text-xs truncate" style="color:var(--text-muted);">{{ auth()->user()->username }}</p>
+                                </div>
                             </div>
                             <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 transition"
                                 style="color:var(--text-primary);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">

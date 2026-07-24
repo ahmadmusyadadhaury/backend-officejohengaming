@@ -47,6 +47,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('files/{path}', [FileController::class, 'show'])->name('files.show')->where('path', '.*');
+Route::get('files/check/{path}', [FileController::class, 'check'])->name('files.check')->where('path', '.*');
 
 // Public Asset Detail — tanpa login
 Route::get('/aset/{kode_aset}', [PublicAssetController::class, 'show'])->name('public.asset.show');
@@ -73,6 +74,8 @@ Route::get('/', function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
     Route::resource('teams', TeamController::class);
+    Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.store');
+    Route::delete('teams/{team}/members/{user}', [TeamController::class, 'removeMember'])->name('teams.members.destroy');
     Route::resource('assets', AssetController::class);
     Route::get('moms', [AdminMomController::class, 'index'])->name('moms.index');
     Route::resource('vehicles', VehicleController::class)->except(['create', 'show', 'edit']);
@@ -140,6 +143,12 @@ Route::middleware(['auth', 'admin_hr'])->prefix('admin')->name('admin.')->group(
 Route::middleware(['auth', 'manage_accounts'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('admins', AdminAccountController::class);
+    Route::post('users/karyawan', [UserController::class, 'storeKaryawan'])->name('users.karyawan.store');
+    Route::put('users/karyawan/{karyawan}', [UserController::class, 'updateKaryawan'])->name('users.karyawan.update');
+    Route::delete('users/karyawan/{karyawan}', [UserController::class, 'destroyKaryawan'])->name('users.karyawan.destroy');
+    Route::post('admins/karyawan', [AdminAccountController::class, 'storeKaryawan'])->name('admins.karyawan.store');
+    Route::put('admins/karyawan/{karyawan}', [AdminAccountController::class, 'updateKaryawan'])->name('admins.karyawan.update');
+    Route::delete('admins/karyawan/{karyawan}', [AdminAccountController::class, 'destroyKaryawan'])->name('admins.karyawan.destroy');
 });
 
 // Koordinator Routes
@@ -152,6 +161,8 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::get('moms', [MomController::class, 'index'])->name('mom.index');
     Route::resource('meetings.mom', MomController::class)->shallow();
     Route::patch('mom/{mom}/send', [MomController::class, 'send'])->name('mom.send');
+    Route::post('mom/{mom}/upload-file', [MomController::class, 'uploadFile'])->name('mom.upload-file');
+    Route::post('meetings/{meeting}/upload-file', [KoordinatorMeetingController::class, 'uploadFile'])->name('meetings.upload-file');
     Route::get('data-saya', [DataSayaController::class, 'index'])->name('data-saya.index');
     Route::post('data-saya', [DataSayaController::class, 'store'])->name('data-saya.store');
     Route::put('data-saya/{asetDaya}', [DataSayaController::class, 'update'])->name('data-saya.update');

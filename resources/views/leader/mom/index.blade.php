@@ -110,7 +110,7 @@
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
                                 <button type="button" onclick="showMomDetail({{ $mom->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                    Detail
+                                    Lihat Detail
                                 </button>
                                 @if($mom->status === 'draft')
                                     <a href="{{ route('koordinator.mom.edit', $mom) }}" class="btn btn-primary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
@@ -119,16 +119,14 @@
                                     </a>
                                 @endif
                                 <div class="relative dropdown-actions-mom">
-                                    <button type="button" onclick="toggleMomMenu(event, {{ $mom->id }})" class="btn btn-secondary btn-sm" style="padding:4px 6px;line-height:1;" title="Aksi">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
-                                    </button>
+                                    <button type="button" onclick="toggleMomMenu(event, {{ $mom->id }})" style="padding:6px 10px;line-height:1;font-size:1.1rem;font-weight:700;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-surface);color:var(--text-primary);cursor:pointer;" title="Aksi">⋮</button>
                                     <div id="mom-menu-{{ $mom->id }}" style="display:none;position:absolute;top:100%;right:0;min-width:170px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;padding:6px;z-index:99999;margin-top:4px;">
                                         <a href="{{ route('mom.export', $mom->id) }}" class="w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                             Export Excel
                                         </a>
                                         @if($mom->file_path)
-                                        <a href="{{ route('files.show', $mom->file_path) }}" target="_blank" class="w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                        <a href="javascript:void(0)" onclick="checkAndOpenFile('{{ $mom->file_path }}','{{ route('files.show', $mom->file_path) }}','{{ route('koordinator.mom.upload-file', $mom->id) }}')" class="w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition" style="color:var(--text-secondary);display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;text-decoration:none;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                             Download Lampiran
                                         </a>
@@ -206,8 +204,24 @@
 
 @endsection
 
+@include('partials.file-preview-modal')
+@include('partials.file-upload-modal')
+
 @push('scripts')
 <script>
+function checkAndOpenFile(filePath, fileUrl, uploadUrl) {
+    fetch('/files/check/' + encodeURIComponent(filePath))
+        .then(r => r.json())
+        .then(data => {
+            if (data.exists) {
+                openFilePreviewModal(filePath, fileUrl);
+            } else {
+                openFileUploadModal(uploadUrl, filePath);
+            }
+        })
+        .catch(() => { window.open(fileUrl, '_blank'); });
+}
+
 const momsData = @json($momsJson);
 
 const momStatusMap = {
@@ -252,7 +266,7 @@ function showMomDetail(id) {
         </div>
         ${m.file_path ? `
         <div class="pt-2">
-            <a href="${m.file_url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition" style="border:1px solid rgba(16,185,129,0.5);background:rgba(16,185,129,0.1);color:#10b981;" onmouseover="this.style.background='rgba(16,185,129,0.2)'" onmouseout="this.style.background='rgba(16,185,129,0.1)'">
+            <a href="javascript:void(0)" onclick="checkAndOpenFile('${m.file_path}','${m.file_url}','${m.upload_url}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition" style="border:1px solid rgba(16,185,129,0.5);background:rgba(16,185,129,0.1);color:#10b981;" onmouseover="this.style.background='rgba(16,185,129,0.2)'" onmouseout="this.style.background='rgba(16,185,129,0.1)'">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Download File
             </a>
@@ -315,7 +329,7 @@ function showMomDetail(id) {
                 <svg class="w-3 h-3" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                 <span class="text-[11px] font-bold uppercase tracking-wider" style="color:#10b981;">File Pendukung</span>
             </div>
-            <a href="${m.file_url}" target="_blank" class="inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-medium rounded-lg max-w-full" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);">
+            <a href="javascript:void(0)" onclick="checkAndOpenFile('${m.file_path}','${m.file_url}','${m.upload_url}')" class="inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-medium rounded-lg max-w-full" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 <span class="truncate max-w-[200px]">${m.file_name}</span>
             </a>

@@ -22,12 +22,12 @@
             <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">
                 File lampiran untuk dokumen ini belum tersedia di server.
             </p>
-            <button onclick="window.history.back()" class="btn btn-primary" style="padding:0.6rem 1.5rem;font-size:0.85rem;">
-                <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ url('/') }}" class="btn btn-primary inline-flex items-center gap-2" style="padding:0.6rem 1.5rem;font-size:0.85rem;text-decoration:none;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
-                Kembali
-            </button>
+                Kembali ke Beranda
+            </a>
         </div>
     </div>
 </body>

@@ -60,11 +60,11 @@
 </div>
 
 {{-- Modal Tambah / Edit --}}
-<div id="aset-modal" class="modal-modern" onclick="if(event.target===this)closeModal()">
+<div id="aset-modal" class="modal-modern" onclick="if(event.target===this)closeAsetModal()">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
             <h3 id="modal-title">Tambah Aset MES</h3>
-            <button type="button" onclick="closeModal()" class="modal-modern-close">&times;</button>
+            <button type="button" onclick="closeAsetModal()" class="modal-modern-close">&times;</button>
         </div>
         <form id="aset-form" method="POST">
             @csrf
@@ -86,7 +86,7 @@
                 </div>
             </div>
             <div class="modal-modern-footer gap-2">
-                <button type="button" onclick="closeModal()" class="btn btn-secondary">Batal</button>
+                <button type="button" onclick="closeAsetModal()" class="btn btn-secondary">Batal</button>
                 <button type="submit" class="btn btn-primary" id="form-submit-btn">Tambah</button>
             </div>
         </form>
@@ -107,7 +107,7 @@
 
 @push('scripts')
 <script>
-function closeModal() { document.getElementById('aset-modal').style.display = 'none'; document.body.style.overflow = ''; }
+function closeAsetModal() { document.getElementById('aset-modal').style.display = 'none'; document.body.style.overflow = ''; }
 
 function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah Aset MES';
@@ -136,11 +136,8 @@ function openEditModal(id) {
 }
 </script>
 <script>
-const assets = @json($assets->values()->map(fn($a) => [
-    'id' => $a->id,
-    'nama_aset' => $a->nama_aset,
-    'jumlah' => $a->jumlah,
-    'keterangan' => $a->keterangan,
-]));
+const assets = {!! json_encode($assets->values()->map(function($a) {
+    return ['id' => $a->id, 'nama_aset' => $a->nama_aset, 'jumlah' => $a->jumlah, 'keterangan' => $a->keterangan];
+})->toArray()) !!};
 </script>
 @endpush

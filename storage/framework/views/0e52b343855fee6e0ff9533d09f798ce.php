@@ -1,10 +1,9 @@
-@extends('layouts.app')
-@section('body-class', 'page-admin')
-@section('title', 'Kelola Akun Koordinator')
-@section('page-title', 'Overview > Kelola Akun Koordinator')
-@section('page-subtitle', 'Kelola akun koordinator divisi dengan akses TERBATAS (menu Meeting saja).')
-@section('sidebar-menu') @include('partials.sidebar-admin') @endsection
-@section('content')
+<?php $__env->startSection('body-class', 'page-admin'); ?>
+<?php $__env->startSection('title', 'Kelola Akun Koordinator'); ?>
+<?php $__env->startSection('page-title', 'Overview > Kelola Akun Koordinator'); ?>
+<?php $__env->startSection('page-subtitle', 'Kelola akun koordinator divisi dengan akses TERBATAS (menu Meeting saja).'); ?>
+<?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
 <div class="pt-2 space-y-4 animate-fade-in">
 
     <div class="gaming-card" style="overflow:visible;">
@@ -13,30 +12,30 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Akun Koordinator</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Kelola akun koordinator divisi dengan akses TERBATAS (menu Meeting saja).</div>
             </div>
-@if(auth()->user()->role !== 'gm')
+<?php if(auth()->user()->role !== 'gm'): ?>
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Koordinator
             </button>
-@endif
+<?php endif; ?>
         </div>
-        <form method="GET" action="{{ route('admin.users.index') }}" id="filter-form">
-        <input type="hidden" name="status" id="status-input" value="{{ request('status') }}">
+        <form method="GET" action="<?php echo e(route('admin.users.index')); ?>" id="filter-form">
+        <input type="hidden" name="status" id="status-input" value="<?php echo e(request('status')); ?>">
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..."
+                <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari..."
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <span id="filter-label">{{ request('status') === 'active' ? 'Aktif' : (request('status') === 'inactive' ? 'Nonaktif' : 'Semua Status') }}</span>
+                    <span id="filter-label"><?php echo e(request('status') === 'active' ? 'Aktif' : (request('status') === 'inactive' ? 'Nonaktif' : 'Semua Status')); ?></span>
                     <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
@@ -59,27 +58,28 @@
                         <th>Role</th>
                         <th>Divisi</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<?php if(auth()->user()->role !== 'gm'): ?><th>Aksi</th><?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($users as $user)
+                    <?php $__empty_1 = true; $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $users->firstItem() + $loop->index }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $user->name }}</td>
-                        <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;">{{ $user->username }}</code></td>
+                        <td style="color:var(--text-muted);"><?php echo e($users->firstItem() + $loop->index); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($user->name); ?></td>
+                        <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;"><?php echo e($user->username); ?></code></td>
                         <td>
-                            <span class="badge badge-primary">{{ $user->role_label }}</span>
+                            <span class="badge badge-primary"><?php echo e($user->role_label); ?></span>
                         </td>
-                        <td style="color:var(--text-muted);">{{ $user->team?->name ?? '—' }}</td>
+                        <td style="color:var(--text-muted);"><?php echo e($user->team?->name ?? '—'); ?></td>
                         <td>
-                            <span class="badge {{ $user->is_active ? 'badge-green' : 'badge-red' }}">
-                                {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
+                            <span class="badge <?php echo e($user->is_active ? 'badge-green' : 'badge-red'); ?>">
+                                <?php echo e($user->is_active ? 'Aktif' : 'Nonaktif'); ?>
+
                             </span>
                         </td>
-@if(auth()->user()->role !== 'gm')
+<?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
-                            <button type="button" onclick="openDetailModal({{ json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'role'=>$user->role,'role_label'=>$user->role_label,'team_name'=>($user->team?->name ?? '—'),'is_active'=>$user->is_active]) }})" class="btn btn-secondary btn-sm" style="margin-right:4px;display:inline-flex;align-items:center;gap:4px;">
+                            <button type="button" onclick="openDetailModal(<?php echo e(json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'role'=>$user->role,'role_label'=>$user->role_label,'team_name'=>($user->team?->name ?? '—'),'is_active'=>$user->is_active])); ?>)" class="btn btn-secondary btn-sm" style="margin-right:4px;display:inline-flex;align-items:center;gap:4px;">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 Lihat Detail
                             </button>
@@ -88,12 +88,12 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
                                 </button>
                                 <div class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:140px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                    <button type="button" onclick="openEditModal({{ json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'role'=>$user->role,'team_id'=>$user->team_id,'is_active'=>$user->is_active]) }})" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                                    <button type="button" onclick="openEditModal(<?php echo e(json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'role'=>$user->role,'team_id'=>$user->team_id,'is_active'=>$user->is_active])); ?>)" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         Edit
                                     </button>
-                                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun ini?" style="margin:0;">
-                                        @csrf @method('DELETE')
+                                    <form method="POST" action="<?php echo e(route('admin.users.destroy', $user)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun ini?" style="margin:0;">
+                                        <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                         <button style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:#f87171;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             Hapus
@@ -102,32 +102,32 @@
                                 </div>
                             </div>
                         </td>
-@endif
+<?php endif; ?>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun koordinator ditemukan.</td></tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $users->links() }}</div>
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);"><?php echo e($users->links()); ?></div>
     </div>
 
-    {{-- ═══════════════════ TABEL KARYAWAN ═══════════════════ --}}
+    
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Karyawan</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Akun karyawan biasa dengan akses terbatas.</div>
             </div>
-@if(auth()->user()->role !== 'gm')
+<?php if(auth()->user()->role !== 'gm'): ?>
             <button type="button" onclick="openCreateKaryawanModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Karyawan
             </button>
-@endif
+<?php endif; ?>
         </div>
         <div class="overflow-x-auto">
             <table class="gaming-table min-w-[700px]">
@@ -138,24 +138,25 @@
                         <th>Username</th>
                         <th>Divisi</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<?php if(auth()->user()->role !== 'gm'): ?><th>Aksi</th><?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($karyawans as $karyawan)
+                    <?php $__empty_1 = true; $__currentLoopData = $karyawans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $karyawan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $karyawans->firstItem() + $loop->index }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $karyawan->name }}</td>
-                        <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;">{{ $karyawan->username }}</code></td>
-                        <td style="color:var(--text-muted);">{{ $karyawan->team?->name ?? '—' }}</td>
+                        <td style="color:var(--text-muted);"><?php echo e($karyawans->firstItem() + $loop->index); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($karyawan->name); ?></td>
+                        <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;"><?php echo e($karyawan->username); ?></code></td>
+                        <td style="color:var(--text-muted);"><?php echo e($karyawan->team?->name ?? '—'); ?></td>
                         <td>
-                            <span class="badge {{ $karyawan->is_active ? 'badge-green' : 'badge-red' }}">
-                                {{ $karyawan->is_active ? 'Aktif' : 'Nonaktif' }}
+                            <span class="badge <?php echo e($karyawan->is_active ? 'badge-green' : 'badge-red'); ?>">
+                                <?php echo e($karyawan->is_active ? 'Aktif' : 'Nonaktif'); ?>
+
                             </span>
                         </td>
-@if(auth()->user()->role !== 'gm')
+<?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
-                            <button type="button" onclick="openDetailKaryawanModal({{ json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'team_name'=>($karyawan->team?->name ?? '—'),'is_active'=>$karyawan->is_active]) }})" class="btn btn-secondary btn-sm" style="margin-right:4px;display:inline-flex;align-items:center;gap:4px;">
+                            <button type="button" onclick="openDetailKaryawanModal(<?php echo e(json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'team_name'=>($karyawan->team?->name ?? '—'),'is_active'=>$karyawan->is_active])); ?>)" class="btn btn-secondary btn-sm" style="margin-right:4px;display:inline-flex;align-items:center;gap:4px;">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 Lihat Detail
                             </button>
@@ -164,12 +165,12 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
                                 </button>
                                 <div class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:140px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                    <button type="button" onclick="openEditKaryawanModal({{ json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'team_id'=>$karyawan->team_id,'is_active'=>$karyawan->is_active]) }})" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                                    <button type="button" onclick="openEditKaryawanModal(<?php echo e(json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'team_id'=>$karyawan->team_id,'is_active'=>$karyawan->is_active])); ?>)" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         Edit
                                     </button>
-                                    <form method="POST" action="{{ route('admin.users.karyawan.destroy', $karyawan) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun karyawan ini?" style="margin:0;">
-                                        @csrf @method('DELETE')
+                                    <form method="POST" action="<?php echo e(route('admin.users.karyawan.destroy', $karyawan)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun karyawan ini?" style="margin:0;">
+                                        <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                         <button style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:#f87171;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             Hapus
@@ -178,19 +179,19 @@
                                 </div>
                             </div>
                         </td>
-@endif
+<?php endif; ?>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun karyawan ditemukan.</td></tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $karyawans->links() }}</div>
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);"><?php echo e($karyawans->links()); ?></div>
     </div>
 </div>
 
-{{-- ═══════════════════ DETAIL MODAL ═══════════════════ --}}
+
 <div id="detail-modal" class="modal-modern">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
@@ -226,7 +227,7 @@
     </div>
 </div>
 
-{{-- ═══════════════════ EDIT MODAL ═══════════════════ --}}
+
 <div id="edit-modal" class="modal-modern">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
@@ -234,7 +235,7 @@
             <button type="button" onclick="closeEditModal()" class="modal-modern-close">&times;</button>
         </div>
         <form id="edit-form" method="POST">
-            @csrf @method('PUT')
+            <?php echo csrf_field(); ?> <?php echo method_field('PUT'); ?>
             <div class="modal-modern-body space-y-4">
                 <div>
                     <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
@@ -260,9 +261,9 @@
                     <label class="gaming-label">Tim</label>
                     <select name="team_id" id="edit-team-id" class="gaming-input gaming-select">
                         <option value="">— Pilih Tim —</option>
-                        @foreach($teams as $team)
-                            <option value="{{ $team->id }}">{{ $team->name }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $teams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $team): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($team->id); ?>"><?php echo e($team->name); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
                 <div class="flex items-center gap-2">
@@ -278,15 +279,15 @@
     </div>
 </div>
 
-{{-- ═══════════════════ CREATE MODAL ═══════════════════ --}}
+
 <div id="create-modal" class="modal-modern">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
             <h3>Tambah Akun Koordinator</h3>
             <button type="button" onclick="closeCreateModal()" class="modal-modern-close">&times;</button>
         </div>
-        <form id="create-form" method="POST" action="{{ route('admin.users.store') }}">
-            @csrf
+        <form id="create-form" method="POST" action="<?php echo e(route('admin.users.store')); ?>">
+            <?php echo csrf_field(); ?>
             <div class="modal-modern-body space-y-4">
                 <div>
                     <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
@@ -313,9 +314,9 @@
                     <label class="gaming-label">Tim <span style="color:#f87171;">*</span></label>
                     <select name="team_id" class="gaming-input gaming-select">
                         <option value="">Pilih Tim</option>
-                        @foreach($teams as $team)
-                            <option value="{{ $team->id }}">{{ $team->name }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $teams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $team): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($team->id); ?>"><?php echo e($team->name); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
             </div>
@@ -327,7 +328,7 @@
     </div>
 </div>
 
-{{-- ═══════════════════ DETAIL KARYAWAN MODAL ═══════════════════ --}}
+
 <div id="detail-karyawan-modal" class="modal-modern">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
@@ -359,7 +360,7 @@
     </div>
 </div>
 
-{{-- ═══════════════════ EDIT KARYAWAN MODAL ═══════════════════ --}}
+
 <div id="edit-karyawan-modal" class="modal-modern">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
@@ -367,7 +368,7 @@
             <button type="button" onclick="closeEditKaryawanModal()" class="modal-modern-close">&times;</button>
         </div>
         <form id="edit-karyawan-form" method="POST">
-            @csrf @method('PUT')
+            <?php echo csrf_field(); ?> <?php echo method_field('PUT'); ?>
             <div class="modal-modern-body space-y-4">
                 <div>
                     <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
@@ -385,9 +386,9 @@
                     <label class="gaming-label">Tim</label>
                     <select name="team_id" id="edit-karyawan-team-id" class="gaming-input gaming-select">
                         <option value="">— Tanpa Tim —</option>
-                        @foreach($teams as $team)
-                            <option value="{{ $team->id }}">{{ $team->name }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $teams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $team): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($team->id); ?>"><?php echo e($team->name); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
                 <div class="flex items-center gap-2">
@@ -403,15 +404,15 @@
     </div>
 </div>
 
-{{-- ═══════════════════ CREATE KARYAWAN MODAL ═══════════════════ --}}
+
 <div id="create-karyawan-modal" class="modal-modern">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
             <h3>Tambah Akun Karyawan</h3>
             <button type="button" onclick="closeCreateKaryawanModal()" class="modal-modern-close">&times;</button>
         </div>
-        <form id="create-karyawan-form" method="POST" action="{{ route('admin.users.karyawan.store') }}">
-            @csrf
+        <form id="create-karyawan-form" method="POST" action="<?php echo e(route('admin.users.karyawan.store')); ?>">
+            <?php echo csrf_field(); ?>
             <div class="modal-modern-body space-y-4">
                 <div>
                     <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
@@ -429,9 +430,9 @@
                     <label class="gaming-label">Tim</label>
                     <select name="team_id" class="gaming-input gaming-select">
                         <option value="">— Tanpa Tim —</option>
-                        @foreach($teams as $team)
-                            <option value="{{ $team->id }}">{{ $team->name }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $teams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $team): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($team->id); ?>"><?php echo e($team->name); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
             </div>
@@ -548,10 +549,12 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { closeDetailModal(); closeEditModal(); closeCreateModal(); closeDetailKaryawanModal(); closeEditKaryawanModal(); closeCreateKaryawanModal(); }
 });
 </script>
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/users/index.blade.php ENDPATH**/ ?>

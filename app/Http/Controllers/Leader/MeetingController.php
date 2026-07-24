@@ -12,6 +12,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Services\MeetingQueueService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MeetingController extends Controller
 {
@@ -56,6 +57,9 @@ class MeetingController extends Controller
             'end_time' => $m->end_time,
             'actual_end_time' => $m->actual_end_time,
             'reject_reason' => $m->reject_reason,
+            'file_path' => $m->file_path,
+            'file_url' => $m->file_path ? route('files.show', $m->file_path) : null,
+            'upload_url' => route('koordinator.meetings.upload-file', $m->id),
             'teams' => $m->teams->map(fn ($t) => $t->name),
             'rt_label' => MeetingQueueService::realtimeStatus($m)['label'] ?? '-',
             'assets' => $m->assets->map(fn ($a) => [
@@ -71,8 +75,10 @@ class MeetingController extends Controller
                 'pic' => $m->mom->pic,
                 'creator_name' => $m->mom->creator->name ?? null,
                 'sent_at' => $m->mom->sent_at?->format('d M Y H:i'),
+                'file_path' => $m->mom->file_path,
                 'file_url' => $m->mom->file_path ? route('files.show', $m->mom->file_path) : null,
                 'file_name' => $m->mom->file_path ? basename($m->mom->file_path) : null,
+                'upload_url' => route('koordinator.mom.upload-file', $m->mom->id),
             ] : null,
         ]);
 
@@ -388,5 +394,27 @@ class MeetingController extends Controller
 
         return redirect()->route('koordinator.meetings.index')
             ->with('success', 'Meeting "'.$title.'" berhasil dihapus.');
+    }
+
+    public function uploadFile(Request $request, Meeting $meeting)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
+        ]);
+
+        if ($meeting->file_path && Storage::disk('public')->exists($meeting->file_path)) {
+            Storage::disk('public')->delete($meeting->file_path);
+        }
+
+        $filePath = $request->file('file')->store('meeting-files', 'public');
+        $meeting->update(['file_path' => $filePath]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'File berhasil diupload.',
+            'file_url' => route('files.show', $filePath),
+            'file_name' => $request->file('file')->getClientOriginalName(),
+            'file_path' => $filePath,
+        ]);
     }
 }

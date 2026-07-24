@@ -45,6 +45,7 @@ class MomController extends Controller
                 'file_path' => $mom->file_path,
                 'file_name' => $mom->file_path ? basename($mom->file_path) : null,
                 'file_url' => $mom->file_path ? route('files.show', $mom->file_path) : null,
+                'upload_url' => route('koordinator.mom.upload-file', $mom->id),
                 'why' => $mom->meeting->why ?? '',
                 'what' => $mom->meeting->what ?? '',
                 'how' => $mom->meeting->how_expected ?? '',

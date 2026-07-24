@@ -439,8 +439,26 @@
 </div>
 @endpush
 
+@include('partials.file-preview-modal')
+@include('partials.file-upload-modal')
+
 @push('scripts')
 <script>
+function checkAndOpenFile(filePath, fileUrl, uploadUrl) {
+    fetch('/files/check/' + encodeURIComponent(filePath))
+        .then(r => r.json())
+        .then(data => {
+            if (data.exists) {
+                openFilePreviewModal(filePath, fileUrl);
+            } else if (uploadUrl) {
+                openFileUploadModal(uploadUrl, filePath);
+            } else {
+                window.open(fileUrl, '_blank');
+            }
+        })
+        .catch(() => { window.open(fileUrl, '_blank'); });
+}
+
 const meetingsData = @json($meetingsJson);
 const roomsData = @json($rooms);
 const csrfToken = '{{ csrf_token() }}';
@@ -555,7 +573,7 @@ function showDetail(id) {
         document.getElementById('mom-action-plan').innerHTML = momItem('Action Plan', m.mom.action_plan, 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2');
         document.getElementById('mom-pic-section').innerHTML = momItem('Penanggung Jawab (PIC)', m.mom.pic, 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z');
         document.getElementById('mom-file-section').innerHTML = m.mom.file_url
-            ? '<div><div class="flex items-center gap-1 mb-1"><svg class="w-3 h-3" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><span class="text-[11px] font-bold uppercase tracking-wider" style="color:#10b981;">File Pendukung</span></div><a href="' + m.mom.file_url + '" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-lg max-w-full" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);"><svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="truncate max-w-[160px]">' + (m.mom.file_name || 'Download') + '</span></a></div>'
+            ? '<div><div class="flex items-center gap-1 mb-1"><svg class="w-3 h-3" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><span class="text-[11px] font-bold uppercase tracking-wider" style="color:#10b981;">File Pendukung</span></div><a href="javascript:void(0)" onclick="checkAndOpenFile(\'' + m.mom.file_path + '\',\'' + m.mom.file_url + '\',null)" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-lg max-w-full" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3);"><svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="truncate max-w-[160px]">' + (m.mom.file_name || 'Download') + '</span></a></div>'
             : '';
         momSection.style.display = '';
     } else {

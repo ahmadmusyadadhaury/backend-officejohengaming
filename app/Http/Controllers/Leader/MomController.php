@@ -35,6 +35,7 @@ class MomController extends Controller
                 'file_path' => $mom->file_path,
                 'file_name' => $mom->file_path ? basename($mom->file_path) : null,
                 'file_url' => $mom->file_path ? route('files.show', $mom->file_path) : null,
+                'upload_url' => route('koordinator.mom.upload-file', $mom->id),
                 'why' => $mom->meeting->why ?? '',
                 'what' => $mom->meeting->what ?? '',
                 'how' => $mom->meeting->how_expected ?? '',
@@ -201,5 +202,27 @@ class MomController extends Controller
     public function destroy(Mom $mom)
     {
         return back()->with('error', 'MOM tidak bisa dihapus.');
+    }
+
+    public function uploadFile(Request $request, Mom $mom)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
+        ]);
+
+        if ($mom->file_path && Storage::disk('public')->exists($mom->file_path)) {
+            Storage::disk('public')->delete($mom->file_path);
+        }
+
+        $filePath = $request->file('file')->store('mom-files', 'public');
+        $mom->update(['file_path' => $filePath]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'File berhasil diupload.',
+            'file_url' => route('files.show', $filePath),
+            'file_name' => $request->file('file')->getClientOriginalName(),
+            'file_path' => $filePath,
+        ]);
     }
 }

@@ -1,21 +1,20 @@
-@extends('layouts.app')
-@section('body-class', 'page-admin')
-@section('title', 'Kelola Tim')
-@section('page-title', 'Overview > Kelola Tim')
-@section('page-subtitle', 'Organisir tim dan departemen perusahaan')
-@section('sidebar-menu') @include('partials.sidebar-admin') @endsection
-@section('content')
+<?php $__env->startSection('body-class', 'page-admin'); ?>
+<?php $__env->startSection('title', 'Kelola Tim'); ?>
+<?php $__env->startSection('page-title', 'Overview > Kelola Tim'); ?>
+<?php $__env->startSection('page-subtitle', 'Organisir tim dan departemen perusahaan'); ?>
+<?php $__env->startSection('sidebar-menu'); ?> <?php echo $__env->make('partials.sidebar-admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?> <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
 <div class="pt-2 space-y-4 animate-fade-in">
 
     <div class="gaming-card" style="overflow:visible;">
-        <form method="GET" action="{{ route('admin.teams.index') }}" id="filter-form">
-        <input type="hidden" name="status" id="status-input" value="{{ request('status') }}">
+        <form method="GET" action="<?php echo e(route('admin.teams.index')); ?>" id="filter-form">
+        <input type="hidden" name="status" id="status-input" value="<?php echo e(request('status')); ?>">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Tim</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Organisir tim dan departemen perusahaan</div>
             </div>
-@if(auth()->user()->role !== 'gm')
+<?php if(auth()->user()->role !== 'gm'): ?>
             <div class="flex items-center gap-2">
                 <button type="button" onclick="openAddMemberModal()" class="btn btn-secondary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,21 +29,21 @@
                     Tambah Tim
                 </button>
             </div>
-@endif
+<?php endif; ?>
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
             <div class="relative flex-1 min-w-[200px] max-w-[260px]">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..."
+                <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari..."
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <span id="filter-label">{{ request('status') === 'active' ? 'Aktif' : (request('status') === 'inactive' ? 'Nonaktif' : 'Semua Status') }}</span>
+                    <span id="filter-label"><?php echo e(request('status') === 'active' ? 'Aktif' : (request('status') === 'inactive' ? 'Nonaktif' : 'Semua Status')); ?></span>
                     <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
@@ -67,28 +66,29 @@
                         <th>Anggota</th>
                         <th>Kepala Tim</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<?php if(auth()->user()->role !== 'gm'): ?><th>Aksi</th><?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($teams as $team)
+                    <?php $__empty_1 = true; $__currentLoopData = $teams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $team): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $teams->firstItem() + $loop->index }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $team->name }}</td>
-                        <td style="color:var(--text-muted);">{{ $team->description ?? '—' }}</td>
+                        <td style="color:var(--text-muted);"><?php echo e($teams->firstItem() + $loop->index); ?></td>
+                        <td style="color:var(--text-primary);font-weight:500;"><?php echo e($team->name); ?></td>
+                        <td style="color:var(--text-muted);"><?php echo e($team->description ?? '—'); ?></td>
                         <td>
-                            <span class="badge badge-blue">{{ $team->members_count }} orang</span>
+                            <span class="badge badge-blue"><?php echo e($team->members_count); ?> orang</span>
                         </td>
-                        <td style="color:var(--text-muted);">{{ $team->leader?->name ?? '—' }}</td>
+                        <td style="color:var(--text-muted);"><?php echo e($team->leader?->name ?? '—'); ?></td>
                         <td>
-                            <span class="badge {{ $team->is_active ? 'badge-green' : 'badge-red' }}">
-                                {{ $team->is_active ? 'Aktif' : 'Nonaktif' }}
+                            <span class="badge <?php echo e($team->is_active ? 'badge-green' : 'badge-red'); ?>">
+                                <?php echo e($team->is_active ? 'Aktif' : 'Nonaktif'); ?>
+
                             </span>
                         </td>
-@if(auth()->user()->role !== 'gm')
+<?php if(auth()->user()->role !== 'gm'): ?>
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
-                                <button type="button" onclick="showDetail({{ $team->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                <button type="button" onclick="showDetail(<?php echo e($team->id); ?>)" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -96,18 +96,18 @@
                                     Lihat Detail
                                 </button>
                                 <div class="dropdown-wrap" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown(this, {{ $team->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
-                                    <div id="dropdown-{{ $team->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showDetail({{ $team->id }})" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                    <button type="button" onclick="toggleDropdown(this, <?php echo e($team->id); ?>)" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-<?php echo e($team->id); ?>" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showDetail(<?php echo e($team->id); ?>)" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                             Detail
                                         </button>
-                                        <button type="button" onclick="openEditModal({{ json_encode(['id'=>$team->id,'name'=>$team->name,'description'=>$team->description ?? '','is_active'=>$team->is_active]) }})" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
+                                        <button type="button" onclick="openEditModal(<?php echo e(json_encode(['id'=>$team->id,'name'=>$team->name,'description'=>$team->description ?? '','is_active'=>$team->is_active])); ?>)" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                             Edit
                                         </button>
-                                        <form method="POST" action="{{ route('admin.teams.destroy', $team) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus tim ini?" style="margin:0;">
-                                            @csrf @method('DELETE')
+                                        <form method="POST" action="<?php echo e(route('admin.teams.destroy', $team)); ?>" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus tim ini?" style="margin:0;">
+                                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                             <button type="submit" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:#f87171;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                                 <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                 Hapus
@@ -117,19 +117,19 @@
                                 </div>
                             </div>
                         </td>
-@endif
+<?php endif; ?>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada tim ditemukan.</td></tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $teams->links() }}</div>
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);"><?php echo e($teams->links()); ?></div>
     </div>
 </div>
 
-{{-- Edit Modal --}}
+
 <div id="edit-modal" class="modal-modern" onclick="if(event.target===this)closeEditModal()">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
@@ -137,7 +137,7 @@
             <button type="button" onclick="closeEditModal()" class="modal-modern-close">&times;</button>
         </div>
         <form id="edit-form" method="POST">
-            @csrf @method('PUT')
+            <?php echo csrf_field(); ?> <?php echo method_field('PUT'); ?>
             <div class="modal-modern-body space-y-4">
                 <div>
                     <label class="gaming-label">Nama Tim <span style="color:#f87171;">*</span></label>
@@ -160,15 +160,15 @@
     </div>
 </div>
 
-{{-- Create Modal --}}
+
 <div id="create-modal" class="modal-modern" onclick="if(event.target===this)closeCreateModal()">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
             <h3>Tambah Tim</h3>
             <button type="button" onclick="closeCreateModal()" class="modal-modern-close">&times;</button>
         </div>
-        <form id="create-form" method="POST" action="{{ route('admin.teams.store') }}">
-            @csrf
+        <form id="create-form" method="POST" action="<?php echo e(route('admin.teams.store')); ?>">
+            <?php echo csrf_field(); ?>
             <div class="modal-modern-body space-y-4">
                 <div>
                     <label class="gaming-label">Nama Tim <span style="color:#f87171;">*</span></label>
@@ -191,37 +191,37 @@
     </div>
 </div>
 
-{{-- Tambah Anggota Modal --}}
+
 <div id="add-member-modal" class="modal-modern" onclick="if(event.target===this)closeAddMemberModal()">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
             <h3>Tambah Anggota ke Tim</h3>
             <button type="button" onclick="closeAddMemberModal()" class="modal-modern-close">&times;</button>
         </div>
-        <form id="add-member-form" method="POST" action="{{ route('admin.teams.members.store', '_TEAM_') }}" onsubmit="return fixMemberAction(this);">
-            @csrf
+        <form id="add-member-form" method="POST" action="<?php echo e(route('admin.teams.members.store', '_TEAM_')); ?>" onsubmit="return fixMemberAction(this);">
+            <?php echo csrf_field(); ?>
             <div class="modal-modern-body space-y-4">
                 <div>
                     <label class="gaming-label">Pilih Tim <span style="color:#f87171;">*</span></label>
                     <select name="" id="member-team-select" required class="gaming-input" style="width:100%;">
                         <option value="">— Pilih Tim —</option>
-                        @foreach($allTeams as $tid => $tname)
-                            <option value="{{ $tid }}">{{ $tname }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $allTeams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tid => $tname): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($tid); ?>"><?php echo e($tname); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
                 <div>
                     <label class="gaming-label">Pilih Anggota <span style="color:#f87171;">*</span></label>
-                    @if($availableUsers->isEmpty())
+                    <?php if($availableUsers->isEmpty()): ?>
                         <p class="text-xs" style="color:var(--text-muted);">Tidak ada user tersedia yang bisa ditambahkan.</p>
-                    @else
+                    <?php else: ?>
                         <select name="user_id" id="member-user-select" required class="gaming-input" style="width:100%;">
                             <option value="">— Pilih User —</option>
-                            @foreach($availableUsers as $u)
-                                <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->username }}) — {{ $u->role_label }}</option>
-                            @endforeach
+                            <?php $__currentLoopData = $availableUsers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($u->id); ?>"><?php echo e($u->name); ?> (<?php echo e($u->username); ?>) — <?php echo e($u->role_label); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
-                    @endif
+                    <?php endif; ?>
                 </div>
                 <div id="member-preview" class="hidden">
                     <div class="flex items-center gap-3 p-3 rounded-xl" style="background:var(--bg-surface-2);border:1px solid var(--border-color);">
@@ -236,14 +236,14 @@
                 </div>
             </div>
             <div class="modal-modern-footer gap-2">
-                <button type="submit" class="btn btn-primary" id="member-submit-btn" @if($availableUsers->isEmpty()) disabled @endif>Tambahkan</button>
+                <button type="submit" class="btn btn-primary" id="member-submit-btn" <?php if($availableUsers->isEmpty()): ?> disabled <?php endif; ?>>Tambahkan</button>
                 <button type="button" onclick="closeAddMemberModal()" class="btn btn-secondary">Batal</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- Detail Tim Modal --}}
+
 <div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetailModal()">
     <div class="modal-modern-panel lg" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
@@ -312,8 +312,8 @@ function closeCreateModal() {
 }
 document.getElementById('create-modal').addEventListener('click', function(e) { if (e.target === this) closeCreateModal(); });
 
-var usersData = @json($availableUsersJson);
-var csrfToken = '{{ csrf_token() }}';
+var usersData = <?php echo json_encode($availableUsersJson, 15, 512) ?>;
+var csrfToken = '<?php echo e(csrf_token()); ?>';
 
 function fixMemberAction(form) {
     var teamId = document.getElementById('member-team-select').value;
@@ -324,7 +324,7 @@ function fixMemberAction(form) {
 
 function openAddMemberModal() {
     var form = document.getElementById('add-member-form');
-    form.action = '{{ route("admin.teams.members.store", "_TEAM_") }}';
+    form.action = '<?php echo e(route("admin.teams.members.store", "_TEAM_")); ?>';
     var ts = document.getElementById('member-team-select');
     var us = document.getElementById('member-user-select');
     if (ts) ts.value = '';
@@ -336,7 +336,7 @@ function closeAddMemberModal() {
     closeModal('add-member-modal');
 }
 
-var isGm = {{ auth()->user()->role === 'gm' ? 'true' : 'false' }};
+var isGm = <?php echo e(auth()->user()->role === 'gm' ? 'true' : 'false'); ?>;
 
 function showDetail(teamId) {
     document.getElementById('detail-title').textContent = 'Detail Tim';
@@ -472,10 +472,11 @@ if (memberSel) {
     });
 }
 </script>
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\backend-johenofficesystem\resources\views/admin/teams/index.blade.php ENDPATH**/ ?>

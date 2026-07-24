@@ -61,7 +61,10 @@
                             <div class="w-28 h-28 rounded-2xl overflow-hidden flex items-center justify-center"
                                 style="background:linear-gradient(135deg,var(--color-accent),var(--color-primary-light));box-shadow:0 4px 16px rgba(124,58,237,0.3);">
                                 @if($user->avatar_url)
-                                    <img id="avatar-preview" src="{{ $user->avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
+                                    <img id="avatar-preview" src="{{ $user->avatar_url }}?v={{ time() }}" alt="Avatar" class="w-full h-full object-cover">
+                                    <span id="avatar-initials" class="font-gaming font-bold text-4xl text-white hidden">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </span>
                                 @else
                                     <span id="avatar-initials" class="font-gaming font-bold text-4xl text-white">
                                         {{ strtoupper(substr($user->name, 0, 1)) }}

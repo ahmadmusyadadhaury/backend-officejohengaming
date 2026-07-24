@@ -460,6 +460,7 @@ class PaymentApprovalController extends Controller
             foreach ($records as $record) {
                 if ($record->requested_by === auth()->id()) {
                     $skipped++;
+
                     continue;
                 }
 
