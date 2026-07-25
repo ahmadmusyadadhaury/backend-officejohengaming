@@ -10,6 +10,8 @@ use App\Models\ElectricityTokenReading;
 use App\Models\Meeting;
 use App\Models\MeetingInvitation;
 use App\Models\PembayaranAsetDigital;
+use App\Models\PembayaranAsetMes;
+use App\Models\PembayaranAsetTim;
 use App\Models\PembayaranIplRuko;
 use App\Models\PeralatanKantor;
 use App\Models\Room;
@@ -141,6 +143,22 @@ class DashboardController extends Controller
                     ->orderBy('jatuh_tempo')
                     ->get()
                     ->map(fn ($p) => $mapPayment($p, 'ipl_ruko', $jenisLabels['ipl_ruko'] ?? 'IPL Ruko'))
+            )
+            ->merge(
+                PembayaranAsetTim::whereNull('requested_by')
+                    ->whereNotIn('status', ['lunas', 'rejected'])
+                    ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
+                    ->orderBy('jatuh_tempo')
+                    ->get()
+                    ->map(fn ($p) => $mapPayment($p, 'aset_tim', 'Aset Tim'))
+            )
+            ->merge(
+                PembayaranAsetMes::whereNull('requested_by')
+                    ->whereNotIn('status', ['lunas', 'rejected'])
+                    ->where('jatuh_tempo', '<=', $sevenDaysFromNow)
+                    ->orderBy('jatuh_tempo')
+                    ->get()
+                    ->map(fn ($p) => $mapPayment($p, 'aset_mes', 'Aset Mes'))
             );
 
         $allWifi = collect(WifiPayment::whereNull('requested_by')
@@ -249,6 +267,7 @@ class DashboardController extends Controller
         $monthlyLabels = [];
         $monthlyTagihan = [];
         $monthlyBayar = [];
+        $monthlyPersetujuan = [];
         for ($i = 5; $i >= 0; $i--) {
             $month = now()->subMonths($i);
             $monthlyLabels[] = $month->isoFormat('MMM Y');
@@ -257,18 +276,30 @@ class DashboardController extends Controller
 
             $tagihan = PembayaranAsetDigital::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + PembayaranIplRuko::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + WifiPayment::where('status', '!=', 'rejected')->whereBetween('created_at', [$start, $end])->sum('biaya');
+                + WifiPayment::where('status', '!=', 'rejected')->whereBetween('created_at', [$start, $end])->sum('biaya')
+                + PembayaranAsetTim::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranAsetMes::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal');
 
             $bayar = PembayaranAsetDigital::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + PembayaranIplRuko::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + WifiPayment::where('status', 'lunas')->whereBetween('created_at', [$start, $end])->sum('biaya');
+                + WifiPayment::where('status', 'lunas')->whereBetween('created_at', [$start, $end])->sum('biaya')
+                + PembayaranAsetTim::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranAsetMes::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal');
+
+            $persetujuan = PembayaranAsetDigital::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranIplRuko::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + WifiPayment::where('status', 'pending')->whereBetween('created_at', [$start, $end])->sum('biaya')
+                + PembayaranAsetTim::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + PembayaranAsetMes::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal');
 
             $monthlyTagihan[] = (int) $tagihan;
             $monthlyBayar[] = (int) $bayar;
+            $monthlyPersetujuan[] = (int) $persetujuan;
         }
         $chartLabels = $monthlyLabels;
         $chartTagihan = $monthlyTagihan;
         $chartBayar = $monthlyBayar;
+        $chartPersetujuan = $monthlyPersetujuan;
 
         $jabatanList = Vehicle::distinct()->pluck('jabatan')
             ->merge(DigitalAsset::distinct()->pluck('jabatan'))
@@ -280,6 +311,6 @@ class DashboardController extends Controller
             ->sort()
             ->values();
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'paymentDataJson', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar', 'jabatanList'));
+        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'paymentDataJson', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar', 'chartPersetujuan', 'jabatanList'));
     }
 }

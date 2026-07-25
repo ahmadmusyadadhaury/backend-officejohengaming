@@ -9,7 +9,8 @@
 @php
     $totalTagihanDonut = array_sum($chartTagihan ?? []);
     $totalBayarDonut = array_sum($chartBayar ?? []);
-    $sisaDonut = $totalTagihanDonut - $totalBayarDonut;
+    $totalPersetujuanDonut = array_sum($chartPersetujuan ?? []);
+    $sisaDonut = $totalTagihanDonut - $totalBayarDonut - $totalPersetujuanDonut;
 @endphp
 <div class="dashboard-section stagger-children">
 
@@ -278,19 +279,36 @@
                 <div class="flex-1 flex items-center justify-center p-4">
                     <div style="position:relative;height:140px;width:140px;max-width:100%;"><canvas id="ringkasanChart"></canvas></div>
                 </div>
-                <div class="grid grid-cols-3 gap-1.5 px-4 pb-4 flex-shrink-0">
-                    <div class="flex flex-col items-center gap-0.5 py-1.5 rounded-lg" style="background:rgba(59,130,246,0.06);">
+                <div class="flex flex-wrap justify-center gap-1.5 px-4 pb-4 flex-shrink-0">
+                    @if($totalTagihanDonut > 0)
+                    <div class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg" style="background:rgba(59,130,246,0.06);">
                         <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Tagihan</span>
                         <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($totalTagihanDonut, 0, ',', '.') }}</span>
                     </div>
-                    <div class="flex flex-col items-center gap-0.5 py-1.5 rounded-lg" style="background:rgba(16,185,129,0.06);">
+                    @endif
+                    @if($totalBayarDonut > 0)
+                    <div class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg" style="background:rgba(16,185,129,0.06);">
                         <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Dibayar</span>
                         <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($totalBayarDonut, 0, ',', '.') }}</span>
                     </div>
-                    <div class="flex flex-col items-center gap-0.5 py-1.5 rounded-lg" style="background:rgba(245,158,11,0.06);">
+                    @endif
+                    @if($totalPersetujuanDonut > 0)
+                    <div class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg" style="background:rgba(139,92,246,0.06);">
+                        <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Persetujuan</span>
+                        <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($totalPersetujuanDonut, 0, ',', '.') }}</span>
+                    </div>
+                    @endif
+                    @if($sisaDonut > 0)
+                    <div class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg" style="background:rgba(245,158,11,0.06);">
                         <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Sisa</span>
                         <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($sisaDonut, 0, ',', '.') }}</span>
                     </div>
+                    @endif
+                    @if($totalTagihanDonut === 0 && $totalBayarDonut === 0 && $totalPersetujuanDonut === 0)
+                    <div class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg" style="background:rgba(100,116,139,0.06);">
+                        <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Belum Ada Data</span>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -662,6 +680,7 @@
     var labels = @json($chartLabels);
     var tagihan = @json($chartTagihan);
     var bayar = @json($chartBayar);
+    var persetujuan = @json($chartPersetujuan);
 
     function formatChartCurrency(v) {
         return 'Rp ' + v.toLocaleString('id-ID');
@@ -669,9 +688,6 @@
 
     var ctx = document.getElementById('monthlyChart');
     if (ctx) {
-        var labels = @json($chartLabels);
-        var tagihan = @json($chartTagihan);
-        var bayar = @json($chartBayar);
 
         new Chart(ctx.getContext('2d'), {
             type: 'bar',
@@ -691,6 +707,14 @@
                         data: bayar,
                         backgroundColor: 'rgba(16,185,129,0.7)',
                         borderColor: '#10b981',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                    {
+                        label: 'Menunggu Persetujuan',
+                        data: persetujuan,
+                        backgroundColor: 'rgba(139,92,246,0.7)',
+                        borderColor: '#8b5cf6',
                         borderWidth: 1,
                         borderRadius: 4,
                     },
@@ -738,18 +762,25 @@
     if (rc) {
         var totalTagihan = tagihan.reduce(function(a, b) { return a + b; }, 0);
         var totalBayar = bayar.reduce(function(a, b) { return a + b; }, 0);
-        var sisa = totalTagihan - totalBayar;
-        var pctBayar = totalTagihan > 0 ? (totalBayar / totalTagihan * 100) : 0;
-        var pctSisa = totalTagihan > 0 ? (sisa / totalTagihan * 100) : 0;
+        var totalPersetujuan = persetujuan.reduce(function(a, b) { return a + b; }, 0);
+        var sisa = totalTagihan - totalBayar - totalPersetujuan;
+
+        var donutData = [totalBayar, totalPersetujuan, sisa].filter(function(v) { return v > 0; });
+        var donutLabels = [];
+        var donutColors = [];
+        var donutBorders = [];
+        if (totalBayar > 0) { donutLabels.push('Dibayar'); donutColors.push('rgba(16,185,129,0.85)'); donutBorders.push('#10b981'); }
+        if (totalPersetujuan > 0) { donutLabels.push('Menunggu Persetujuan'); donutColors.push('rgba(139,92,246,0.85)'); donutBorders.push('#8b5cf6'); }
+        if (sisa > 0) { donutLabels.push('Sisa'); donutColors.push('rgba(245,158,11,0.85)'); donutBorders.push('#f59e0b'); }
 
         new Chart(rc.getContext('2d'), {
             type: 'doughnut',
             data: {
-                labels: ['Dibayar', 'Sisa'],
+                labels: donutLabels.length > 0 ? donutLabels : ['Belum Ada Data'],
                 datasets: [{
-                    data: [totalBayar, sisa],
-                    backgroundColor: ['rgba(16,185,129,0.85)', 'rgba(245,158,11,0.85)'],
-                    borderColor: ['#10b981', '#f59e0b'],
+                    data: donutData.length > 0 ? donutData : [1],
+                    backgroundColor: donutColors.length > 0 ? donutColors : ['rgba(100,116,139,0.3)'],
+                    borderColor: donutBorders.length > 0 ? donutBorders : ['#64748b'],
                     borderWidth: 2,
                     hoverOffset: 8,
                 }],
@@ -765,7 +796,8 @@
                         callbacks: {
                             label: function(c) {
                                 var total = totalTagihan;
-                                var pct = c.raw / total * 100;
+                                var pct = total > 0 ? (c.raw / total * 100) : 0;
+                                if (c.raw === 1 && donutLabels[0] === 'Belum Ada Data') return 'Belum ada data';
                                 return c.label + ': ' + formatChartCurrency(c.raw) + ' (' + pct.toFixed(1) + '%)';
                             },
                         },
