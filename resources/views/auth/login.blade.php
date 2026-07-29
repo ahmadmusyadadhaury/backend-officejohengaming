@@ -221,7 +221,7 @@
         </div>
 
         <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-top:1.5rem;opacity:0.6;">
-            &copy; {{ date('Y') }} JOHEN OFFICE. All rights reserved.
+            &copy;2026 Divisi IT JOHEN GAMING All rights reserved.
         </p>
     </div>
 
