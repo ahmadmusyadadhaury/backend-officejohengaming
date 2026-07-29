@@ -546,7 +546,12 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="gaming-label">PIC <span style="color:#f87171;">*</span></label>
-                                <input type="text" name="pic" id="f-pic" required placeholder="Masukan nama PIC" class="gaming-input">
+                                <select name="pic" id="f-pic" required class="gaming-input gaming-select">
+                                    <option value="">— Pilih PIC —</option>
+                                    @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
+                                    <option value="{{ $u->name }}">{{ $u->name }} ({{ $u->username }})</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
                                 <label class="gaming-label">Jabatan PIC <span style="color:#f87171;">*</span></label>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('body-class', 'page-leader')
+@section('body-class', 'page-leader page-leader-meetings')
 @section('title', 'Meeting Saya')
 @section('page-title', 'Meeting Saya')
 @section('page-subtitle', 'Kelola seluruh meeting yang kamu ajukan')
@@ -56,16 +56,24 @@
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
-            <select id="status-filter" onchange="filterMeetings(this.value)" class="ml-auto"
-                style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;">
-                <option value="all">Semua Status</option>
-                <option value="pending">Menunggu</option>
-                <option value="approved">Disetujui</option>
-                <option value="rejected">Ditolak</option>
-                <option value="confirmed">Dikonfirmasi</option>
-                <option value="completed">Selesai</option>
-                <option value="cancelled">Dibatalkan</option>
-            </select>
+            <div class="filter-dropdown-wrap" style="position:relative;margin-left:auto;">
+                <button type="button" onclick="toggleMeetingFilter(event)"
+                    style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                    <span id="status-filter-label" data-value="all">Semua Status</span>
+                    <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="status-filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                    <button type="button" data-value="all" onclick="setMeetingFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
+                    <button type="button" data-value="pending" onclick="setMeetingFilter('pending')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Menunggu</button>
+                    <button type="button" data-value="approved" onclick="setMeetingFilter('approved')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Disetujui</button>
+                    <button type="button" data-value="rejected" onclick="setMeetingFilter('rejected')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Ditolak</button>
+                    <button type="button" data-value="confirmed" onclick="setMeetingFilter('confirmed')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Dikonfirmasi</button>
+                    <button type="button" data-value="completed" onclick="setMeetingFilter('completed')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Selesai</button>
+                    <button type="button" data-value="cancelled" onclick="setMeetingFilter('cancelled')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Dibatalkan</button>
+                </div>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="gaming-table min-w-[700px]" id="meetings-table">
@@ -446,6 +454,19 @@
 
 @endsection
 
+@push('styles')
+<style>
+.page-leader.page-leader-meetings .btn-primary {
+    background: #6d5ef9;
+    box-shadow: 0 2px 8px rgba(109,94,249,0.25);
+}
+.page-leader.page-leader-meetings .btn-primary:hover {
+    background: #5a4be0;
+    box-shadow: 0 4px 14px rgba(109,94,249,0.35);
+}
+</style>
+@endpush
+
 @include('partials.file-preview-modal')
 @include('partials.file-upload-modal')
 
@@ -530,8 +551,31 @@ function initModalTimeRestrictions() {
 
 document.addEventListener('DOMContentLoaded', initModalTimeRestrictions);
 
+function toggleMeetingFilter(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('status-filter-menu');
+    const isHidden = menu.style.display === 'none';
+    document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = isHidden ? 'block' : 'none';
+}
+
+function setMeetingFilter(value) {
+    const label = document.getElementById('status-filter-label');
+    const map = { all: 'Semua Status', pending: 'Menunggu', approved: 'Disetujui', rejected: 'Ditolak', confirmed: 'Dikonfirmasi', completed: 'Selesai', cancelled: 'Dibatalkan' };
+    label.textContent = map[value] || value;
+    label.dataset.value = value;
+    document.getElementById('status-filter-menu').style.display = 'none';
+    filterMeetings();
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    }
+});
+
 function filterMeetings() {
-    const status = document.getElementById('status-filter').value;
+    const status = document.getElementById('status-filter-label').dataset.value || 'all';
     const search = (document.getElementById('search-meeting')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('#meetings-tbody tr:not(#empty-row)');
 

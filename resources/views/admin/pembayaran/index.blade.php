@@ -577,12 +577,22 @@
                             <th class="hidden md:table-cell">Biaya</th>
                         @else
                             <th>{{ $jenis === 'aset_digital' ? 'Nama Aset' : 'Periode' }}</th>
+                            @if($jenis === 'aset_digital')
+                            <th class="hidden md:table-cell">Email</th>
+                            <th class="hidden md:table-cell">Mulai</th>
+                            <th class="hidden md:table-cell">Berakhir</th>
+                            @endif
                             <th class="hidden md:table-cell">Tagihan</th>
                             <th>Jatuh Tempo</th>
                             @if(in_array($jenis, ['aset_digital', 'ipl_ruko']))
                             <th style="color:var(--text-muted);font-size:0.65rem;">Hari</th>
                             @endif
                             <th>Nominal</th>
+                            @if($jenis === 'aset_digital')
+                            <th>PIC</th>
+                            <th class="hidden lg:table-cell">Jabatan</th>
+                            <th class="hidden md:table-cell">Keterangan</th>
+                            @endif
                         @endif
                         <th>Status</th>
                             <th class="hidden md:table-cell">Tgl Bayar</th>
@@ -710,6 +720,11 @@
                         <td class="hidden md:table-cell" style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->biaya, 0, ',', '.') }}</td>
                         @else
                         <td style="color:var(--text-primary);font-weight:500;">{{ $item->periode }}</td>
+                        @if($jenis === 'aset_digital')
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->email ?? '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->mulai?->format('d/m/Y') ?? '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->berakhir?->format('d/m/Y') ?? '-' }}</td>
+                        @endif
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->tanggal_tagihan?->format('d/m/Y') }}</td>
                         <td style="color:var(--text-muted);">{{ $item->jatuh_tempo?->format('d/m/Y') }}</td>
                         @if($jenis === 'aset_digital')
@@ -718,6 +733,11 @@
                         <td style="color:var(--text-muted);font-size:0.7rem;">{{ $item->hari_ipl }}</td>
                         @endif
                         <td style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
+                        @if($jenis === 'aset_digital')
+                        <td style="color:var(--text-muted);">{{ $item->digitalAsset?->pic ?? '-' }}</td>
+                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->jabatan ?? '-' }}</td>
+                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $item->digitalAsset?->keperluan ?? '-' }}">{{ $item->digitalAsset?->keperluan ?? '-' }}</td>
+                        @endif
                         @endif
                         <td><span class="badge {{ $badgeClass }}">{{ $badgeLabel }}</span></td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ ($item->tanggal_bayar) ? $item->tanggal_bayar->format('d/m/Y') : '-' }}</td>
@@ -746,7 +766,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data {{ $jenisLabels[$jenis] }}.</td>
+                        <td colspan="{{ $jenis === 'internet' ? 11 : ($jenis === 'aset_digital' ? 15 : ($jenis === 'ipl_ruko' ? 10 : 8)) }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data {{ $jenisLabels[$jenis] }}.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -1663,6 +1683,12 @@ function showDetail(id) {
     const s = statusComputedMap[i.status_digital] || statusComputedMap['mati'];
     const rows = [
         { label: 'Nama Aset', value: i.periode },
+        { label: 'Email', value: i.email || '-' },
+        { label: 'Mulai', value: i.mulai || '-' },
+        { label: 'Berakhir', value: i.berakhir || '-' },
+        { label: 'PIC', value: i.pic || '-' },
+        { label: 'Jabatan', value: i.jabatan || '-' },
+        { label: 'Keterangan', value: i.keperluan || '-' },
         { label: 'Tagihan', value: fmt(i.tanggal_tagihan) },
         { label: 'Jatuh Tempo', value: fmt(i.jatuh_tempo) },
         { label: 'Hari', value: i.hari_digital || '-' },

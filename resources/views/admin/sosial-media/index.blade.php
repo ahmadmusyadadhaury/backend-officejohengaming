@@ -227,7 +227,12 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="gaming-label">PIC <span class="field-req">*</span></label>
-                        <input type="text" name="pic" id="f-pic" required placeholder="Masukan nama PIC" class="gaming-input">
+                        <select name="pic" id="f-pic" required class="gaming-input gaming-select">
+                            <option value="">— Pilih PIC —</option>
+                            @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
+                            <option value="{{ $u->name }}">{{ $u->name }} ({{ $u->username }})</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="gaming-label">Status</label>

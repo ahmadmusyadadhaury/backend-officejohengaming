@@ -426,8 +426,17 @@
 
                 {{-- Hidden fields --}}
                 <input type="hidden" name="biaya_kendaraan" id="f-biaya_kendaraan" value="0">
-                <input type="hidden" name="pic" id="f-pic" value="{{ auth()->user()->name }}">
                 <input type="hidden" name="jabatan" id="f-jabatan" value="{{ auth()->user()->jabatan ?? auth()->user()->role }}">
+
+                <div class="vehicle-field">
+                    <label class="vehicle-label">PIC</label>
+                    <select name="pic" id="f-pic" class="vehicle-input">
+                        <option value="">— Pilih PIC —</option>
+                        @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
+                        <option value="{{ $u->name }}" {{ auth()->user()->name === $u->name ? 'selected' : '' }}>{{ $u->name }} ({{ $u->username }})</option>
+                        @endforeach
+                    </select>
+                </div>
 
                 {{-- Footer --}}
                 <div class="vehicle-modal-footer">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Leader;
 
 use App\Http\Controllers\Controller;
 use App\Models\AsetTim;
+use App\Models\Team;
 use Illuminate\Http\Request;
 
 class AsetTimController extends Controller
@@ -15,7 +16,13 @@ class AsetTimController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('leader.aset-tim.index', compact('assets'));
+        $allTim = Team::where('is_active', true)->pluck('name')
+            ->merge(AsetTim::whereNotNull('tim')->where('tim', '!=', '')->distinct()->pluck('tim'))
+            ->unique()->sort()->values();
+
+        $userTim = auth()->user()->team?->name;
+
+        return view('leader.aset-tim.index', compact('assets', 'allTim', 'userTim'));
     }
 
     public function store(Request $request)
@@ -27,6 +34,7 @@ class AsetTimController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
+        $data['jumlah'] = $data['jumlah'] ?? 1;
         $data['penanggung_jawab'] = auth()->id();
         $data['is_active'] = true;
 
@@ -49,6 +57,7 @@ class AsetTimController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
+        $data['jumlah'] = $data['jumlah'] ?? 1;
         $asetTim->update($data);
 
         return redirect()->route('koordinator.aset-tim.index')->with('success', 'Aset TIM berhasil diperbarui.');

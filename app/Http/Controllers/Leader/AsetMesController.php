@@ -15,7 +15,15 @@ class AsetMesController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('leader.aset-mes.index', compact('assets'));
+        $assetsJson = $assets->values()->map(fn ($a) => [
+            'id' => $a->id,
+            'nama_aset' => $a->nama_aset,
+            'jumlah' => $a->jumlah,
+            'keterangan' => $a->keterangan,
+            'is_active' => $a->is_active,
+        ]);
+
+        return view('leader.aset-mes.index', compact('assets', 'assetsJson'));
     }
 
     public function store(Request $request)

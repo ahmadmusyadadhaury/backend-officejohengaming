@@ -229,6 +229,7 @@ class PaymentApprovalController extends Controller
                     'detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
                     'status' => $r->status,
+                    'pic' => $r->pic,
                     'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
                 ]);
             $all = $all->merge($records);

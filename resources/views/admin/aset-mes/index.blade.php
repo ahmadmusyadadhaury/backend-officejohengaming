@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('body-class', 'page-admin')
+@section('body-class', 'page-admin page-aset-mes')
 @section('title', 'Aset MES')
 @section('page-title', 'Data Aset > Aset MES')
 @section('page-subtitle', 'Daftar aset MES dan perlengkapan perusahaan')
@@ -173,7 +173,12 @@
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">PIC</label>
-                        <input type="text" name="pic" id="f-pic" placeholder="Nama PIC" class="gaming-input">
+                        <select name="pic" id="f-pic" class="gaming-input gaming-select">
+                            <option value="">— Pilih PIC —</option>
+                            @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
+                            <option value="{{ $u->name }}">{{ $u->name }} ({{ $u->username }})</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Jabatan</label>
@@ -207,7 +212,14 @@
 .btn-form-batal { color: var(--text-primary); border: 1px solid var(--border-color); background: var(--bg-surface); }
 .btn-form-simpan { background: linear-gradient(135deg,#6c5cff,#8b7bff); color: #fff; border: none; box-shadow: 0 4px 15px rgba(108,92,255,0.3); }
 .btn-form-simpan:hover { transform: translateY(-1px); }
-
+.page-admin.page-aset-mes .btn-primary {
+    background: #6d5ef9;
+    box-shadow: 0 2px 8px rgba(109,94,249,0.25);
+}
+.page-admin.page-aset-mes .btn-primary:hover {
+    background: #5a4be0;
+    box-shadow: 0 4px 14px rgba(109,94,249,0.35);
+}
 </style>
 @endpush
 

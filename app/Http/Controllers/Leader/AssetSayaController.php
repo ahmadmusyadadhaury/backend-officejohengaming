@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Leader;
 
 use App\Http\Controllers\Controller;
+use App\Models\AsetDaya;
 use App\Models\AsetMes;
 use App\Models\AsetTim;
 use App\Models\DigitalAsset;
@@ -16,6 +17,17 @@ use Illuminate\Support\Collection;
 
 class AssetSayaController extends Controller
 {
+    private const KATEGORI_MAP = [
+        'Data Aset Saya' => AsetDaya::class,
+        'Kendaraan' => Vehicle::class,
+        'Digital' => DigitalAsset::class,
+        'Sosial Media' => SosialMedia::class,
+        'SIM Card' => SimCard::class,
+        'Peralatan Kantor' => PeralatanKantor::class,
+        'Aset MES' => AsetMes::class,
+        'Aset TIM' => AsetTim::class,
+    ];
+
     public function index(Request $request)
     {
         $userName = auth()->user()->name;
@@ -23,7 +35,6 @@ class AssetSayaController extends Controller
 
         $assets = $this->getMyAssets($userName, $userId);
 
-        // Search
         if ($search = $request->input('search')) {
             $assets = $assets->filter(fn ($a) => str_contains(strtolower($a['nama_aset']), strtolower($search))
                 || str_contains(strtolower($a['kode_aset'] ?? ''), strtolower($search))
@@ -32,17 +43,14 @@ class AssetSayaController extends Controller
             );
         }
 
-        // Filter by kategori
         if ($kategori = $request->input('kategori')) {
             $assets = $assets->filter(fn ($a) => $a['kategori'] === $kategori);
         }
 
-        // Sort
         $sortField = $request->input('sort', 'created_at');
         $sortDir = $request->input('dir', 'desc');
         $assets = $assets->sortBy($sortField, SORT_REGULAR, $sortDir === 'asc')->values();
 
-        // Pagination
         $perPage = 15;
         $page = $request->input('page', 1);
         $total = $assets->count();
@@ -52,48 +60,146 @@ class AssetSayaController extends Controller
             'query' => $request->query(),
         ]);
 
-        // Stats
         $kategoriCounts = $assets->groupBy('kategori')->map(fn ($g) => $g->count());
-        $allKategoris = ['Kendaraan', 'Digital', 'Sosial Media', 'SIM Card', 'Peralatan Kantor', 'Aset MES', 'Aset TIM'];
+        $allKategoris = array_keys(self::KATEGORI_MAP);
 
-        return view('leader.asset-saya.index', compact('paginator', 'assets', 'kategoriCounts', 'allKategoris'));
+        $asetDaya = AsetDaya::where('penanggung_jawab', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('leader.asset-saya.index', compact('paginator', 'assets', 'kategoriCounts', 'allKategoris', 'asetDaya'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'nama_aset' => 'required|string|max:255',
+            'jenis_aset' => 'nullable|string|max:255',
+            'keterangan' => 'nullable|string',
+            'daya' => 'nullable|string|max:255',
+        ]);
+
+        $data['penanggung_jawab'] = auth()->id();
+        $data['is_active'] = true;
+
+        AsetDaya::create($data);
+
+        return redirect()->route('koordinator.asset-saya.index')->with('success', 'Aset berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, string $kategori, int $id)
+    {
+        $modelClass = self::KATEGORI_MAP[$kategori] ?? null;
+        if (! $modelClass) {
+            abort(404);
+        }
+
+        $model = $modelClass::findOrFail($id);
+
+        $rules = match ($kategori) {
+            'Data Aset Saya' => [
+                'nama_aset' => 'sometimes|required|string|max:255',
+                'jenis_aset' => 'nullable|string|max:255',
+                'keterangan' => 'nullable|string',
+                'daya' => 'nullable|string|max:255',
+                'unit' => 'nullable|string|max:255',
+                'is_active' => 'sometimes|boolean',
+            ],
+            'Kendaraan' => [
+                'nama_kendaraan' => 'sometimes|required|string|max:255',
+                'plat_nomor' => 'nullable|string|max:255',
+                'jenis_kendaraan' => 'nullable|string|max:255',
+                'merk_tipe' => 'nullable|string|max:255',
+                'warna' => 'nullable|string|max:255',
+                'tahun' => 'nullable|integer',
+                'keperluan' => 'nullable|string|max:255',
+            ],
+            'Digital' => [
+                'nama_aset' => 'sometimes|required|string|max:255',
+                'email' => 'nullable|email|max:255',
+                'is_active' => 'sometimes|boolean',
+                'keperluan' => 'nullable|string|max:255',
+            ],
+            'Sosial Media' => [
+                'nama' => 'sometimes|required|string|max:255',
+                'username' => 'nullable|string|max:255',
+                'platform' => 'nullable|string|max:255',
+                'status' => 'nullable|string|max:255',
+                'ket' => 'nullable|string',
+            ],
+            'SIM Card' => [
+                'nomor_sim_card' => 'sometimes|required|string|max:255',
+                'status_kartu' => 'sometimes|boolean',
+                'keperluan' => 'nullable|string|max:255',
+            ],
+            'Peralatan Kantor' => [
+                'nama_barang' => 'sometimes|required|string|max:255',
+                'kondisi' => 'nullable|string|max:255',
+                'lokasi_unit' => 'nullable|string|max:255',
+                'keterangan' => 'nullable|string',
+            ],
+            'Aset MES' => [
+                'nama_aset' => 'sometimes|required|string|max:255',
+                'is_active' => 'sometimes|boolean',
+            ],
+            'Aset TIM' => [
+                'nama_aset' => 'sometimes|required|string|max:255',
+                'is_active' => 'sometimes|boolean',
+            ],
+            default => [],
+        };
+
+        $data = $request->validate($rules);
+        $model->update($data);
+
+        return redirect()->route('koordinator.asset-saya.index')->with('success', 'Aset berhasil diperbarui.');
+    }
+
+    public function destroy(string $kategori, int $id)
+    {
+        $modelClass = self::KATEGORI_MAP[$kategori] ?? null;
+        if (! $modelClass) {
+            abort(404);
+        }
+
+        $model = $modelClass::findOrFail($id);
+        $model->delete();
+
+        return redirect()->route('koordinator.asset-saya.index')->with('success', 'Aset berhasil dihapus.');
     }
 
     private function getMyAssets(string $userName, int $userId): Collection
     {
         $assets = collect();
 
-        // Kendaraan — pic = string name, no is_active column
+        $assets = $assets->merge(
+            AsetDaya::where('penanggung_jawab', $userId)->get()->map(fn ($a) => $this->mapItem($a, 'Data Aset Saya', $a->nama_aset, '-', '-', $a->penanggungJawab?->name ?? '-', $a->jabatan ?? '-', null, $a->created_at, $a->is_active ? 'Aktif' : 'Tidak Aktif'))
+        );
+
         $assets = $assets->merge(
             Vehicle::where('pic', $userName)->get()->map(fn ($v) => $this->mapItem($v, 'Kendaraan', $v->nama_kendaraan, $v->plat_nomor, '-', $v->pic, $v->jabatan, null, $v->created_at, ucfirst(str_replace('_', ' ', $v->status_pajak))))
         );
 
-        // Digital — pic = string name
         $assets = $assets->merge(
             DigitalAsset::where('pic', $userName)->get()->map(fn ($d) => $this->mapItem($d, 'Digital', $d->nama_aset, $d->email, '-', $d->pic, $d->jabatan, null, $d->created_at, $d->is_active ? 'Aktif' : 'Tidak Aktif'))
         );
 
-        // Sosial Media — pic = string name
         $assets = $assets->merge(
             SosialMedia::where('pic', $userName)->get()->map(fn ($s) => $this->mapItem($s, 'Sosial Media', $s->nama, $s->username, $s->platform, $s->pic, '-', null, $s->created_at, $s->status === 'aktif' ? 'Aktif' : 'Nonaktif'))
         );
 
-        // SIM Card — pic = string name
         $assets = $assets->merge(
             SimCard::where('pic', $userName)->get()->map(fn ($s) => $this->mapItem($s, 'SIM Card', $s->nomor_sim_card, $s->nomor_sim_card, '-', $s->pic, $s->jabatan, $s->atasan, $s->created_at, $s->status_kartu ? 'Aktif' : 'Nonaktif'))
         );
 
-        // Peralatan Kantor — pic = string name (nullable)
         $assets = $assets->merge(
             PeralatanKantor::where('pic', $userName)->get()->map(fn ($p) => $this->mapItem($p, 'Peralatan Kantor', $p->nama_barang, $p->kode_aset ?? '-', $p->lokasi_unit, $p->pic ?? '-', $p->jabatan ?? '-', $p->atasan ?? '-', $p->created_at, ucfirst($p->kondisi)))
         );
 
-        // Aset MES — penanggung_jawab = user ID
         $assets = $assets->merge(
             AsetMes::where('penanggung_jawab', $userId)->get()->map(fn ($m) => $this->mapItem($m, 'Aset MES', $m->nama_aset, '-', '-', $m->penanggungJawab?->name ?? ($m->pic ?? '-'), $m->jabatan ?? '-', null, $m->created_at, $m->is_active ? 'Aktif' : 'Tidak Aktif'))
         );
 
-        // Aset TIM — penanggung_jawab = user ID
         $assets = $assets->merge(
             AsetTim::where('penanggung_jawab', $userId)->get()->map(fn ($t) => $this->mapItem($t, 'Aset TIM', $t->nama_aset, '-', $t->tim ?? '-', $t->penanggungJawab?->name ?? ($t->pic ?? '-'), $t->jabatan ?? '-', null, $t->created_at, $t->is_active ? 'Aktif' : 'Tidak Aktif'))
         );

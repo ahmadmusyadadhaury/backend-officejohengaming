@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('body-class', 'page-leader')
+@section('body-class', 'page-leader page-leader-dashboard')
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
 @section('page-subtitle', 'Selamat datang, ' . auth()->user()->name)
@@ -384,6 +384,14 @@
 }
 .field-req { color: #f87171; }
 .gaming-input { width: 100%; }
+.page-leader.page-leader-dashboard .btn-primary {
+    background: #6d5ef9;
+    box-shadow: 0 2px 8px rgba(109,94,249,0.25);
+}
+.page-leader.page-leader-dashboard .btn-primary:hover {
+    background: #5a4be0;
+    box-shadow: 0 4px 14px rgba(109,94,249,0.35);
+}
 </style>
 @endpush
 

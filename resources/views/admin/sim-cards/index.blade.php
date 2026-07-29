@@ -17,36 +17,48 @@
             if ($s === 'jatuh_tempo') return 'jatuh_tempo';
             return 'other';
         });
+        $matiCount = isset($alertGroups['mati']) ? $alertGroups['mati']->count() : 0;
+        $jatuhTempoCount = isset($alertGroups['jatuh_tempo']) ? $alertGroups['jatuh_tempo']->count() : 0;
+        $segeraCount = isset($alertGroups['segera_habis']) ? $alertGroups['segera_habis']->count() : 0;
     @endphp
     @if($alerts->isNotEmpty())
-    <div class="space-y-2">
-        @if(isset($alertGroups['mati']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #ef4444;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['mati']->count() }} SIM Card</span>
-                <span style="color:var(--text-muted);"> dengan masa tenggang sudah lewat.</span>
-                <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        @if($matiCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#ef4444;">{{ $matiCount }} Tidak Aktif</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $matiCount }} SIM Card dengan masa tenggang sudah habis.</div>
+                </div>
             </div>
         </div>
         @endif
-        @if(isset($alertGroups['segera_habis']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f59e0b;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['segera_habis']->count() }} SIM Card</span>
-                <span style="color:var(--text-muted);"> akan segera habis masa tenggangnya (≤3 hari).</span>
-                <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+        @if($jatuhTempoCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#f97316;">{{ $jatuhTempoCount }} Jatuh Tempo</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $jatuhTempoCount }} SIM Card akan berakhir dalam 4-7 hari.</div>
+                </div>
             </div>
         </div>
         @endif
-        @if(isset($alertGroups['jatuh_tempo']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f97316;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['jatuh_tempo']->count() }} SIM Card</span>
-                <span style="color:var(--text-muted);"> akan jatuh tempo (≤7 hari).</span>
-                <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+        @if($segeraCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#f59e0b;">{{ $segeraCount }} Segera Habis</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $segeraCount }} SIM Card akan berakhir dalam 1-3 hari.</div>
+                </div>
             </div>
         </div>
         @endif
@@ -248,7 +260,7 @@
 <div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetail()">
     <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
         <div class="modal-modern-header">
-            <h3>Detail SIM Card</h3>
+            <h3 id="detail-title">Detail SIM Card</h3>
             <button type="button" onclick="closeDetail()" class="modal-modern-close">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -288,7 +300,12 @@
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">PIC <span class="field-req">*</span></label>
-                        <input type="text" name="pic" id="f-pic" required placeholder="Masukan nama PIC" class="gaming-input">
+                        <select name="pic" id="f-pic" required class="gaming-input gaming-select">
+                            <option value="">— Pilih PIC —</option>
+                            @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
+                            <option value="{{ $u->name }}">{{ $u->name }} ({{ $u->username }})</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Atasan</label>

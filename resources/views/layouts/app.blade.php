@@ -187,7 +187,7 @@
                             </p>
                             @if($activeInvitations->count() === 0 && $activeWeeklyInvitations->count() === 0)
                                 <div class="px-4 py-3 text-center text-xs" style="color:var(--text-muted);">
-                                    Belum ada undangan aktif
+                                    Belum ada informasi
                                 </div>
                             @endif
                             @foreach($activeInvitations as $inv)
@@ -256,21 +256,7 @@
                             @endforeach
                             @endif
 
-                            {{-- Peringatan Kadaluarsa --}}
-                            @if($upcomingAlerts->count() > 0)
-                            <p class="px-4 py-2 font-gaming font-semibold" style="font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);margin-top:4px;">
-                                ⚠️  PERINGATAN KADALUARSA
-                            </p>
-                            @foreach($upcomingAlerts as $alert)
-                            <div class="flex items-start gap-3 px-4 py-3" style="border-bottom:1px solid var(--border-color);">
-                                <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:#f87171;"></div>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-medium truncate" style="color:var(--text-primary);">{{ $alert->name }}</p>
-                                    <p class="text-xs" style="color:var(--text-muted);">Stock: {{ $alert->quantity }} unit</p>
-                                </div>
-                            </div>
-                            @endforeach
-                            @endif
+                            {{-- Peringatan Kadaluarsa — removed --}}
                             @php
                                 $notif_isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin']);
                             @endphp

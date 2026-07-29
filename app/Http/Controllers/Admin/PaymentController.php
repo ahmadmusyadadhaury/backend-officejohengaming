@@ -97,8 +97,8 @@ class PaymentController extends Controller
                 'checker' => $u->checker?->name,
             ]);
         } elseif ($jenis === 'aset_digital') {
-            $items = PembayaranAsetDigital::orderBy('created_at', 'desc')->get();
-            $all = PembayaranAsetDigital::all();
+            $items = PembayaranAsetDigital::with('digitalAsset')->orderBy('created_at', 'desc')->get();
+            $all = PembayaranAsetDigital::with('digitalAsset')->get();
 
             $stats = [
                 'total' => $all->count(),
@@ -126,6 +126,12 @@ class PaymentController extends Controller
                 'approved_by' => $p->approved_by,
                 'bukti_bayar' => $p->bukti_bayar,
                 'notes' => $p->notes,
+                'email' => $p->digitalAsset?->email ?? '-',
+                'mulai' => $p->digitalAsset?->mulai?->format('d/m/Y') ?? '-',
+                'berakhir' => $p->digitalAsset?->berakhir?->format('d/m/Y') ?? '-',
+                'pic' => $p->digitalAsset?->pic ?? '-',
+                'jabatan' => $p->digitalAsset?->jabatan ?? '-',
+                'keperluan' => $p->digitalAsset?->keperluan ?? '-',
             ]);
 
             $alertItems = $all->filter(fn ($p) => in_array($p->status_digital, ['mati', 'segera_habis']))->values();

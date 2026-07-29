@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meeting;
+use App\Models\AsetMes;
+use App\Models\AsetTim;
 use App\Models\MeetingInvitation;
 use App\Models\Notification;
 use App\Models\PembayaranAsetDigital;
+use App\Models\PembayaranAsetMes;
+use App\Models\PembayaranAsetTim;
 use App\Models\PembayaranIplRuko;
 use App\Models\User;
 use App\Models\WeeklyMeetingInvitation;
@@ -286,18 +290,34 @@ class RealtimeController extends Controller
         $sevenDaysAgo = $today->copy()->subDays(7);
         $sevenDaysFromNow = $today->copy()->addDays(7);
 
+        // Aset milik user (untuk filter PIC)
+        $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
+        $myAsetMesIds = AsetMes::where('penanggung_jawab', $userId)->pluck('id');
+
         $models = [
             'wifi_payments' => ['class' => WifiPayment::class, 'dateField' => 'masa_tenggang', 'query' => null],
             'pembayaran_aset_digital' => ['class' => PembayaranAsetDigital::class, 'dateField' => 'jatuh_tempo', 'query' => null],
             'pembayaran_ipl_ruko' => ['class' => PembayaranIplRuko::class, 'dateField' => 'jatuh_tempo', 'query' => null],
+            'pembayaran_aset_tim' => ['class' => PembayaranAsetTim::class, 'dateField' => 'jatuh_tempo', 'query' => function ($q) use ($myAsetTimIds) {
+                $q->whereIn('aset_tim_id', $myAsetTimIds);
+            }],
+            'pembayaran_aset_mes' => ['class' => PembayaranAsetMes::class, 'dateField' => 'jatuh_tempo', 'query' => function ($q) use ($myAsetMesIds) {
+                $q->whereIn('aset_mes_id', $myAsetMesIds);
+            }],
         ];
 
-        $labelMap = ['wifi_payments' => 'Internet', 'pembayaran_aset_digital' => 'Aset Digital', 'pembayaran_ipl_ruko' => 'IPL Ruko'];
+        $labelMap = [
+            'wifi_payments' => 'Internet',
+            'pembayaran_aset_digital' => 'Aset Digital',
+            'pembayaran_ipl_ruko' => 'IPL Ruko',
+            'pembayaran_aset_tim' => 'Aset TIM',
+            'pembayaran_aset_mes' => 'Aset MES',
+        ];
 
         $inserts = [];
 
         foreach ($models as $table => $cfg) {
-            $dueColumn = $table === 'wifi_payments' ? 'masa_tenggang' : 'jatuh_tempo';
+            $dueColumn = $cfg['dateField'];
             $q = $cfg['class']::whereNotIn('status', ['lunas', 'rejected', 'pending', 'menunggu'])
                 ->where($dueColumn, '>=', $sevenDaysAgo)
                 ->where($dueColumn, '<=', $sevenDaysFromNow);

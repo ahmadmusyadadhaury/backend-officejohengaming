@@ -48,6 +48,7 @@ class AsetTimApiController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
+        $data['jumlah'] = $data['jumlah'] ?? 1;
         $data['is_active'] = true;
 
         $asset = AsetTim::create($data);
@@ -82,6 +83,7 @@ class AsetTimApiController extends Controller
             'is_active' => 'sometimes|boolean',
         ]);
 
+        $data['jumlah'] = $data['jumlah'] ?? 1;
         $asetTim->update($data);
 
         return response()->json([

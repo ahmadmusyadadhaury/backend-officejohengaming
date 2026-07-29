@@ -31,7 +31,6 @@ use App\Http\Controllers\Leader\AsetMesController as KoordinatorAsetMesControlle
 use App\Http\Controllers\Leader\AsetTimController as KoordinatorAsetTimController;
 use App\Http\Controllers\Leader\AssetSayaController;
 use App\Http\Controllers\Leader\DashboardController as KoordinatorDashboard;
-use App\Http\Controllers\Leader\DataSayaController;
 use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingController;
 use App\Http\Controllers\Leader\MomController;
 use App\Http\Controllers\MomExportController;
@@ -163,11 +162,10 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::patch('mom/{mom}/send', [MomController::class, 'send'])->name('mom.send');
     Route::post('mom/{mom}/upload-file', [MomController::class, 'uploadFile'])->name('mom.upload-file');
     Route::post('meetings/{meeting}/upload-file', [KoordinatorMeetingController::class, 'uploadFile'])->name('meetings.upload-file');
-    Route::get('data-saya', [DataSayaController::class, 'index'])->name('data-saya.index');
-    Route::post('data-saya', [DataSayaController::class, 'store'])->name('data-saya.store');
-    Route::put('data-saya/{asetDaya}', [DataSayaController::class, 'update'])->name('data-saya.update');
-    Route::delete('data-saya/{asetDaya}', [DataSayaController::class, 'destroy'])->name('data-saya.destroy');
     Route::get('asset-saya', [AssetSayaController::class, 'index'])->name('asset-saya.index');
+    Route::post('asset-saya', [AssetSayaController::class, 'store'])->name('asset-saya.store');
+    Route::put('asset-saya/{kategori}/{id}', [AssetSayaController::class, 'update'])->name('asset-saya.update');
+    Route::delete('asset-saya/{kategori}/{id}', [AssetSayaController::class, 'destroy'])->name('asset-saya.destroy');
     Route::get('aset-tim', [KoordinatorAsetTimController::class, 'index'])->name('aset-tim.index');
     Route::post('aset-tim', [KoordinatorAsetTimController::class, 'store'])->name('aset-tim.store');
     Route::put('aset-tim/{asetTim}', [KoordinatorAsetTimController::class, 'update'])->name('aset-tim.update');

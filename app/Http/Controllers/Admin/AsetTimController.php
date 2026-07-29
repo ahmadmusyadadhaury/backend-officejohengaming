@@ -64,6 +64,7 @@ class AsetTimController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
+        $data['jumlah'] = $data['jumlah'] ?? 1;
         $data['is_active'] = true;
 
         $asset = AsetTim::create($data);
@@ -89,6 +90,7 @@ class AsetTimController extends Controller
         ];
 
         $data = $request->validate($rules);
+        $data['jumlah'] = $data['jumlah'] ?? 1;
         $asetTim->update($data);
 
         if ($request->ajax() || $request->wantsJson()) {

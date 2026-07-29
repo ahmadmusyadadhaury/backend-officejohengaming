@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Asset;
 use App\Models\Meeting;
 use App\Models\Team;
 use App\Models\VehiclePajakRequest;
@@ -96,11 +95,8 @@ class AppServiceProvider extends ServiceProvider
                     ->sortBy('start_time')
                     ->take(3);
 
-                // Peringatan Kadaluarsa (Aset dengan stock rendah)
-                $upcomingAlerts = Asset::where('quantity', '<=', 2)
-                    ->orderBy('quantity')
-                    ->take(3)
-                    ->get();
+                // Peringatan Kadaluarsa — tidak dipakai
+                $upcomingAlerts = collect();
 
                 // Pengajuan Pajak Pending (untuk approver)
                 $pendingPajakApprovalsCount = VehiclePajakRequest::where('status', 'pending')->count();

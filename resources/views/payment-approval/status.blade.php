@@ -58,24 +58,26 @@
             <table class="gaming-table" style="width:100%;min-width:700px;">
                 <colgroup>
                     <col style="width:50px">
-                    <col style="width:100px">
+                    <col style="width:95px">
                     <col>
-                    <col style="width:130px">
-                    <col style="width:110px">
+                    <col style="width:115px">
+                    <col style="width:115px">
                     <col style="width:100px">
-                    <col style="width:70px">
-                    <col class="hidden md:table-cell" style="width:140px">
+                    <col style="width:85px">
+                    <col style="width:65px">
+                    <col class="hidden md:table-cell" style="width:130px">
                 </colgroup>
                 <thead>
                     <tr>
                         <th style="width:50px">No</th>
-                        <th style="width:100px">Jenis</th>
+                        <th style="width:95px">Jenis</th>
                         <th>Detail</th>
-                        <th style="width:130px">Nominal</th>
-                        <th style="width:110px">Tgl Bayar</th>
-                        <th style="width:100px">Status</th>
-                        <th style="width:70px">Bukti</th>
-                        <th class="hidden md:table-cell" style="width:140px">Approval</th>
+                        <th style="width:115px">PIC</th>
+                        <th style="width:115px">Nominal</th>
+                        <th style="width:100px">Tgl Bayar</th>
+                        <th style="width:85px">Status</th>
+                        <th style="width:65px">Bukti</th>
+                        <th class="hidden md:table-cell" style="width:130px">Approval</th>
                     </tr>
                 </thead>
                 <tbody id="status-tbody">
@@ -84,6 +86,7 @@
                         <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
                         <td><span class="text-xs font-semibold" style="color:var(--text-secondary);">{{ $r['jenis_label'] }}</span></td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $r['detail'] }}</td>
+                        <td style="color:var(--text-secondary);font-size:13px;">{{ $r['pic'] ?? '-' }}</td>
                         <td style="color:var(--text-primary);">Rp {{ number_format($r['nominal'], 0, ',', '.') }}</td>
                         <td style="color:var(--text-secondary);font-size:13px;">{{ $r['tanggal_bayar'] }}</td>
                         <td>

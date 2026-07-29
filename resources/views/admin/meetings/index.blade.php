@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('body-class', 'page-admin')
+@section('body-class', 'page-admin page-admin-meetings')
 @section('title', 'Permintaan Meeting')
 @section('page-title', 'Permintaan Meeting')
 @section('page-subtitle', 'Kelola semua permintaan meeting perusahaan')
@@ -463,13 +463,13 @@ const meetingsData = @json($meetingsJson);
 const roomsData = @json($rooms);
 const csrfToken = '{{ csrf_token() }}';
 const statusMap = {
-    pending:     { label: '● MENUNGGU',  bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
-    approved:    { label: '● DISETUJUI',  bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
-    rejected:    { label: '● DITOLAK',    bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
-    confirmed:   { label: '● DIKONFIRMASI', bg: '#eff6ff', text: '#2563eb', border: '#bfdbfe' },
-    cancelled:   { label: '● DIBATALKAN', bg: '#f9fafb', text: '#6b7280', border: '#e5e7eb' },
-    in_progress: { label: '● BERLANGSUNG', bg: '#eff6ff', text: '#2563eb', border: '#bfdbfe' },
-    completed:   { label: '● SELESAI',    bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
+    pending:     { label: '● MENUNGGU',  cls: 'badge-yellow' },
+    approved:    { label: '● DISETUJUI',  cls: 'badge-blue' },
+    rejected:    { label: '● DITOLAK',    cls: 'badge-red' },
+    confirmed:   { label: '● DIKONFIRMASI', cls: 'badge-primary' },
+    cancelled:   { label: '● DIBATALKAN', cls: 'badge-gray' },
+    in_progress: { label: '● BERLANGSUNG', cls: 'badge-primary' },
+    completed:   { label: '● SELESAI',    cls: 'badge-green' },
 };
 
 function showDetail(id) {
@@ -504,7 +504,7 @@ function showDetail(id) {
         </div>
         <div class="flex items-center justify-between py-2.5">
             <span class="text-[11px] font-semibold" style="color:var(--text-muted);">Status</span>
-            <span class="text-[11px] font-bold px-2.5 py-1 rounded-md" style="background:${st.bg};color:${st.text};">${st.label}</span>
+            <span class="badge ${st.cls}">${st.label}</span>
         </div>
     `;
 
@@ -755,5 +755,13 @@ document.getElementById('delete-confirm-modal')?.addEventListener('click', funct
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 .meeting-row + .meeting-row > td { padding-top: 0; }
+.page-admin.page-admin-meetings .btn-primary {
+    background: #6d5ef9;
+    box-shadow: 0 2px 8px rgba(109,94,249,0.25);
+}
+.page-admin.page-admin-meetings .btn-primary:hover {
+    background: #5a4be0;
+    box-shadow: 0 4px 14px rgba(109,94,249,0.35);
+}
 </style>
 @endpush
