@@ -61,7 +61,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Belun ada aset MES yang ditugaskan.</td></tr>
+                    <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset MES.</td></tr>
                     @endforelse
                 </tbody>
             </table>
