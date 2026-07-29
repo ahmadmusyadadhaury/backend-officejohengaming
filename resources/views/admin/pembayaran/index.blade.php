@@ -1267,17 +1267,36 @@
                         <label class="gaming-label">Jatuh Tempo <span class="field-req">*</span></label>
                         <input type="date" name="jatuh_tempo" id="f-jatuh_tempo" required class="gaming-input">
                     </div>
-                    @endif
                     <div class="field-group">
-                        <label class="gaming-label">Status <span class="field-req">*</span></label>
-                        <select name="status" id="f-status" required class="gaming-input" onchange="toggleTanggalBayar()">
-                            <option value="jatuh_tempo">Jatuh Tempo</option>
-                            <option value="lunas">Lunas</option>
-                            <option value="pending">Menunggu</option>
-                            <option value="rejected">Ditolak</option>
+                        <label class="gaming-label">PIC <span class="field-req">*</span></label>
+                        <input type="text" name="pic" id="f-pic" required placeholder="Nama penanggung jawab" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Jabatan <span class="field-req">*</span></label>
+                        <select name="jabatan" id="f-jabatan" required class="gaming-input gaming-select">
+                            <option value="">Pilih Jabatan</option>
+                            <option value="Chief Executive Officer (CEO)">Chief Executive Officer (CEO)</option>
+                            <option value="General Manager (GM)">General Manager (GM)</option>
+                            <option value="Head of Store">Head of Store</option>
+                            <option value="Admin Master">Admin Master</option>
+                            <option value="HR">HR</option>
+                            <option value="Koordinator">Koordinator</option>
+                            <option value="Karyawan">Karyawan</option>
                         </select>
                     </div>
-                    <div class="field-group" id="f-tanggal_bayar-group">
+                    @if($jenis === 'aset_digital')
+                    <div class="field-group">
+                        <label class="gaming-label">ID Aset Digital</label>
+                        <select name="digital_asset_id" id="f-digital_asset_id" class="gaming-input gaming-select">
+                            <option value="">Pilih Aset Digital</option>
+                            @foreach($digitalAssets as $da)
+                            <option value="{{ $da->id }}">{{ $da->nama_aset }} — {{ $da->pic }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+                    @endif
+                    <div class="field-group">
                         <label class="gaming-label">Tanggal Bayar</label>
                         <input type="date" name="tanggal_bayar" id="f-tanggal_bayar" class="gaming-input">
                     </div>
@@ -1616,21 +1635,6 @@ function closeAlertPopup() {
     document.body.style.overflow = '';
 }
 
-function toggleTanggalBayar() {
-    const status = document.getElementById('f-status').value;
-    const group = document.getElementById('f-tanggal_bayar-group');
-    const input = document.getElementById('f-tanggal_bayar');
-    if (status === 'lunas' || status === 'pending') {
-        group.style.display = '';
-        if (!input.value) {
-            input.value = new Date().toISOString().split('T')[0];
-        }
-    } else {
-        group.style.display = 'none';
-        input.value = '';
-    }
-}
-
 function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah Tagihan';
     document.getElementById('form-method').value = 'POST';
@@ -1640,8 +1644,6 @@ function openCreateModal() {
     document.getElementById('payment-form').querySelectorAll('input, select').forEach(el => {
         if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method') el.value = '';
     });
-    document.getElementById('f-status').value = 'jatuh_tempo';
-    document.getElementById('f-tanggal_bayar-group').style.display = 'none';
     showPaymentModal();
 }
 
@@ -1888,16 +1890,14 @@ function openEditModal(id) {
     document.getElementById('f-tanggal_tagihan').value = i.tanggal_tagihan;
     document.getElementById('f-jatuh_tempo').value = i.jatuh_tempo;
     document.getElementById('f-nominal').value = i.nominal;
+    document.getElementById('f-pic').value = i.pic;
+    document.getElementById('f-jabatan').value = i.jabatan;
+    if (document.getElementById('f-digital_asset_id')) {
+        document.getElementById('f-digital_asset_id').value = i.digital_asset_id || '';
+    }
     @endif
 
-    document.getElementById('f-status').value = i.status;
-    if (i.status === 'lunas' || i.status === 'pending') {
-        document.getElementById('f-tanggal_bayar').value = i.tanggal_bayar || new Date().toISOString().split('T')[0];
-        document.getElementById('f-tanggal_bayar-group').style.display = '';
-    } else {
-        document.getElementById('f-tanggal_bayar').value = '';
-        document.getElementById('f-tanggal_bayar-group').style.display = 'none';
-    }
+    document.getElementById('f-tanggal_bayar').value = i.tanggal_bayar || '';
 
     showPaymentModal();
 }

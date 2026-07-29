@@ -47,6 +47,8 @@ class VehicleController extends Controller
                 'pajak_5_tahun' => $v->pajak_5_tahun?->format('d/m/Y'),
                 'kepemilikan_status' => $v->kepemilikan_status,
                 'biaya_kendaraan' => (int) $v->biaya_kendaraan,
+                'biaya_pajak_tahunan' => $v->biaya_pajak_tahunan ? (int) $v->biaya_pajak_tahunan : null,
+                'biaya_pajak_5_tahun' => $v->biaya_pajak_5_tahun ? (int) $v->biaya_pajak_5_tahun : null,
                 'pic' => $v->pic,
                 'jabatan' => $v->jabatan,
                 'keperluan' => $v->keperluan,
@@ -96,6 +98,8 @@ class VehicleController extends Controller
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'keperluan' => 'nullable|string',
+            'biaya_pajak_tahunan' => 'nullable|numeric|min:0',
+            'biaya_pajak_5_tahun' => 'nullable|numeric|min:0',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -126,6 +130,8 @@ class VehicleController extends Controller
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'keperluan' => 'nullable|string',
+            'biaya_pajak_tahunan' => 'nullable|numeric|min:0',
+            'biaya_pajak_5_tahun' => 'nullable|numeric|min:0',
         ]);
 
         if ($request->hasFile('foto')) {

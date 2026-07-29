@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\TokenLowMail;
 use App\Models\ElectricityTokenReading;
 use App\Models\InternetUsageCheck;
+use App\Models\DigitalAsset;
 use App\Models\Notification;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetMes;
@@ -97,6 +98,31 @@ class PaymentController extends Controller
                 'checker' => $u->checker?->name,
             ]);
         } elseif ($jenis === 'aset_digital') {
+            $expiringAssets = DigitalAsset::where(function ($q) {
+                $q->where('berakhir', '<=', now()->addDays(7))
+                  ->orWhere('is_active', false);
+            })->get();
+
+            foreach ($expiringAssets as $asset) {
+                $hasUnpaid = PembayaranAsetDigital::where('digital_asset_id', $asset->id)
+                    ->where('periode', 'like', '%(Perpanjangan)%')
+                    ->whereNotIn('status', ['lunas', 'rejected'])
+                    ->exists();
+                if (!$hasUnpaid) {
+                    $jatuhTempo = now()->addDays(30);
+                    PembayaranAsetDigital::create([
+                        'digital_asset_id' => $asset->id,
+                        'periode' => $asset->nama_aset . ' (Perpanjangan)',
+                        'tanggal_tagihan' => now(),
+                        'jatuh_tempo' => $jatuhTempo,
+                        'nominal' => $asset->biaya,
+                        'pic' => $asset->pic,
+                        'jabatan' => $asset->jabatan,
+                        'status' => $this->resolvePaymentStatus($jatuhTempo),
+                    ]);
+                }
+            }
+
             $items = PembayaranAsetDigital::with('digitalAsset')->orderBy('created_at', 'desc')->get();
             $all = PembayaranAsetDigital::with('digitalAsset')->get();
 
@@ -129,8 +155,8 @@ class PaymentController extends Controller
                 'email' => $p->digitalAsset?->email ?? '-',
                 'mulai' => $p->digitalAsset?->mulai?->format('d/m/Y') ?? '-',
                 'berakhir' => $p->digitalAsset?->berakhir?->format('d/m/Y') ?? '-',
-                'pic' => $p->digitalAsset?->pic ?? '-',
-                'jabatan' => $p->digitalAsset?->jabatan ?? '-',
+                'pic' => $p->pic ?? $p->digitalAsset?->pic ?? '-',
+                'jabatan' => $p->jabatan ?? $p->digitalAsset?->jabatan ?? '-',
                 'keperluan' => $p->digitalAsset?->keperluan ?? '-',
             ]);
 
@@ -353,13 +379,14 @@ class PaymentController extends Controller
         ];
 
         $users = User::orderBy('name')->get();
+        $digitalAssets = DigitalAsset::orderBy('nama_aset')->get();
 
         return view('admin.pembayaran.index', compact(
             'jenis', 'items', 'itemsJson', 'stats', 'alertItems', 'alerts',
             'jenisLabels', 'jenisIcons', 'tokenReadings', 'latestReading',
             'tokenAlert', 'capacityKwh', 'usedKwh', 'tokenMonth',
             'latestPayment', 'topupHistory', 'topupRange', 'readingRange',
-            'users', 'internetUsages', 'internetUsagesJson', 'internetUsageDate', 'tahun', 'availableYears',
+            'users', 'digitalAssets', 'internetUsages', 'internetUsagesJson', 'internetUsageDate', 'tahun', 'availableYears',
         ));
     }
 
@@ -385,6 +412,9 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
+                'pic' => 'required|string|max:255',
+                'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
+                'digital_asset_id' => 'nullable|exists:digital_assets,id',
                 'tanggal_bayar' => 'nullable|date',
             ]);
             $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
@@ -465,6 +495,9 @@ class PaymentController extends Controller
                 'tanggal_tagihan' => 'required|date',
                 'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
                 'nominal' => 'required|numeric|min:0',
+                'pic' => 'required|string|max:255',
+                'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
+                'digital_asset_id' => 'nullable|exists:digital_assets,id',
                 'tanggal_bayar' => 'nullable|date',
             ]);
             if (! empty($data['tanggal_tagihan'])) {
@@ -477,12 +510,27 @@ class PaymentController extends Controller
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
             $model = PembayaranAsetDigital::findOrFail($id);
+            $wasPaidBefore = !is_null($model->tanggal_bayar);
             if ($model->status !== 'lunas') {
                 $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             } else {
                 unset($data['status']);
             }
             $model->update($data);
+
+            if ($model->digital_asset_id && $request->filled('tanggal_bayar') && !$wasPaidBefore) {
+                $asset = DigitalAsset::find($model->digital_asset_id);
+                if ($asset) {
+                    $newBerakhir = max(
+                        $asset->berakhir ? $asset->berakhir->copy() : now(),
+                        now()
+                    )->addYear();
+                    $asset->update([
+                        'berakhir' => $newBerakhir,
+                        'is_active' => true,
+                    ]);
+                }
+            }
         } elseif ($jenis === 'ipl_ruko') {
             $data = $request->validate([
                 'periode' => 'required|string|max:255',

@@ -189,68 +189,75 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
 </div>
 
 {{-- Create / Edit Modal --}}
-<div id="sosmed-modal" class="modal-modern">
-    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
-        <div class="modal-modern-header">
-            <h3 id="modal-title">Tambah Sosial Media</h3>
-            <button type="button" onclick="closeModal('sosmed-modal')" class="modal-modern-close">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div id="sosmed-modal" style="display:none;position:fixed;inset:0;z-index:100000;align-items:flex-start;justify-content:center;padding:20px;background:var(--bg-overlay);overflow-y:auto;" onclick="if(event.target===this)closeModal('sosmed-modal')">
+    <div class="sosmed-modal-card" onclick="event.stopPropagation()">
+        <div class="sosmed-modal-header">
+            <div>
+                <h3 class="sosmed-modal-title" id="modal-title">Tambah Sosial Media</h3>
+                <p class="sosmed-modal-subtitle">Kelola akun sosial media operasional</p>
+            </div>
+            <button type="button" onclick="closeModal('sosmed-modal')" class="sosmed-close-btn">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
-        <div class="modal-modern-body">
+        <div class="sosmed-modal-body">
             <form id="sosmed-form" method="POST">
                 @csrf
                 <input type="hidden" name="_method" id="form-method" value="POST">
                 <input type="hidden" name="id" id="form-id" value="">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
-                    <div class="flex flex-col gap-1.5">
-                        <label class="gaming-label">Username <span class="field-req">*</span></label>
-                        <input type="text" name="username" id="f-username" required placeholder="Masukan username" class="gaming-input">
+                <div class="sosmed-form-grid">
+                    <div class="sosmed-form-col">
+                        <div class="sosmed-field">
+                            <label class="sosmed-label">Username <span class="sosmed-required">*</span></label>
+                            <input type="text" name="username" id="f-username" required placeholder="Masukan username" class="sosmed-input">
+                        </div>
+                        <div class="sosmed-field">
+                            <label class="sosmed-label">Nama <span class="sosmed-required">*</span></label>
+                            <input type="text" name="nama" id="f-nama" required placeholder="Masukan nama akun" class="sosmed-input">
+                        </div>
+                        <div class="sosmed-field">
+                            <label class="sosmed-label">Followers</label>
+                            <input type="text" name="followers" id="f-followers" placeholder="Masukan jumlah followers" class="sosmed-input">
+                        </div>
+                        <div class="sosmed-field">
+                            <label class="sosmed-label">Divisi <span class="sosmed-required">*</span></label>
+                            <input type="text" name="divisi" id="f-divisi" required placeholder="Masukan divisi" class="sosmed-input">
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="gaming-label">Nama <span class="field-req">*</span></label>
-                        <input type="text" name="nama" id="f-nama" required placeholder="Masukan nama akun" class="gaming-input">
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="gaming-label">Followers</label>
-                        <input type="text" name="followers" id="f-followers" placeholder="Masukan jumlah followers" class="gaming-input">
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="gaming-label">Platform <span class="field-req">*</span></label>
-                        <input type="text" name="platform" id="f-platform" required placeholder="Contoh: Instagram, TikTok" class="gaming-input">
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="gaming-label">Divisi <span class="field-req">*</span></label>
-                        <input type="text" name="divisi" id="f-divisi" required placeholder="Masukan divisi" class="gaming-input">
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="gaming-label">PIC <span class="field-req">*</span></label>
-                        <select name="pic" id="f-pic" required class="gaming-input gaming-select">
-                            <option value="">— Pilih PIC —</option>
-                            @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
-                            <option value="{{ $u->name }}">{{ $u->name }} ({{ $u->username }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="gaming-label">Status</label>
-                        <select name="status" id="f-status" class="gaming-input">
-                            <option value="aktif">Aktif</option>
-                            <option value="nonaktif">Tidak Aktif</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col gap-1.5 sm:col-span-2">
-                        <label class="gaming-label">Keterangan</label>
-                        <textarea name="ket" id="f-ket" placeholder="Masukan keterangan" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
+                    <div class="sosmed-form-col">
+                        <div class="sosmed-field">
+                            <label class="sosmed-label">Platform <span class="sosmed-required">*</span></label>
+                            <input type="text" name="platform" id="f-platform" required placeholder="Contoh: Instagram, TikTok" class="sosmed-input">
+                        </div>
+                        <div class="sosmed-field">
+                            <label class="sosmed-label">PIC <span class="sosmed-required">*</span></label>
+                            <select name="pic" id="f-pic" required class="sosmed-input">
+                                <option value="">— Pilih PIC —</option>
+                                @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
+                                <option value="{{ $u->name }}">{{ $u->name }} ({{ $u->username }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="sosmed-field">
+                            <label class="sosmed-label">Status</label>
+                            <select name="status" id="f-status" class="sosmed-input">
+                                <option value="aktif">Aktif</option>
+                                <option value="nonaktif">Tidak Aktif</option>
+                            </select>
+                        </div>
+                        <div class="sosmed-field">
+                            <label class="sosmed-label">Keterangan</label>
+                            <textarea name="ket" id="f-ket" placeholder="Masukan keterangan" rows="2" class="sosmed-input sosmed-textarea"></textarea>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="modal-modern-footer">
-            <button type="button" onclick="closeModal('sosmed-modal')" class="btn btn-secondary">Batal</button>
-            <button type="submit" class="btn btn-primary" id="form-submit-btn" form="sosmed-form">Simpan</button>
+        <div class="sosmed-modal-footer">
+            <button type="button" onclick="closeModal('sosmed-modal')" class="sosmed-btn sosmed-btn-batal">Batal</button>
+            <button type="submit" class="sosmed-btn sosmed-btn-simpan" id="form-submit-btn" form="sosmed-form">Simpan</button>
         </div>
     </div>
 </div>
@@ -259,21 +266,148 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
 
 @push('styles')
 <style>
-.field-req { color: #f87171; }
-
-.modal-modern-body .gaming-input {
-    padding: 0.55rem 0.75rem;
-    font-size: 0.8rem;
+@keyframes sosmedFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
-.modal-modern-body .gaming-label {
-    margin-bottom: 0;
-    font-size: 0.65rem;
+.sosmed-modal-card {
+    width: 100%;
+    max-width: 700px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    max-height: 95vh;
+    animation: sosmedFadeIn 0.3s ease;
 }
-
-.stat-card-compact .stat-label-text {
-    font-size: 0.7rem;
+.sosmed-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.sosmed-modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+.sosmed-modal-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 2px 0 0;
+    font-weight: 400;
+}
+.sosmed-close-btn {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.sosmed-close-btn:hover { background: rgba(128,128,128,0.2); color: var(--text-primary); }
+.sosmed-modal-body {
+    padding: 12px 20px 12px;
+    overflow-y: auto;
+    flex: 1;
+}
+.sosmed-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+}
+@media (max-width: 768px) {
+    .sosmed-form-grid { grid-template-columns: 1fr; }
+    .sosmed-modal-card { max-width: 95vw; }
+    .sosmed-modal-header { padding: 12px 20px 10px; }
+    .sosmed-modal-body { padding: 10px 16px 10px; }
+}
+.sosmed-form-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.sosmed-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sosmed-label {
+    font-size: 12px;
     font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sosmed-required { color: #f87171; }
+.sosmed-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 13px;
+    outline: none;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+.sosmed-input:focus {
+    border-color: #6c5cff;
+    box-shadow: 0 0 0 3px rgba(108,92,255,0.15);
+}
+.sosmed-input::placeholder { color: var(--text-muted); }
+.sosmed-input option { background: var(--bg-surface); color: var(--text-primary); }
+.sosmed-textarea {
+    height: auto;
+    padding: 10px 14px;
+    resize: vertical;
+    min-height: 64px;
+}
+.sosmed-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 14px;
+    margin-top: 14px;
+    border-top: 1px solid var(--border-color);
+}
+.sosmed-btn {
+    padding: 8px 24px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
+}
+.sosmed-btn-batal {
+    background: transparent;
+    border: 1px solid var(--border-color);
     color: var(--text-secondary);
+}
+.sosmed-btn-batal:hover {
+    border-color: rgba(128,128,128,0.4);
+    color: var(--text-primary);
+}
+.sosmed-btn-simpan {
+    background: linear-gradient(135deg, #6c5cff, #8b7bff);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(108,92,255,0.3);
+}
+.sosmed-btn-simpan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108,92,255,0.4);
 }
 </style>
 @endpush

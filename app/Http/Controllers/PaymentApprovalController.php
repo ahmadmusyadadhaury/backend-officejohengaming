@@ -118,6 +118,9 @@ class PaymentApprovalController extends Controller
     public function myRequests()
     {
         $userId = auth()->id();
+        $userName = auth()->user()->name;
+        $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
+        $myAsetMesIds = AsetMes::where('penanggung_jawab', $userId)->pluck('id');
         $all = collect();
 
         foreach ([
@@ -128,7 +131,19 @@ class PaymentApprovalController extends Controller
             'aset_mes' => PembayaranAsetMes::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
-                ->where('requested_by', $userId)
+                ->where(function ($q) use ($userId, $userName, $jenis, $myAsetTimIds, $myAsetMesIds) {
+                    $q->where('requested_by', $userId);
+                    $q->orWhere(function ($sub) use ($userName, $jenis, $myAsetTimIds, $myAsetMesIds) {
+                        $sub->where('status', 'lunas');
+                        if (in_array($jenis, ['aset_tim', 'aset_mes'])) {
+                            $fk = $jenis === 'aset_tim' ? 'aset_tim_id' : 'aset_mes_id';
+                            $ids = $jenis === 'aset_tim' ? $myAsetTimIds : $myAsetMesIds;
+                            $sub->whereIn($fk, $ids);
+                        } else {
+                            $sub->where('pic', $userName);
+                        }
+                    });
+                })
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(fn ($r) => [
@@ -181,7 +196,7 @@ class PaymentApprovalController extends Controller
             ]);
         $all = $all->merge($pajakRecords);
 
-        $requests = $all->sortByDesc('created_at')->values();
+        $requests = $all->unique(fn ($i) => $i['jenis'].'_'.$i['id'])->sortByDesc('created_at')->values();
 
         return view('payment-approval.status', compact('requests'));
     }
@@ -192,12 +207,48 @@ class PaymentApprovalController extends Controller
         $today = Carbon::today();
 
         $userId = auth()->id();
+        $userName = auth()->user()->name;
         $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
         $myAsetMesIds = AsetMes::where('penanggung_jawab', $userId)->pluck('id');
+
+        $expiringVehicles = Vehicle::where(function ($q) {
+            $q->whereDate('pajak_tahunan', '<=', now()->addDays(7))
+              ->orWhereDate('pajak_5_tahun', '<=', now()->addDays(7));
+        })->get();
+
+        foreach ($expiringVehicles as $vehicle) {
+            $jenisPajakList = [];
+            if ($vehicle->pajak_tahunan && $vehicle->pajak_tahunan->lte(now()->addDays(7))) {
+                $jenisPajakList[] = 'tahunan';
+            }
+            if ($vehicle->pajak_5_tahun && $vehicle->pajak_5_tahun->lte(now()->addDays(7))) {
+                $jenisPajakList[] = '5_tahunan';
+            }
+            foreach ($jenisPajakList as $jenisPajak) {
+                $hasPending = VehiclePajakRequest::where('vehicle_id', $vehicle->id)
+                    ->where('jenis', $jenisPajak)
+                    ->whereNotIn('status', ['approved', 'rejected'])
+                    ->exists();
+                if (!$hasPending) {
+                    $nominal = $jenisPajak === 'tahunan'
+                        ? ($vehicle->biaya_pajak_tahunan ?? $vehicle->biaya_kendaraan)
+                        : ($vehicle->biaya_pajak_5_tahun ?? $vehicle->biaya_kendaraan);
+                    VehiclePajakRequest::create([
+                        'vehicle_id' => $vehicle->id,
+                        'jenis' => $jenisPajak,
+                        'nominal' => $nominal,
+                        'status' => 'pending',
+                        'requested_by' => null,
+                        'bukti_bayar' => null,
+                    ]);
+                }
+            }
+        }
 
         foreach ([
             'internet' => WifiPayment::class,
             'aset_digital' => PembayaranAsetDigital::class,
+            'pajak_kendaraan' => VehiclePajakRequest::class,
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
             'aset_mes' => PembayaranAsetMes::class,
@@ -206,8 +257,23 @@ class PaymentApprovalController extends Controller
 
             $query = $class::with('requester')
                 ->whereNull('requested_by')
-                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
-                ->where($dateField, '<', $today);
+                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu']);
+
+            if ($jenis === 'aset_digital') {
+                if (! in_array(auth()->user()->role, User::FULL_ACCESS_ROLES)) {
+                    $query->where(function ($q) use ($userName) {
+                        $q->where('pic', $userName)
+                          ->orWhereHas('digitalAsset', fn ($q) => $q->where('pic', $userName));
+                    });
+                }
+            } elseif ($jenis === 'pajak_kendaraan') {
+                $query->with('vehicle');
+                if (! in_array(auth()->user()->role, User::FULL_ACCESS_ROLES)) {
+                    $query->whereHas('vehicle', fn ($q) => $q->where('pic', $userName));
+                }
+            } else {
+                $query->where($dateField, '<', $today);
+            }
 
             if ($jenis === 'aset_tim') {
                 $query->whereIn('aset_tim_id', $myAsetTimIds);
@@ -222,14 +288,15 @@ class PaymentApprovalController extends Controller
                     'jenis_label' => match ($jenis) {
                         'internet' => 'Internet',
                         'aset_digital' => 'Aset Digital',
+                        'pajak_kendaraan' => 'Pajak Kendaraan',
                         'ipl_ruko' => 'IPL Ruko',
                         'aset_tim' => 'Aset TIM',
                         'aset_mes' => 'Aset MES',
                     },
-                    'detail' => $jenis === 'internet' ? $r->nama_internet : $r->periode,
+                    'detail' => $jenis === 'internet' ? $r->nama_internet : ($jenis === 'pajak_kendaraan' ? $r->vehicle?->nama_kendaraan . ' (' . ($r->jenis === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahun') . ')' : $r->periode),
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
                     'status' => $r->status,
-                    'pic' => $r->pic,
+                    'pic' => $jenis === 'pajak_kendaraan' ? ($r->vehicle?->pic ?? '-') : $r->pic,
                     'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
                 ]);
             $all = $all->merge($records);
@@ -388,30 +455,32 @@ class PaymentApprovalController extends Controller
             'approved_at' => now(),
         ]);
 
-        // Auto-create tagihan baru hanya jika tanggal baru masih di masa depan
-        $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
-        $nextDate = $record->{$dateField}->copy()->addMonths($offsetMonths);
+        if (! in_array($jenis, ['aset_digital', 'pajak_kendaraan'])) {
+            // Auto-create tagihan baru hanya jika tanggal baru masih di masa depan
+            $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+            $nextDate = $record->{$dateField}->copy()->addMonths($offsetMonths);
 
-        if ($nextDate->isFuture()) {
-            $fillable = $record->getFillable();
-            $newData = [];
-            foreach ($fillable as $col) {
-                if (in_array($col, ['id', 'status', 'tanggal_bayar', 'requested_by', 'approved_by', 'approved_at', 'bukti_bayar', 'notes', 'created_at', 'updated_at', 'period'])) {
-                    continue;
+            if ($nextDate->isFuture()) {
+                $fillable = $record->getFillable();
+                $newData = [];
+                foreach ($fillable as $col) {
+                    if (in_array($col, ['id', 'status', 'tanggal_bayar', 'requested_by', 'approved_by', 'approved_at', 'bukti_bayar', 'notes', 'created_at', 'updated_at', 'period'])) {
+                        continue;
+                    }
+                    $newData[$col] = $record->$col;
                 }
-                $newData[$col] = $record->$col;
+
+                $newData['period'] = $period;
+                $newData[$dateField] = $nextDate;
+                $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+
+                if ($jenis !== 'internet') {
+                    $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
+                    $newData['periode'] = $nextDate->locale('id')->translatedFormat('F Y');
+                }
+
+                $class::create($newData);
             }
-
-            $newData['period'] = $period;
-            $newData[$dateField] = $nextDate;
-            $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
-
-            if ($jenis !== 'internet') {
-                $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
-                $newData['periode'] = $nextDate->locale('id')->translatedFormat('F Y');
-            }
-
-            $class::create($newData);
         }
 
         $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;

@@ -23,6 +23,8 @@ class Vehicle extends Model
         'pic',
         'jabatan',
         'keperluan',
+        'biaya_pajak_tahunan',
+        'biaya_pajak_5_tahun',
     ];
 
     protected function casts(): array
@@ -32,6 +34,8 @@ class Vehicle extends Model
             'pajak_tahunan' => 'date',
             'pajak_5_tahun' => 'date',
             'biaya_kendaraan' => 'decimal:2',
+            'biaya_pajak_tahunan' => 'decimal:2',
+            'biaya_pajak_5_tahun' => 'decimal:2',
         ];
     }
 

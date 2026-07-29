@@ -365,10 +365,13 @@
                             <input type="text" name="nomor_mesin" id="f-nomor_mesin" placeholder="Masukan nomor mesin" class="vehicle-input">
                         </div>
                         <div class="vehicle-field">
-                            <label class="vehicle-label">
-                                Keterangan <span class="vehicle-required">*</span>
-                            </label>
-                            <textarea name="keperluan" id="f-keperluan" required placeholder="Masukan keterangan" rows="2" class="vehicle-input vehicle-textarea"></textarea>
+                            <label class="vehicle-label">PIC <span class="vehicle-required">*</span></label>
+                            <select name="pic" id="f-pic" class="vehicle-input">
+                                <option value="">— Pilih PIC —</option>
+                                @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
+                                <option value="{{ $u->name }}" {{ auth()->user()->name === $u->name ? 'selected' : '' }}>{{ $u->name }} ({{ $u->username }})</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -410,33 +413,44 @@
                             <input type="date" name="pajak_5_tahun" id="f-pajak_5_tahun" required class="vehicle-input">
                         </div>
                         <div class="vehicle-field">
-                            <label class="vehicle-label">Foto Kendaraan</label>
-                            <div style="display:flex;flex-direction:column;gap:8px;">
-                                <label for="f-foto" class="vehicle-upload" id="foto-upload-area" style="height:80px;">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                    <span id="foto-label" style="font-size:12px;">Klik untuk upload gambar</span>
-                                </label>
-                                <input type="file" name="foto" id="f-foto" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" style="display:none;">
-                                <div id="foto-preview" style="display:none;text-align:center;">
-                                    <img id="foto-preview-img" src="" alt="Preview" style="max-width:100%;max-height:100px;border-radius:8px;object-fit:cover;">
-                                </div>
-                            </div>
+                            <label class="vehicle-label">
+                                Biaya Pajak Tahunan
+                            </label>
+                            <input type="number" name="biaya_pajak_tahunan" id="f-biaya_pajak_tahunan" placeholder="Masukan nominal pajak tahunan" class="vehicle-input" min="0" step="0.01">
                         </div>
+                        <div class="vehicle-field">
+                            <label class="vehicle-label">
+                                Biaya Pajak 5 Tahunan
+                            </label>
+                            <input type="number" name="biaya_pajak_5_tahun" id="f-biaya_pajak_5_tahun" placeholder="Masukan nominal pajak 5 tahunan" class="vehicle-input" min="0" step="0.01">
+                        </div>
+
+                </div>
+
+                {{-- Full-width fields --}}
+                <div class="vehicle-field">
+                    <label class="vehicle-label">
+                        Keterangan <span class="vehicle-required">*</span>
+                    </label>
+                    <textarea name="keperluan" id="f-keperluan" required placeholder="Masukan keterangan" rows="2" class="vehicle-input vehicle-textarea"></textarea>
+                </div>
+                <div class="vehicle-field">
+                    <label class="vehicle-label">Foto Kendaraan</label>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <label for="f-foto" class="vehicle-upload" id="foto-upload-area" style="height:80px;">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span id="foto-label" style="font-size:12px;">Klik untuk upload gambar</span>
+                        </label>
+                        <input type="file" name="foto" id="f-foto" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" style="display:none;">
+                        <div id="foto-preview" style="display:none;text-align:center;">
+                            <img id="foto-preview-img" src="" alt="Preview" style="max-width:100%;max-height:100px;border-radius:8px;object-fit:cover;">
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Hidden fields --}}
                 <input type="hidden" name="biaya_kendaraan" id="f-biaya_kendaraan" value="0">
                 <input type="hidden" name="jabatan" id="f-jabatan" value="{{ auth()->user()->jabatan ?? auth()->user()->role }}">
-
-                <div class="vehicle-field">
-                    <label class="vehicle-label">PIC</label>
-                    <select name="pic" id="f-pic" class="vehicle-input">
-                        <option value="">— Pilih PIC —</option>
-                        @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $u)
-                        <option value="{{ $u->name }}" {{ auth()->user()->name === $u->name ? 'selected' : '' }}>{{ $u->name }} ({{ $u->username }})</option>
-                        @endforeach
-                    </select>
-                </div>
 
                 {{-- Footer --}}
                 <div class="vehicle-modal-footer">
@@ -488,28 +502,28 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 24px 28px 20px;
+    padding: 16px 24px 12px;
     border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
 }
 .vehicle-modal-title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0;
 }
 .vehicle-modal-subtitle {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-muted);
-    margin: 4px 0 0;
+    margin: 2px 0 0;
     font-weight: 400;
 }
 .vehicle-close-btn {
-    width: 36px; height: 36px;
+    width: 32px; height: 32px;
     display: flex; align-items: center; justify-content: center;
     background: var(--bg-surface-2);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: 8px;
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s;
@@ -517,33 +531,33 @@
 }
 .vehicle-close-btn:hover { background: rgba(128,128,128,0.2); color: var(--text-primary); }
 .vehicle-modal-body {
-    padding: 20px 24px 16px;
+    padding: 12px 20px 12px;
     overflow-y: auto;
     flex: 1;
 }
 .vehicle-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px 24px;
+    gap: 10px 20px;
 }
 @media (max-width: 768px) {
     .vehicle-form-grid { grid-template-columns: 1fr; }
     .vehicle-modal-card { max-width: 95vw; }
-    .vehicle-modal-header { padding: 20px 20px 16px; }
-    .vehicle-modal-body { padding: 20px; }
+    .vehicle-modal-header { padding: 12px 20px 10px; }
+    .vehicle-modal-body { padding: 10px 16px 10px; }
 }
 .vehicle-form-col {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 .vehicle-field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 .vehicle-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-primary);
     display: flex;
@@ -553,13 +567,13 @@
 .vehicle-required { color: #f87171; }
 .vehicle-input {
     width: 100%;
-    height: 48px;
-    padding: 0 16px;
+    height: 40px;
+    padding: 0 14px;
     background: var(--bg-surface-2);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 10px;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: 13px;
     outline: none;
     transition: all 0.25s ease;
     box-sizing: border-box;
@@ -572,13 +586,13 @@
 .vehicle-input option { background: var(--bg-surface); color: var(--text-primary); }
 .vehicle-textarea {
     height: auto;
-    padding: 12px 16px;
+    padding: 10px 14px;
     resize: vertical;
-    min-height: 80px;
+    min-height: 64px;
 }
 .vehicle-upload {
     width: 100%;
-    height: 100px;
+    height: 72px;
     background: var(--bg-surface-2);
     border: 1px dashed var(--border-color);
     border-radius: 12px;
@@ -600,14 +614,14 @@
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    padding-top: 20px;
-    margin-top: 20px;
+    padding-top: 14px;
+    margin-top: 14px;
     border-top: 1px solid var(--border-color);
 }
 .vehicle-btn {
-    padding: 10px 28px;
-    border-radius: 12px;
-    font-size: 14px;
+    padding: 8px 24px;
+    border-radius: 10px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -833,6 +847,8 @@ function openEditModal(id) {
     document.getElementById('f-pajak_5_tahun').value = v.pajak_5_tahun ? v.pajak_5_tahun.split('/').reverse().join('-') : '';
     document.getElementById('f-kepemilikan_status').value = v.kepemilikan_status;
     document.getElementById('f-biaya_kendaraan').value = v.biaya_kendaraan;
+    document.getElementById('f-biaya_pajak_tahunan').value = v.biaya_pajak_tahunan || '';
+    document.getElementById('f-biaya_pajak_5_tahun').value = v.biaya_pajak_5_tahun || '';
     document.getElementById('f-pic').value = v.pic;
     document.getElementById('f-jabatan').value = v.jabatan;
     document.getElementById('f-keperluan').value = v.keperluan;
