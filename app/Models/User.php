@@ -97,4 +97,68 @@ class User extends Authenticatable
             default => ucfirst($this->role),
         };
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | IT Ticketing System — relasi & helper (additive)
+    |--------------------------------------------------------------------------
+    */
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'user_id');
+    }
+
+    public function assignedTickets()
+    {
+        return $this->hasMany(Ticket::class, 'assigned_to');
+    }
+
+    public function ticketComments()
+    {
+        return $this->hasMany(TicketComment::class);
+    }
+
+    public function ticketRatings()
+    {
+        return $this->hasMany(TicketRating::class);
+    }
+
+    public function ticketTeamMember()
+    {
+        return $this->hasOne(TicketTeamMember::class);
+    }
+
+    public function ticketNotifications()
+    {
+        return $this->hasMany(TicketNotification::class);
+    }
+
+    /**
+     * Apakah user merupakan anggota tim IT (bisa mengelola ticket).
+     * Super admin (role admin) selalu dianggap anggota.
+     */
+    public function isTicketTeam(): bool
+    {
+        if ($this->role === 'admin') {
+            return true;
+        }
+
+        return $this->ticketTeamMember()->exists();
+    }
+
+    /**
+     * Apakah user merupakan leader tim IT (bisa assign, laporan, SLA).
+     * Super admin (role admin) selalu dianggap leader.
+     */
+    public function isTicketLeader(): bool
+    {
+        if ($this->role === 'admin') {
+            return true;
+        }
+
+        $member = $this->ticketTeamMember()->first();
+
+        return $member !== null && $member->is_leader;
+    }
 }

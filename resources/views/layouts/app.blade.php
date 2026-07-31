@@ -10,6 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v={{ file_exists(public_path('apple-touch-icon.png')) ? filemtime(public_path('apple-touch-icon.png')) : '1' }}">
     <link rel="stylesheet" href="{{ asset('css/tailwind.css') }}?v={{ file_exists(public_path('css/tailwind.css')) ? md5_file(public_path('css/tailwind.css')) : '1' }}">
     <link rel="stylesheet" href="{{ asset('css/gaming.css') }}?v={{ file_exists(public_path('css/gaming.css')) ? md5_file(public_path('css/gaming.css')) : '1' }}">
+    <link rel="stylesheet" href="{{ asset('css/tickets.css') }}?v={{ file_exists(public_path('css/tickets.css')) ? md5_file(public_path('css/tickets.css')) : '1' }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .sidebar-safe  { padding-bottom: env(safe-area-inset-bottom, 16px); }

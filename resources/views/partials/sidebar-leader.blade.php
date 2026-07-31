@@ -93,6 +93,8 @@
     <a href="{{ route('payment-approval.status') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.status') ? 'active' : '' }}"><span class="truncate">Status Pengajuan</span></a>
 </div>
 
+@include('partials.sidebar-ticketing')
+
 <p class="sidebar-section-label">Akun</p>
 <a href="{{ route('profile.edit') }}"
     class="sidebar-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}">

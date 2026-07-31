@@ -190,6 +190,8 @@
 
 @endif
 
+@include('partials.sidebar-ticketing')
+
 <p class="sidebar-section-label">Akun</p>
 <a href="{{ route('profile.edit') }}"
     class="sidebar-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}">

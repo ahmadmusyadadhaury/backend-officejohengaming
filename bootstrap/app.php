@@ -6,6 +6,8 @@ use App\Http\Middleware\ApiAuthMiddleware;
 use App\Http\Middleware\CanManageAccountsMiddleware;
 use App\Http\Middleware\LeaderMiddleware;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\TicketLeaderMiddleware;
+use App\Http\Middleware\TicketTeamMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,6 +32,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'manage_accounts' => CanManageAccountsMiddleware::class,
             'admin_hr' => AdminHrMiddleware::class,
+            'ticket.team' => TicketTeamMiddleware::class,
+            'ticket.leader' => TicketLeaderMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

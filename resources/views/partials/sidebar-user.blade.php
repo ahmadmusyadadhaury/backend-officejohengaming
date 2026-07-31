@@ -65,6 +65,8 @@
     <span class="truncate">Status Pengajuan</span>
 </a>
 
+@include('partials.sidebar-ticketing')
+
 <p class="sidebar-section-label">Akun</p>
 <a href="{{ route('profile.edit') }}"
     class="sidebar-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
