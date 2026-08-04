@@ -108,8 +108,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('pembayaran/{id}', [PaymentController::class, 'destroy'])->name('pembayaran.destroy');
     Route::post('pembayaran/ipl-bulk', [PaymentController::class, 'bulkIpl'])->name('pembayaran.ipl-bulk');
     Route::post('token-reading', [PaymentController::class, 'storeTokenReading'])->name('pembayaran.token-reading.store');
+    Route::put('token-reading/{id}', [PaymentController::class, 'updateTokenReading'])->name('pembayaran.token-reading.update');
     Route::delete('token-reading/{id}', [PaymentController::class, 'destroyTokenReading'])->name('pembayaran.token-reading.destroy');
     Route::post('token-topup', [PaymentController::class, 'storeTokenPayment'])->name('pembayaran.token-topup.store');
+    Route::put('token-topup/{id}', [PaymentController::class, 'updateTokenPayment'])->name('pembayaran.token-topup.update');
     Route::delete('token-topup/{id}', [PaymentController::class, 'destroyTokenPayment'])->name('pembayaran.token-topup.destroy');
     Route::post('internet-usage', [PaymentController::class, 'storeInternetUsage'])->name('pembayaran.internet-usage.store');
     Route::delete('internet-usage/{id}', [PaymentController::class, 'destroyInternetUsage'])->name('pembayaran.internet-usage.destroy');

@@ -132,21 +132,22 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $i->pic }}</td>
                         @if(auth()->user()->role !== 'gm')
                         <td>
-                            <div class="flex items-center gap-1.5">
-                                <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" title="Lihat Detail" style="padding:4px 8px;">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                    <span class="hidden sm:inline">Detail</span>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
                                 </button>
-                                <button type="button" onclick="openEditModal({{ $i->id }})" class="btn btn-secondary btn-sm" title="Edit" style="padding:4px 8px;">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                    <span class="hidden sm:inline">Edit</span>
-                                </button>
-                                <form method="POST" action="{{ route('admin.sosial-media.destroy', $i) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun {{ $i->username }}?" style="margin:0;display:inline-flex;">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus" style="padding:4px 8px;">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
-                                </form>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, {{ $i->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-{{ $i->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showDetail({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        <button type="button" onclick="openEditModal({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.sosial-media.destroy', $i) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun {{ $i->username }}?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </td>
                         @endif
@@ -189,7 +190,7 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
 </div>
 
 {{-- Create / Edit Modal --}}
-<div id="sosmed-modal" style="display:none;position:fixed;inset:0;z-index:100000;align-items:flex-start;justify-content:center;padding:20px;background:var(--bg-overlay);overflow-y:auto;" onclick="if(event.target===this)closeModal('sosmed-modal')">
+<div id="sosmed-modal" style="display:none;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;padding:20px;background:var(--bg-overlay);overflow-y:auto;" onclick="if(event.target===this)closeModal('sosmed-modal')">
     <div class="sosmed-modal-card" onclick="event.stopPropagation()">
         <div class="sosmed-modal-header">
             <div>
@@ -378,8 +379,8 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    padding-top: 14px;
-    margin-top: 14px;
+    padding: 14px 24px 20px;
+    flex-shrink: 0;
     border-top: 1px solid var(--border-color);
 }
 .sosmed-btn {
@@ -529,6 +530,17 @@ function setFilter(value) {
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.filter-dropdown-wrap')) {
         document.getElementById('filter-menu').style.display = 'none';
+    }
+});
+
+function toggleDropdown(btn, id) {
+    const menu = document.getElementById('dropdown-' + id);
+    document.querySelectorAll('.dropdown-menu').forEach(m => { if (m.id !== 'dropdown-' + id) m.style.display = 'none'; });
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-wrap')) {
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
     }
 });
 

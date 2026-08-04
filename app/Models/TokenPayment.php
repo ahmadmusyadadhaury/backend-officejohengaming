@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TokenPayment extends Model
 {
-    protected $fillable = ['amount_kwh', 'nominal', 'payment_date', 'period', 'notes', 'created_by'];
+    protected $fillable = ['amount_kwh', 'nominal', 'payment_date', 'period', 'notes', 'bukti_bayar', 'created_by'];
 
     protected function casts(): array
     {

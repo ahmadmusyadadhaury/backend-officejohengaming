@@ -451,6 +451,7 @@ class ExportController extends Controller
                 'Jumlah KWH' => $t->amount_kwh,
                 'Nominal' => $t->nominal,
                 'Oleh' => $t->creator?->name ?? '-',
+                'Bukti' => $t->bukti_bayar ? route('files.show', $t->bukti_bayar) : '-',
                 'Catatan' => $t->notes ?: 'Tidak ada catatan',
             ]);
 

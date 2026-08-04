@@ -898,6 +898,7 @@
                         <th>Jumlah KWH</th>
                         <th>Nominal</th>
                         <th>Oleh</th>
+                        <th>Bukti</th>
                         <th>Catatan</th>
                         @if(auth()->user()->role !== 'gm')
                         <th>Aksi</th>
@@ -913,19 +914,41 @@
                         <td style="font-weight:600;color:var(--text-primary);">{{ number_format($t->amount_kwh, 0) }} KWH</td>
                         <td style="color:var(--text-primary);">Rp {{ number_format($t->nominal, 0) }}</td>
                         <td style="color:var(--text-primary);">{{ $t->creator?->name ?? '-' }}</td>
+                        <td>
+                            @if($t->bukti_bayar)
+                            <a href="{{ route('files.show', $t->bukti_bayar) }}" target="_blank" rel="noopener" title="Lihat bukti pembayaran">
+                                <img src="{{ route('files.show', $t->bukti_bayar) }}" alt="Bukti" style="width:60px;height:40px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);display:block;">
+                            </a>
+                            @else
+                            <span style="color:var(--text-muted);">-</span>
+                            @endif
+                        </td>
                         <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $t->notes ?: 'Tidak ada catatan' }}</td>
                         @if(auth()->user()->role !== 'gm')
                         <td>
-                            <form method="POST" action="{{ route('admin.pembayaran.token-topup.destroy', $t->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up ini?" style="margin:0;">
-                                @csrf @method('DELETE')
-                                <button type="submit" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:2px 6px;">Hapus</button>
-                            </form>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showTopupDetail({{ $t->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, 'tp-{{ $t->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-tp-{{ $t->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showTopupDetail({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        <button type="button" onclick="openEditTopup({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.pembayaran.token-topup.destroy', $t->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                         @endif
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
+                        <td colspan="{{ auth()->user()->role !== 'gm' ? 8 : 7 }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -1049,13 +1072,22 @@
                         @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
-                                <form method="POST" action="{{ route('admin.pembayaran.token-reading.destroy', $r->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data pengecekan ini?" style="margin:0;">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:2px 6px;">Hapus</button>
-                                </form>
-                                <a href="{{ route('admin.export', ['type' => 'token-readings']) }}" class="btn btn-secondary btn-sm" style="padding:4px 8px;line-height:1;" title="Download Excel">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                </a>
+                                <button type="button" onclick="showTokenReadingDetail({{ $r->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, 'tr-{{ $r->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-tr-{{ $r->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showTokenReadingDetail({{ $r->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        <button type="button" onclick="openEditTokenReading({{ $r->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <a href="{{ route('admin.export', ['type' => 'token-readings']) }}" target="_blank" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;text-decoration:none;box-sizing:border-box;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Download Excel</a>
+                                        <form method="POST" action="{{ route('admin.pembayaran.token-reading.destroy', $r->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data pengecekan ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </td>
                         @endif
@@ -1079,7 +1111,7 @@
 <div id="token-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
     <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Input Pengecekan Token</h3>
+            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="token-modal-title">Input Pengecekan Token</h3>
             <button type="button" onclick="closeTokenModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -1087,8 +1119,9 @@
             </button>
         </div>
         <div class="px-6 py-5 overflow-y-auto flex-1">
-            <form method="POST" action="{{ route('admin.pembayaran.token-reading.store') }}">
+            <form method="POST" id="token-form" action="{{ route('admin.pembayaran.token-reading.store') }}">
                 @csrf
+                <input type="hidden" name="_method" id="token-method" value="POST">
                 <div class="space-y-4">
                     <div class="field-group">
                         <label class="gaming-label">Sisa KWH <span class="field-req">*</span></label>
@@ -1115,37 +1148,56 @@
                 </div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
                     <button type="button" onclick="closeTokenModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                    <button type="submit" id="token-submit-btn" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+{{-- Token Reading Detail Modal --}}
+<div id="token-reading-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Pengecekan Token</h3>
+            <button type="button" onclick="closeTokenReadingDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1" id="token-reading-detail-body"></div>
+        <div class="px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);display:flex;justify-content:flex-end;">
+            <button type="button" onclick="closeTokenReadingDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        </div>
+    </div>
+</div>
+
 {{-- Top Up Token Modal --}}
 <div id="topup-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
-    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:92vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <h3 class="text-base font-bold" style="color:var(--text-primary);">Top Up Token Listrik</h3>
+            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="topup-modal-title">Top Up Token Listrik</h3>
             <button type="button" onclick="closeTopupModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
-        <div class="px-6 py-5 overflow-y-auto flex-1">
-            <form method="POST" action="{{ route('admin.pembayaran.token-topup.store') }}">
+        <div class="px-5 py-4 overflow-y-auto flex-1">
+            <form method="POST" id="topup-form" action="{{ route('admin.pembayaran.token-topup.store') }}" enctype="multipart/form-data">
                 @csrf
-                <div class="space-y-4">
+                <input type="hidden" name="_method" id="topup-method" value="POST">
+                <div class="space-y-2.5">
                     <div class="field-group">
                         <label class="gaming-label">Jumlah KWH <span class="field-req">*</span></label>
                         <input type="number" name="amount_kwh" id="f-amount_kwh" required step="0.01" min="1" placeholder="Contoh: 7000" class="gaming-input">
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan jumlah KWH yang dibeli.</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Jumlah KWH yang dibeli.</div>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Nominal (Rp) <span class="field-req">*</span></label>
                         <input type="number" name="nominal" id="f-nominal" required step="0.01" min="0" placeholder="Contoh: 1500000" class="gaming-input">
-                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Masukkan nominal harga token.</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Nominal harga token.</div>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
@@ -1153,14 +1205,37 @@
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Catatan</label>
-                        <textarea name="notes" id="f-topup-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                        <textarea name="notes" id="f-topup-notes" rows="1" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Bukti Pembayaran</label>
+                        <input type="file" name="bukti_bayar" id="f-topup-bukti" accept="image/jpeg,image/png" class="gaming-input" style="padding:8px;">
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;" id="topup-bukti-hint">Foto/scan bukti pembayaran (JPG/PNG, maks 2MB). Opsional.</div>
                     </div>
                 </div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
                     <button type="button" onclick="closeTopupModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                    <button type="submit" id="topup-submit-btn" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+{{-- Top Up Detail Modal --}}
+<div id="topup-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Top Up Token</h3>
+            <button type="button" onclick="closeTopupDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1" id="topup-detail-body"></div>
+        <div class="px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);display:flex;justify-content:flex-end;">
+            <button type="button" onclick="closeTopupDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
         </div>
     </div>
 </div>
@@ -1506,6 +1581,8 @@ console.log('[PAYMENT] Script loaded', window.__paymentScript);
 window.__paymentScript = 1;
 const paymentData = @json($itemsJson);
 const internetUsageData = @json($internetUsagesJson);
+const topupData = @json($topupHistoryJson);
+const tokenReadingData = @json($tokenReadingsJson);
 const currentJenis = '{{ $jenis }}';
 const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
 const jenisLabel = @json($jenisLabels[$jenis] ?? $jenis);
@@ -1945,7 +2022,24 @@ function filterTable() {
 
 
 
+function resetTokenForm() {
+    const form = document.getElementById('token-form');
+    form.action = '{{ route('admin.pembayaran.token-reading.store') }}';
+    document.getElementById('token-method').value = 'POST';
+    document.getElementById('token-modal-title').textContent = 'Input Pengecekan Token';
+    document.getElementById('token-submit-btn').textContent = 'Simpan';
+    form.querySelectorAll('input, textarea, select').forEach(el => {
+        if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method' && el.name !== 'checked_date') {
+            el.value = '';
+        }
+    });
+    document.getElementById('f-checked_date').value = '{{ date('Y-m-d') }}';
+    const defChecked = document.getElementById('f-checked_by').querySelector('option[selected]');
+    if (defChecked) document.getElementById('f-checked_by').value = defChecked.value;
+}
+
 function openTokenModal() {
+    resetTokenForm();
     document.getElementById('token-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
     document.getElementById('f-remaining_kwh').focus();
@@ -1953,6 +2047,64 @@ function openTokenModal() {
 
 function closeTokenModal() {
     document.getElementById('token-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function openEditTokenReading(id) {
+    const r = tokenReadingData.find(x => x.id === id);
+    if (!r) return;
+    resetTokenForm();
+    document.getElementById('token-modal-title').textContent = 'Edit Pengecekan Token';
+    document.getElementById('token-submit-btn').textContent = 'Simpan Perubahan';
+    document.getElementById('token-method').value = 'PUT';
+    document.getElementById('token-form').action = '{{ route('admin.pembayaran.token-reading.update', ['id' => 0]) }}'.slice(0, -1) + id;
+    document.getElementById('f-remaining_kwh').value = r.remaining_kwh;
+    document.getElementById('f-checked_date').value = r.checked_date;
+    document.getElementById('f-checked_by').value = r.checked_by;
+    document.getElementById('f-notes').value = r.notes || '';
+    document.getElementById('token-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-remaining_kwh').focus();
+}
+
+const tokenReadingStatusMap = {
+    segera_isi: { color: '#ef4444', bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.3)', label: 'Segera Isi Token' },
+    warning: { color: '#f97316', bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.3)', label: 'Warning' },
+    perhatian: { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', label: 'Perhatian' },
+    aman: { color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.3)', label: 'Aman' },
+};
+
+function showTokenReadingDetail(id) {
+    const r = tokenReadingData.find(x => x.id === id);
+    if (!r) return;
+    const fmtDate = new Date(r.checked_date + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const st = tokenReadingStatusMap[r.status] || tokenReadingStatusMap.aman;
+    const rows = [
+        { label: 'Tanggal Check', value: fmtDate },
+        { label: 'Sisa KWH', value: Number(r.remaining_kwh).toLocaleString('id-ID') + ' KWH' },
+        { label: 'Terpakai', value: Number(r.terpakai).toLocaleString('id-ID') + ' KWH' },
+        { label: 'Pengecek', value: r.checker ? r.checker.name : '-' },
+        { label: 'Catatan', value: r.notes || '-' },
+    ];
+    const statusBlock = `<div class="mt-3"><div class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);margin-bottom:6px;">Status</div>
+        <span class="badge text-xs" style="background:${st.bg};color:${st.color};border:1px solid ${st.border};">${st.label}</span></div>`;
+    document.getElementById('token-reading-detail-body').innerHTML = `
+        <div class="space-y-0">
+            ${rows.map((row, idx) => `
+                <div class="flex items-center justify-between py-2.5" style="${idx < rows.length - 1 ? 'border-bottom:1px solid var(--border-color);' : ''}">
+                    <span class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);">${row.label}</span>
+                    <span class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${row.value}</span>
+                </div>
+            `).join('')}
+        </div>
+        ${statusBlock}
+    `;
+    document.getElementById('token-reading-detail-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTokenReadingDetail() {
+    document.getElementById('token-reading-detail-modal').style.display = 'none';
     document.body.style.overflow = '';
 }
 
@@ -1968,9 +2120,27 @@ function closeInternetUsageModal() {
 
 document.getElementById('token-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTokenModal(); });
 document.getElementById('internet-usage-modal')?.addEventListener('click', function(e) { if (e.target === this) closeInternetUsageModal(); });
+document.getElementById('token-reading-detail-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTokenReadingDetail(); });
 document.getElementById('topup-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTopupModal(); });
+document.getElementById('topup-detail-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTopupDetail(); });
+
+function resetTopupForm() {
+    const form = document.getElementById('topup-form');
+    form.action = '{{ route('admin.pembayaran.token-topup.store') }}';
+    document.getElementById('topup-method').value = 'POST';
+    document.getElementById('topup-modal-title').textContent = 'Top Up Token Listrik';
+    document.getElementById('topup-submit-btn').textContent = 'Simpan';
+    document.getElementById('topup-bukti-hint').textContent = 'Foto/scan bukti pembayaran (JPG/PNG, maks 2MB). Opsional.';
+    form.querySelectorAll('input, textarea, select').forEach(el => {
+        if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method' && el.name !== 'payment_date') {
+            el.value = '';
+        }
+    });
+    document.getElementById('f-payment_date').value = '{{ date('Y-m-d') }}';
+}
 
 function openTopupModal() {
+    resetTopupForm();
     document.getElementById('topup-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
     document.getElementById('f-amount_kwh').focus();
@@ -1979,6 +2149,66 @@ function openTopupModal() {
 function closeTopupModal() {
     document.getElementById('topup-modal').style.display = 'none';
     document.body.style.overflow = '';
+}
+
+function showTopupDetail(id) {
+    const t = topupData.find(x => x.id === id);
+    if (!t) return;
+    const fmtDate = new Date(t.payment_date + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(t.nominal);
+    const rows = [
+        { label: 'Tanggal Bayar', value: fmtDate },
+        { label: 'Periode', value: t.period || '-' },
+        { label: 'Jumlah KWH', value: Number(t.amount_kwh).toLocaleString('id-ID') + ' KWH' },
+        { label: 'Nominal', value: nominal },
+        { label: 'Oleh', value: t.creator ? t.creator.name : '-' },
+        { label: 'Catatan', value: t.notes || '-' },
+    ];
+    const buktiBlock = t.bukti_bayar
+        ? `<div class="mt-3"><div class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);margin-bottom:6px;">Bukti Pembayaran</div>
+           <a href="{{ url('files') }}/${t.bukti_bayar}" target="_blank" rel="noopener">
+               <img src="{{ url('files') }}/${t.bukti_bayar}" alt="Bukti" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--border-color);object-fit:contain;display:block;">
+           </a></div>`
+        : `<div class="mt-3"><div class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);">Bukti Pembayaran</div>
+           <div class="text-sm" style="color:var(--text-muted);">Tidak ada bukti</div></div>`;
+
+    document.getElementById('topup-detail-body').innerHTML = `
+        <div class="space-y-0">
+            ${rows.map((r, idx) => `
+                <div class="flex items-center justify-between py-2.5" style="${idx < rows.length - 1 ? 'border-bottom:1px solid var(--border-color);' : ''}">
+                    <span class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);">${r.label}</span>
+                    <span class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.value}</span>
+                </div>
+            `).join('')}
+        </div>
+        ${buktiBlock}
+    `;
+    document.getElementById('topup-detail-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTopupDetail() {
+    document.getElementById('topup-detail-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function openEditTopup(id) {
+    const t = topupData.find(x => x.id === id);
+    if (!t) return;
+    resetTopupForm();
+    document.getElementById('topup-modal-title').textContent = 'Edit Top Up Token Listrik';
+    document.getElementById('topup-submit-btn').textContent = 'Simpan Perubahan';
+    document.getElementById('topup-bukti-hint').textContent = t.bukti_bayar ? 'Bukti saat ini tersedia. Kosongkan jika tidak mengganti.' : 'Belum ada bukti. Opsional.';
+    document.getElementById('topup-method').value = 'PUT';
+    document.getElementById('topup-form').action = '{{ route('admin.pembayaran.token-topup.update', ['id' => 0]) }}'.slice(0, -1) + id;
+    document.getElementById('f-amount_kwh').value = t.amount_kwh;
+    document.getElementById('f-nominal').value = t.nominal;
+    document.getElementById('f-payment_date').value = String(t.payment_date).slice(0, 10);
+    document.getElementById('f-topup-notes').value = t.notes || '';
+    document.getElementById('f-topup-bukti').value = '';
+    document.getElementById('topup-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-amount_kwh').focus();
 }
 
 function setTopupRange(range) {

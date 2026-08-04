@@ -6,12 +6,14 @@ use App\Http\Controllers\Api\AssetApiController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\DigitalAssetApiController;
+use App\Http\Controllers\Api\MeetingApiController;
 use App\Http\Controllers\Api\PaymentApprovalApiController;
 use App\Http\Controllers\Api\PembayaranApiController;
 use App\Http\Controllers\Api\PeralatanKantorApiController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\SimCardApiController;
 use App\Http\Controllers\Api\VehicleApiController;
+use App\Http\Controllers\Api\WeeklyMeetingApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +38,10 @@ Route::middleware('api.auth')->group(function () {
     Route::get('bookings', [BookingController::class, 'index']);
     Route::post('bookings', [BookingController::class, 'store']);
     Route::delete('bookings/{booking}', [BookingController::class, 'destroy']);
+
+    Route::get('meetings', [MeetingApiController::class, 'index']);
+    Route::get('meetings/{meeting}', [MeetingApiController::class, 'show']);
+    Route::get('weekly-meetings', [WeeklyMeetingApiController::class, 'index']);
 
     Route::apiResource('assets', AssetApiController::class)->parameters(['assets' => 'asset']);
     Route::apiResource('aset-ruko', AsetRukoApiController::class)->parameters(['aset_ruko' => 'ruko']);
