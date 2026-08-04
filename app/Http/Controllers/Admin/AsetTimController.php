@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AsetTim;
+use App\Models\Team;
 use Illuminate\Http\Request;
 
 class AsetTimController extends Controller
@@ -26,7 +27,14 @@ class AsetTimController extends Controller
             'nonaktif' => $assets->where('is_active', false)->count(),
         ];
 
-        $allTim = AsetTim::whereNotNull('tim')->where('tim', '!=', '')->distinct()->pluck('tim')->sort()->values();
+        $allTim = Team::where('is_active', true)
+            ->whereNotNull('name')
+            ->where('name', '!=', '')
+            ->orderBy('name')
+            ->pluck('name')
+            ->unique()
+            ->sort()
+            ->values();
 
         $assetsJson = $assets->values()->map(function ($a) {
             return [

@@ -135,15 +135,19 @@
 </div>
 
 {{-- Detail Modal --}}
-<div id="detail-modal" class="modal-modern" onclick="if(event.target===this)closeDetail()">
-    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
-        <div class="modal-modern-header">
-            <h3 id="detail-title">Detail Aset TIM</h3>
-            <button type="button" onclick="closeDetail()" class="modal-modern-close">&times;</button>
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[460px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Aset TIM</h3>
+            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
-        <div class="modal-modern-body" id="detail-body"></div>
-        <div class="modal-modern-footer">
-            <button type="button" onclick="closeDetail()" class="btn btn-secondary">Tutup</button>
+        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
         </div>
     </div>
 </div>
@@ -276,20 +280,39 @@ document.querySelectorAll('[id$="-modal"]').forEach(m => {
 function showDetail(id) {
     const a = assets.find(x => x.id === id);
     if (!a) return;
-    document.getElementById('detail-title').textContent = 'Detail Aset TIM';
+    document.getElementById('detail-title').textContent = a.nama_aset;
+
+    const rows = [
+        { label: 'Tim', value: a.tim || '-' },
+        { label: 'Jumlah', value: a.jumlah },
+        { label: 'Penanggung Jawab', value: a.penanggung_jawab_nama },
+        { label: 'PIC', value: a.pic || '-' },
+        { label: 'Jabatan', value: a.jabatan || '-' },
+    ];
+
     document.getElementById('detail-body').innerHTML = `
-        <div class="detail-grid">
-            <div class="detail-item"><span class="detail-label">Nama Aset</span><span class="detail-value">${a.nama_aset}</span></div>
-            <div class="detail-item"><span class="detail-label">Tim</span><span class="detail-value">${a.tim || '-'}</span></div>
-            <div class="detail-item"><span class="detail-label">Jumlah</span><span class="detail-value">${a.jumlah}</span></div>
-            <div class="detail-item"><span class="detail-label">Penanggung Jawab</span><span class="detail-value">${a.penanggung_jawab_nama}</span></div>
-            <div class="detail-item"><span class="detail-label">PIC</span><span class="detail-value">${a.pic || '-'}</span></div>
-            <div class="detail-item"><span class="detail-label">Jabatan</span><span class="detail-value">${a.jabatan || '-'}</span></div>
-            <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value">${a.is_active ? 'Aktif' : 'Tidak Aktif'}</span></div>
-            <div class="detail-item" style="grid-column:1/-1;"><span class="detail-label">Keterangan</span><span class="detail-value">${a.keterangan || '-'}</span></div>
-        </div>`;
-    document.getElementById('detail-modal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+        <div class="space-y-1">
+            <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
+                <p class="text-sm" style="color:var(--text-muted);">Nama Aset</p>
+                <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${a.nama_aset}</p>
+            </div>
+            ${rows.map((r, i) => `
+                <div class="flex items-center justify-between py-2.5" ${i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
+                    <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
+                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.value}</p>
+                </div>
+            `).join('')}
+            <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
+                <p class="text-sm" style="color:var(--text-muted);">Status</p>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${a.is_active ? '#ecfdf5' : '#fef2f2'};color:${a.is_active ? '#059669' : '#dc2626'};border:1px solid ${a.is_active ? '#a7f3d0' : '#fecaca'};">${a.is_active ? 'Aktif' : 'Tidak Aktif'}</span>
+            </div>
+            <div class="flex items-center justify-between py-2.5">
+                <p class="text-sm" style="color:var(--text-muted);">Keterangan</p>
+                <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${a.keterangan || '-'}</p>
+            </div>
+        </div>
+    `;
+    openModal('detail-modal');
 }
 function closeDetail() { document.getElementById('detail-modal').style.display = 'none'; document.body.style.overflow = ''; }
 

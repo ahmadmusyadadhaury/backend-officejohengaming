@@ -107,10 +107,11 @@
     <a href="{{ route('admin.peralatan-kantor.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.peralatan-kantor.*') ? 'active' : '' }}"><span class="truncate">Peralatan Kantor</span></a>
     <a href="{{ route('admin.ruko.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.ruko.*') ? 'active' : '' }}"><span class="truncate">Aset Ruko</span></a>
     <a href="{{ route('admin.aset-mes.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.aset-mes.*') ? 'active' : '' }}"><span class="truncate">Aset MES</span></a>
-    @php
-        $sidebarTeams = \App\Models\AsetTim::whereNotNull('tim')->where('tim', '!=', '')->distinct()->pluck('tim')->sort()->values();
-    @endphp
     <a href="{{ route('admin.aset-tim.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.aset-tim.*') && !request('tim') ? 'active' : '' }}"><span class="truncate">Aset TIM</span></a>
+    @if(request()->routeIs('admin.aset-tim.*'))
+    @php
+        $sidebarTeams = \App\Models\Team::where('is_active', true)->whereNotNull('name')->where('name', '!=', '')->orderBy('name')->pluck('name')->unique()->sort()->values();
+    @endphp
     @foreach($sidebarTeams as $teamName)
     @php $isActive = request('tim') === $teamName; @endphp
     <a href="{{ route('admin.aset-tim.index', ['tim' => $teamName]) }}" class="sidebar-item sidebar-submenu-item {{ $isActive ? 'active' : '' }}" style="padding-left:2.5rem;font-size:0.7rem;gap:6px;">
@@ -118,6 +119,7 @@
         <span class="truncate">{{ $teamName }}</span>
     </a>
     @endforeach
+    @endif
 </div>
 
 <div class="sidebar-section">

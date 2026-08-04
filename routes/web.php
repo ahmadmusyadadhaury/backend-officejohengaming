@@ -100,7 +100,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-tim', AsetTimController::class)->except(['create', 'show', 'edit']);
-    Route::resource('aset-mes', AsetMesController::class)->except(['create', 'show', 'edit']);
+    Route::resource('aset-mes', AsetMesController::class)->except(['create', 'show', 'edit'])->parameters(['aset-mes' => 'asetMes']);
     Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
     Route::post('pembayaran', [PaymentController::class, 'store'])->name('pembayaran.store');
     Route::put('pembayaran/{id}', [PaymentController::class, 'update'])->name('pembayaran.update');
