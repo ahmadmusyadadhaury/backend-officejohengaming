@@ -115,7 +115,7 @@
                 <tbody id="aset-tbody-putra">
                     @forelse($assetsPutra as $a)
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-muted);">{{ $assetsPutra->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
                         <td style="color:var(--text-muted);">{{ $a->jumlah }}</td>
                         <td style="color:var(--text-muted);">{{ $a->penanggungJawab?->name ?? '-' }}</td>
@@ -201,7 +201,7 @@
                 <tbody id="aset-tbody-putri">
                     @forelse($assetsPutri as $a)
                     <tr>
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-muted);">{{ $assetsPutri->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
                         <td style="color:var(--text-muted);">{{ $a->jumlah }}</td>
                         <td style="color:var(--text-muted);">{{ $a->penanggungJawab?->name ?? '-' }}</td>
