@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\DataExport;
 use App\Http\Controllers\Controller;
+use App\Models\AsetMes;
 use App\Models\AsetRuko;
+use App\Models\AsetTim;
 use App\Models\Asset;
 use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
@@ -43,6 +45,8 @@ class ExportController extends Controller
             'digital-assets' => fn () => $this->digitalAssetsExport($filter),
             'sim-cards' => fn () => $this->simCardsExport($filter),
             'peralatan-kantor' => fn () => $this->peralatanKantorExport($filter),
+            'aset-tim' => fn () => $this->asetTimExport($request),
+            'aset-mes' => fn () => $this->asetMesExport($filter),
             'ruko' => fn () => $this->rukoExport($filter),
             'pembayaran' => fn () => $this->pembayaranExport($jenis, $filter),
             'token-readings' => fn () => $this->tokenReadingsExport($request),
@@ -278,6 +282,53 @@ class ExportController extends Controller
         return Excel::download(
             new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Peralatan Kantor', 'Peralatan Kantor'),
             'Data_Peralatan_Kantor.xlsx'
+        );
+    }
+
+    protected function asetTimExport($request)
+    {
+        $tim = $request->query('tim');
+        $query = AsetTim::with('penanggungJawab')->orderBy('created_at', 'desc');
+        if ($tim) {
+            $query->where('tim', $tim);
+        }
+        $data = $query->get()->map(fn ($a) => [
+            'Nama Aset' => $a->nama_aset,
+            'Tim' => $a->tim ?? '-',
+            'Jumlah' => $a->jumlah,
+            'Penanggung Jawab' => $a->penanggungJawab?->name ?? '-',
+            'PIC' => $a->pic ?? '-',
+            'Jabatan' => $a->jabatan ?? '-',
+            'Status' => $a->is_active ? 'Aktif' : 'Tidak Aktif',
+            'Keterangan' => $a->keterangan ?? '-',
+        ]);
+
+        return Excel::download(
+            new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Aset TIM', 'Aset TIM'),
+            'Data_Aset_TIM.xlsx'
+        );
+    }
+
+    protected function asetMesExport($filter = 'all')
+    {
+        $query = AsetMes::with('penanggungJawab')->orderBy('nama_aset');
+        if (in_array($filter, ['putra', 'putri'])) {
+            $query->where('kategori', $filter);
+        }
+        $data = $query->get()->map(fn ($a) => [
+            'Nama Aset' => $a->nama_aset,
+            'Kategori' => ucfirst($a->kategori),
+            'Jumlah' => $a->jumlah,
+            'Penanggung Jawab' => $a->penanggungJawab?->name ?? AsetMes::PENANGGUNG_JAWAB_MES[$a->kategori] ?? '-',
+            'PIC' => $a->pic ?? '-',
+            'Jabatan' => $a->jabatan ?? '-',
+            'Status' => $a->is_active ? 'Aktif' : 'Tidak Aktif',
+            'Keterangan' => $a->keterangan ?? '-',
+        ]);
+
+        return Excel::download(
+            new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Aset MES', 'Aset MES'),
+            'Data_Aset_MES.xlsx'
         );
     }
 

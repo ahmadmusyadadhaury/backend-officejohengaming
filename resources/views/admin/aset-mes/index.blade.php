@@ -98,6 +98,22 @@
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
+            <div class="flex items-center gap-2" style="margin-left:auto;">
+                <div class="filter-dropdown-wrap" style="position:relative;">
+                    <button type="button" onclick="toggleStatusMenu(event, 'putra')" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                        <span id="status-label-putra">Semua Status</span>
+                        <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="status-menu-putra" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                        <button type="button" data-value="all" onclick="setStatusFilter('all', 'putra')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
+                        <button type="button" data-value="1" onclick="setStatusFilter('1', 'putra')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
+                        <button type="button" data-value="0" onclick="setStatusFilter('0', 'putra')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
+                    </div>
+                </div>
+                <a href="{{ route('admin.export', ['type' => 'aset-mes', 'filter' => 'putra']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="gaming-table min-w-[700px]" id="aset-table-putra">
@@ -114,7 +130,7 @@
                 </thead>
                 <tbody id="aset-tbody-putra">
                     @forelse($assetsPutra as $a)
-                    <tr>
+                    <tr data-status="{{ $a->is_active ? '1' : '0' }}">
                         <td style="color:var(--text-muted);">{{ $assetsPutra->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
                         <td style="color:var(--text-muted);">{{ $a->jumlah }}</td>
@@ -184,6 +200,22 @@
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
+            <div class="flex items-center gap-2" style="margin-left:auto;">
+                <div class="filter-dropdown-wrap" style="position:relative;">
+                    <button type="button" onclick="toggleStatusMenu(event, 'putri')" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                        <span id="status-label-putri">Semua Status</span>
+                        <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="status-menu-putri" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                        <button type="button" data-value="all" onclick="setStatusFilter('all', 'putri')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
+                        <button type="button" data-value="1" onclick="setStatusFilter('1', 'putri')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
+                        <button type="button" data-value="0" onclick="setStatusFilter('0', 'putri')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
+                    </div>
+                </div>
+                <a href="{{ route('admin.export', ['type' => 'aset-mes', 'filter' => 'putri']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="gaming-table min-w-[700px]" id="aset-table-putri">
@@ -200,7 +232,7 @@
                 </thead>
                 <tbody id="aset-tbody-putri">
                     @forelse($assetsPutri as $a)
-                    <tr>
+                    <tr data-status="{{ $a->is_active ? '1' : '0' }}">
                         <td style="color:var(--text-muted);">{{ $assetsPutri->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
                         <td style="color:var(--text-muted);">{{ $a->jumlah }}</td>
@@ -345,12 +377,37 @@
 <script>
 const assets = @json($assetsJson);
 
+let currentStatus = { putra: 'all', putri: 'all' };
+
+function toggleStatusMenu(e, kategori) {
+    e.stopPropagation();
+    const menu = document.getElementById('status-menu-' + kategori);
+    document.querySelectorAll('.filter-menu').forEach(m => { if (m.id !== 'status-menu-' + kategori) m.style.display = 'none'; });
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function setStatusFilter(value, kategori) {
+    currentStatus[kategori] = value;
+    document.getElementById('status-label-' + kategori).textContent = document.querySelector(`#status-menu-${kategori} button[data-value="${value}"]`).textContent;
+    document.getElementById('status-menu-' + kategori).style.display = 'none';
+    filterTable(kategori);
+}
+
 function filterTable(kategori) {
     const q = (document.getElementById('search-aset-' + kategori)?.value || '').toLowerCase();
     document.querySelectorAll('#aset-tbody-' + kategori + ' tr').forEach(row => {
-        row.style.display = !q || row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        if (!row.hasAttribute('data-status')) { row.style.display = ''; return; }
+        const matchStatus = currentStatus[kategori] === 'all' || row.dataset.status === currentStatus[kategori];
+        const matchSearch = !q || row.textContent.toLowerCase().includes(q);
+        row.style.display = matchStatus && matchSearch ? '' : 'none';
     });
 }
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.querySelectorAll('.filter-menu').forEach(m => m.style.display = 'none');
+    }
+});
 
 function toggleDropdown(btn, id) {
     const menu = document.getElementById('dropdown-' + id);

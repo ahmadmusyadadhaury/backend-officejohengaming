@@ -129,12 +129,7 @@
                     </div>
                     <div>
                         <label class="gaming-label">Tim</label>
-                        <select name="tim" class="gaming-input gaming-select">
-                            <option value="">— Pilih Tim —</option>
-                            @foreach($allTim as $t)
-                            <option value="{{ $t }}" {{ $userTim === $t ? 'selected' : '' }}>{{ $t }}</option>
-                            @endforeach
-                        </select>
+                        <div class="gaming-input" style="display:flex;align-items:center;gap:8px;color:var(--text-primary);">{{ $userTim ?? '—' }}</div>
                     </div>
                     <div>
                         <label class="gaming-label">Keterangan</label>
@@ -171,12 +166,7 @@
                     </div>
                     <div>
                         <label class="gaming-label">Tim</label>
-                        <select name="tim" id="edit_tim" class="gaming-input gaming-select">
-                            <option value="">— Pilih Tim —</option>
-                            @foreach($allTim as $t)
-                            <option value="{{ $t }}">{{ $t }}</option>
-                            @endforeach
-                        </select>
+                        <div class="gaming-input" style="display:flex;align-items:center;gap:8px;color:var(--text-primary);">{{ $userTim ?? '—' }}</div>
                     </div>
                     <div>
                         <label class="gaming-label">Keterangan</label>
@@ -271,7 +261,6 @@ function closeAddModal() {
 function openEditModal(asset) {
     document.getElementById('editForm').action = '{{ route("koordinator.aset-tim.update", ["asetTim" => "___ID___"]) }}'.replace('___ID___', asset.id);
     document.getElementById('edit_nama_aset').value = asset.nama_aset;
-    document.getElementById('edit_tim').value = asset.tim || '';
     document.getElementById('edit_keterangan').value = asset.keterangan || '';
     document.getElementById('edit_jumlah').value = asset.jumlah || '';
     document.getElementById('edit_is_active').value = asset.is_active ? '1' : '0';

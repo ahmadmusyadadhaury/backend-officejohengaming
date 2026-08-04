@@ -63,11 +63,15 @@
             @endif
         </div>
         @if($allTim->count() > 0)
-        <div class="px-5 py-2.5 flex flex-wrap items-center gap-2" style="border-bottom:1px solid var(--border-color);">
-            <a href="{{ route('admin.aset-tim.index') }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition" style="background:{{ !$activeTim ? 'var(--color-accent)' : 'var(--bg-surface-2)' }};color:{{ !$activeTim ? '#fff' : 'var(--text-secondary)' }};border:1px solid {{ !$activeTim ? 'var(--color-accent)' : 'var(--border-color)' }};text-decoration:none;">Semua</a>
-            @foreach($allTim as $t)
-            <a href="{{ route('admin.aset-tim.index', ['tim' => $t]) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold transition" style="background:{{ $activeTim === $t ? 'var(--color-accent)' : 'var(--bg-surface-2)' }};color:{{ $activeTim === $t ? '#fff' : 'var(--text-secondary)' }};border:1px solid {{ $activeTim === $t ? 'var(--color-accent)' : 'var(--border-color)' }};text-decoration:none;">{{ $t }}</a>
-            @endforeach
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <label for="filter-tim" class="text-xs font-semibold" style="color:var(--text-muted);">Tim</label>
+            <select id="filter-tim" onchange="filterByTim(this.value)"
+                class="text-xs" style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;border-radius:8px;padding:6px 30px 6px 10px;">
+                <option value="">— Semua —</option>
+                @foreach($allTim as $t)
+                <option value="{{ $t }}" {{ $activeTim === $t ? 'selected' : '' }}>{{ $t }}</option>
+                @endforeach
+            </select>
         </div>
         @endif
         <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
@@ -78,6 +82,22 @@
                 <input type="text" id="search-aset" placeholder="Cari..." oninput="filterTable()"
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+            </div>
+            <div class="flex items-center gap-2" style="margin-left:auto;">
+                <div class="filter-dropdown-wrap" style="position:relative;">
+                    <button type="button" onclick="toggleStatusMenu(event)" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                        <span id="status-label">Semua Status</span>
+                        <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="status-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                        <button type="button" data-value="all" onclick="setStatusFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Status</button>
+                        <button type="button" data-value="1" onclick="setStatusFilter('1')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Aktif</button>
+                        <button type="button" data-value="0" onclick="setStatusFilter('0')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
+                    </div>
+                </div>
+                <a href="{{ route('admin.export', ['type' => 'aset-tim'] + ($activeTim ? ['tim' => $activeTim] : [])) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
             </div>
         </div>
         <div class="table-responsive">
@@ -96,7 +116,7 @@
                 </thead>
                 <tbody id="aset-tbody">
                     @forelse($assets as $a)
-                    <tr>
+                    <tr data-status="{{ $a->is_active ? '1' : '0' }}">
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
                         <td style="color:var(--text-muted);">{{ $a->tim ?? '-' }}</td>
@@ -250,16 +270,47 @@ const assets = @json($assetsJson);
 
 const activeTim = @json($activeTim);
 
+function filterByTim(val) {
+    window.location.href = val
+        ? '{{ route("admin.aset-tim.index") }}?tim=' + encodeURIComponent(val)
+        : '{{ route("admin.aset-tim.index") }}';
+}
+
 function getTimParam() {
     return activeTim ? '?tim=' + encodeURIComponent(activeTim) : '';
+}
+
+let currentStatus = 'all';
+
+function toggleStatusMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('status-menu');
+    document.querySelectorAll('.filter-menu').forEach(m => { if (m.id !== 'status-menu') m.style.display = 'none'; });
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function setStatusFilter(value) {
+    currentStatus = value;
+    document.getElementById('status-label').textContent = document.querySelector(`#status-menu button[data-value="${value}"]`).textContent;
+    document.getElementById('status-menu').style.display = 'none';
+    filterTable();
 }
 
 function filterTable() {
     const q = (document.getElementById('search-aset')?.value || '').toLowerCase();
     document.querySelectorAll('#aset-tbody tr').forEach(row => {
-        row.style.display = !q || row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        if (!row.hasAttribute('data-status')) { row.style.display = ''; return; }
+        const matchStatus = currentStatus === 'all' || row.dataset.status === currentStatus;
+        const matchSearch = !q || row.textContent.toLowerCase().includes(q);
+        row.style.display = matchStatus && matchSearch ? '' : 'none';
     });
 }
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.filter-dropdown-wrap')) {
+        document.getElementById('status-menu').style.display = 'none';
+    }
+});
 
 function toggleDropdown(btn, id) {
     const menu = document.getElementById('dropdown-' + id);

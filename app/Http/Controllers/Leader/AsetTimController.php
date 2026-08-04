@@ -29,12 +29,12 @@ class AsetTimController extends Controller
     {
         $data = $request->validate([
             'nama_aset' => 'required|string|max:255',
-            'tim' => 'nullable|string|max:255',
             'jumlah' => 'nullable|integer|min:1',
             'keterangan' => 'nullable|string',
         ]);
 
         $data['jumlah'] = $data['jumlah'] ?? 1;
+        $data['tim'] = auth()->user()->team?->name;
         $data['penanggung_jawab'] = auth()->id();
         $data['is_active'] = true;
 
@@ -51,13 +51,13 @@ class AsetTimController extends Controller
 
         $data = $request->validate([
             'nama_aset' => 'required|string|max:255',
-            'tim' => 'nullable|string|max:255',
             'jumlah' => 'nullable|integer|min:1',
             'is_active' => 'boolean',
             'keterangan' => 'nullable|string',
         ]);
 
         $data['jumlah'] = $data['jumlah'] ?? 1;
+        $data['tim'] = auth()->user()->team?->name;
         $asetTim->update($data);
 
         return redirect()->route('koordinator.aset-tim.index')->with('success', 'Aset TIM berhasil diperbarui.');
