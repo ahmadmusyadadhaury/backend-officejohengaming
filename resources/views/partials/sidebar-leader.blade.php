@@ -1,5 +1,5 @@
 @php
-    $isMeetingActive = request()->routeIs('koordinator.meetings.*', 'koordinator.mom.*', 'calendar');
+    $isMeetingActive = request()->routeIs('koordinator.meetings.*', 'koordinator.mom.*', 'koordinator.recordings.*', 'calendar');
     $isOperationalActive = request()->routeIs('koordinator.asset-saya.*', 'koordinator.aset-tim.*', 'koordinator.aset-mes.*');
     $isPaymentActive = request()->routeIs('payment-approval.*');
 
@@ -52,6 +52,7 @@
         <span class="notif-badge-activity ml-auto" style="display:none;background:#ef4444;color:white;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;"></span>
     </a>
     <a href="{{ route('koordinator.mom.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.mom.index') ? 'active' : '' }}"><span class="truncate">Rekap MOM</span></a>
+    <a href="{{ route('koordinator.recordings.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.recordings.*') ? 'active' : '' }}"><span class="truncate">Rekap Rapat</span></a>
     <a href="{{ route('calendar') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('calendar') ? 'active' : '' }}"><span class="truncate">Jadwal Meeting</span></a>
 </div>
 

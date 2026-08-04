@@ -33,6 +33,7 @@ use App\Http\Controllers\Leader\AssetSayaController;
 use App\Http\Controllers\Leader\DashboardController as KoordinatorDashboard;
 use App\Http\Controllers\Leader\MeetingController as KoordinatorMeetingController;
 use App\Http\Controllers\Leader\MomController;
+use App\Http\Controllers\Leader\RecordingController;
 use App\Http\Controllers\MomExportController;
 use App\Http\Controllers\OverrideRequestController;
 use App\Http\Controllers\PaymentApprovalController;
@@ -121,6 +122,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('payment-approvals/reset', [PaymentApprovalController::class, 'resetData'])->name('payment-approvals.reset');
     Route::get('export', [ExportController::class, 'export'])->name('export');
 
+    // Rekap Rapat (Recording)
+    Route::get('recordings', [RecordingController::class, 'index'])->name('recordings.index');
+    Route::get('recordings/create', [RecordingController::class, 'create'])->name('recordings.create');
+    Route::post('recordings', [RecordingController::class, 'store'])->name('recordings.store');
+    Route::get('recordings/{recording}', [RecordingController::class, 'show'])->name('recordings.show');
+    Route::get('recordings/{recording}/edit', [RecordingController::class, 'edit'])->name('recordings.edit');
+    Route::put('recordings/{recording}', [RecordingController::class, 'update'])->name('recordings.update');
+    Route::delete('recordings/{recording}', [RecordingController::class, 'destroy'])->name('recordings.destroy');
+
     // // Chat — hidden
     // Route::get('/chat/conversations', [ChatController::class, 'conversations'])->name('chat.conversations');
     // Route::get('/chat/messages', [ChatController::class, 'messages'])->name('chat.messages');
@@ -168,6 +178,13 @@ Route::middleware(['auth', 'leader'])->prefix('koordinator')->name('koordinator.
     Route::resource('meetings.mom', MomController::class)->shallow();
     Route::patch('mom/{mom}/send', [MomController::class, 'send'])->name('mom.send');
     Route::post('mom/{mom}/upload-file', [MomController::class, 'uploadFile'])->name('mom.upload-file');
+    Route::get('recordings', [RecordingController::class, 'index'])->name('recordings.index');
+    Route::get('recordings/create', [RecordingController::class, 'create'])->name('recordings.create');
+    Route::post('recordings', [RecordingController::class, 'store'])->name('recordings.store');
+    Route::get('recordings/{recording}', [RecordingController::class, 'show'])->name('recordings.show');
+    Route::get('recordings/{recording}/edit', [RecordingController::class, 'edit'])->name('recordings.edit');
+    Route::put('recordings/{recording}', [RecordingController::class, 'update'])->name('recordings.update');
+    Route::delete('recordings/{recording}', [RecordingController::class, 'destroy'])->name('recordings.destroy');
     Route::post('meetings/{meeting}/upload-file', [KoordinatorMeetingController::class, 'uploadFile'])->name('meetings.upload-file');
     Route::get('asset-saya', [AssetSayaController::class, 'index'])->name('asset-saya.index');
     Route::post('asset-saya', [AssetSayaController::class, 'store'])->name('asset-saya.store');

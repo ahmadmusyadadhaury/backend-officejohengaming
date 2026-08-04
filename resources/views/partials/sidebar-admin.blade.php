@@ -1,5 +1,5 @@
 @php
-    $isMeetingActive = request()->routeIs('admin.meetings.*', 'admin.moms.*', 'calendar', 'koordinator.meetings.*', 'koordinator.mom.*');
+    $isMeetingActive = request()->routeIs('admin.meetings.*', 'admin.moms.*', 'admin.recordings.*', 'koordinator.recordings.*', 'calendar', 'koordinator.meetings.*', 'koordinator.mom.*');
     $isAssetActive = request()->routeIs('admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*', 'admin.sosial-media.*', 'admin.aset-mes.*', 'admin.aset-tim.*');
     $isPaymentActive = request()->routeIs('admin.pembayaran.*', 'admin.payment-approvals.*', 'payment-approval.*');
     $isAdminActive = request()->routeIs('admin.users.*', 'admin.admins.*', 'admin.assets.*', 'admin.teams.*', 'admin.rooms.*', 'admin.team-compositions.*');
@@ -85,6 +85,7 @@
     <a href="{{ route('koordinator.meetings.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('koordinator.meetings.*') ? 'active' : '' }}"><span class="truncate">Meeting Saya</span></a>
     <a href="{{ route('admin.meetings.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.meetings.*') ? 'active' : '' }}"><span class="truncate">Permintaan Meeting</span></a>
     <a href="{{ route('admin.moms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.moms.*', 'koordinator.mom.*') ? 'active' : '' }}"><span class="truncate">Rekap MOM</span></a>
+    <a href="{{ route('admin.recordings.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.recordings.*', 'koordinator.recordings.*') ? 'active' : '' }}"><span class="truncate">Rekap Rapat</span></a>
     <a href="{{ route('calendar') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('calendar') ? 'active' : '' }}"><span class="truncate">Jadwal Meeting</span></a>
 </div>
 
