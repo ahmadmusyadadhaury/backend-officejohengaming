@@ -10,7 +10,7 @@
     $totalTagihanDonut = array_sum($chartTagihan ?? []);
     $totalBayarDonut = array_sum($chartBayar ?? []);
     $totalPersetujuanDonut = array_sum($chartPersetujuan ?? []);
-    $sisaDonut = $totalTagihanDonut - $totalBayarDonut - $totalPersetujuanDonut;
+    // $sisaDonut — dihitung di controller (sama dgn logika halaman Tagihan)
 @endphp
 <div class="dashboard-section stagger-children">
 
@@ -267,7 +267,7 @@
             </div>
 
             {{-- Donut Chart --}}
-            <div class="gaming-card lg:col-span-2 flex flex-col overflow-hidden">
+            <div class="gaming-card lg:col-span-2 flex flex-col">
                 <div class="card-header flex-shrink-0">
                     <span class="card-header-title">
                         <svg style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,7 +277,7 @@
                     </span>
                 </div>
                 <div class="flex-1 flex items-center justify-center p-4">
-                    <div style="position:relative;height:140px;width:140px;max-width:100%;"><canvas id="ringkasanChart"></canvas></div>
+                    <div style="position:relative;height:200px;width:200px;max-width:100%;"><canvas id="ringkasanChart"></canvas></div>
                 </div>
                 <div class="flex flex-wrap justify-center gap-1.5 px-4 pb-4 flex-shrink-0">
                     @if($totalTagihanDonut > 0)
@@ -299,10 +299,12 @@
                     </div>
                     @endif
                     @if($sisaDonut > 0)
-                    <div class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg" style="background:rgba(245,158,11,0.06);">
-                        <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Sisa</span>
-                        <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($sisaDonut, 0, ',', '.') }}</span>
-                    </div>
+                    <a href="{{ route('payment-approval.tagihan') }}" title="Lihat tagihan yang belum dibayar" style="text-decoration:none;">
+                        <div class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg" style="background:rgba(245,158,11,0.06);cursor:pointer;transition:transform .15s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <span class="text-[0.55rem] font-medium" style="color:var(--text-muted);">Sisa</span>
+                            <span class="text-xs font-semibold" style="color:var(--text-primary);">Rp {{ number_format($sisaDonut, 0, ',', '.') }}</span>
+                        </div>
+                    </a>
                     @endif
                     @if($totalTagihanDonut === 0 && $totalBayarDonut === 0 && $totalPersetujuanDonut === 0)
                     <div class="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-lg" style="background:rgba(100,116,139,0.06);">
@@ -763,7 +765,7 @@
         var totalTagihan = tagihan.reduce(function(a, b) { return a + b; }, 0);
         var totalBayar = bayar.reduce(function(a, b) { return a + b; }, 0);
         var totalPersetujuan = persetujuan.reduce(function(a, b) { return a + b; }, 0);
-        var sisa = totalTagihan - totalBayar - totalPersetujuan;
+        var sisa = {{ $sisaDonut ?? 0 }};
 
         var donutData = [totalBayar, totalPersetujuan, sisa].filter(function(v) { return v > 0; });
         var donutLabels = [];
@@ -790,6 +792,7 @@
                 maintainAspectRatio: true,
                 cutout: '65%',
                 devicePixelRatio: window.devicePixelRatio || 1,
+                layout: { padding: 30 },
                 plugins: {
                     legend: { display: false },
                     tooltip: {

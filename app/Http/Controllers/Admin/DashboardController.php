@@ -20,6 +20,7 @@ use App\Models\Team;
 use App\Models\TokenPayment;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\VehiclePajakRequest;
 use App\Models\WeeklyMeetingSession;
 use App\Models\WifiPayment;
 use App\Services\WeeklyMeetingService;
@@ -301,6 +302,31 @@ class DashboardController extends Controller
         $chartBayar = $monthlyBayar;
         $chartPersetujuan = $monthlyPersetujuan;
 
+        // Sisa = tagihan yang belum dibayar & belum diajukan (sama dgn halaman Tagihan)
+        $sisaDonut =
+            WifiPayment::whereNull('requested_by')
+                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+                ->where('masa_tenggang', '<', $today)
+                ->sum('biaya')
+            + PembayaranAsetDigital::whereNull('requested_by')
+                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+                ->sum('nominal')
+            + PembayaranIplRuko::whereNull('requested_by')
+                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+                ->where('jatuh_tempo', '<', $today)
+                ->sum('nominal')
+            + VehiclePajakRequest::whereNull('requested_by')
+                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+                ->sum('nominal')
+            + PembayaranAsetTim::whereNull('requested_by')
+                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+                ->where('jatuh_tempo', '<', $today)
+                ->sum('nominal')
+            + PembayaranAsetMes::whereNull('requested_by')
+                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+                ->where('jatuh_tempo', '<', $today)
+                ->sum('nominal');
+
         $jabatanList = Vehicle::distinct()->pluck('jabatan')
             ->merge(DigitalAsset::distinct()->pluck('jabatan'))
             ->merge(SimCard::distinct()->pluck('jabatan'))
@@ -311,6 +337,6 @@ class DashboardController extends Controller
             ->sort()
             ->values();
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'paymentDataJson', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar', 'chartPersetujuan', 'jabatanList'));
+        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'paymentDataJson', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar', 'chartPersetujuan', 'jabatanList', 'sisaDonut'));
     }
 }
