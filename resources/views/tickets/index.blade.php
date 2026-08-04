@@ -14,12 +14,12 @@
             <h2 class="text-base font-bold" style="color:var(--tk-text);">Semua Ticket</h2>
             <p class="text-xs" style="color:var(--tk-muted);">{{ $tickets->total() }} ticket ditemukan</p>
         </div>
-        <a href="{{ route('ticket.create') }}" class="btn btn-primary btn-sm">
+        <button type="button" onclick="openModal('create-ticket-modal')" class="btn btn-primary btn-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
             Buat Ticket
-        </a>
+        </button>
     </div>
 
     {{-- Filter --}}
@@ -111,7 +111,7 @@
                     <td><span class="text-xs" style="color:var(--tk-muted);">{{ $ticket->technician?->name ?? '-' }}</span></td>
                     <td class="tk-mono text-xs whitespace-nowrap" style="color:var(--tk-muted);">{{ $ticket->created_at->format('d/m/Y H:i') }}</td>
                     <td>
-                        <a href="{{ route('ticket.show', $ticket) }}" class="btn btn-sm btn-secondary">Detail</a>
+                        <button type="button" onclick="openTicketDetail({{ $ticket->id }}, '{{ addslashes($ticket->ticket_number) }}')" class="btn btn-sm btn-secondary">Detail</button>
                     </td>
                 </tr>
                 @endforeach
@@ -123,4 +123,7 @@
         @endif
     </div>
 </div>
+
+@include('tickets.partials.create-modal')
+@include('tickets.partials.detail-modal')
 @endsection

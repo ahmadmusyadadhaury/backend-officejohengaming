@@ -65,7 +65,7 @@
     <span class="truncate">Status Pengajuan</span>
 </a>
 
-@include('partials.sidebar-ticketing')
+@include('partials.sidebar-bantuan-it')
 
 <p class="sidebar-section-label">Akun</p>
 <a href="{{ route('profile.edit') }}"

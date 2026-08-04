@@ -18,7 +18,7 @@ class StoreTicketRequest extends FormRequest
             'title' => ['required', 'string', 'max:100'],
             'category_id' => ['nullable', 'exists:ticket_categories,id'],
             'description' => ['required', 'string', 'max:5000'],
-            'location' => ['required', 'string', 'max:191'],
+            'location' => ['nullable', 'string', 'max:191'],
             'priority' => ['required', 'string', 'in:'.implode(',', Ticket::priorities())],
             'attachments' => ['nullable', 'array', 'max:5'],
             'attachments.*' => [
@@ -34,7 +34,6 @@ class StoreTicketRequest extends FormRequest
         return [
             'title.required' => 'Judul masalah wajib diisi.',
             'description.required' => 'Deskripsi masalah wajib diisi.',
-            'location.required' => 'Lokasi/ruangan wajib diisi.',
             'priority.required' => 'Prioritas wajib dipilih.',
             'attachments.*.max' => 'Ukuran lampiran maksimal '.config('ticket.max_attachment_size').' KB.',
             'attachments.*.mimes' => 'Format lampiran tidak diizinkan.',

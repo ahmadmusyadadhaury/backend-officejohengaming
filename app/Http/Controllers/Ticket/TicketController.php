@@ -58,7 +58,10 @@ class TicketController extends Controller
      */
     public function my(Request $request)
     {
-        $query = auth()->user()->tickets()->with(['requester', 'category', 'technician', 'rating']);
+        $query = auth()->user()->tickets()->with([
+            'requester', 'category', 'technician', 'rating',
+            'histories' => fn ($q) => $q->latest(),
+        ]);
 
         $query
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
@@ -94,11 +97,19 @@ class TicketController extends Controller
             ->with('success', 'Ticket '.$ticket->ticket_number.' berhasil dibuat.');
     }
 
-    public function show(Ticket $ticket)
+    public function show(Request $request, Ticket $ticket)
     {
         Gate::authorize('view', $ticket);
 
         $ticket->load(['requester', 'category', 'technician', 'comments' => fn ($q) => $q->with(['user', 'attachments'])->oldest(), 'attachments', 'histories' => fn ($q) => $q->with('user')->latest(), 'rating']);
+
+        if ($request->has('embed')) {
+            return view('tickets.partials.detail-content', [
+                'ticket' => $ticket,
+                'user' => auth()->user(),
+                'embedded' => true,
+            ]);
+        }
 
         return view('tickets.show', [
             'ticket' => $ticket,

@@ -10,26 +10,44 @@ class AsetMesController extends Controller
 {
     public function index()
     {
-        $assets = AsetMes::with('penanggungJawab')
+        $assetsPutra = AsetMes::with('penanggungJawab')
             ->where('penanggung_jawab', auth()->id())
+            ->where('kategori', 'putra')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10, ['*'], 'page_putra')
+            ->withQueryString();
 
-        $assetsJson = $assets->values()->map(fn ($a) => [
-            'id' => $a->id,
-            'nama_aset' => $a->nama_aset,
-            'jumlah' => $a->jumlah,
-            'keterangan' => $a->keterangan,
-            'is_active' => $a->is_active,
+        $assetsPutri = AsetMes::with('penanggungJawab')
+            ->where('penanggung_jawab', auth()->id())
+            ->where('kategori', 'putri')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'page_putri')
+            ->withQueryString();
+
+        $assetsJson = collect([...$assetsPutra->items(), ...$assetsPutri->items()])
+            ->map(fn ($a) => [
+                'id' => $a->id,
+                'nama_aset' => $a->nama_aset,
+                'kategori' => $a->kategori,
+                'jumlah' => $a->jumlah,
+                'keterangan' => $a->keterangan,
+                'is_active' => $a->is_active,
+            ])
+            ->values();
+
+        return view('leader.aset-mes.index', [
+            'assetsPutra' => $assetsPutra,
+            'assetsPutri' => $assetsPutri,
+            'assetsJson' => $assetsJson,
+            'penanggungJawabMes' => AsetMes::PENANGGUNG_JAWAB_MES,
         ]);
-
-        return view('leader.aset-mes.index', compact('assets', 'assetsJson'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
             'nama_aset' => 'required|string|max:255',
+            'kategori' => 'required|in:putra,putri',
             'jumlah' => 'nullable|integer|min:1',
             'keterangan' => 'nullable|string',
         ]);
@@ -50,6 +68,7 @@ class AsetMesController extends Controller
 
         $data = $request->validate([
             'nama_aset' => 'required|string|max:255',
+            'kategori' => 'required|in:putra,putri',
             'jumlah' => 'nullable|integer|min:1',
             'is_active' => 'boolean',
             'keterangan' => 'nullable|string',

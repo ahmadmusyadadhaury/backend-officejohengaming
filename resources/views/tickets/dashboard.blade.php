@@ -22,24 +22,31 @@
             <h2 class="text-base font-bold" style="color:var(--tk-text);">Bantuan IT, terpantau hingga tuntas</h2>
             <p class="text-xs" style="color:var(--tk-muted);">Lapor masalah IT dan pantau progresnya dalam satu tempat.</p>
         </div>
-        <a href="{{ route('ticket.create') }}" class="btn btn-primary btn-sm">
+        <button type="button" onclick="openModal('create-ticket-modal')" class="btn btn-primary btn-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
             Buat Ticket
-        </a>
+        </button>
     </div>
 
     {{-- Stat tiles --}}
-    <div class="grid grid-cols-2 lg:grid-cols-6 gap-2.5 md:gap-3">
+    @php
+        $isTeamStat = auth()->user()->isTicketTeam();
+    @endphp
+    <div class="grid grid-cols-2 {{ $isTeamStat ? 'lg:grid-cols-6' : 'lg:grid-cols-3' }} gap-2.5 md:gap-3">
         @php
-            $cards = [
+            $cards = $isTeamStat ? [
                 ['label' => 'Total Ticket', 'count' => $stats['total'], 'color' => '#6366f1', 'url' => route('ticket.index')],
                 ['label' => 'Open', 'count' => $stats['open'], 'color' => '#94a3b8', 'url' => route('ticket.index', ['status' => 'open'])],
                 ['label' => 'Sedang Diproses', 'count' => $stats['processing'], 'color' => '#f59e0b', 'url' => route('ticket.index', ['status' => 'in_progress'])],
                 ['label' => 'Menunggu Anda', 'count' => $stats['waiting_user'], 'color' => '#8b5cf6', 'url' => route('ticket.index', ['status' => 'waiting_user'])],
                 ['label' => 'Over SLA', 'count' => $stats['over_sla'], 'color' => '#ef4444', 'url' => route('ticket.index', ['filter' => 'over_sla'])],
                 ['label' => 'Selesai', 'count' => $stats['closed'], 'color' => '#10b981', 'url' => route('ticket.index', ['status' => 'closed'])],
+            ] : [
+                ['label' => 'Total Tiket', 'count' => $stats['total'], 'color' => '#6366f1', 'url' => route('ticket.my')],
+                ['label' => 'Sedang Diproses', 'count' => $stats['processing'], 'color' => '#f59e0b', 'url' => route('ticket.my', ['status' => 'in_progress'])],
+                ['label' => 'Selesai', 'count' => $stats['closed'], 'color' => '#10b981', 'url' => route('ticket.my', ['filter' => 'closed'])],
             ];
         @endphp
         @foreach($cards as $card)
@@ -50,6 +57,7 @@
         @endforeach
     </div>
 
+    @if(auth()->user()->isTicketTeam())
     {{-- Queue rail --}}
     <div class="tk-queue">
         @php
@@ -67,6 +75,7 @@
         </a>
         @endforeach
     </div>
+    @endif
 
     {{-- Filter tabs --}}
     <div class="tk-tabs">
@@ -108,20 +117,20 @@
             </svg>
             <p>Belum ada ticket. Buat ticket pertama Anda!</p>
             <div class="tk-empty-action">
-                <a href="{{ route('ticket.create') }}" class="btn btn-primary btn-sm">+ Buat Ticket</a>
+                <button type="button" onclick="openModal('create-ticket-modal')" class="btn btn-primary btn-sm">+ Buat Ticket</button>
             </div>
         </div>
         @else
         <div class="space-y-2">
             @foreach($recent as $ticket)
-            <a href="{{ route('ticket.show', $ticket) }}" class="flex flex-wrap items-center gap-3 p-3 rounded-xl tk-card-hover" style="border:1px solid var(--tk-border);text-decoration:none;">
+            <a href="javascript:void(0)" onclick="openTicketDetail({{ $ticket->id }}, '{{ addslashes($ticket->ticket_number) }}')" class="flex flex-wrap items-center gap-3 p-3 rounded-xl tk-card-hover" style="border:1px solid var(--tk-border);text-decoration:none;cursor:pointer;">
                 <span class="tk-slip">
                     <span class="tk-slip-tab" style="background:{{ $ticket->priorityColor() }};"></span>
                     {{ $ticket->ticket_number }}
                 </span>
                 <div class="min-w-0 flex-1">
                     <p class="text-sm font-semibold truncate" style="color:var(--tk-text);">{{ $ticket->title }}</p>
-                    <p class="text-xs truncate" style="color:var(--tk-muted);">{{ $ticket->created_at->diffForHumans() }} · {{ $ticket->location }}</p>
+                    <p class="text-xs truncate" style="color:var(--tk-muted);">{{ $ticket->created_at->diffForHumans() }}@if($ticket->location) · {{ $ticket->location }}@endif</p>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     @if($ticket->isOverSla())
@@ -139,4 +148,7 @@
         @endif
     </div>
 </div>
+
+@include('tickets.partials.create-modal')
+@include('tickets.partials.detail-modal')
 @endsection

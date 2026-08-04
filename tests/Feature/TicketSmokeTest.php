@@ -67,6 +67,15 @@ class TicketSmokeTest extends TestCase
         $this->actingAs($admin)->get(route('ticket.reports.export'))->assertSuccessful('ticket.reports.export');
     }
 
+    public function test_ticket_detail_embed_renders(): void
+    {
+        foreach ([$this->user, $this->tech, $this->leader] as $actor) {
+            $response = $this->actingAs($actor)->get(route('ticket.show', $this->ticket).'?embed=1');
+            $response->assertSuccessful();
+            $response->assertSee($this->ticket->ticket_number);
+        }
+    }
+
     protected function buildSchema(): void
     {
         Schema::create('teams', function (Blueprint $t) {

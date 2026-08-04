@@ -27,10 +27,10 @@ return [
     ],
 
     'priority_labels' => [
-        'low' => 'Low',
-        'medium' => 'Medium',
-        'high' => 'High',
-        'urgent' => 'Urgent',
+        'low' => 'Rendah',
+        'medium' => 'Sedang',
+        'high' => 'Tinggi',
+        'urgent' => 'Mendesak',
     ],
 
     'priority_colors' => [

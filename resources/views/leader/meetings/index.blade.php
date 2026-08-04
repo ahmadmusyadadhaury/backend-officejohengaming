@@ -218,68 +218,75 @@
 </div>
 
 {{-- Request Meeting Modal --}}
-<div id="request-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">
-    <div class="w-full max-w-[820px] max-h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-y-auto min-h-0" style="background:var(--bg-surface);" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
-            <div>
-                <h3 class="text-base font-bold" style="color:var(--text-primary);">Request Meeting Baru</h3>
-                <p class="text-xs mt-0.5" style="color:var(--text-muted);">Isi detail pertemuan untuk mengajukan meeting.</p>
+<style>
+    .mt-section { display:flex; align-items:center; gap:7px; font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-secondary); margin-bottom:10px; }
+    .mt-section::before { content:''; width:3px; height:12px; border-radius:999px; background:#a78bfa; flex-shrink:0; }
+</style>
+<div id="request-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);">
+    <div class="w-full max-w-[720px] rounded-2xl flex flex-col min-h-0" style="max-height:92vh;background:var(--bg-surface);border:1px solid var(--border-color);box-shadow:0 24px 60px -12px rgba(0,0,0,.28),0 8px 24px -12px rgba(0,0,0,.18);" onclick="event.stopPropagation()">
+        <div class="flex items-center gap-3 px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <div class="flex items-center justify-center w-10 h-10 rounded-xl flex-shrink-0" style="background:rgba(124,58,237,0.12);color:#a78bfa;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
             </div>
-            <button type="button" onclick="closeModal('request-modal')" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+            <div class="min-w-0 flex-1">
+                <h3 class="text-base font-bold leading-tight" style="color:var(--text-primary);">Request Meeting Baru</h3>
+                <p class="text-xs mt-0.5 leading-snug" style="color:var(--text-muted);">Isi detail pertemuan untuk mengajukan meeting.</p>
+            </div>
+            <button type="button" onclick="closeModal('request-modal')" class="p-1.5 rounded-lg transition flex-shrink-0" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0">
+        <form method="POST" action="{{ route('koordinator.meetings.store') }}" enctype="multipart/form-data" class="px-6 py-5 space-y-5 overflow-y-auto flex-1 min-h-0">
             @csrf
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="space-y-5">
 
-                {{-- LEFT COLUMN --}}
-                <div class="space-y-4">
-
-                    {{-- Info Dasar --}}
-                    <div>
-                        <p class="font-gaming font-semibold text-xs mb-2" style="color:var(--text-primary);letter-spacing:0.05em;">INFO DASAR</p>
-                        <div class="space-y-2">
+                {{-- Info Dasar --}}
+                <div>
+                    <p class="mt-section">INFO DASAR</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="modal-title" class="gaming-label">Judul Meeting <span style="color:#f87171;">*</span></label>
+                            <input id="modal-title" type="text" name="title" value="{{ old('title') }}" required placeholder="Contoh: Evaluasi Konten Mingguan" class="gaming-input">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
-                                <label class="gaming-label">Judul Meeting <span style="color:#f87171;">*</span></label>
-                                <input type="text" name="title" value="{{ old('title') }}" required placeholder="Contoh: Evaluasi Konten Mingguan" class="gaming-input">
+                                <label for="modal-date" class="gaming-label">Tanggal <span style="color:#f87171;">*</span></label>
+                                <input id="modal-date" type="date" name="meeting_date" value="{{ old('meeting_date') }}" required min="{{ date('Y-m-d') }}" class="gaming-input">
                             </div>
                             <div>
-                                <label class="gaming-label">Ruangan <span style="color:#f87171;">*</span></label>
-                                <select name="room_id" required class="gaming-input gaming-select">
-                                    <option value="">Pilih Ruangan</option>
-                                    @foreach($rooms as $room)
-                                        <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>
-                                            {{ $room->name }} ({{ $room->capacity }} orang)
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="gaming-label">Tanggal <span style="color:#f87171;">*</span></label>
-                                    <input type="date" name="meeting_date" value="{{ old('meeting_date') }}" required min="{{ date('Y-m-d') }}" class="gaming-input">
-                                </div>
-                                <div>
-                                    <label class="gaming-label">Jam Mulai <span style="color:#f87171;">*</span></label>
-                                    <input type="text" name="start_time" id="modal-start-time" value="{{ old('start_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
-                                </div>
+                                <label for="modal-start-time" class="gaming-label">Jam Mulai <span style="color:#f87171;">*</span></label>
+                                <input id="modal-start-time" type="text" name="start_time" value="{{ old('start_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
                             </div>
                             <div>
-                                <label class="gaming-label">Jam Selesai <span style="color:#f87171;">*</span></label>
-                                <input type="text" name="end_time" id="modal-end-time" value="{{ old('end_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
+                                <label for="modal-end-time" class="gaming-label">Jam Selesai <span style="color:#f87171;">*</span></label>
+                                <input id="modal-end-time" type="text" name="end_time" value="{{ old('end_time') }}" required class="gaming-input" placeholder="--:--" autocomplete="off">
                             </div>
                         </div>
+                        <div>
+                            <label for="modal-room" class="gaming-label">Ruangan <span style="color:#f87171;">*</span></label>
+                            <select id="modal-room" name="room_id" required class="gaming-input gaming-select">
+                                <option value="">Pilih Ruangan</option>
+                                @foreach($rooms as $room)
+                                    <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>
+                                        {{ $room->name }} ({{ $room->capacity }} orang)
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
+                </div>
 
-                    {{-- Tim --}}
-                    <div style="border-top:1px solid var(--border-color);padding-top:0.75rem;">
-                        <p class="font-gaming font-semibold text-xs mb-2" style="color:var(--text-primary);letter-spacing:0.05em;">TIM</p>
+                {{-- Tim --}}
+                <div>
+                    <p class="mt-section">TIM</p>
+                    <div class="space-y-3">
                         @if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'ceo']))
-                        <div class="mb-2">
-                            <label class="gaming-label">Tim Utama <span style="color:#f87171;">*</span></label>
-                            <select name="main_team_id" required class="gaming-input gaming-select">
+                        <div>
+                            <label for="modal-main-team" class="gaming-label">Tim Utama <span style="color:#f87171;">*</span></label>
+                            <select id="modal-main-team" name="main_team_id" required class="gaming-input gaming-select">
                                 <option value="">Pilih Tim Utama</option>
                                 @foreach($teams as $team)
                                     <option value="{{ $team->id }}" {{ old('main_team_id') == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
@@ -288,76 +295,74 @@
                         </div>
                         @endif
                         <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="gaming-label mb-0">Tim Tambahan <span style="color:var(--text-muted);font-weight:400;font-size:0.7rem;">(Opsional)</span></label>
-                                <button type="button" onclick="addTeamRowModal()" class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:0.7rem;">+ Tambah</button>
+                            <div class="flex items-center justify-between">
+                                <label class="gaming-label mb-1">Tim Tambahan <span style="color:var(--text-muted);font-weight:400;font-size:0.7rem;">(Opsional)</span></label>
+                                <button type="button" onclick="addTeamRowModal()" class="btn btn-secondary btn-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Tambah
+                                </button>
                             </div>
-                            <div id="modal-extra-teams" class="space-y-1.5"></div>
+                            <div id="modal-extra-teams" class="space-y-2 mt-1"></div>
                         </div>
                     </div>
-
                 </div>
 
-                {{-- RIGHT COLUMN --}}
-                <div class="space-y-4">
-
-                    {{-- 5W1H --}}
-                    <div>
-                        <p class="font-gaming font-semibold text-xs mb-2" style="color:var(--text-primary);letter-spacing:0.05em;">DETAIL MEETING (5W1H)</p>
-                        <div class="space-y-2">
-                            <div>
-                                <label class="gaming-label">WHY <span style="color:#f87171;">*</span></label>
-                                <textarea name="why" rows="2" required placeholder="Kenapa meeting ini diadakan?" class="gaming-input" style="resize:vertical;">{{ old('why') }}</textarea>
-                            </div>
-                            <div>
-                                <label class="gaming-label">WHAT <span style="color:#f87171;">*</span></label>
-                                <textarea name="what" rows="2" required placeholder="Apa yang akan dibahas?" class="gaming-input" style="resize:vertical;">{{ old('what') }}</textarea>
-                            </div>
-                            <div>
-                                <label class="gaming-label">HOW <span style="color:#f87171;">*</span></label>
-                                <textarea name="how_expected" rows="2" required placeholder="Hasil yang diharapkan?" class="gaming-input" style="resize:vertical;">{{ old('how_expected') }}</textarea>
-                            </div>
+                {{-- Detail Meeting (5W1H) --}}
+                <div>
+                    <p class="mt-section">DETAIL MEETING (5W1H)</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="modal-why" class="gaming-label">WHY <span style="color:#f87171;">*</span></label>
+                            <textarea id="modal-why" name="why" rows="2" required placeholder="Kenapa meeting ini diadakan?" class="gaming-input" style="resize:vertical;">{{ old('why') }}</textarea>
+                        </div>
+                        <div>
+                            <label for="modal-what" class="gaming-label">WHAT <span style="color:#f87171;">*</span></label>
+                            <textarea id="modal-what" name="what" rows="2" required placeholder="Apa yang akan dibahas?" class="gaming-input" style="resize:vertical;">{{ old('what') }}</textarea>
+                        </div>
+                        <div>
+                            <label for="modal-how" class="gaming-label">HOW <span style="color:#f87171;">*</span></label>
+                            <textarea id="modal-how" name="how_expected" rows="2" required placeholder="Hasil yang diharapkan?" class="gaming-input" style="resize:vertical;">{{ old('how_expected') }}</textarea>
                         </div>
                     </div>
+                </div>
 
-                    {{-- Lampiran & Aset --}}
-                    <div style="border-top:1px solid var(--border-color);padding-top:0.75rem;">
-                        <p class="font-gaming font-semibold text-xs mb-2" style="color:var(--text-primary);letter-spacing:0.05em;">LAMPIRAN & ASET</p>
-                        <div class="space-y-2">
-                            <div>
-                                <label class="gaming-label">Lampiran File <span style="color:var(--text-muted);font-weight:400;font-size:0.7rem;">(Opsional)</span></label>
-                                <input type="file" name="file" accept=".pdf,.doc,.docx" class="gaming-input" style="padding:0.4rem;font-size:0.8rem;">
-                            </div>
-                            @if($assets->count())
-                            <div>
-                                <label class="gaming-label">Kebutuhan Aset</label>
-                                <div class="space-y-1">
-                                    @foreach($assets->take(4) as $asset)
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs flex-1" style="color:var(--text-secondary);">{{ $asset->name }}</span>
-                                        <input type="number" name="assets[{{ $asset->id }}]" min="0" max="{{ $asset->quantity }}" value="0"
-                                            class="gaming-input text-center" style="width:50px;padding:0.2rem 0.3rem;font-size:0.75rem;">
-                                    </div>
-                                    @endforeach
+                {{-- Lampiran & Aset --}}
+                <div>
+                    <p class="mt-section">LAMPIRAN & ASET</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="modal-file" class="gaming-label">Lampiran File <span style="color:var(--text-muted);font-weight:400;font-size:0.7rem;">(Opsional)</span></label>
+                            <input id="modal-file" type="file" name="file" accept=".pdf,.doc,.docx" class="gaming-input" style="padding:0.4rem;font-size:0.8rem;">
+                        </div>
+                        @if($assets->count())
+                        <div>
+                            <label class="gaming-label">Kebutuhan Aset</label>
+                            <div class="space-y-1.5">
+                                @foreach($assets->take(4) as $asset)
+                                <div class="flex items-center gap-3 rounded-lg px-3 py-2" style="background:var(--bg-surface-2);border:1px solid var(--border-color);">
+                                    <span class="text-xs flex-1" style="color:var(--text-secondary);">{{ $asset->name }}</span>
+                                    <span class="text-[0.65rem]" style="color:var(--text-muted);">Tersedia {{ $asset->quantity }}</span>
+                                    <input type="number" name="assets[{{ $asset->id }}]" min="0" max="{{ $asset->quantity }}" value="0"
+                                        class="gaming-input text-center" style="width:56px;padding:0.25rem 0.35rem;font-size:0.75rem;">
                                 </div>
+                                @endforeach
                             </div>
-                            @endif
                         </div>
+                        @endif
                     </div>
-
                 </div>
 
             </div>
 
             {{-- Actions --}}
-            <div class="flex gap-3 pt-3" style="border-top:1px solid var(--border-color);">
-                <button type="submit" class="btn btn-primary">
+            <div class="flex items-center justify-end gap-3 pt-3" style="border-top:1px solid var(--border-color);margin-top:8px;">
+                <button type="button" onclick="closeModal('request-modal')" class="btn btn-secondary btn-sm">Batal</button>
+                <button type="submit" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                     </svg>
                     Kirim Request
                 </button>
-                <button type="button" onclick="closeModal('request-modal')" class="btn btn-secondary">Batal</button>
             </div>
         </form>
     </div>

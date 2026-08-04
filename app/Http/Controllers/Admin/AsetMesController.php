@@ -10,18 +10,31 @@ class AsetMesController extends Controller
 {
     public function index()
     {
-        $assets = AsetMes::with('penanggungJawab')->orderBy('created_at', 'desc')->get();
+        $assetsPutra = AsetMes::with('penanggungJawab')
+            ->where('kategori', 'putra')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'page_putra')
+            ->withQueryString();
+
+        $assetsPutri = AsetMes::with('penanggungJawab')
+            ->where('kategori', 'putri')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'page_putri')
+            ->withQueryString();
 
         $stats = [
-            'total' => $assets->count(),
-            'aktif' => $assets->where('is_active', true)->count(),
-            'nonaktif' => $assets->where('is_active', false)->count(),
+            'total' => AsetMes::count(),
+            'aktif' => AsetMes::where('is_active', true)->count(),
+            'nonaktif' => AsetMes::where('is_active', false)->count(),
+            'putra' => AsetMes::where('kategori', 'putra')->count(),
+            'putri' => AsetMes::where('kategori', 'putri')->count(),
         ];
 
-        $assetsJson = $assets->values()->map(function ($a) {
-            return [
+        $assetsJson = collect([...$assetsPutra->items(), ...$assetsPutri->items()])
+            ->map(fn ($a) => [
                 'id' => $a->id,
                 'nama_aset' => $a->nama_aset,
+                'kategori' => $a->kategori,
                 'jumlah' => $a->jumlah,
                 'penanggung_jawab' => $a->penanggung_jawab,
                 'penanggung_jawab_nama' => $a->penanggungJawab?->name ?? '-',
@@ -29,13 +42,15 @@ class AsetMesController extends Controller
                 'jabatan' => $a->jabatan,
                 'keterangan' => $a->keterangan,
                 'is_active' => $a->is_active,
-            ];
-        });
+            ])
+            ->values();
 
         return view('admin.aset-mes.index', [
-            'assets' => $assets,
+            'assetsPutra' => $assetsPutra,
+            'assetsPutri' => $assetsPutri,
             'assetsJson' => $assetsJson,
             'stats' => $stats,
+            'penanggungJawabMes' => AsetMes::PENANGGUNG_JAWAB_MES,
         ]);
     }
 
@@ -43,6 +58,7 @@ class AsetMesController extends Controller
     {
         $data = $request->validate([
             'nama_aset' => 'required|string|max:255',
+            'kategori' => 'required|in:putra,putri',
             'jumlah' => 'nullable|integer|min:1',
             'penanggung_jawab' => 'nullable|exists:users,id',
             'pic' => 'nullable|string|max:255',
@@ -61,6 +77,7 @@ class AsetMesController extends Controller
     {
         $rules = [
             'nama_aset' => 'sometimes|required|string|max:255',
+            'kategori' => 'sometimes|in:putra,putri',
             'jumlah' => 'nullable|integer|min:1',
             'penanggung_jawab' => 'nullable|exists:users,id',
             'pic' => 'nullable|string|max:255',

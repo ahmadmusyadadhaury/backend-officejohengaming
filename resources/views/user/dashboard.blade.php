@@ -81,9 +81,9 @@
                         <p class="text-sm font-medium truncate flex-1" style="color:var(--text-primary);">{{ $meeting->title }}</p>
                     </div>
                     <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-[0.65rem]" style="color:var(--text-muted);padding-left:1rem;">
-                        <span>📍 {{ $meeting->room->name }}</span>
+                        <span>📍 {{ $meeting->room?->name }}</span>
                         <span>⏰ {{ substr($meeting->start_time,0,5) }}–{{ substr($meeting->end_time,0,5) }}</span>
-                        <span>👤 {{ $meeting->requester->name }}</span>
+                        <span>👤 {{ $meeting->requester?->name ?? '—' }}</span>
                     </div>
                 </div>
                 @empty

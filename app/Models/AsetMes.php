@@ -6,10 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class AsetMes extends Model
 {
+    public const PENANGGUNG_JAWAB_MES = [
+        'putra' => 'Ridwan Hasan Maulana',
+        'putri' => 'Yuliana Sventy Yasmine Aulhia Sugiat',
+    ];
+
     protected $table = 'aset_mes';
 
     protected $fillable = [
         'nama_aset',
+        'kategori',
         'jumlah',
         'penanggung_jawab',
         'pic',

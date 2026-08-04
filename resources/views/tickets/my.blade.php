@@ -22,12 +22,12 @@
             <h2 class="text-base font-bold" style="color:var(--tk-text);">Ticket Saya</h2>
             <p class="text-xs" style="color:var(--tk-muted);">{{ $tickets->total() }} ticket dibuat oleh Anda</p>
         </div>
-        <a href="{{ route('ticket.create') }}" class="btn btn-primary btn-sm">
+        <button type="button" onclick="openModal('create-ticket-modal')" class="btn btn-primary btn-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
             Buat Ticket
-        </a>
+        </button>
     </div>
 
     {{-- Filter --}}
@@ -58,53 +58,68 @@
             </svg>
             <p>Belum ada ticket. Klik "Buat Ticket" untuk melapor masalah.</p>
             <div class="tk-empty-action">
-                <a href="{{ route('ticket.create') }}" class="btn btn-primary btn-sm">+ Buat Ticket</a>
+                <button type="button" onclick="openModal('create-ticket-modal')" class="btn btn-primary btn-sm">+ Buat Ticket</button>
             </div>
         </div>
         @else
         <table class="tk-table w-full">
+            @php
+                $statusMap = [
+                    'open' => ['Menunggu', '#94a3b8'],
+                    'waiting_user' => ['Menunggu', '#94a3b8'],
+                    'assigned' => ['Diproses', '#f59e0b'],
+                    'in_progress' => ['Diproses', '#f59e0b'],
+                    'reopened' => ['Diproses', '#f59e0b'],
+                    'resolved' => ['Selesai', '#22c55e'],
+                    'closed' => ['Selesai', '#22c55e'],
+                    'cancelled' => ['Dibatalkan', '#111827'],
+                    'rejected' => ['Ditolak', '#ef4444'],
+                ];
+            @endphp
             <thead>
                 <tr>
-                    <th>No. Ticket</th>
-                    <th>Judul</th>
-                    <th>Prioritas</th>
+                    <th>Ticket</th>
+                    <th>Diajukan</th>
                     <th>Status</th>
-                    <th>Teknisi</th>
-                    <th>SLA</th>
-                    <th>Dibuat</th>
+                    <th>PIC</th>
+                    <th>Catatan TIM IT</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($tickets as $ticket)
+                @php
+                    [$statusLabel, $statusColor] = $statusMap[$ticket->status] ?? [$ticket->statusLabel(), $ticket->statusColor()];
+                    $resolveHistory = $ticket->histories->first(fn ($h) => $h->action === 'resolved');
+                    $resolveNote = $resolveHistory ? Str::after($resolveHistory->description, ' — ') : null;
+                @endphp
                 <tr>
                     <td>
-                        <span class="tk-slip">
-                            <span class="tk-slip-tab" style="background:{{ $ticket->priorityColor() }};"></span>
-                            {{ $ticket->ticket_number }}
-                        </span>
-                    </td>
-                    <td>
+                        <a href="javascript:void(0)" onclick="openTicketDetail({{ $ticket->id }}, '{{ addslashes($ticket->ticket_number) }}')">
+                            <span class="tk-slip">
+                                <span class="tk-slip-tab" style="background:{{ $ticket->priorityColor() }};"></span>
+                                {{ $ticket->ticket_number }}
+                            </span>
+                        </a>
                         <p class="text-sm font-semibold truncate max-w-[200px]" style="color:var(--tk-text);">{{ $ticket->title }}</p>
-                    </td>
-                    <td>
-                        <span class="tk-chip" style="background:{{ $ticket->priorityColor() }}1a;color:{{ $ticket->priorityColor() }};border-color:{{ $ticket->priorityColor() }}40;">
-                            <span class="tk-chip-dot" style="background:{{ $ticket->priorityColor() }};"></span>
-                            {{ $ticket->priorityLabel() }}
-                        </span>
-                    </td>
-                    <td>@include('tickets.partials.badges', ['ticket' => $ticket])</td>
-                    <td><span class="text-xs" style="color:var(--tk-muted);">{{ $ticket->technician?->name ?? 'Belum ditugaskan' }}</span></td>
-                    <td>
-                        @if($ticket->isOverSla())
-                        <span class="tk-sla tk-sla-over"><span class="tk-sla-dot"></span>Lewat Batas</span>
-                        @else
-                        <span class="tk-mono text-xs" style="color:var(--tk-muted);">{{ $ticket->slaProgress() }}</span>
-                        @endif
                     </td>
                     <td class="tk-mono text-xs whitespace-nowrap" style="color:var(--tk-muted);">{{ $ticket->created_at->format('d/m/Y H:i') }}</td>
                     <td>
-                        <a href="{{ route('ticket.show', $ticket) }}" class="btn btn-sm btn-secondary">Detail</a>
+                        <span class="tk-chip" style="background:{{ $statusColor }}1a;color:{{ $statusColor }};border-color:{{ $statusColor }}40;">
+                            <span class="tk-chip-dot" style="background:{{ $statusColor }};"></span>
+                            {{ $statusLabel }}
+                        </span>
+                    </td>
+                    <td><span class="text-xs" style="color:var(--tk-muted);">{{ $ticket->technician?->name ?? '—' }}</span></td>
+                    <td>
+                        @if($resolveNote)
+                        <span class="text-xs" style="color:var(--tk-muted);" title="{{ $resolveNote }}">{{ Str::limit($resolveNote, 40) }}</span>
+                        @else
+                        <span class="text-xs" style="color:var(--tk-muted);">—</span>
+                        @endif
+                    </td>
+                    <td>
+                        <button type="button" onclick="openTicketDetail({{ $ticket->id }}, '{{ addslashes($ticket->ticket_number) }}')" class="btn btn-sm btn-secondary">Detail</button>
                     </td>
                 </tr>
                 @endforeach
@@ -116,4 +131,7 @@
         @endif
     </div>
 </div>
+
+@include('tickets.partials.create-modal')
+@include('tickets.partials.detail-modal')
 @endsection

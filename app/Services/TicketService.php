@@ -46,7 +46,7 @@ class TicketService
                 'category_id' => $data['category_id'] ?? null,
                 'title' => $data['title'],
                 'description' => $data['description'],
-                'location' => $data['location'],
+                'location' => $data['location'] ?? null,
                 'department' => TicketSupport::departmentFromUser($user),
                 'position' => TicketSupport::positionFromUser($user),
                 'priority' => $data['priority'],

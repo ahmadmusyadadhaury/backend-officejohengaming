@@ -2,13 +2,13 @@
 @section('body-class', 'page-admin page-aset-mes')
 @section('title', 'Aset MES')
 @section('page-title', 'Data Aset > Aset MES')
-@section('page-subtitle', 'Daftar aset MES dan perlengkapan perusahaan')
+@section('page-subtitle', 'Daftar aset MES Putra & Putri dan perlengkapan perusahaan')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(124,58,237,0.15);">
                 <svg class="w-[18px] h-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,7 +18,28 @@
             <div class="min-w-0">
                 <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Aset MES</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(37,99,235,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+            </div>
+            <div class="min-w-0">
+                <div class="text-xl font-gaming font-bold" style="color:#60a5fa;">{{ $stats['putra'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Mes Putra</div>
+            </div>
+        </div>
+        <div class="gaming-card p-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(236,72,153,0.15);">
+                <svg class="w-[18px] h-[18px]" style="color:#f472b6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+            </div>
+            <div class="min-w-0">
+                <div class="text-xl font-gaming font-bold" style="color:#f472b6;">{{ $stats['putri'] }}</div>
+                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Mes Putri</div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -30,7 +51,6 @@
             <div>
                 <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Aset Aktif</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -42,23 +62,30 @@
             <div>
                 <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['nonaktif'] }}</div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Aset Tidak Aktif</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
             </div>
         </div>
     </div>
 
+    {{-- ===== MES PUTRA ===== --}}
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
-            <div>
-                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Aset MES</div>
-                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Aset MES dan perlengkapan perusahaan.</div>
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#60a5fa;"></span>
+                <div>
+                    <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Aset MES Putra</div>
+                    <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Aset dan perlengkapan Mes Putra.</div>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[0.65rem] font-semibold mt-1.5" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        Penanggung Jawab: {{ $penanggungJawabMes['putra'] }}
+                    </span>
+                </div>
             </div>
             @if(auth()->user()->role !== 'gm')
-            <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
+            <button type="button" onclick="openCreateModal('putra')" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Tambah Aset MES
+                Tambah Aset Putra
             </button>
             @endif
         </div>
@@ -67,13 +94,13 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-aset" placeholder="Cari..." oninput="filterTable()"
+                <input type="text" id="search-aset-putra" placeholder="Cari..." oninput="filterTable('putra')"
                     class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
         </div>
         <div class="table-responsive">
-            <table class="gaming-table min-w-[700px]" id="aset-table">
+            <table class="gaming-table min-w-[700px]" id="aset-table-putra">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -85,8 +112,8 @@
                         @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
                     </tr>
                 </thead>
-                <tbody id="aset-tbody">
-                    @forelse($assets as $a)
+                <tbody id="aset-tbody-putra">
+                    @forelse($assetsPutra as $a)
                     <tr>
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
@@ -115,11 +142,100 @@
                         </td>@endif
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset MES.</td></tr>
+                    <tr><td colspan="{{ auth()->user()->role !== 'gm' ? 7 : 6 }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset Mes Putra.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+        @if($assetsPutra->hasPages())
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $assetsPutra->links() }}</div>
+        @endif
+    </div>
+
+    {{-- ===== MES PUTRI ===== --}}
+    <div class="gaming-card" style="overflow:visible;">
+        <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#f472b6;"></span>
+                <div>
+                    <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Data Aset MES Putri</div>
+                    <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Aset dan perlengkapan Mes Putri.</div>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[0.65rem] font-semibold mt-1.5" style="background:#fdf2f8;color:#be185d;border:1px solid #fbcfe8;">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        Penanggung Jawab: {{ $penanggungJawabMes['putri'] }}
+                    </span>
+                </div>
+            </div>
+            @if(auth()->user()->role !== 'gm')
+            <button type="button" onclick="openCreateModal('putri')" class="btn btn-primary btn-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Tambah Aset Putri
+            </button>
+            @endif
+        </div>
+        <div class="px-6 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-[200px] max-w-[260px]">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="search-aset-putri" placeholder="Cari..." oninput="filterTable('putri')"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="gaming-table min-w-[700px]" id="aset-table-putri">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Aset</th>
+                        <th>Jumlah</th>
+                        <th>Penanggung Jawab</th>
+                        <th>Status</th>
+                        <th>Keterangan</th>
+                        @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+                    </tr>
+                </thead>
+                <tbody id="aset-tbody-putri">
+                    @forelse($assetsPutri as $a)
+                    <tr>
+                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $a->nama_aset }}</td>
+                        <td style="color:var(--text-muted);">{{ $a->jumlah }}</td>
+                        <td style="color:var(--text-muted);">{{ $a->penanggungJawab?->name ?? '-' }}</td>
+                        <td><span class="badge {{ $a->is_active ? 'badge-green' : 'badge-red' }}">{{ $a->is_active ? 'Aktif' : 'Tidak Aktif' }}</span></td>
+                        <td style="max-width:150px;color:var(--text-muted);">{{ $a->keterangan ?? '-' }}</td>
+                        @if(auth()->user()->role !== 'gm')<td>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showDetail({{ $a->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, {{ $a->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-{{ $a->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showDetail({{ $a->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditModal({{ $a->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.aset-mes.destroy', $a) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus aset MES ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>@endif
+                    </tr>
+                    @empty
+                    <tr><td colspan="{{ auth()->user()->role !== 'gm' ? 7 : 6 }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset Mes Putri.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @if($assetsPutri->hasPages())
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $assetsPutri->links() }}</div>
+        @endif
     </div>
 </div>
 
@@ -155,12 +271,19 @@
             <div class="modal-modern-body">
                 <div class="form-grid-2">
                     <div class="field-group">
-                        <label class="gaming-label">Nama Aset <span class="field-req">*</span></label>
-                        <input type="text" name="nama_aset" id="f-nama_aset" required placeholder="Masukan nama aset" class="gaming-input">
+                        <label class="gaming-label">Kategori <span class="field-req">*</span></label>
+                        <select name="kategori" id="f-kategori" required class="gaming-input gaming-select">
+                            <option value="putra">Mes Putra</option>
+                            <option value="putri">Mes Putri</option>
+                        </select>
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Jumlah</label>
                         <input type="number" name="jumlah" id="f-jumlah" placeholder="Jumlah" min="1" class="gaming-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Nama Aset <span class="field-req">*</span></label>
+                        <input type="text" name="nama_aset" id="f-nama_aset" required placeholder="Masukan nama aset" class="gaming-input">
                     </div>
                     <div class="field-group">
                         <label class="gaming-label">Penanggung Jawab</label>
@@ -207,11 +330,6 @@
 @media (max-width: 640px) { .form-grid-2 { grid-template-columns: 1fr; } }
 .field-group { display: flex; flex-direction: column; gap: 6px; }
 .field-req { color: #f87171; }
-.form-footer { display: flex; justify-content: flex-end; gap: 10px; padding-top: 16px; margin-top: 8px; border-top: 1px solid var(--border-color); }
-.btn-form { padding: 8px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-.btn-form-batal { color: var(--text-primary); border: 1px solid var(--border-color); background: var(--bg-surface); }
-.btn-form-simpan { background: linear-gradient(135deg,#6c5cff,#8b7bff); color: #fff; border: none; box-shadow: 0 4px 15px rgba(108,92,255,0.3); }
-.btn-form-simpan:hover { transform: translateY(-1px); }
 .page-admin.page-aset-mes .btn-primary {
     background: #6d5ef9;
     box-shadow: 0 2px 8px rgba(109,94,249,0.25);
@@ -227,9 +345,9 @@
 <script>
 const assets = @json($assetsJson);
 
-function filterTable() {
-    const q = (document.getElementById('search-aset')?.value || '').toLowerCase();
-    document.querySelectorAll('#aset-tbody tr').forEach(row => {
+function filterTable(kategori) {
+    const q = (document.getElementById('search-aset-' + kategori)?.value || '').toLowerCase();
+    document.querySelectorAll('#aset-tbody-' + kategori + ' tr').forEach(row => {
         row.style.display = !q || row.textContent.toLowerCase().includes(q) ? '' : 'none';
     });
 }
@@ -255,8 +373,13 @@ function showDetail(id) {
     if (!a) return;
     document.getElementById('detail-title').textContent = a.nama_aset;
 
+    const kategoriBadge = a.kategori === 'putri'
+        ? '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:#fdf2f8;color:#be185d;border:1px solid #fbcfe8;">Mes Putri</span>'
+        : '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;">Mes Putra</span>';
+
     const rows = [
         { label: 'Nama Aset', value: a.nama_aset },
+        { label: 'Kategori', value: a.kategori },
         { label: 'Jumlah', value: a.jumlah },
         { label: 'Penanggung Jawab', value: a.penanggung_jawab_nama },
         { label: 'PIC', value: a.pic || '-' },
@@ -268,7 +391,7 @@ function showDetail(id) {
             ${rows.map((r, i) => `
                 <div class="flex items-center justify-between py-2.5" ${i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
                     <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
-                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.value}</p>
+                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.label === 'Kategori' ? kategoriBadge : r.value}</p>
                 </div>
             `).join('')}
             <div class="flex items-center justify-between py-2.5" style="border-bottom:1px solid var(--border-color);">
@@ -288,12 +411,14 @@ document.getElementById('detail-modal')?.addEventListener('click', function(e) {
     if (e.target === this) closeDetail();
 });
 
-function openCreateModal() {
-    document.getElementById('modal-title').textContent = 'Tambah Aset MES';
+function openCreateModal(kategori) {
+    kategori = kategori || 'putra';
+    document.getElementById('modal-title').textContent = 'Tambah Aset MES ' + (kategori === 'putri' ? 'Putri' : 'Putra');
     document.getElementById('form-method').value = 'POST';
     document.getElementById('form-id').value = '';
     document.getElementById('form-submit-btn').textContent = 'Tambah';
     document.getElementById('aset-form').action = '{{ route("admin.aset-mes.index") }}';
+    document.getElementById('f-kategori').value = kategori;
     document.getElementById('f-nama_aset').value = '';
     document.getElementById('f-jumlah').value = '';
     document.getElementById('f-penanggung_jawab').value = '';
@@ -312,6 +437,7 @@ function openEditModal(id) {
     document.getElementById('form-id').value = a.id;
     document.getElementById('form-submit-btn').textContent = 'Simpan';
     document.getElementById('aset-form').action = '{{ url("admin/aset-mes") }}/' + a.id;
+    document.getElementById('f-kategori').value = a.kategori || 'putra';
     document.getElementById('f-nama_aset').value = a.nama_aset;
     document.getElementById('f-jumlah').value = a.jumlah || '';
     document.getElementById('f-penanggung_jawab').value = a.penanggung_jawab || '';
