@@ -17,6 +17,10 @@
                 <input type="text" name="username" value="{{ old('username') }}" required class="gaming-input">
             </div>
             <div>
+                <label class="gaming-label">NIK</label>
+                <input type="text" name="nik" value="{{ old('nik') }}" class="gaming-input">
+            </div>
+            <div>
                 <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
                 <input type="password" name="password" required class="gaming-input">
             </div>

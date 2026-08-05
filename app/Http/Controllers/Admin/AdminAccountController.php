@@ -18,7 +18,8 @@ class AdminAccountController extends Controller
         if ($search = $request->input('search')) {
             $adminQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%");
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('nik', 'like', "%{$search}%");
             });
         }
 
@@ -39,6 +40,7 @@ class AdminAccountController extends Controller
             $karyawanQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('nik', 'like', "%{$search}%")
                     ->orWhereHas('team', function ($q2) use ($search) {
                         $q2->where('name', 'like', "%{$search}%");
                     });
@@ -69,6 +71,7 @@ class AdminAccountController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username',
+            'nik' => 'nullable|string|max:50|unique:users,nik',
             'password' => 'required|string|min:6',
             'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga',
         ]);
@@ -80,6 +83,7 @@ class AdminAccountController extends Controller
         User::create([
             'name' => $request->name,
             'username' => $request->username,
+            'nik' => $request->nik,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'is_active' => true,
@@ -98,6 +102,7 @@ class AdminAccountController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,'.$admin->id,
+            'nik' => 'nullable|string|max:50|unique:users,nik,'.$admin->id,
             'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga',
         ]);
 
@@ -105,7 +110,7 @@ class AdminAccountController extends Controller
             return back()->withInput()->with('error', 'Akun CEO sudah ada. Hanya 1 CEO yang diperbolehkan.');
         }
 
-        $data = $request->only('name', 'username', 'role', 'is_active');
+        $data = $request->only('name', 'username', 'nik', 'role', 'is_active');
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
@@ -130,6 +135,7 @@ class AdminAccountController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username',
+            'nik' => 'nullable|string|max:50|unique:users,nik',
             'password' => 'required|string|min:6',
             'team_id' => 'nullable|exists:teams,id',
         ]);
@@ -137,6 +143,7 @@ class AdminAccountController extends Controller
         User::create([
             'name' => $request->name,
             'username' => $request->username,
+            'nik' => $request->nik,
             'password' => Hash::make($request->password),
             'role' => 'user',
             'team_id' => $request->team_id,
@@ -151,12 +158,14 @@ class AdminAccountController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,'.$karyawan->id,
+            'nik' => 'nullable|string|max:50|unique:users,nik,'.$karyawan->id,
             'team_id' => 'nullable|exists:teams,id',
         ]);
 
         $data = [
             'name' => $request->name,
             'username' => $request->username,
+            'nik' => $request->nik,
             'team_id' => $request->team_id,
             'is_active' => $request->boolean('is_active'),
         ];

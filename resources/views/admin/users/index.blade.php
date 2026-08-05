@@ -14,12 +14,20 @@
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Kelola akun koordinator divisi dengan akses TERBATAS (menu Meeting saja).</div>
             </div>
 @if(auth()->user()->role !== 'gm')
+            <div class="flex gap-2">
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Koordinator
             </button>
+            <button type="button" onclick="openUploadNikModal()" class="btn btn-secondary btn-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5 5 5M12 5v12"/>
+                </svg>
+                Upload NIK
+            </button>
+            </div>
 @endif
         </div>
         <form method="GET" action="{{ route('admin.users.index') }}" id="filter-form">
@@ -56,6 +64,7 @@
                         <th>No</th>
                         <th>Nama</th>
                         <th>Username</th>
+                        <th>NIK</th>
                         <th>Role</th>
                         <th>Divisi</th>
                         <th>Status</th>
@@ -68,6 +77,7 @@
                         <td style="color:var(--text-muted);">{{ $users->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $user->name }}</td>
                         <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;">{{ $user->username }}</code></td>
+                        <td style="color:var(--text-muted);">{{ $user->nik ?? '—' }}</td>
                         <td>
                             <span class="badge badge-primary">{{ $user->role_label }}</span>
                         </td>
@@ -79,7 +89,7 @@
                         </td>
 @if(auth()->user()->role !== 'gm')
                         <td>
-                            <button type="button" onclick="openDetailModal({{ json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'role'=>$user->role,'role_label'=>$user->role_label,'team_name'=>($user->team?->name ?? '—'),'is_active'=>$user->is_active]) }})" class="btn btn-secondary btn-sm" style="margin-right:4px;display:inline-flex;align-items:center;gap:4px;">
+                            <button type="button" onclick="openDetailModal({{ json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'nik'=>$user->nik,'role'=>$user->role,'role_label'=>$user->role_label,'team_name'=>($user->team?->name ?? '—'),'is_active'=>$user->is_active]) }})" class="btn btn-secondary btn-sm" style="margin-right:4px;display:inline-flex;align-items:center;gap:4px;">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 Lihat Detail
                             </button>
@@ -88,7 +98,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
                                 </button>
                                 <div class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:140px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                    <button type="button" onclick="openEditModal({{ json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'role'=>$user->role,'team_id'=>$user->team_id,'is_active'=>$user->is_active]) }})" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                                    <button type="button" onclick="openEditModal({{ json_encode(['id'=>$user->id,'name'=>$user->name,'username'=>$user->username,'nik'=>$user->nik,'role'=>$user->role,'team_id'=>$user->team_id,'is_active'=>$user->is_active]) }})" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         Edit
                                     </button>
@@ -105,7 +115,7 @@
 @endif
                     </tr>
                     @empty
-                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun koordinator ditemukan.</td></tr>
+                    <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun koordinator ditemukan.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -136,6 +146,7 @@
                         <th>No</th>
                         <th>Nama</th>
                         <th>Username</th>
+                        <th>NIK</th>
                         <th>Divisi</th>
                         <th>Status</th>
 @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
@@ -147,6 +158,7 @@
                         <td style="color:var(--text-muted);">{{ $karyawans->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $karyawan->name }}</td>
                         <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;">{{ $karyawan->username }}</code></td>
+                        <td style="color:var(--text-muted);">{{ $karyawan->nik ?? '—' }}</td>
                         <td style="color:var(--text-muted);">{{ $karyawan->team?->name ?? '—' }}</td>
                         <td>
                             <span class="badge {{ $karyawan->is_active ? 'badge-green' : 'badge-red' }}">
@@ -155,7 +167,7 @@
                         </td>
 @if(auth()->user()->role !== 'gm')
                         <td>
-                            <button type="button" onclick="openDetailKaryawanModal({{ json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'team_name'=>($karyawan->team?->name ?? '—'),'is_active'=>$karyawan->is_active]) }})" class="btn btn-secondary btn-sm" style="margin-right:4px;display:inline-flex;align-items:center;gap:4px;">
+                            <button type="button" onclick="openDetailKaryawanModal({{ json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'nik'=>$karyawan->nik,'team_name'=>($karyawan->team?->name ?? '—'),'is_active'=>$karyawan->is_active]) }})" class="btn btn-secondary btn-sm" style="margin-right:4px;display:inline-flex;align-items:center;gap:4px;">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 Lihat Detail
                             </button>
@@ -164,7 +176,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
                                 </button>
                                 <div class="dropdown-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:140px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                    <button type="button" onclick="openEditKaryawanModal({{ json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'team_id'=>$karyawan->team_id,'is_active'=>$karyawan->is_active]) }})" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                                    <button type="button" onclick="openEditKaryawanModal({{ json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'nik'=>$karyawan->nik,'team_id'=>$karyawan->team_id,'is_active'=>$karyawan->is_active]) }})" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         Edit
                                     </button>
@@ -181,7 +193,7 @@
 @endif
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun karyawan ditemukan.</td></tr>
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun karyawan ditemukan.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -205,6 +217,10 @@
             <div>
                 <label class="gaming-label">Username</label>
                 <div id="detail-username" style="padding:8px 12px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;color:var(--color-neon-blue);font-family:monospace;">—</div>
+            </div>
+            <div>
+                <label class="gaming-label">NIK</label>
+                <div id="detail-nik" style="padding:8px 12px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;color:var(--text-primary);">—</div>
             </div>
             <div>
                 <label class="gaming-label">Role</label>
@@ -243,6 +259,10 @@
                 <div>
                     <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
                     <input type="text" name="username" id="edit-username" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" id="edit-nik" class="gaming-input">
                 </div>
                 <div>
                     <label class="gaming-label">Password Baru <span style="color:var(--text-muted);font-weight:400;">(kosongkan jika tidak diubah)</span></label>
@@ -297,6 +317,10 @@
                     <input type="text" name="username" required class="gaming-input">
                 </div>
                 <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" class="gaming-input">
+                </div>
+                <div>
                     <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
                     <input type="password" name="password" required class="gaming-input">
                 </div>
@@ -344,6 +368,10 @@
                 <div id="detail-karyawan-username" style="padding:8px 12px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;color:var(--color-neon-blue);font-family:monospace;">—</div>
             </div>
             <div>
+                <label class="gaming-label">NIK</label>
+                <div id="detail-karyawan-nik" style="padding:8px 12px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;color:var(--text-primary);">—</div>
+            </div>
+            <div>
                 <label class="gaming-label">Divisi / Tim</label>
                 <div id="detail-karyawan-team" style="padding:8px 12px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;color:var(--text-primary);">—</div>
             </div>
@@ -376,6 +404,10 @@
                 <div>
                     <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
                     <input type="text" name="username" id="edit-karyawan-username" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" id="edit-karyawan-nik" class="gaming-input">
                 </div>
                 <div>
                     <label class="gaming-label">Password Baru <span style="color:var(--text-muted);font-weight:400;">(kosongkan jika tidak diubah)</span></label>
@@ -422,6 +454,10 @@
                     <input type="text" name="username" required class="gaming-input">
                 </div>
                 <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" class="gaming-input">
+                </div>
+                <div>
                     <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
                     <input type="password" name="password" required class="gaming-input">
                 </div>
@@ -438,6 +474,38 @@
             <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Buat Akun</button>
                 <button type="button" onclick="closeCreateKaryawanModal()" class="btn btn-secondary">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ═══════════════════ UPLOAD NIK MODAL ═══════════════════ --}}
+<div id="upload-nik-modal" class="modal-modern">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Upload NIK Karyawan</h3>
+            <button type="button" onclick="closeUploadNikModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <form id="upload-nik-form" method="POST" action="{{ route('admin.users.nik.import') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-modern-body space-y-4">
+                <p style="font-size:0.8rem;color:var(--text-muted);">
+                    Download template, isi kolom NIK untuk setiap karyawan (dicocokkan berdasarkan username), lalu upload kembali.
+                </p>
+                <a href="{{ route('admin.users.nik.template') }}" class="btn btn-secondary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Download Template Excel
+                </a>
+                <div>
+                    <label class="gaming-label">File Excel (xlsx/xls/csv) <span style="color:#f87171;">*</span></label>
+                    <input type="file" name="file" required accept=".xlsx,.xls,.csv" class="gaming-input">
+                </div>
+            </div>
+            <div class="modal-modern-footer gap-2">
+                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" onclick="closeUploadNikModal()" class="btn btn-secondary">Batal</button>
             </div>
         </form>
     </div>
@@ -475,6 +543,7 @@ function toggleDropdown(e) {
 function openDetailModal(data) {
     document.getElementById('detail-name').textContent = data.name;
     document.getElementById('detail-username').textContent = data.username;
+    document.getElementById('detail-nik').textContent = data.nik || '—';
     document.getElementById('detail-role').innerHTML = '<span class="badge badge-primary">' + data.role_label + '</span>';
     document.getElementById('detail-team').textContent = data.team_name;
     document.getElementById('detail-status').innerHTML = data.is_active == 1
@@ -492,6 +561,7 @@ function openEditModal(data) {
     document.getElementById('edit-form').action = '/admin/users/' + data.id;
     document.getElementById('edit-name').value = data.name;
     document.getElementById('edit-username').value = data.username;
+    document.getElementById('edit-nik').value = data.nik || '';
     document.getElementById('edit-role').value = data.role;
     document.getElementById('edit-team-id').value = data.team_id || '';
     document.getElementById('edit-is-active').checked = data.is_active == 1;
@@ -516,6 +586,7 @@ function toggleCreateTeam(role) {
 function openDetailKaryawanModal(data) {
     document.getElementById('detail-karyawan-name').textContent = data.name;
     document.getElementById('detail-karyawan-username').textContent = data.username;
+    document.getElementById('detail-karyawan-nik').textContent = data.nik || '—';
     document.getElementById('detail-karyawan-team').textContent = data.team_name;
     document.getElementById('detail-karyawan-status').innerHTML = data.is_active == 1
         ? '<span class="badge badge-green">Aktif</span>'
@@ -532,6 +603,7 @@ function openEditKaryawanModal(data) {
     document.getElementById('edit-karyawan-form').action = '/admin/users/karyawan/' + data.id;
     document.getElementById('edit-karyawan-name').value = data.name;
     document.getElementById('edit-karyawan-username').value = data.username;
+    document.getElementById('edit-karyawan-nik').value = data.nik || '';
     document.getElementById('edit-karyawan-team-id').value = data.team_id || '';
     document.getElementById('edit-karyawan-is-active').checked = data.is_active == 1;
     openModal('edit-karyawan-modal');
@@ -544,8 +616,14 @@ function openCreateKaryawanModal() {
 }
 function closeCreateKaryawanModal() { closeModal('create-karyawan-modal'); }
 
+function openUploadNikModal() {
+    document.getElementById('upload-nik-form').reset();
+    openModal('upload-nik-modal');
+}
+function closeUploadNikModal() { closeModal('upload-nik-modal'); }
+
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeDetailModal(); closeEditModal(); closeCreateModal(); closeDetailKaryawanModal(); closeEditKaryawanModal(); closeCreateKaryawanModal(); }
+    if (e.key === 'Escape') { closeDetailModal(); closeEditModal(); closeCreateModal(); closeDetailKaryawanModal(); closeEditKaryawanModal(); closeCreateKaryawanModal(); closeUploadNikModal(); }
 });
 </script>
 @push('styles')

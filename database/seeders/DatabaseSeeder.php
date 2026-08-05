@@ -31,25 +31,25 @@ class DatabaseSeeder extends Seeder
         }
 
         // Admin & Full Access
-        User::create(['name' => 'Admin Master',              'username' => 'admin',     'email' => 'admin@johen.com',     'password' => Hash::make('password'), 'role' => 'admin']);
-        User::create(['name' => 'Head of Store',             'username' => 'headstore', 'email' => 'headstore@johen.com', 'password' => Hash::make('password'), 'role' => 'head_of_store']);
-        User::create(['name' => 'General Manager',           'username' => 'gm',        'email' => 'gm@johen.com',        'password' => Hash::make('password'), 'role' => 'gm']);
-        User::create(['name' => 'HR Manager',                'username' => 'hr',        'email' => 'hr@johen.com',        'password' => Hash::make('password'), 'role' => 'hr']);
-        User::create(['name' => 'Chief Executive Officer',   'username' => 'ceo',       'email' => 'ceo@johen.com',       'password' => Hash::make('password'), 'role' => 'ceo']);
-        User::create(['name' => 'Admin General Affairs',     'username' => 'admin_ga',  'email' => 'admin_ga@johen.com',  'password' => Hash::make('password'), 'role' => 'admin_ga']);
+        User::create(['name' => 'Admin Master',              'username' => 'admin',     'email' => 'admin@johen.com',     'password' => Hash::make('password'), 'role' => 'admin', 'nik' => 'NIK-001']);
+        User::create(['name' => 'Head of Store',             'username' => 'headstore', 'email' => 'headstore@johen.com', 'password' => Hash::make('password'), 'role' => 'head_of_store', 'nik' => 'NIK-002']);
+        User::create(['name' => 'General Manager',           'username' => 'gm',        'email' => 'gm@johen.com',        'password' => Hash::make('password'), 'role' => 'gm', 'nik' => 'NIK-003']);
+        User::create(['name' => 'HR Manager',                'username' => 'hr',        'email' => 'hr@johen.com',        'password' => Hash::make('password'), 'role' => 'hr', 'nik' => 'NIK-004']);
+        User::create(['name' => 'Chief Executive Officer',   'username' => 'ceo',       'email' => 'ceo@johen.com',       'password' => Hash::make('password'), 'role' => 'ceo', 'nik' => 'NIK-005']);
+        User::create(['name' => 'Admin General Affairs',     'username' => 'admin_ga',  'email' => 'admin_ga@johen.com',  'password' => Hash::make('password'), 'role' => 'admin_ga', 'nik' => 'NIK-006']);
 
         // Koordinator — masing-masing terikat ke team game-nya
-        User::create(['name' => 'Koordinator Konten',       'username' => 'koordinator1',  'email' => 'koordinator1@johen.com',  'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 1]);
-        User::create(['name' => 'Koordinator Roblox',       'username' => 'Johen.roblox',  'email' => 'johen.roblox@johen.com',  'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 2]);
-        User::create(['name' => 'Koordinator PUBG',         'username' => 'Johen.PUBG',    'email' => 'johen.pubg@johen.com',    'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 3]);
-        User::create(['name' => 'Koordinator MLBB',         'username' => 'Johen.MLBB',    'email' => 'johen.mlbb@johen.com',    'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 4]);
-        User::create(['name' => 'Koordinator Free Fire',    'username' => 'Johen.FreeFire', 'email' => 'johen.freefire@johen.com', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 5]);
-        User::create(['name' => 'Koordinator E-Football',   'username' => 'Johen.EFootbal', 'email' => 'johen.efootbal@johen.com', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 6]);
-        User::create(['name' => 'Koordinator Kreatif',      'username' => 'creatif',       'email' => 'creatif@johen.com',       'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 7]);
-        User::create(['name' => 'Koordinator IT',           'username' => 'it',            'email' => 'it@johen.com',            'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 8]);
+        User::create(['name' => 'Koordinator Konten',       'username' => 'koordinator1',  'email' => 'koordinator1@johen.com',  'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 1, 'nik' => 'NIK-007']);
+        User::create(['name' => 'Koordinator Roblox',       'username' => 'Johen.roblox',  'email' => 'johen.roblox@johen.com',  'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 2, 'nik' => 'NIK-008']);
+        User::create(['name' => 'Koordinator PUBG',         'username' => 'Johen.PUBG',    'email' => 'johen.pubg@johen.com',    'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 3, 'nik' => 'NIK-009']);
+        User::create(['name' => 'Koordinator MLBB',         'username' => 'Johen.MLBB',    'email' => 'johen.mlbb@johen.com',    'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 4, 'nik' => 'NIK-010']);
+        User::create(['name' => 'Koordinator Free Fire',    'username' => 'Johen.FreeFire', 'email' => 'johen.freefire@johen.com', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 5, 'nik' => 'NIK-011']);
+        User::create(['name' => 'Koordinator E-Football',   'username' => 'Johen.EFootbal', 'email' => 'johen.efootbal@johen.com', 'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 6, 'nik' => 'NIK-012']);
+        User::create(['name' => 'Koordinator Kreatif',      'username' => 'creatif',       'email' => 'creatif@johen.com',       'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 7, 'nik' => 'NIK-013']);
+        User::create(['name' => 'Koordinator IT',           'username' => 'it',            'email' => 'it@johen.com',            'password' => Hash::make('password'), 'role' => 'koordinator', 'team_id' => 8, 'nik' => 'NIK-014']);
 
         // User biasa
-        User::create(['name' => 'Karyawan Konten', 'username' => 'user1', 'email' => 'user1@johen.com', 'password' => Hash::make('password'), 'role' => 'user', 'team_id' => 1]);
+        User::create(['name' => 'Karyawan Konten', 'username' => 'user1', 'email' => 'user1@johen.com', 'password' => Hash::make('password'), 'role' => 'user', 'team_id' => 1, 'nik' => 'NIK-015']);
 
         // Rooms — masing-masing khusus per game
         Room::create(['name' => 'Meeting Room Utama', 'capacity' => 50, 'facilities' => ['Proyektor', 'TV', 'Speaker', 'Whiteboard', 'AC'], 'location' => 'Lantai 1', 'description' => 'Ruang meeting utama — bisa dipakai semua divisi', 'is_active' => true]);

@@ -17,6 +17,10 @@
                 <input type="text" name="username" value="{{ old('username', $user->username) }}" required class="gaming-input">
             </div>
             <div>
+                <label class="block text-xs font-semibold mb-1.5" style="color:var(--text-secondary);letter-spacing:0.06em;text-transform:uppercase;">NIK</label>
+                <input type="text" name="nik" value="{{ old('nik', $user->nik) }}" class="gaming-input">
+            </div>
+            <div>
                 <label class="block text-xs font-semibold mb-1.5" style="color:var(--text-secondary);letter-spacing:0.06em;text-transform:uppercase;">Password Baru <span style="color:var(--text-muted);font-weight:400;">(kosongkan jika tidak diubah)</span></label>
                 <input type="password" name="password" class="gaming-input">
             </div>

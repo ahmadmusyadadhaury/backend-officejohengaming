@@ -164,6 +164,8 @@ Route::middleware(['auth', 'manage_accounts'])->prefix('admin')->name('admin.')-
     Route::post('users/karyawan', [UserController::class, 'storeKaryawan'])->name('users.karyawan.store');
     Route::put('users/karyawan/{karyawan}', [UserController::class, 'updateKaryawan'])->name('users.karyawan.update');
     Route::delete('users/karyawan/{karyawan}', [UserController::class, 'destroyKaryawan'])->name('users.karyawan.destroy');
+    Route::get('users/nik/template', [UserController::class, 'downloadNikTemplate'])->name('users.nik.template');
+    Route::post('users/nik/import', [UserController::class, 'importNik'])->name('users.nik.import');
     Route::post('admins/karyawan', [AdminAccountController::class, 'storeKaryawan'])->name('admins.karyawan.store');
     Route::put('admins/karyawan/{karyawan}', [AdminAccountController::class, 'updateKaryawan'])->name('admins.karyawan.update');
     Route::delete('admins/karyawan/{karyawan}', [AdminAccountController::class, 'destroyKaryawan'])->name('admins.karyawan.destroy');

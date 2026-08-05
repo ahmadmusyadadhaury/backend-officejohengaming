@@ -15,12 +15,20 @@
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Akun dengan akses PENUH ke seluruh menu sistem.</div>
             </div>
 @if(auth()->user()->role !== 'gm')
+            <div class="flex gap-2">
             <button type="button" onclick="openCreateAdminModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Admin
             </button>
+            <button type="button" onclick="openUploadNikModal()" class="btn btn-secondary btn-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5 5 5M12 5v12"/>
+                </svg>
+                Upload NIK
+            </button>
+            </div>
 @endif
         </div>
         <form method="GET" action="{{ route('admin.admins.index') }}" id="admin-filter-form">
@@ -57,6 +65,7 @@
                         <th>No</th>
                         <th>Nama</th>
                         <th>Username</th>
+                        <th>NIK</th>
                         <th>Role</th>
                         <th>Status</th>
 @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
@@ -68,6 +77,7 @@
                         <td style="color:var(--text-muted);">{{ $admins->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $admin->name }}</td>
                         <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;">{{ $admin->username }}</code></td>
+                        <td style="color:var(--text-muted);">{{ $admin->nik ?? '—' }}</td>
                         <td>
                             @php
                                 $roleClass = match($admin->role) {
@@ -90,7 +100,7 @@
                         <td>
                             @if($admin->id !== auth()->id())
                                 <div class="flex gap-2">
-                                    <button type="button" onclick="openEditAdminModal({{ json_encode(['id'=>$admin->id,'name'=>$admin->name,'username'=>$admin->username,'role'=>$admin->role,'is_active'=>$admin->is_active]) }})" class="btn btn-secondary btn-sm">Edit</button>
+                                    <button type="button" onclick="openEditAdminModal({{ json_encode(['id'=>$admin->id,'name'=>$admin->name,'username'=>$admin->username,'nik'=>$admin->nik,'role'=>$admin->role,'is_active'=>$admin->is_active]) }})" class="btn btn-secondary btn-sm">Edit</button>
                                     <form method="POST" action="{{ route('admin.admins.destroy', $admin) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun admin ini?">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-danger btn-sm">Hapus</button>
@@ -103,7 +113,7 @@
 @endif
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun admin ditemukan.</td></tr>
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun admin ditemukan.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -134,6 +144,7 @@
                         <th>No</th>
                         <th>Nama</th>
                         <th>Username</th>
+                        <th>NIK</th>
                         <th>Divisi</th>
                         <th>Status</th>
 @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
@@ -145,6 +156,7 @@
                         <td style="color:var(--text-muted);">{{ $karyawans->firstItem() + $loop->index }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $karyawan->name }}</td>
                         <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;">{{ $karyawan->username }}</code></td>
+                        <td style="color:var(--text-muted);">{{ $karyawan->nik ?? '—' }}</td>
                         <td style="color:var(--text-muted);">{{ $karyawan->team?->name ?? '—' }}</td>
                         <td>
                             <span class="badge {{ $karyawan->is_active ? 'badge-green' : 'badge-red' }}">
@@ -154,7 +166,7 @@
 @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex gap-2">
-                                <button type="button" onclick="openEditKaryawanModal({{ json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'team_id'=>$karyawan->team_id,'is_active'=>$karyawan->is_active]) }})" class="btn btn-secondary btn-sm">Edit</button>
+                                <button type="button" onclick="openEditKaryawanModal({{ json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'nik'=>$karyawan->nik,'team_id'=>$karyawan->team_id,'is_active'=>$karyawan->is_active]) }})" class="btn btn-secondary btn-sm">Edit</button>
                                 <form method="POST" action="{{ route('admin.admins.karyawan.destroy', $karyawan) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun karyawan ini?">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-danger btn-sm">Hapus</button>
@@ -164,7 +176,7 @@
 @endif
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun karyawan ditemukan.</td></tr>
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun karyawan ditemukan.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -190,6 +202,10 @@
                 <div>
                     <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
                     <input type="text" name="username" id="edit-admin-username" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" id="edit-admin-nik" class="gaming-input">
                 </div>
                 <div>
                     <label class="gaming-label">Password Baru <span style="color:var(--text-muted);font-weight:400;">(kosongkan jika tidak diubah)</span></label>
@@ -236,6 +252,10 @@
                     <input type="text" name="username" required class="gaming-input">
                 </div>
                 <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" class="gaming-input">
+                </div>
+                <div>
                     <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
                     <input type="password" name="password" required class="gaming-input">
                 </div>
@@ -276,6 +296,10 @@
                 <div>
                     <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
                     <input type="text" name="username" id="edit-karyawan-username" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" id="edit-karyawan-nik" class="gaming-input">
                 </div>
                 <div>
                     <label class="gaming-label">Password Baru <span style="color:var(--text-muted);font-weight:400;">(kosongkan jika tidak diubah)</span></label>
@@ -321,6 +345,10 @@
                     <input type="text" name="username" required class="gaming-input">
                 </div>
                 <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" class="gaming-input">
+                </div>
+                <div>
                     <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
                     <input type="password" name="password" required class="gaming-input">
                 </div>
@@ -337,6 +365,38 @@
             <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Buat Akun</button>
                 <button type="button" onclick="closeCreateKaryawanModal()" class="btn btn-secondary">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ═══════════════════ UPLOAD NIK MODAL ═══════════════════ --}}
+<div id="upload-nik-modal" class="modal-modern" onclick="if(event.target===this)closeUploadNikModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Upload NIK Karyawan</h3>
+            <button type="button" onclick="closeUploadNikModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <form id="upload-nik-form" method="POST" action="{{ route('admin.users.nik.import') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-modern-body space-y-4">
+                <p style="font-size:0.8rem;color:var(--text-muted);">
+                    Download template, isi kolom NIK untuk setiap karyawan (dicocokkan berdasarkan username), lalu upload kembali.
+                </p>
+                <a href="{{ route('admin.users.nik.template') }}" class="btn btn-secondary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Download Template Excel
+                </a>
+                <div>
+                    <label class="gaming-label">File Excel (xlsx/xls/csv) <span style="color:#f87171;">*</span></label>
+                    <input type="file" name="file" required accept=".xlsx,.xls,.csv" class="gaming-input">
+                </div>
+            </div>
+            <div class="modal-modern-footer gap-2">
+                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" onclick="closeUploadNikModal()" class="btn btn-secondary">Batal</button>
             </div>
         </form>
     </div>
@@ -364,6 +424,7 @@ function openEditAdminModal(data) {
     document.getElementById('edit-admin-form').action = '/admin/admins/' + data.id;
     document.getElementById('edit-admin-name').value = data.name;
     document.getElementById('edit-admin-username').value = data.username;
+    document.getElementById('edit-admin-nik').value = data.nik || '';
     document.getElementById('edit-admin-role').value = data.role;
     document.getElementById('edit-admin-is-active').checked = data.is_active == 1;
     openModal('edit-admin-modal');
@@ -379,6 +440,7 @@ function openEditKaryawanModal(data) {
     document.getElementById('edit-karyawan-form').action = '/admin/admins/karyawan/' + data.id;
     document.getElementById('edit-karyawan-name').value = data.name;
     document.getElementById('edit-karyawan-username').value = data.username;
+    document.getElementById('edit-karyawan-nik').value = data.nik || '';
     document.getElementById('edit-karyawan-team-id').value = data.team_id || '';
     document.getElementById('edit-karyawan-is-active').checked = data.is_active == 1;
     openModal('edit-karyawan-modal');
@@ -389,11 +451,17 @@ function openCreateKaryawanModal() {
     openModal('create-karyawan-modal');
 }
 function closeCreateKaryawanModal() { closeModal('create-karyawan-modal'); }
+function openUploadNikModal() {
+    document.getElementById('upload-nik-form').reset();
+    openModal('upload-nik-modal');
+}
+function closeUploadNikModal() { closeModal('upload-nik-modal'); }
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeEditAdminModal(); closeCreateAdminModal();
         closeEditKaryawanModal(); closeCreateKaryawanModal();
+        closeUploadNikModal();
     }
 });
 </script>
