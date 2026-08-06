@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\KaryawanImportTemplateExport;
 use App\Exports\UsersNikTemplateExport;
 use App\Http\Controllers\Controller;
+use App\Imports\KaryawanImport;
 use App\Imports\UsersNikImport;
 use App\Models\Team;
 use App\Models\User;
@@ -195,6 +197,52 @@ class UserController extends Controller
         $karyawan->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'Akun karyawan berhasil dihapus.');
+    }
+
+    public function downloadKaryawanTemplate()
+    {
+        return Excel::download(
+            new KaryawanImportTemplateExport,
+            'Template_Import_Karyawan.xlsx'
+        );
+    }
+
+    public function importKaryawan(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        $import = new KaryawanImport(auth()->user()->role === 'admin');
+        Excel::import($import, $request->file('file'));
+
+        $successCount = $import->getSuccessCount();
+        $skipped = $import->getSkipped();
+        $skippedCount = $import->getSkippedCount();
+        $errors = $import->getErrors();
+        $totalErrors = count($errors);
+
+        $redirect = redirect()->route('admin.users.index');
+
+        $details = [];
+        if ($skippedCount > 0) {
+            $details[] = "{$skippedCount} baris duplikat dilewati";
+        }
+        if ($totalErrors > 0) {
+            $details[] = "{$totalErrors} baris gagal";
+        }
+
+        if ($details) {
+            session()->flash('import_errors', $errors);
+            session()->flash('import_skipped', $skipped);
+            session()->flash('import_success_count', $successCount);
+            session()->flash('import_skipped_count', $skippedCount);
+            session()->flash('import_error_count', $totalErrors);
+
+            return $redirect->with('warning', 'Berhasil tambah '.$successCount.' karyawan. '.implode(', ', $details).'.');
+        }
+
+        return $redirect->with('success', "Berhasil tambah {$successCount} karyawan.");
     }
 
     public function downloadNikTemplate()

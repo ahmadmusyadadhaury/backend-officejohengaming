@@ -237,7 +237,7 @@ function closeAddModal() {
 }
 
 function openEditModal(asset) {
-    document.getElementById('editForm').action = '{{ route("koordinator.data-saya.update", ["asetDaya" => "___ID___"]) }}'.replace('___ID___', asset.id);
+    document.getElementById('editForm').action = '{{ route("koordinator.data-saya.update", ["asetSaya" => "___ID___"]) }}'.replace('___ID___', asset.id);
     document.getElementById('edit_nama_aset').value = asset.nama_aset;
     document.getElementById('edit_jenis_aset').value = asset.jenis_aset || '';
     document.getElementById('edit_keterangan').value = asset.keterangan || '';

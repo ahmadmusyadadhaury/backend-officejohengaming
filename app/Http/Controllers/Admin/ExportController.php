@@ -179,7 +179,7 @@ class ExportController extends Controller
         if ($filter !== 'all') {
             $query->where('status_pajak', $filter);
         }
-        $data = $query->get()->map(fn ($v) => [
+        $vehicles = $query->get()->map(fn ($v) => [
             'Nama Kendaraan' => $v->nama_kendaraan,
             'Nomor Polisi' => $v->plat_nomor ?? '-',
             'Jenis Kendaraan' => $v->jenis_kendaraan,
@@ -191,7 +191,37 @@ class ExportController extends Controller
             'Status Kepemilikan' => $v->kepemilikan_status,
             'Foto' => $v->foto ? route('files.show', $v->foto) : '-',
             'Keterangan' => $v->keperluan ?? '-',
+            'Sumber' => 'Kendaraan',
         ]);
+
+        $peralatan = collect();
+        if ($filter === 'all') {
+            $peralatan = PeralatanKantor::where('sub_kategori', 'Kendaraan')
+                ->orderBy('kode_aset')
+                ->get()
+                ->map(fn ($p) => [
+                    'Nama Kendaraan' => $p->nama_barang,
+                    'Nomor Polisi' => '-',
+                    'Jenis Kendaraan' => 'Motor',
+                    'Merk / Tipe' => $p->detail ?? '-',
+                    'Tahun' => $p->pengadaan_tahun,
+                    'Warna' => '-',
+                    'Nomor Rangka' => '-',
+                    'Nomor Mesin' => '-',
+                    'Status Kepemilikan' => $p->milik,
+                    'Foto' => $p->foto ? route('files.show', $p->foto) : '-',
+                    'Keterangan' => collect([
+                        $p->kode_aset ? 'Kode Aset: '.$p->kode_aset : null,
+                        $p->lokasi_unit ? 'Lokasi: '.$p->lokasi_unit : null,
+                        $p->ruangan ? 'Ruang: '.$p->ruangan : null,
+                        $p->kondisi ? 'Kondisi: '.$p->kondisi : null,
+                        $p->keterangan ?: null,
+                    ])->filter()->implode(' • '),
+                    'Sumber' => 'Peralatan Kantor',
+                ]);
+        }
+
+        $data = $vehicles->concat($peralatan);
 
         return Excel::download(
             new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Kendaraan', 'Kendaraan'),

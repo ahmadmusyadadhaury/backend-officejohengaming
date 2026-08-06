@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PembayaranAsetDaya extends Model
+class PembayaranAsetSaya extends Model
 {
-    protected $table = 'pembayaran_aset_daya';
+    protected $table = 'pembayaran_aset_saya';
 
     protected $fillable = [
-        'aset_daya_id',
+        'aset_saya_id',
         'periode',
         'tanggal_tagihan',
         'jatuh_tempo',
@@ -38,9 +38,9 @@ class PembayaranAsetDaya extends Model
         ];
     }
 
-    public function asetDaya()
+    public function asetSaya()
     {
-        return $this->belongsTo(AsetDaya::class, 'aset_daya_id');
+        return $this->belongsTo(AsetSaya::class, 'aset_saya_id');
     }
 
     public function requester()

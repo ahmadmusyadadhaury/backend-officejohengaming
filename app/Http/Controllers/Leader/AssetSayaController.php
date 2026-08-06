@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Leader;
 
 use App\Http\Controllers\Controller;
-use App\Models\AsetDaya;
 use App\Models\AsetMes;
+use App\Models\AsetSaya;
 use App\Models\AsetTim;
 use App\Models\DigitalAsset;
 use App\Models\PeralatanKantor;
@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
 class AssetSayaController extends Controller
 {
     private const KATEGORI_MAP = [
-        'Data Aset Saya' => AsetDaya::class,
+        'Data Aset Saya' => AsetSaya::class,
         'Kendaraan' => Vehicle::class,
         'Digital' => DigitalAsset::class,
         'Sosial Media' => SosialMedia::class,
@@ -63,11 +63,11 @@ class AssetSayaController extends Controller
         $kategoriCounts = $assets->groupBy('kategori')->map(fn ($g) => $g->count());
         $allKategoris = array_keys(self::KATEGORI_MAP);
 
-        $asetDaya = AsetDaya::where('penanggung_jawab', $userId)
+        $asetSaya = AsetSaya::where('penanggung_jawab', $userId)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('leader.asset-saya.index', compact('paginator', 'assets', 'kategoriCounts', 'allKategoris', 'asetDaya'));
+        return view('leader.asset-saya.index', compact('paginator', 'assets', 'kategoriCounts', 'allKategoris', 'asetSaya'));
     }
 
     public function store(Request $request)
@@ -82,7 +82,7 @@ class AssetSayaController extends Controller
         $data['penanggung_jawab'] = auth()->id();
         $data['is_active'] = true;
 
-        AsetDaya::create($data);
+        AsetSaya::create($data);
 
         return redirect()->route('koordinator.asset-saya.index')->with('success', 'Aset berhasil ditambahkan.');
     }
@@ -173,7 +173,7 @@ class AssetSayaController extends Controller
         $assets = collect();
 
         $assets = $assets->merge(
-            AsetDaya::where('penanggung_jawab', $userId)->get()->map(fn ($a) => $this->mapItem($a, 'Data Aset Saya', $a->nama_aset, '-', '-', $a->penanggungJawab?->name ?? '-', $a->jabatan ?? '-', null, $a->created_at, $a->is_active ? 'Aktif' : 'Tidak Aktif'))
+            AsetSaya::where('penanggung_jawab', $userId)->get()->map(fn ($a) => $this->mapItem($a, 'Data Aset Saya', $a->nama_aset, '-', '-', $a->penanggungJawab?->name ?? '-', $a->jabatan ?? '-', null, $a->created_at, $a->is_active ? 'Aktif' : 'Tidak Aktif'))
         );
 
         $assets = $assets->merge(

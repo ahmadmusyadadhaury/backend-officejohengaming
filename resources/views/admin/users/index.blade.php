@@ -131,12 +131,26 @@
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Akun karyawan biasa dengan akses terbatas.</div>
             </div>
 @if(auth()->user()->role !== 'gm')
+            <div class="flex gap-2 flex-wrap">
             <button type="button" onclick="openCreateKaryawanModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 Tambah Karyawan
             </button>
+            <button type="button" onclick="openImportKaryawanModal()" class="btn btn-secondary btn-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                Import Karyawan
+            </button>
+            <a href="{{ route('admin.users.karyawan.template') }}" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:6px;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                </svg>
+                Download Template Excel
+            </a>
+            </div>
 @endif
         </div>
         <div class="overflow-x-auto">
@@ -511,6 +525,39 @@
     </div>
 </div>
 
+{{-- ═══════════════════ IMPORT KARYAWAN MODAL ═══════════════════ --}}
+<div id="import-karyawan-modal" class="modal-modern">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Import Karyawan dari Excel</h3>
+            <button type="button" onclick="closeImportKaryawanModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <form id="import-karyawan-form" method="POST" action="{{ route('admin.users.karyawan.import') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-modern-body space-y-4">
+                <p style="font-size:0.8rem;color:var(--text-muted);">
+                    Download template, isi data karyawan (kolom Tim & Role memakai dropdown pilihan), lalu upload kembali.
+                    Role bisa <b>Karyawan</b>, <b>Koordinator</b>, atau <b>Admin</b>. Password dikosongkan berarti memakai default <code>password</code>.
+                </p>
+                <a href="{{ route('admin.users.karyawan.template') }}" class="btn btn-secondary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Download Template Excel
+                </a>
+                <div>
+                    <label class="gaming-label">File Excel (xlsx/xls/csv) <span style="color:#f87171;">*</span></label>
+                    <input type="file" name="file" required accept=".xlsx,.xls,.csv" class="gaming-input">
+                </div>
+            </div>
+            <div class="modal-modern-footer gap-2">
+                <button type="submit" class="btn btn-primary">Import</button>
+                <button type="button" onclick="closeImportKaryawanModal()" class="btn btn-secondary">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 function toggleFilterMenu(e) {
     e.stopPropagation();
@@ -622,10 +669,60 @@ function openUploadNikModal() {
 }
 function closeUploadNikModal() { closeModal('upload-nik-modal'); }
 
+function openImportKaryawanModal() {
+    document.getElementById('import-karyawan-form').reset();
+    openModal('import-karyawan-modal');
+}
+function closeImportKaryawanModal() { closeModal('import-karyawan-modal'); }
+
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeDetailModal(); closeEditModal(); closeCreateModal(); closeDetailKaryawanModal(); closeEditKaryawanModal(); closeCreateKaryawanModal(); closeUploadNikModal(); }
+    if (e.key === 'Escape') { closeDetailModal(); closeEditModal(); closeCreateModal(); closeDetailKaryawanModal(); closeEditKaryawanModal(); closeCreateKaryawanModal(); closeUploadNikModal(); closeImportKaryawanModal(); }
 });
 </script>
+
+@if(session('import_errors') || session('import_skipped'))
+<div class="pt-2">
+    <div class="gaming-card p-4" style="border-left:4px solid #f59e0b;">
+        <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <p class="text-sm font-semibold" style="color:var(--text-primary);">
+                    Import Selesai:
+                    @if(session('import_success_count') !== null) {{ session('import_success_count') }} berhasil, @endif
+                    @if(session('import_skipped_count')) {{ session('import_skipped_count') }} duplikat dilewati, @endif
+                    @if(session('import_error_count') !== null) {{ session('import_error_count') }} gagal.
+                    @endif
+                </p>
+                @if(session('import_skipped'))
+                <div class="mt-2 max-h-[150px] overflow-y-auto" style="scrollbar-width:thin;">
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        @foreach(session('import_skipped') as $item)
+                        <li style="font-size:12px;color:#f59e0b;padding:2px 0;">{{ $item }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+                @if(session('import_errors'))
+                <div class="mt-2 max-h-[150px] overflow-y-auto" style="scrollbar-width:thin;">
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        @foreach(session('import_errors') as $error)
+                        <li style="font-size:12px;color:#ef4444;padding:2px 0;">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+            </div>
+            <button type="button" onclick="this.closest('.gaming-card').remove()" class="ml-auto p-1" style="background:none;border:none;cursor:pointer;color:var(--text-muted);">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+@endif
 @push('styles')
 <style>
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }

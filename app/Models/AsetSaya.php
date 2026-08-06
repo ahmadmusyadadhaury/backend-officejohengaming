@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AsetDaya extends Model
+class AsetSaya extends Model
 {
-    protected $table = 'aset_daya';
+    protected $table = 'aset_saya';
 
     protected $fillable = [
         'nama_aset',
@@ -34,6 +34,6 @@ class AsetDaya extends Model
 
     public function pembayaran()
     {
-        return $this->hasOne(PembayaranAsetDaya::class, 'aset_daya_id');
+        return $this->hasOne(PembayaranAsetSaya::class, 'aset_saya_id');
     }
 }

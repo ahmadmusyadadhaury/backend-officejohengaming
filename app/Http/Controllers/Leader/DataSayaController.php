@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Leader;
 
 use App\Http\Controllers\Controller;
-use App\Models\AsetDaya;
+use App\Models\AsetSaya;
 use Illuminate\Http\Request;
 
 class DataSayaController extends Controller
 {
     public function index()
     {
-        $assets = AsetDaya::where('penanggung_jawab', auth()->id())
+        $assets = AsetSaya::where('penanggung_jawab', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -29,12 +29,12 @@ class DataSayaController extends Controller
         $data['penanggung_jawab'] = auth()->id();
         $data['is_active'] = true;
 
-        AsetDaya::create($data);
+        AsetSaya::create($data);
 
         return redirect()->route('koordinator.data-saya.index')->with('success', 'Aset berhasil ditambahkan.');
     }
 
-    public function update(Request $request, AsetDaya $asetDaya)
+    public function update(Request $request, AsetSaya $asetSaya)
     {
         $data = $request->validate([
             'nama_aset' => 'sometimes|required|string|max:255',
@@ -45,14 +45,14 @@ class DataSayaController extends Controller
             'is_active' => 'sometimes|boolean',
         ]);
 
-        $asetDaya->update($data);
+        $asetSaya->update($data);
 
         return redirect()->route('koordinator.data-saya.index')->with('success', 'Aset berhasil diperbarui.');
     }
 
-    public function destroy(AsetDaya $asetDaya)
+    public function destroy(AsetSaya $asetSaya)
     {
-        $asetDaya->delete();
+        $asetSaya->delete();
 
         return redirect()->route('koordinator.data-saya.index')->with('success', 'Aset berhasil dihapus.');
     }

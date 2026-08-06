@@ -20,7 +20,9 @@
             <div class="min-w-0">
                 <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
                 <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Kendaraan</div>
-                
+                @if($peralatanCount > 0)
+                <div class="text-[10px] mt-0.5 leading-tight" style="color:var(--text-muted);">{{ $peralatanCount }} dari Peralatan Kantor</div>
+                @endif
             </div>
         </div>
         <div class="gaming-card p-4 flex items-center gap-3">
@@ -197,6 +199,7 @@
                 <tbody id="vehicles-tbody">
                     @forelse($vehicles as $v)
                     @php
+                        $isPeralatan = ($v->sumber ?? null) === 'peralatan';
                         $statusBadge = match($v->status_pajak) {
                             'aktif'        => 'badge-green',
                             'segera_habis' => 'badge-yellow',
@@ -212,10 +215,10 @@
                             default        => '-',
                         };
                     @endphp
-                    <tr data-status="{{ $v->status_pajak }}">
+                    <tr data-status="{{ $isPeralatan ? 'non_pajak' : $v->status_pajak }}">
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
-                        <td style="color:var(--text-primary);font-weight:500;">{{ $v->nama_kendaraan }}</td>
-                        <td style="color:var(--text-muted);font-family:monospace;font-weight:600;">{{ $v->plat_nomor }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $v->nama_kendaraan }}@if($isPeralatan) <span class="badge badge-gray" style="margin-left:4px;vertical-align:middle;">Peralatan Kantor</span>@endif</td>
+                        <td style="color:var(--text-muted);font-family:monospace;font-weight:600;">{{ $v->plat_nomor ?? '-' }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-primary);">{{ $v->jenis_kendaraan }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $v->merk_tipe ?? '-' }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $v->tahun }}</td>
@@ -235,9 +238,22 @@
                             <svg class="w-4 h-4 inline-block align-middle" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg><span class="inline-block align-middle" style="color:#f59e0b;margin-left:4px;font-weight:500;font-size:12px;font-family:monospace;">Data Belum Dilengkapi</span>
                             @endif
                         </td>
-                        <td><span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span> @if(in_array($v->status_pajak, ['jatuh_tempo', 'segera_habis', 'mati']))<br><span class="text-[9px] font-semibold" style="color:var(--text-muted);">{{ $v->hari_pajak }}</span>@endif</td>
+                        <td>
+                            @if($isPeralatan)
+                            <span class="badge badge-gray">Non Pajak</span>
+                            @else
+                            <span class="badge {{ $statusBadge }}">{{ $statusLabel }}</span>
+                            @if(in_array($v->status_pajak, ['jatuh_tempo', 'segera_habis', 'mati']))<br><span class="text-[9px] font-semibold" style="color:var(--text-muted);">{{ $v->hari_pajak }}</span>@endif
+                            @endif
+                        </td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $v->keperluan }}">{{ $v->keperluan ?? '-' }}</td>
                         @if(auth()->user()->role !== 'gm')<td>
+                            @if($isPeralatan)
+                            <button type="button" onclick="showDetail('{{ $v->id }}')" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                Lihat Detail
+                            </button>
+                            @else
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $v->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -256,6 +272,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </td>@endif
                     </tr>
                     @empty
@@ -725,10 +742,51 @@ function closeAlertPopup() {
     document.getElementById('alert-overlay').style.display = 'none';
 }
 
+function renderPeralatanDetail(v) {
+    document.getElementById('detail-title').textContent = v.nama_kendaraan;
+
+    const fotoHtml = v.foto ? `
+        <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:center;background:var(--bg-surface-2);border-radius:16px;padding:16px;">
+            <img src="${v.foto}" alt="Foto Kendaraan" style="max-width:100%;max-height:180px;border-radius:12px;object-fit:contain;">
+        </div>` : '';
+
+    const rows = [
+        { label: 'Kode Aset', value: v.kode_aset || '-' },
+        { label: 'Jenis', value: v.jenis_kendaraan },
+        { label: 'Tahun', value: v.tahun || '-' },
+        { label: 'Lokasi Unit', value: v.lokasi_unit || '-' },
+        { label: 'Ruangan', value: v.ruangan || '-' },
+        { label: 'Kondisi', value: v.kondisi || '-' },
+        { label: 'Kepemilikan', value: v.kepemilikan_status || '-' },
+        { label: 'PIC', value: v.pic || '-' },
+        { label: 'Jabatan', value: v.jabatan || '-' },
+        { label: 'Keterangan', value: v.keperluan || '-' },
+    ];
+
+    const detailBody = document.getElementById('detail-body');
+    detailBody.innerHTML = `
+        ${fotoHtml}
+        <div class="space-y-1">
+            ${rows.map((r, i) => `
+                <div class="flex items-center justify-between py-2.5" ${i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : ''}>
+                    <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
+                    <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.label === 'Kode Aset' ? `<span style="font-family:monospace;background:var(--bg-surface-2);padding:2px 8px;border-radius:6px;">${r.value}</span>` : r.value}</p>
+                </div>
+            `).join('')}
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border-color);text-align:center;">
+            <p class="text-xs" style="color:var(--text-muted);">Data dari Peralatan Kantor (sub-kategori Kendaraan)</p>
+        </div>
+    `;
+    document.getElementById('detail-modal').style.zIndex = '99999';
+    openModal('detail-modal');
+}
+
 function showDetail(id) {
     document.querySelectorAll('.dropdown-menu').forEach(function(el) { el.style.display = 'none'; });
     const v = vehiclesData.find(i => i.id === id);
     if (!v) return;
+    if (v.sumber === 'peralatan') { renderPeralatanDetail(v); return; }
     document.getElementById('detail-title').textContent = v.nama_kendaraan;
 
     const st = statusMap[v.status_pajak] || statusMap.mati;

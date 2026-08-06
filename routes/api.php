@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\AsetMesApiController;
 use App\Http\Controllers\Api\AsetRukoApiController;
+use App\Http\Controllers\Api\AsetSayaApiController;
 use App\Http\Controllers\Api\AsetTimApiController;
 use App\Http\Controllers\Api\AssetApiController;
 use App\Http\Controllers\Api\AuthController;
@@ -12,6 +14,7 @@ use App\Http\Controllers\Api\PembayaranApiController;
 use App\Http\Controllers\Api\PeralatanKantorApiController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\SimCardApiController;
+use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\VehicleApiController;
 use App\Http\Controllers\Api\WeeklyMeetingApiController;
 use Illuminate\Http\Request;
@@ -47,6 +50,9 @@ Route::middleware('api.auth')->group(function () {
     Route::apiResource('aset-ruko', AsetRukoApiController::class)->parameters(['aset_ruko' => 'ruko']);
     Route::apiResource('aset-tim', AsetTimApiController::class)->parameters(['aset_tim' => 'asetTim']);
     Route::apiResource('digital-assets', DigitalAssetApiController::class)->parameters(['digital_assets' => 'digitalAsset']);
+    Route::get('aset-saya', [AsetSayaApiController::class, 'index']);
+    Route::get('aset-mes', [AsetMesApiController::class, 'index']);
+    Route::get('users', [UserApiController::class, 'index']);
     Route::get('vehicles', [VehicleApiController::class, 'index']);
     Route::get('sim-cards', [SimCardApiController::class, 'index']);
     Route::get('peralatan-kantor', [PeralatanKantorApiController::class, 'index']);
