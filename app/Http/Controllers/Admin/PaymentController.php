@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\TokenLowMail;
+use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
 use App\Models\InternetUsageCheck;
-use App\Models\DigitalAsset;
 use App\Models\Notification;
 use App\Models\PembayaranAsetDigital;
 use App\Models\PembayaranAsetMes;
@@ -101,7 +101,7 @@ class PaymentController extends Controller
         } elseif ($jenis === 'aset_digital') {
             $expiringAssets = DigitalAsset::where(function ($q) {
                 $q->where('berakhir', '<=', now()->addDays(7))
-                  ->orWhere('is_active', false);
+                    ->orWhere('is_active', false);
             })->get();
 
             foreach ($expiringAssets as $asset) {
@@ -109,11 +109,11 @@ class PaymentController extends Controller
                     ->where('periode', 'like', '%(Perpanjangan)%')
                     ->whereNotIn('status', ['lunas', 'rejected'])
                     ->exists();
-                if (!$hasUnpaid) {
+                if (! $hasUnpaid) {
                     $jatuhTempo = now()->addDays(30);
                     PembayaranAsetDigital::create([
                         'digital_asset_id' => $asset->id,
-                        'periode' => $asset->nama_aset . ' (Perpanjangan)',
+                        'periode' => $asset->nama_aset.' (Perpanjangan)',
                         'tanggal_tagihan' => now(),
                         'jatuh_tempo' => $jatuhTempo,
                         'nominal' => $asset->biaya,
@@ -277,6 +277,7 @@ class PaymentController extends Controller
         }
 
         $tokenReadings = collect();
+        $tokenReadingsJson = collect();
         $latestReading = null;
         $tokenAlert = null;
         $capacityKwh = 7000;
@@ -284,6 +285,7 @@ class PaymentController extends Controller
         $tokenMonth = now()->format('Y-m');
         $latestPayment = null;
         $topupHistory = collect();
+        $topupHistoryJson = collect();
         $topupRange = $request->get('topup_range', 'bulanan');
         $readingRange = $request->get('reading_range', 'bulanan');
 
@@ -533,7 +535,7 @@ class PaymentController extends Controller
                 $data['tanggal_bayar'] = Carbon::parse($data['tanggal_bayar'])->format('Y-m-d');
             }
             $model = PembayaranAsetDigital::findOrFail($id);
-            $wasPaidBefore = !is_null($model->tanggal_bayar);
+            $wasPaidBefore = ! is_null($model->tanggal_bayar);
             if ($model->status !== 'lunas') {
                 $data['status'] = $this->resolvePaymentStatus($data['jatuh_tempo']);
             } else {
@@ -541,7 +543,7 @@ class PaymentController extends Controller
             }
             $model->update($data);
 
-            if ($model->digital_asset_id && $request->filled('tanggal_bayar') && !$wasPaidBefore) {
+            if ($model->digital_asset_id && $request->filled('tanggal_bayar') && ! $wasPaidBefore) {
                 $asset = DigitalAsset::find($model->digital_asset_id);
                 if ($asset) {
                     $newBerakhir = max(
