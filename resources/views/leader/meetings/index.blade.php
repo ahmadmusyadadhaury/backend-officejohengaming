@@ -223,7 +223,7 @@
     .mt-section::before { content:''; width:3px; height:12px; border-radius:999px; background:#a78bfa; flex-shrink:0; }
 </style>
 <div id="request-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(--bg-overlay);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);">
-    <div class="w-full max-w-[720px] rounded-2xl flex flex-col min-h-0" style="max-height:92vh;background:var(--bg-surface);border:1px solid var(--border-color);box-shadow:0 24px 60px -12px rgba(0,0,0,.28),0 8px 24px -12px rgba(0,0,0,.18);" onclick="event.stopPropagation()">
+    <div class="w-full max-w-[820px] rounded-2xl flex flex-col min-h-0" style="max-height:92vh;background:var(--bg-surface);border:1px solid var(--border-color);box-shadow:0 24px 60px -12px rgba(0,0,0,.28),0 8px 24px -12px rgba(0,0,0,.18);" onclick="event.stopPropagation()">
         <div class="flex items-center gap-3 px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
             <div class="flex items-center justify-center w-10 h-10 rounded-xl flex-shrink-0" style="background:rgba(124,58,237,0.12);color:#a78bfa;">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
