@@ -323,12 +323,14 @@
                             </div>
                         </div>
                         <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
-                            <div id="detail-barcode-image" style="flex:1;min-width:0;display:flex;justify-content:center;"></div>
+                            <div id="detail-barcode-image" style="flex:0 1 auto;min-width:0;display:flex;justify-content:center;"></div>
                             <div id="detail-qr-row" class="hidden" style="flex-shrink:0;text-align:center;">
                                 <img id="detail-qr-img" src="" alt="QR Detail" style="width:56px;height:56px;">
-                                <p style="font-size:9px;color:var(--text-muted);margin-top:2px;">Scan QR untuk lihat detail</p>
-                                <a id="detail-qr-link" href="#" target="_blank" rel="noopener" style="font-size:9px;color:var(--color-accent);word-break:break-all;text-decoration:underline;">Buka halaman detail</a>
                             </div>
+                        </div>
+                        <div id="detail-qr-caption" class="hidden" style="margin-top:6px;text-align:center;">
+                            <p style="font-size:9px;color:var(--text-muted);">Scan QR untuk lihat detail</p>
+                            <a id="detail-qr-link" href="#" target="_blank" rel="noopener" style="font-size:9px;color:var(--color-accent);word-break:break-all;text-decoration:underline;">Buka halaman detail</a>
                         </div>
                     </div>
                 </div>
@@ -1140,9 +1142,11 @@ function renderBarcode(containerId, code, encodeUrl) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
     const qrRow = document.getElementById('detail-qr-row');
+    const qrCaption = document.getElementById('detail-qr-caption');
     if (!code) {
         document.getElementById('detail-barcode-section').style.display = 'none';
         if (qrRow) qrRow.classList.add('hidden');
+        if (qrCaption) qrCaption.classList.add('hidden');
         return;
     }
     document.getElementById('detail-barcode-section').style.display = '';
@@ -1155,8 +1159,10 @@ function renderBarcode(containerId, code, encodeUrl) {
             qrLink.href = encodeUrl;
             qrLink.textContent = encodeUrl;
             qrRow.classList.remove('hidden');
+            if (qrCaption) qrCaption.classList.remove('hidden');
         } else {
             qrRow.classList.add('hidden');
+            if (qrCaption) qrCaption.classList.add('hidden');
         }
     }
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1692,7 +1698,8 @@ function downloadBarcode() {
         ctx.fillText(title, hx * scale, hy * scale);
 
         const y = pad + headerH + 10;
-        let x = pad;
+        const contentX = pad + (totalW - pad * 2 - contentW) / 2;
+        let x = contentX;
         ctx.drawImage(bcImg, x * scale, (y + (contentH - h) / 2) * scale, w * scale, h * scale);
         x += w + gap;
         if (hasQr) {
