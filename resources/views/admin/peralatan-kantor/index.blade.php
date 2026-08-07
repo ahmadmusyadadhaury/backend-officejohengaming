@@ -176,8 +176,9 @@
                         };
                         $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
                         $penyusutanPerHari = $i->nilai / $masaBarang;
-                        $hariTerpakai = $i->tanggal_pembelian ? max(abs(now()->diffInDays($i->tanggal_pembelian)), 0) : 0;
-                        $nilaiSekarang = max($i->nilai - ($penyusutanPerHari * $hariTerpakai), 0);
+                        $waktuPakai = max((int) $i->waktu_pakai_per_hari, 1);
+                        $penguranganHariIni = $penyusutanPerHari * $waktuPakai;
+                        $nilaiSekarang = max($i->nilai - $penguranganHariIni, 0);
                     @endphp
                     <tr data-kondisi="{{ $i->kondisi }}">
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $loop->iteration }}</td>
@@ -194,9 +195,9 @@
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->sub_kategori }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->milik }}</td>
                         <td style="color:var(--text-primary);font-weight:500;white-space:nowrap;font-size:0.75rem;">Rp{{ number_format($i->nilai, 0, ',', '.') }}</td>
-                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->waktu_pakai_per_hari }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $waktuPakai }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->estimasi_waktu_barang }}</td>
-                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ number_format($i->pengurangan_harga_per_hari, 2, ',', '.') }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ number_format($penguranganHariIni, 2, ',', '.') }}</td>
                         <td style="color:{{ $nilaiSekarang > 0 ? 'var(--text-primary)' : '#ef4444' }};font-weight:500;white-space:nowrap;font-size:0.75rem;">Rp{{ number_format($nilaiSekarang, 0, ',', '.') }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->pic }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->jabatan }}</td>
@@ -517,7 +518,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="gaming-label">Waktu Pakai Barang Perhari Ini <span style="color:#f87171;">*</span></label>
-                                <input type="number" name="waktu_pakai_per_hari" id="f-waktu_pakai_per_hari" required value="2" class="gaming-input" min="0">
+                                <input type="number" name="waktu_pakai_per_hari" id="f-waktu_pakai_per_hari" required value="2" class="gaming-input" min="1" oninput="hitungPenyusutan()">
                             </div>
                             <div>
                                 <label class="gaming-label">Estimasi Waktu Barang <span style="color:#f87171;">*</span></label>
@@ -1367,15 +1368,16 @@ function updatePreview() {
     }
     const nilai = parseFloat(document.getElementById('f-nilai').value) || 0;
     const masaBarang = parseInt(document.getElementById('f-estimasi_waktu_barang').value) || 1;
+    const waktuPakai = parseInt(document.getElementById('f-waktu_pakai_per_hari').value) || 1;
     const tglBeli = document.getElementById('f-tanggal_pembelian').value;
-    const penyusutan = nilai / masaBarang;
+    const penyusutan = (nilai / masaBarang) * waktuPakai;
     let hariTerpakai = 0;
     if (tglBeli) {
         const now = new Date();
         const beli = new Date(tglBeli);
         hariTerpakai = Math.max(Math.floor(Math.abs(now - beli) / (1000 * 60 * 60 * 24)), 0);
     }
-    const nilaiSekarang = Math.max(nilai - (penyusutan * hariTerpakai), 0);
+    const nilaiSekarang = Math.max(nilai - penyusutan, 0);
     document.getElementById('pv-pengurangan_harga_per_hari').textContent = 'Rp' + Math.round(penyusutan).toLocaleString('id-ID');
     document.getElementById('pv-harga_per_hari_ini').textContent = 'Rp' + Math.round(nilaiSekarang).toLocaleString('id-ID');
     document.getElementById('pv-hari_terpakai').textContent = hariTerpakai + ' Hari';
@@ -1420,15 +1422,9 @@ function prevStep() {
 function hitungPenyusutan() {
     const nilai = parseFloat(document.getElementById('f-nilai').value) || 0;
     const masaBarang = parseInt(document.getElementById('f-estimasi_waktu_barang').value) || 1;
-    const tglBeli = document.getElementById('f-tanggal_pembelian').value;
-    const penyusutan = nilai / masaBarang;
-    let hariTerpakai = 0;
-    if (tglBeli) {
-        const now = new Date();
-        const beli = new Date(tglBeli);
-        hariTerpakai = Math.max(Math.floor(Math.abs(now - beli) / (1000 * 60 * 60 * 24)), 0);
-    }
-    const nilaiSekarang = Math.max(nilai - (penyusutan * hariTerpakai), 0);
+    const waktuPakai = parseInt(document.getElementById('f-waktu_pakai_per_hari').value) || 1;
+    const penyusutan = (nilai / masaBarang) * waktuPakai;
+    const nilaiSekarang = Math.max(nilai - penyusutan, 0);
     document.getElementById('penyusutan-display').textContent = 'Rp' + Math.round(penyusutan).toLocaleString('id-ID');
     document.getElementById('nilai-sekarang-display').textContent = 'Rp' + Math.round(nilaiSekarang).toLocaleString('id-ID');
 }

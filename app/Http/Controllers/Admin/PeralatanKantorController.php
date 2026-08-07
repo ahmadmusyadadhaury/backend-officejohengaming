@@ -6,7 +6,6 @@ use App\Exports\PeralatanKantorTemplateExport;
 use App\Http\Controllers\Controller;
 use App\Imports\PeralatanKantorImport;
 use App\Models\PeralatanKantor;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -28,8 +27,10 @@ class PeralatanKantorController extends Controller
         $itemsJson = $items->values()->map(function ($i) {
             $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
             $penyusutanPerHari = $i->nilai / $masaBarang;
+            $waktuPakai = max((int) $i->waktu_pakai_per_hari, 1);
+            $penguranganHariIni = $penyusutanPerHari * $waktuPakai;
+            $nilaiSekarang = max($i->nilai - $penguranganHariIni, 0);
             $hariTerpakai = $i->tanggal_pembelian ? max(abs(now()->diffInDays($i->tanggal_pembelian)), 0) : 0;
-            $nilaiSekarang = max($i->nilai - ($penyusutanPerHari * $hariTerpakai), 0);
 
             return [
                 'id' => $i->id,
@@ -49,12 +50,12 @@ class PeralatanKantorController extends Controller
                 'kategori_nilai' => $i->kategori_nilai,
                 'kategori_ukuran' => $i->kategori_ukuran,
                 'nilai' => (int) $i->nilai,
-                'waktu_pakai_per_hari' => $i->waktu_pakai_per_hari,
+                'waktu_pakai_per_hari' => $waktuPakai,
                 'estimasi_waktu_barang' => $i->estimasi_waktu_barang,
-                'pengurangan_harga_per_hari' => round($penyusutanPerHari, 2),
+                'pengurangan_harga_per_hari' => round($penguranganHariIni, 2),
                 'harga_per_hari_ini' => round($nilaiSekarang, 2),
                 'hari_terpakai' => $hariTerpakai,
-                'penyusutan_per_hari' => round($penyusutanPerHari, 2),
+                'penyusutan_per_hari' => round($penguranganHariIni, 2),
                 'nilai_sekarang' => round($nilaiSekarang, 2),
                 'pic' => $i->pic,
                 'jabatan' => $i->jabatan,
@@ -91,7 +92,7 @@ class PeralatanKantorController extends Controller
             'kategori_nilai' => 'required|string|max:255',
             'kategori_ukuran' => 'required|string|max:255',
             'nilai' => 'required|numeric|min:0',
-            'waktu_pakai_per_hari' => 'required|integer|min:0',
+            'waktu_pakai_per_hari' => 'required|integer|min:1',
             'estimasi_waktu_barang' => 'required|integer|min:0',
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
@@ -101,9 +102,10 @@ class PeralatanKantorController extends Controller
         ]);
 
         $masaBarang = max($data['estimasi_waktu_barang'], 1);
-        $data['pengurangan_harga_per_hari'] = $data['nilai'] / $masaBarang;
-        $hariTerpakai = max(abs(now()->diffInDays(Carbon::parse($data['tanggal_pembelian']))), 0);
-        $data['harga_per_hari_ini'] = max($data['nilai'] - ($data['pengurangan_harga_per_hari'] * $hariTerpakai), 0);
+        $waktuPakai = max((int) $data['waktu_pakai_per_hari'], 1);
+        $data['waktu_pakai_per_hari'] = $waktuPakai;
+        $data['pengurangan_harga_per_hari'] = ($data['nilai'] / $masaBarang) * $waktuPakai;
+        $data['harga_per_hari_ini'] = max($data['nilai'] - $data['pengurangan_harga_per_hari'], 0);
 
         $fotoPath = null;
         if ($request->hasFile('foto')) {
@@ -139,7 +141,7 @@ class PeralatanKantorController extends Controller
             'kategori_nilai' => 'required|string|max:255',
             'kategori_ukuran' => 'required|string|max:255',
             'nilai' => 'required|numeric|min:0',
-            'waktu_pakai_per_hari' => 'required|integer|min:0',
+            'waktu_pakai_per_hari' => 'required|integer|min:1',
             'estimasi_waktu_barang' => 'required|integer|min:0',
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
@@ -149,9 +151,10 @@ class PeralatanKantorController extends Controller
         ]);
 
         $masaBarang = max($data['estimasi_waktu_barang'], 1);
-        $data['pengurangan_harga_per_hari'] = $data['nilai'] / $masaBarang;
-        $hariTerpakai = max(abs(now()->diffInDays(Carbon::parse($data['tanggal_pembelian']))), 0);
-        $data['harga_per_hari_ini'] = max($data['nilai'] - ($data['pengurangan_harga_per_hari'] * $hariTerpakai), 0);
+        $waktuPakai = max((int) $data['waktu_pakai_per_hari'], 1);
+        $data['waktu_pakai_per_hari'] = $waktuPakai;
+        $data['pengurangan_harga_per_hari'] = ($data['nilai'] / $masaBarang) * $waktuPakai;
+        $data['harga_per_hari_ini'] = max($data['nilai'] - $data['pengurangan_harga_per_hari'], 0);
 
         if ($request->hasFile('foto')) {
             if ($peralatanKantor->foto) {
@@ -210,8 +213,10 @@ class PeralatanKantorController extends Controller
 
         $masaBarang = max($item->estimasi_waktu_barang ?: 360, 1);
         $penyusutanPerHari = $item->nilai / $masaBarang;
+        $waktuPakai = max((int) $item->waktu_pakai_per_hari, 1);
+        $penguranganHariIni = $penyusutanPerHari * $waktuPakai;
+        $nilaiSekarang = max($item->nilai - $penguranganHariIni, 0);
         $hariTerpakai = $item->tanggal_pembelian ? max(abs(now()->diffInDays($item->tanggal_pembelian)), 0) : 0;
-        $nilaiSekarang = max($item->nilai - ($penyusutanPerHari * $hariTerpakai), 0);
 
         return response()->json([
             'id' => $item->id,
@@ -231,12 +236,12 @@ class PeralatanKantorController extends Controller
             'kategori_nilai' => $item->kategori_nilai,
             'kategori_ukuran' => $item->kategori_ukuran,
             'nilai' => (int) $item->nilai,
-            'waktu_pakai_per_hari' => $item->waktu_pakai_per_hari,
+            'waktu_pakai_per_hari' => $waktuPakai,
             'estimasi_waktu_barang' => $item->estimasi_waktu_barang,
-            'pengurangan_harga_per_hari' => round($penyusutanPerHari, 2),
+            'pengurangan_harga_per_hari' => round($penguranganHariIni, 2),
             'harga_per_hari_ini' => round($nilaiSekarang, 0),
             'hari_terpakai' => $hariTerpakai,
-            'penyusutan_per_hari' => round($penyusutanPerHari, 2),
+            'penyusutan_per_hari' => round($penguranganHariIni, 2),
             'nilai_sekarang' => round($nilaiSekarang, 0),
             'pic' => $item->pic,
             'jabatan' => $item->jabatan,

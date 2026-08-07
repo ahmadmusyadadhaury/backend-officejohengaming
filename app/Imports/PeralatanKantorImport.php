@@ -71,17 +71,9 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
         $nilai = (float) $row['Nilai (in Rupiah)'];
         $masaBarang = max((int) $row['Estimasi Waktu Barang'], 1);
         $penguranganPerHari = $nilai / $masaBarang;
-
-        $tanggalPembelian = $row['Tanggal Pembelian'];
-        $hariTerpakai = 0;
-        if ($tanggalPembelian) {
-            try {
-                $hariTerpakai = max(abs(now()->diffInDays(Carbon::parse($tanggalPembelian))), 0);
-            } catch (\Exception $e) {
-                $hariTerpakai = 0;
-            }
-        }
-        $hargaPerHariIni = max($nilai - ($penguranganPerHari * $hariTerpakai), 0);
+        $waktuPakai = max((int) ($row['Waktu Pakai Barang Perhari Ini'] ?? 0), 1);
+        $penguranganHariIni = $penguranganPerHari * $waktuPakai;
+        $hargaPerHariIni = max($nilai - $penguranganHariIni, 0);
 
         $kodeAset = $row['Kode Asset'] ?? null;
         $barcode = $row['Barcode'] ?? null;
@@ -109,9 +101,9 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
             'sub_kategori' => $row['Sub-Kategori'],
             'milik' => $row['Milik'],
             'nilai' => $nilai,
-            'waktu_pakai_per_hari' => (int) ($row['Waktu Pakai Barang Perhari Ini'] ?? 0),
+            'waktu_pakai_per_hari' => $waktuPakai,
             'estimasi_waktu_barang' => (int) ($row['Estimasi Waktu Barang'] ?? 0),
-            'pengurangan_harga_per_hari' => $penguranganPerHari,
+            'pengurangan_harga_per_hari' => $penguranganHariIni,
             'harga_per_hari_ini' => $hargaPerHariIni,
             'pic' => $row['PIC'] ?? null,
             'jabatan' => $row['Jabatan PIC'] ?? null,
