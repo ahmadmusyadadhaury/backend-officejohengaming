@@ -356,7 +356,7 @@
             <div id="label-card" style="width:280px;border:2px solid var(--border-color);border-radius:14px;padding:18px;text-align:center;background:var(--bg-surface);">
                 <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:0 auto 8px;">
                     <img id="label-logo" src="{{ asset('images/logo/logo johengaming.jpg') }}" alt="Logo" style="width:36px;height:36px;object-fit:contain;">
-                    <p style="font-size:9px;font-weight:700;letter-spacing:0.08em;color:var(--text-primary);">JSA PERALATAN KANTOR</p>
+                    <p style="font-size:11px;font-weight:800;letter-spacing:0.08em;color:var(--text-primary);">JSA PERALATAN KANTOR</p>
                 </div>
                 <p id="label-nama" style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:3px;"></p>
                 <p id="label-kode" style="font-size:10px;font-family:monospace;color:#7c3aed;font-weight:700;margin-bottom:10px;"></p>
@@ -1309,14 +1309,14 @@ function printLabel(id) {
         <!DOCTYPE html>
         <html><head><title>Cetak Label - ${i.kode_aset}</title>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
             @page { margin: 0; }
             * { box-sizing: border-box; margin: 0; padding: 0; }
             body { font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
             .label { width: 320px; border: 2px solid #1e1e2e; border-radius: 12px; padding: 16px; text-align: center; }
             .head-line { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 10px; }
             .logo { width: 40px; height: 40px; object-fit: contain; }
-            .brand { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #1e1e2e; }
+            .brand { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: #1e1e2e; }
             .name { font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 4px; }
             .code { font-size: 11px; font-family: monospace; color: #7c3aed; font-weight: 700; margin-bottom: 10px; }
             .media-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 auto 8px; }
@@ -1641,8 +1641,23 @@ function printBarcode() {
     const w = clone.getAttribute('width') || 300;
     const h = clone.getAttribute('height') || 120;
     const win = window.open('', '_blank', 'width=' + w + ',height=' + h);
-    win.document.write('<!DOCTYPE html><html><head><title>Cetak Barcode</title><style>@page{margin:0;}*{box-sizing:border-box;margin:0;padding:0;}body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:12px;font-family:monospace;background:#fff;}.wrap{width:320px;margin:0 auto;text-align:center;background:#fff;border:1px solid #ddd;border-radius:10px;padding:12px;}.head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}.head img{width:40px;height:40px;object-fit:contain;}.head .title{font-size:13px;font-weight:700;letter-spacing:0.08em;color:#111;}.row{display:flex;align-items:center;justify-content:center;gap:8px;}.row>div{flex:1;min-width:0;}.row svg{width:100%;height:auto;display:block;}@media print{body{padding:0;}.wrap{border:none;}}</style></head><body><div class="wrap"><div class="head"><img src="' + logoUrl + '" alt="Logo"><div class="title">JSA PERALATAN KANTOR</div></div><div class="row">' + qrHtml + '<div>' + svgData + '</div></div></div><script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>');
+    win.document.write('<!DOCTYPE html><html><head><title>Cetak Barcode</title><style>@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");@page{margin:0;}*{box-sizing:border-box;margin:0;padding:0;}body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:12px;font-family:monospace;background:#fff;}.wrap{width:max-content;margin:0 auto;text-align:center;background:#fff;border:1px solid #ddd;border-radius:10px;padding:12px;}.head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}.head img{width:40px;height:40px;object-fit:contain;}.head .title{font-family:"Poppins",sans-serif;font-size:15px;font-weight:800;letter-spacing:0.08em;color:#000;}.row{display:flex;align-items:center;justify-content:center;gap:8px;}.row>div{min-width:0;}.row svg{height:auto;display:block;}@media print{body{padding:0;}.wrap{border:none;}}</style></head><body><div class="wrap"><div class="head"><img src="' + logoUrl + '" alt="Logo"><div class="title">JSA PERALATAN KANTOR</div></div><div class="row">' + qrHtml + '<div>' + svgData + '</div></div></div><script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>');
     win.document.close();
+}
+
+function roundedRectPath(ctx, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
 }
 
 function downloadBarcode() {
@@ -1654,7 +1669,7 @@ function downloadBarcode() {
     const hasQr = qrEl && qrRow && !qrRow.classList.contains('hidden') && qrEl.src && qrEl.complete && qrEl.naturalWidth > 0;
     const scale = 2;
     const pad = 12;
-    const logoSize = 44;
+    const logoSize = 40;
     const qrSize = 56;
     const gap = 8;
     const title = 'JSA PERALATAN KANTOR';
@@ -1663,9 +1678,41 @@ function downloadBarcode() {
     let logoOk = false;
     let logoReady = false;
     let bcOk = false;
+    let fontReady = false;
+
+    function ensurePoppinsLoaded() {
+        return new Promise(function(resolve) {
+            if (!document.getElementById('poppins-font')) {
+                var fl = document.createElement('link');
+                fl.id = 'poppins-font';
+                fl.rel = 'stylesheet';
+                fl.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap';
+                document.head.appendChild(fl);
+            }
+            var done = false;
+            var finish = function() { if (!done) { done = true; resolve(); } };
+            var timer = setTimeout(finish, 2500);
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(function() {
+                    if (document.fonts.load) {
+                        document.fonts.load('800 36px Poppins').then(finish).catch(finish);
+                    } else {
+                        finish();
+                    }
+                }).catch(finish);
+            } else {
+                finish();
+            }
+        });
+    }
+
+    ensurePoppinsLoaded().then(function() {
+        fontReady = true;
+        build();
+    });
 
     function build() {
-        if (!logoOk || !bcOk) return;
+        if (!logoOk || !bcOk || !fontReady) return;
         const w = parseInt(clone.getAttribute('width')) || 300;
         const h = parseInt(clone.getAttribute('height')) || 120;
         const qw = hasQr ? qrSize : 0;
@@ -1674,30 +1721,40 @@ function downloadBarcode() {
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        ctx.font = 'bold ' + (15 * scale) + 'px Poppins, Arial, sans-serif';
+        ctx.font = '800 ' + (15 * scale) + 'px Poppins, Arial, sans-serif';
+        ctx.letterSpacing = '0.08em';
         const titleW = ctx.measureText(title).width;
         const headerW = (logoReady ? logoSize + 8 : 0) + titleW;
         const totalW = Math.max(headerW, contentW) + pad * 2;
         const headerH = Math.max(logoReady ? logoSize : 0, 20);
-        const totalH = pad + headerH + 10 + contentH + pad;
+        const totalH = pad + headerH + 12 + contentH + pad;
 
         canvas.width = totalW * scale;
         canvas.height = totalH * scale;
+        ctx.font = '800 ' + (15 * scale) + 'px Poppins, Arial, sans-serif';
+        ctx.letterSpacing = '0.08em';
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        const lw = 1 * scale;
+        ctx.strokeStyle = '#dddddd';
+        ctx.lineWidth = lw;
+        roundedRectPath(ctx, lw / 2, lw / 2, canvas.width - lw, canvas.height - lw, 10 * scale);
+        ctx.stroke();
+
         const hy = pad + headerH / 2;
-        let hx = pad;
+        const headerX = pad + (totalW - pad * 2 - headerW) / 2;
+        let hx = headerX;
         if (logoReady) {
             ctx.drawImage(logo, hx * scale, (hy - logoSize / 2) * scale, logoSize * scale, logoSize * scale);
             hx += logoSize + 8;
         }
-        ctx.fillStyle = '#111111';
+        ctx.fillStyle = '#000000';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
         ctx.fillText(title, hx * scale, hy * scale);
 
-        const y = pad + headerH + 10;
+        const y = pad + headerH + 12;
         const contentX = pad + (totalW - pad * 2 - contentW) / 2;
         let x = contentX;
         ctx.drawImage(bcImg, x * scale, (y + (contentH - h) / 2) * scale, w * scale, h * scale);

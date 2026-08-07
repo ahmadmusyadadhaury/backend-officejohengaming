@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            color-scheme: light;
             --bg-base: #f7f7f7;
             --bg-surface: #ffffff;
             --bg-surface-2: #f3f4f6;
@@ -23,19 +24,18 @@
             --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
             --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
         }
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-base: #0d0f1a;
-                --bg-surface: #141832;
-                --bg-surface-2: #1a1f40;
-                --text-primary: #e2e8f0;
-                --text-secondary: #cbd5e1;
-                --text-muted: #94a3b8;
-                --border-color: rgba(255,255,255,0.08);
-                --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-                --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
-                --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
-            }
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --bg-base: #0d0f1a;
+            --bg-surface: #141832;
+            --bg-surface-2: #1a1f40;
+            --text-primary: #e2e8f0;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255,255,255,0.08);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
         }
         *, *::before, *::after { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -137,21 +137,19 @@
     </style>
 </head>
 <body>
+    <button id="theme-toggle" type="button" aria-label="Ganti tema" style="position:fixed;top:12px;right:12px;z-index:50;width:40px;height:40px;border-radius:50%;border:1px solid var(--border-color);background:var(--bg-surface);color:var(--text-primary);box-shadow:var(--shadow-md);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg id="icon-moon" style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg id="icon-sun" style="width:20px;height:20px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+    </button>
     <div class="px-4 py-6 sm:py-10">
         <div class="asset-card animate-in">
 
             {{-- Foto --}}
-            <div class="foto-container">
-                @if($fotoUrl)
+            @if($fotoUrl)
+                <div class="foto-container">
                     <img src="{{ $fotoUrl }}" alt="{{ $item->nama_barang }}" loading="lazy">
-                @else
-                    <div class="foto-placeholder">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--text-muted);">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                        </svg>
-                    </div>
-                @endif
-            </div>
+                </div>
+            @endif
 
             {{-- Header --}}
             <div class="px-5 pt-5 pb-3">
@@ -288,5 +286,24 @@
             </div>
         </div>
     </div>
+    <script>
+        (function() {
+            var toggle = document.getElementById('theme-toggle');
+            var moon = document.getElementById('icon-moon');
+            var sun = document.getElementById('icon-sun');
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                moon.style.display = theme === 'light' ? 'block' : 'none';
+                sun.style.display = theme === 'dark' ? 'block' : 'none';
+            }
+            applyTheme('light');
+            if (toggle) {
+                toggle.addEventListener('click', function() {
+                    var current = document.documentElement.getAttribute('data-theme');
+                    applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

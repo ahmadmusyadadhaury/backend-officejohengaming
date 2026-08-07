@@ -17,15 +17,6 @@
             --border-color: #e2e8f0;
             --color-accent: #7c3aed;
         }
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-base: #0d0f1a;
-                --bg-surface: #141832;
-                --text-primary: #e2e8f0;
-                --text-muted: #94a3b8;
-                --border-color: rgba(255,255,255,0.08);
-            }
-        }
         *, *::before, *::after { box-sizing: border-box; }
         body {
             font-family: 'Poppins', system-ui, sans-serif;
@@ -48,9 +39,6 @@
             text-align: center;
             padding: 48px 32px;
             animation: fadeInUp 0.5s ease forwards;
-        }
-        @media (prefers-color-scheme: dark) {
-            .notfound-card { box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
         }
         .notfound-icon {
             width: 80px;
