@@ -17,6 +17,7 @@ use App\Models\PeralatanKantor;
 use App\Models\Room;
 use App\Models\SimCard;
 use App\Models\Team;
+use App\Models\TeamComposition;
 use App\Models\TokenPayment;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -60,6 +61,8 @@ class DashboardController extends Controller
             'pending_payments' => PembayaranAsetDigital::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + PembayaranIplRuko::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('jatuh_tempo', '<=', today()->addDays(7))->count() + WifiPayment::whereNull('requested_by')->whereNotIn('status', ['lunas', 'rejected'])->where('masa_tenggang', '<=', today()->addDays(7))->count(),
             'approval_pending_payments' => PembayaranAsetDigital::where('status', 'pending')->count() + PembayaranIplRuko::where('status', 'pending')->count() + WifiPayment::where('status', 'pending')->count(),
         ];
+
+        $compositions = TeamComposition::orderBy('sort_order')->get();
 
         app(WeeklyMeetingService::class)->generateTodaySessions();
 
@@ -337,6 +340,6 @@ class DashboardController extends Controller
             ->sort()
             ->values();
 
-        return view('admin.dashboard', compact('stats', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'paymentDataJson', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar', 'chartPersetujuan', 'jabatanList', 'sisaDonut'));
+        return view('admin.dashboard', compact('stats', 'compositions', 'pendingMeetings', 'todayMeetings', 'overduePayments', 'todayPayments', 'warningPayments', 'allMerged', 'paymentDataJson', 'approvalWaitingMeetings', 'myInvitations', 'allAlertAssets', 'expiringAssets', 'expiredAssets', 'digitalAssetsNeedMaintenance', 'tokenAlertDashboard', 'latestTokenReading', 'chartLabels', 'chartTagihan', 'chartBayar', 'chartPersetujuan', 'jabatanList', 'sisaDonut'));
     }
 }
