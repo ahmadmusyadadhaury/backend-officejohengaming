@@ -322,11 +322,13 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="detail-barcode-image" style="display:flex;justify-content:center;"></div>
-                        <div id="detail-qr-row" class="mt-3 hidden" style="border-top:1px dashed var(--border-color);padding-top:10px;text-align:center;">
-                            <img id="detail-qr-img" src="" alt="QR Detail" style="width:96px;height:96px;">
-                            <p style="font-size:10px;color:var(--text-muted);margin-top:4px;">Scan QR dengan kamera HP untuk lihat detail</p>
-                            <a id="detail-qr-link" href="#" target="_blank" rel="noopener" style="font-size:10px;color:var(--color-accent);word-break:break-all;text-decoration:underline;">Buka halaman detail</a>
+                        <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+                            <div id="detail-barcode-image" style="flex:1;min-width:0;display:flex;justify-content:center;"></div>
+                            <div id="detail-qr-row" class="hidden" style="flex-shrink:0;text-align:center;">
+                                <img id="detail-qr-img" src="" alt="QR Detail" style="width:56px;height:56px;">
+                                <p style="font-size:9px;color:var(--text-muted);margin-top:2px;">Scan QR untuk lihat detail</p>
+                                <a id="detail-qr-link" href="#" target="_blank" rel="noopener" style="font-size:9px;color:var(--color-accent);word-break:break-all;text-decoration:underline;">Buka halaman detail</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -350,12 +352,16 @@
         </div>
         <div class="px-5 py-4 flex flex-col items-center" id="label-preview-content">
             <div id="label-card" style="width:280px;border:2px solid var(--border-color);border-radius:14px;padding:18px;text-align:center;background:var(--bg-surface);">
-                <img id="label-logo" src="{{ asset('images/logo/logo_web.png') }}" alt="Logo" style="width:40px;height:40px;object-fit:contain;margin:0 auto 6px;">
-                <p style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--text-primary);margin-bottom:10px;">JOHEN OFFICE</p>
+                <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:0 auto 8px;">
+                    <img id="label-logo" src="{{ asset('images/logo/logo johengaming.jpg') }}" alt="Logo" style="width:36px;height:36px;object-fit:contain;">
+                    <p style="font-size:9px;font-weight:700;letter-spacing:0.08em;color:var(--text-primary);">JSA PERALATAN KANTOR</p>
+                </div>
                 <p id="label-nama" style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:3px;"></p>
                 <p id="label-kode" style="font-size:10px;font-family:monospace;color:#7c3aed;font-weight:700;margin-bottom:10px;"></p>
-                <div id="label-qr-container" style="margin:0 auto 8px;"></div>
-                <div id="label-barcode-container" style="margin:0 auto 6px;"></div>
+                <div style="display:flex;gap:6px;align-items:center;justify-content:center;">
+                    <div id="label-qr-container" style="flex-shrink:0;"></div>
+                    <div id="label-barcode-container" style="flex:1;min-width:0;"></div>
+                </div>
                 <p id="label-url" style="font-size:7px;color:var(--text-muted);word-break:break-all;"></p>
             </div>
         </div>
@@ -1226,7 +1232,7 @@ function downloadQrCode(id) {
     document.getElementById('label-nama').textContent = i.nama_barang;
     document.getElementById('label-kode').textContent = i.kode_aset;
     document.getElementById('label-url').textContent = publicUrl;
-    document.getElementById('label-qr-container').innerHTML = '<img src="' + qrUrl + '" alt="QR Code" style="width:120px;height:120px;">';
+    document.getElementById('label-qr-container').innerHTML = '<img src="' + qrUrl + '" alt="QR Code" style="width:56px;height:56px;">';
 
     const bcSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     try {
@@ -1269,7 +1275,7 @@ function printLabel(id) {
     if (!i) return;
     const qrUrl = '{{ url("/aset") }}/' + encodeURIComponent(i.kode_aset) + '/qr';
     const publicUrl = '{{ url("/aset") }}/' + encodeURIComponent(i.kode_aset);
-    const logoUrl = '{{ asset("images/logo/logo_web.png") }}';
+    const logoUrl = '{{ asset("images/logo/logo johengaming.jpg") }}';
     let bcHtml = '';
     try {
         const bcSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1302,23 +1308,30 @@ function printLabel(id) {
             * { box-sizing: border-box; margin: 0; padding: 0; }
             body { font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
             .label { width: 320px; border: 2px solid #1e1e2e; border-radius: 12px; padding: 16px; text-align: center; }
-            .logo { width: 48px; height: 48px; object-fit: contain; margin: 0 auto 8px; }
-            .brand { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #1e1e2e; margin-bottom: 12px; }
+            .head-line { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 10px; }
+            .logo { width: 40px; height: 40px; object-fit: contain; }
+            .brand { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: #1e1e2e; }
             .name { font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 4px; }
             .code { font-size: 11px; font-family: monospace; color: #7c3aed; font-weight: 700; margin-bottom: 10px; }
-            .qr { margin: 0 auto 8px; }
-            .qr img { width: 140px; height: 140px; }
-            .barcode svg { width: 100%; height: auto; display: block; margin: 0 auto 8px; }
+            .media-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 auto 8px; }
+            .qr { flex-shrink: 0; }
+            .qr img { width: 56px; height: 56px; display: block; }
+            .barcode { flex: 1; min-width: 0; }
+            .barcode svg { width: 100%; height: auto; display: block; }
             .url { font-size: 7px; color: #94a3b8; word-break: break-all; }
             @media print { body { padding: 0; } .label { border-width: 1px; } }
         </style></head><body>
         <div class="label">
-            <img src="${logoUrl}" class="logo" alt="Logo">
-            <div class="brand">JOHEN OFFICE</div>
+            <div class="head-line">
+                <img src="${logoUrl}" class="logo" alt="Logo">
+                <div class="brand">JSA PERALATAN KANTOR</div>
+            </div>
             <div class="name">${i.nama_barang}</div>
             <div class="code">${i.kode_aset}</div>
-            <div class="qr"><img src="${qrUrl}" alt="QR Code"></div>
-            <div class="barcode">${bcHtml}</div>
+            <div class="media-row">
+                <div class="qr"><img src="${qrUrl}" alt="QR Code"></div>
+                <div class="barcode">${bcHtml}</div>
+            </div>
             <div class="url">${publicUrl}</div>
         </div>
         <script>setTimeout(function(){window.print();},800);<\/script>
@@ -1614,10 +1627,15 @@ function printBarcode() {
     const clone = prepareBlackBarcode();
     if (!clone) return;
     const svgData = new XMLSerializer().serializeToString(clone);
+    const qrEl = document.getElementById('detail-qr-img');
+    const qrRow = document.getElementById('detail-qr-row');
+    const hasQr = qrEl && qrRow && !qrRow.classList.contains('hidden') && qrEl.src && qrEl.complete && qrEl.naturalWidth > 0;
+    const logoUrl = '{{ asset("images/logo/logo johengaming.jpg") }}';
+    const qrHtml = hasQr ? '<img src="' + qrEl.src + '" alt="QR" style="width:56px;height:56px;flex-shrink:0;">' : '';
     const w = clone.getAttribute('width') || 300;
     const h = clone.getAttribute('height') || 120;
     const win = window.open('', '_blank', 'width=' + w + ',height=' + h);
-    win.document.write('<!DOCTYPE html><html><head><title>Cetak Barcode</title></head><body style="display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;font-family:monospace;background:#fff;">' + svgData + '<script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>');
+    win.document.write('<!DOCTYPE html><html><head><title>Cetak Barcode</title><style>@page{margin:0;}*{box-sizing:border-box;margin:0;padding:0;}body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:12px;font-family:monospace;background:#fff;}.wrap{width:320px;margin:0 auto;text-align:center;background:#fff;border:1px solid #ddd;border-radius:10px;padding:12px;}.head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}.head img{width:40px;height:40px;object-fit:contain;}.head .title{font-size:13px;font-weight:700;letter-spacing:0.08em;color:#111;}.row{display:flex;align-items:center;justify-content:center;gap:8px;}.row>div{flex:1;min-width:0;}.row svg{width:100%;height:auto;display:block;}@media print{body{padding:0;}.wrap{border:none;}}</style></head><body><div class="wrap"><div class="head"><img src="' + logoUrl + '" alt="Logo"><div class="title">JSA PERALATAN KANTOR</div></div><div class="row">' + qrHtml + '<div>' + svgData + '</div></div></div><script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>');
     win.document.close();
 }
 
@@ -1625,23 +1643,72 @@ function downloadBarcode() {
     const clone = prepareBlackBarcode();
     if (!clone) return;
     const svgData = new XMLSerializer().serializeToString(clone);
-    const w = parseInt(clone.getAttribute('width')) || 300;
-    const h = parseInt(clone.getAttribute('height')) || 120;
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = w * 2;
-    canvas.height = h * 2;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    const img = new Image();
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const qrEl = document.getElementById('detail-qr-img');
+    const qrRow = document.getElementById('detail-qr-row');
+    const hasQr = qrEl && qrRow && !qrRow.classList.contains('hidden') && qrEl.src && qrEl.complete && qrEl.naturalWidth > 0;
+    const scale = 2;
+    const pad = 12;
+    const logoSize = 44;
+    const qrSize = 56;
+    const gap = 8;
+    const title = 'JSA PERALATAN KANTOR';
+    const logo = new Image();
+    const bcImg = new Image();
+    let logoOk = false;
+    let logoReady = false;
+    let bcOk = false;
+
+    function build() {
+        if (!logoOk || !bcOk) return;
+        const w = parseInt(clone.getAttribute('width')) || 300;
+        const h = parseInt(clone.getAttribute('height')) || 120;
+        const qw = hasQr ? qrSize : 0;
+        const contentW = w + (hasQr ? gap + qw : 0);
+        const contentH = Math.max(h, qw);
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.font = 'bold ' + (15 * scale) + 'px Poppins, Arial, sans-serif';
+        const titleW = ctx.measureText(title).width;
+        const headerW = (logoReady ? logoSize + 8 : 0) + titleW;
+        const totalW = Math.max(headerW, contentW) + pad * 2;
+        const headerH = Math.max(logoReady ? logoSize : 0, 20);
+        const totalH = pad + headerH + 10 + contentH + pad;
+
+        canvas.width = totalW * scale;
+        canvas.height = totalH * scale;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const hy = pad + headerH / 2;
+        let hx = pad;
+        if (logoReady) {
+            ctx.drawImage(logo, hx * scale, (hy - logoSize / 2) * scale, logoSize * scale, logoSize * scale);
+            hx += logoSize + 8;
+        }
+        ctx.fillStyle = '#111111';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(title, hx * scale, hy * scale);
+
+        const y = pad + headerH + 10;
+        let x = pad;
+        ctx.drawImage(bcImg, x * scale, (y + (contentH - h) / 2) * scale, w * scale, h * scale);
+        x += w + gap;
+        if (hasQr) {
+            ctx.drawImage(qrEl, x * scale, (y + (contentH - qw) / 2) * scale, qw * scale, qw * scale);
+        }
+
         const a = document.createElement('a');
-        a.download = 'barcode-' + (currentDetailId || 'aset') + '.png';
+        a.download = 'barcode-qr-' + (currentDetailId || 'aset') + '.png';
         a.href = canvas.toDataURL('image/png');
         a.click();
-    };
-    img.onerror = function() {
+    }
+
+    logo.onload = function() { logoOk = true; logoReady = true; build(); };
+    logo.onerror = function() { logoOk = true; build(); };
+    bcImg.onload = function() { bcOk = true; build(); };
+    bcImg.onerror = function() {
         const blob = new Blob([svgData], { type: 'image/svg+xml' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1650,7 +1717,8 @@ function downloadBarcode() {
         a.click();
         setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
     };
-    img.src = getBarcodeSvgDataUrl(clone);
+    logo.src = '{{ asset("images/logo/logo johengaming.jpg") }}';
+    bcImg.src = getBarcodeSvgDataUrl(clone);
 }
 
 /* ===== SCAN BARCODE ===== */
