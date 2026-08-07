@@ -10,7 +10,9 @@ class PublicAssetController extends Controller
 {
     public function show(string $kode_aset)
     {
-        $item = PeralatanKantor::where('kode_aset', $kode_aset)->first();
+        $item = PeralatanKantor::where('kode_aset', $kode_aset)
+            ->orWhere('barcode', $kode_aset)
+            ->first();
 
         if (! $item) {
             return response()->view('public.asset-404', [], 404);
@@ -37,7 +39,9 @@ class PublicAssetController extends Controller
 
     public function qrCode(string $kode_aset): Response
     {
-        $item = PeralatanKantor::where('kode_aset', $kode_aset)->first();
+        $item = PeralatanKantor::where('kode_aset', $kode_aset)
+            ->orWhere('barcode', $kode_aset)
+            ->first();
 
         if (! $item) {
             abort(404);

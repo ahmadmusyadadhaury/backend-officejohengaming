@@ -323,6 +323,11 @@
                             </div>
                         </div>
                         <div id="detail-barcode-image" style="display:flex;justify-content:center;"></div>
+                        <div id="detail-qr-row" class="mt-3 hidden" style="border-top:1px dashed var(--border-color);padding-top:10px;text-align:center;">
+                            <img id="detail-qr-img" src="" alt="QR Detail" style="width:96px;height:96px;">
+                            <p style="font-size:10px;color:var(--text-muted);margin-top:4px;">Scan QR dengan kamera HP untuk lihat detail</p>
+                            <a id="detail-qr-link" href="#" target="_blank" rel="noopener" style="font-size:10px;color:var(--color-accent);word-break:break-all;text-decoration:underline;">Buka halaman detail</a>
+                        </div>
                     </div>
                 </div>
                 {{-- Placeholder when both hidden --}}
@@ -350,6 +355,7 @@
                 <p id="label-nama" style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:3px;"></p>
                 <p id="label-kode" style="font-size:10px;font-family:monospace;color:#7c3aed;font-weight:700;margin-bottom:10px;"></p>
                 <div id="label-qr-container" style="margin:0 auto 8px;"></div>
+                <div id="label-barcode-container" style="margin:0 auto 6px;"></div>
                 <p id="label-url" style="font-size:7px;color:var(--text-muted);word-break:break-all;"></p>
             </div>
         </div>
@@ -415,6 +421,20 @@
                             <div>
                                 <label class="gaming-label">Jumlah <span style="color:#f87171;">*</span></label>
                                 <input type="number" name="jumlah" id="f-jumlah" required placeholder="Masukan jumlah unit" class="gaming-input" min="1">
+                                <p class="text-xs mt-1" style="color:var(--text-muted);">Minimal 1 unit</p>
+                            </div>
+                            <div>
+                                <label class="gaming-label">Foto Barang</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="file" name="foto" id="f-foto" accept="image/jpeg,image/jpg,image/png,image/webp" class="gaming-input flex-1" style="padding:6px;">
+                                    <div id="f-foto-preview" class="hidden flex-shrink-0 relative">
+                                        <img id="f-foto-preview-img" src="" alt="Preview" style="max-width:72px;max-height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--border-color);">
+                                        <button type="button" onclick="clearFotoPreview()" aria-label="Hapus foto" title="Hapus foto" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:9999px;background:#ef4444;color:#fff;border:2px solid var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-xs mt-1" style="color:var(--text-muted);">Format: JPG, PNG, WebP. Maks 2MB.</p>
                             </div>
                         </div>
                         <div>
@@ -424,14 +444,6 @@
                         <div>
                             <label class="gaming-label">Keterangan</label>
                             <textarea name="keterangan" id="f-keterangan" placeholder="Masukan keterangan" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
-                        </div>
-                        <div>
-                            <label class="gaming-label">Foto Barang</label>
-                            <input type="file" name="foto" id="f-foto" accept="image/jpeg,image/jpg,image/png,image/webp" class="gaming-input" style="padding:6px;">
-                            <p class="text-xs mt-1" style="color:var(--text-muted);">Format: JPG, PNG, WebP. Maks 2MB.</p>
-                            <div id="f-foto-preview" class="mt-2 hidden">
-                                <img id="f-foto-preview-img" src="" alt="Preview" style="max-width:120px;max-height:80px;border-radius:8px;object-fit:cover;border:1px solid var(--border-color);">
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -913,6 +925,10 @@
     flex: 1;
     min-width: 0;
 }
+#detail-barcode-image svg {
+    max-width: 100%;
+    height: auto;
+}
 @media (max-width: 640px) {
     .detail-media-wrap {
         flex-direction: column;
@@ -1114,15 +1130,29 @@ function getBarcodeColor() {
     return document.body.classList.contains('dark') ? '#ffffff' : '#000000';
 }
 
-function renderBarcode(containerId, code) {
+function renderBarcode(containerId, code, encodeUrl) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
+    const qrRow = document.getElementById('detail-qr-row');
     if (!code) {
         document.getElementById('detail-barcode-section').style.display = 'none';
+        if (qrRow) qrRow.classList.add('hidden');
         return;
     }
     document.getElementById('detail-barcode-section').style.display = '';
     document.getElementById('detail-kode-aset').textContent = code;
+    if (qrRow) {
+        const qrImg = document.getElementById('detail-qr-img');
+        const qrLink = document.getElementById('detail-qr-link');
+        if (encodeUrl && qrImg && qrLink) {
+            qrImg.src = encodeUrl + '/qr';
+            qrLink.href = encodeUrl;
+            qrLink.textContent = encodeUrl;
+            qrRow.classList.remove('hidden');
+        } else {
+            qrRow.classList.add('hidden');
+        }
+    }
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.id = 'barcode-svg';
     container.appendChild(svg);
@@ -1130,6 +1160,7 @@ function renderBarcode(containerId, code) {
         const color = getBarcodeColor();
         JsBarcode(svg, code, {
             format: 'CODE128',
+            text: code,
             width: 1.2,
             height: 35,
             displayValue: true,
@@ -1176,7 +1207,7 @@ function showDetail(id) {
         fotoSection.style.display = 'none';
     }
 
-    renderBarcode('detail-barcode-image', i.barcode || i.kode_aset);
+    renderBarcode('detail-barcode-image', i.barcode || i.kode_aset, '{{ url("/aset") }}/' + encodeURIComponent(i.kode_aset));
     document.getElementById('detail-body').innerHTML = renderDetailCards(i);
     document.getElementById('detail-media-placeholder').style.display = (!i.foto && !i.barcode && !i.kode_aset) ? '' : 'none';
     openModal('detail-modal');
@@ -1197,6 +1228,28 @@ function downloadQrCode(id) {
     document.getElementById('label-url').textContent = publicUrl;
     document.getElementById('label-qr-container').innerHTML = '<img src="' + qrUrl + '" alt="QR Code" style="width:120px;height:120px;">';
 
+    const bcSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    try {
+        JsBarcode(bcSvg, i.barcode || i.kode_aset, {
+            format: 'CODE128',
+            text: i.barcode || i.kode_aset,
+            width: 1.4,
+            height: 40,
+            displayValue: true,
+            fontSize: 9,
+            font: 'monospace',
+            fontOptions: 'bold',
+            margin: 4,
+            background: 'transparent',
+            lineColor: '#000000',
+            textColor: '#000000',
+        });
+        bcSvg.setAttribute('style', 'width:100%;height:auto;display:block;');
+        document.getElementById('label-barcode-container').innerHTML = new XMLSerializer().serializeToString(bcSvg);
+    } catch (e) {
+        document.getElementById('label-barcode-container').innerHTML = '';
+    }
+
     openModal('label-modal');
 }
 
@@ -1207,7 +1260,7 @@ function closeLabelModal() {
 function printLabelFromModal() {
     const card = document.getElementById('label-card');
     const win = window.open('', '_blank', 'width=400,height=520');
-    win.document.write('<!DOCTYPE html><html><head><title>Cetak Label</title><style>@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"Poppins",sans-serif;display:flex;justify-content:center;padding:20px;background:#fff;}@media print{body{padding:0;}}</style></head><body>' + card.outerHTML + '<script>setTimeout(function(){window.print();},500);<\/script></body></html>');
+    win.document.write('<!DOCTYPE html><html><head><title>Cetak Label</title><style>@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");@page{margin:0;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"Poppins",sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px;background:#fff;}@media print{body{padding:0;}}</style></head><body>' + card.outerHTML + '<script>setTimeout(function(){window.print();},500);<\/script></body></html>');
     win.document.close();
 }
 
@@ -1217,14 +1270,37 @@ function printLabel(id) {
     const qrUrl = '{{ url("/aset") }}/' + encodeURIComponent(i.kode_aset) + '/qr';
     const publicUrl = '{{ url("/aset") }}/' + encodeURIComponent(i.kode_aset);
     const logoUrl = '{{ asset("images/logo/logo_web.png") }}';
+    let bcHtml = '';
+    try {
+        const bcSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        JsBarcode(bcSvg, i.barcode || i.kode_aset, {
+            format: 'CODE128',
+            text: i.barcode || i.kode_aset,
+            width: 1.4,
+            height: 40,
+            displayValue: true,
+            fontSize: 9,
+            font: 'monospace',
+            fontOptions: 'bold',
+            margin: 4,
+            background: 'transparent',
+            lineColor: '#000000',
+            textColor: '#000000',
+        });
+        bcSvg.setAttribute('style', 'width:100%;height:auto;display:block;');
+        bcHtml = new XMLSerializer().serializeToString(bcSvg);
+    } catch (e) {
+        bcHtml = '';
+    }
     const win = window.open('', '_blank', 'width=400,height=500');
     win.document.write(`
         <!DOCTYPE html>
         <html><head><title>Cetak Label - ${i.kode_aset}</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+            @page { margin: 0; }
             * { box-sizing: border-box; margin: 0; padding: 0; }
-            body { font-family: 'Poppins', sans-serif; display: flex; justify-content: center; padding: 20px; }
+            body { font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
             .label { width: 320px; border: 2px solid #1e1e2e; border-radius: 12px; padding: 16px; text-align: center; }
             .logo { width: 48px; height: 48px; object-fit: contain; margin: 0 auto 8px; }
             .brand { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: #1e1e2e; margin-bottom: 12px; }
@@ -1232,6 +1308,7 @@ function printLabel(id) {
             .code { font-size: 11px; font-family: monospace; color: #7c3aed; font-weight: 700; margin-bottom: 10px; }
             .qr { margin: 0 auto 8px; }
             .qr img { width: 140px; height: 140px; }
+            .barcode svg { width: 100%; height: auto; display: block; margin: 0 auto 8px; }
             .url { font-size: 7px; color: #94a3b8; word-break: break-all; }
             @media print { body { padding: 0; } .label { border-width: 1px; } }
         </style></head><body>
@@ -1241,6 +1318,7 @@ function printLabel(id) {
             <div class="name">${i.nama_barang}</div>
             <div class="code">${i.kode_aset}</div>
             <div class="qr"><img src="${qrUrl}" alt="QR Code"></div>
+            <div class="barcode">${bcHtml}</div>
             <div class="url">${publicUrl}</div>
         </div>
         <script>setTimeout(function(){window.print();},800);<\/script>
@@ -1459,7 +1537,7 @@ document.getElementById('item-modal')?.addEventListener('click', function(e) {
             const svg = document.getElementById('barcode-svg');
             if (svg && currentDetailId) {
                 const item = itemsData.find(x => x.id === currentDetailId);
-                if (item) renderBarcode('detail-barcode-image', item.barcode || item.kode_aset);
+                if (item) renderBarcode('detail-barcode-image', item.barcode || item.kode_aset, '{{ url("/aset") }}/' + encodeURIComponent(item.kode_aset));
             }
         }
     }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
@@ -1508,12 +1586,20 @@ function prepareBlackBarcode() {
 
         if (el.hasAttribute('style')) {
             let s = el.getAttribute('style');
-            s = s.replace(/fill\s*:\s*[^;]+/gi, 'fill:#000000');
-            s = s.replace(/stroke\s*:\s*[^;]+/gi, 'stroke:#000000');
-            s = s.replace(/color\s*:\s*[^;]+/gi, 'color:#000000');
+            s = s.replace(/fill\s*:\s*(?!none|transparent)[^;]+/gi, 'fill:#000000');
+            s = s.replace(/stroke\s*:\s*(?!none|transparent)[^;]+/gi, 'stroke:#000000');
+            s = s.replace(/color\s*:\s*(?!none|transparent)[^;]+/gi, 'color:#000000');
             el.setAttribute('style', s);
         }
     });
+
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', '0');
+    bg.setAttribute('y', '0');
+    bg.setAttribute('width', '100%');
+    bg.setAttribute('height', '100%');
+    bg.setAttribute('fill', '#ffffff');
+    clone.insertBefore(bg, clone.firstChild);
 
     clone.setAttribute('style', 'color:#000000;');
     return clone;
@@ -1807,7 +1893,7 @@ function showScannedDetail(i) {
         fotoSection.style.display = 'none';
     }
 
-    renderBarcode('detail-barcode-image', i.barcode || i.kode_aset);
+    renderBarcode('detail-barcode-image', i.barcode || i.kode_aset, '{{ url("/aset") }}/' + encodeURIComponent(i.kode_aset));
     document.getElementById('detail-body').innerHTML = renderDetailCards(i);
     document.getElementById('detail-media-placeholder').style.display = (!i.foto && !i.barcode && !i.kode_aset) ? '' : 'none';
     openModal('detail-modal');
@@ -1974,6 +2060,12 @@ document.getElementById('f-foto')?.addEventListener('change', function(e) {
         preview.classList.add('hidden');
     }
 });
+
+function clearFotoPreview() {
+    document.getElementById('f-foto').value = '';
+    document.getElementById('f-foto-preview').classList.add('hidden');
+    document.getElementById('f-foto-preview-img').src = '';
+}
 
 if (!showAll) {
     filterItems();
