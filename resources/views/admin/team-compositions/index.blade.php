@@ -8,19 +8,11 @@
 <div class="pt-2 space-y-4 animate-fade-in">
 
     <div class="gaming-card" style="overflow:visible;">
-        <form method="POST" action="{{ route('admin.team-compositions.update') }}">
-            @csrf @method('PUT')
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Komposisi Tim</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Atur jumlah per posisi dalam organisasi</div>
             </div>
-            <button type="submit" class="btn btn-primary btn-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Simpan
-            </button>
         </div>
 
         <div class="px-6 py-5">
@@ -53,37 +45,161 @@
 
             {{-- Table --}}
             <div class="overflow-x-auto">
-                <table class="gaming-table w-full" style="table-layout:fixed;">
+                <table class="gaming-table w-full">
                     <thead>
                         <tr>
                             <th style="width:8%;">No</th>
-                            <th style="width:55%;">Posisi</th>
-                            <th style="width:37%;">Jumlah</th>
+                            <th style="width:40%;">Posisi</th>
+                            <th style="width:20%;">Jumlah</th>
+                            @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($compositions as $comp)
+                        @php $compDetail = json_encode(['id'=>$comp->id,'label'=>$comp->label,'max_count'=>$comp->max_count]); @endphp
                         <tr>
                             <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                             <td style="color:var(--text-primary);font-weight:500;">{{ $comp->label }}</td>
                             <td>
-                                <input type="number" name="max_count[{{ $comp->id }}]" value="{{ $comp->max_count }}" min="0"
-                                    class="gaming-input" style="width:100%;max-width:120px;text-align:center;padding:6px 10px;font-size:0.8rem;">
+                                <span class="badge badge-cyan">{{ $comp->max_count }}</span>
                             </td>
+@if(auth()->user()->role !== 'gm')
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" onclick="showDetail({{ $compDetail }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        Lihat Detail
+                                    </button>
+                                    <div class="dropdown-wrap" style="position:relative;">
+                                        <button type="button" onclick="toggleDropdown(this, {{ $comp->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                        <div id="dropdown-{{ $comp->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                            <button type="button" onclick="showDetail({{ $compDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                            <button type="button" onclick="openEditModal({{ $compDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                            <form method="POST" action="{{ route('admin.team-compositions.destroy', $comp) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus komposisi {{ $comp->label }} ini?" style="margin:0;">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+@endif
                         </tr>
                         @empty
-                        <tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data komposisi.</td></tr>
+                        <tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data komposisi.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
+</div>
+
+{{-- Detail Modal --}}
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[460px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Komposisi Tim</h3>
+            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        </div>
+    </div>
+</div>
+
+{{-- Edit Modal --}}
+<div id="edit-modal" class="modal-modern" onclick="if(event.target===this)closeEditModal()">
+    <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Edit Komposisi Tim</h3>
+            <button type="button" onclick="closeEditModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <form id="edit-form" method="POST">
+            @csrf @method('PUT')
+            <div class="modal-modern-body space-y-4">
+                <div>
+                    <label class="gaming-label">Posisi</label>
+                    <input type="text" id="edit-label" disabled class="gaming-input" style="background:var(--bg-surface-2);opacity:0.8;">
+                </div>
+                <div>
+                    <label class="gaming-label">Jumlah <span style="color:#f87171;">*</span></label>
+                    <input type="number" name="max_count" id="edit-max-count" required min="0" class="gaming-input">
+                </div>
+            </div>
+            <div class="modal-modern-footer gap-2">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="button" onclick="closeEditModal()" class="btn btn-secondary">Batal</button>
+            </div>
         </form>
     </div>
 </div>
 
+<script>
+function toggleDropdown(btn, id) {
+    document.querySelectorAll('.dropdown-menu').forEach(function(el) {
+        if (el.id !== 'dropdown-' + id) el.style.display = 'none';
+    });
+    const menu = document.getElementById('dropdown-' + id);
+    if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-wrap')) {
+        document.querySelectorAll('.dropdown-menu').forEach(function(el) { el.style.display = 'none'; });
+    }
+});
+
+function renderDetail(rows) {
+    const html = rows.map(function(r, i) {
+        const border = i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : '';
+        return `<div class="flex items-center justify-between py-2.5" ${border}>
+            <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
+            <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.value}</p>
+        </div>`;
+    }).join('');
+    document.getElementById('detail-body').innerHTML = '<div class="space-y-1">' + html + '</div>';
+    openModal('detail-modal');
+}
+
+function showDetail(data) {
+    document.getElementById('detail-title').textContent = 'Detail Komposisi Tim';
+    renderDetail([
+        { label: 'Posisi', value: data.label },
+        { label: 'Jumlah', value: data.max_count },
+    ]);
+}
+
+function closeDetail() { closeModal('detail-modal'); }
+document.getElementById('detail-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeDetail();
+});
+
+function openEditModal(data) {
+    document.getElementById('edit-form').action = '/admin/team-compositions/' + data.id;
+    document.getElementById('edit-label').value = data.label;
+    document.getElementById('edit-max-count').value = data.max_count;
+    openModal('edit-modal');
+}
+function closeEditModal() { closeModal('edit-modal'); }
+document.getElementById('edit-modal')?.addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeDetail();
+        closeEditModal();
+    }
+});
+</script>
+@push('styles')
 <style>
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>
+@endpush
 @endsection

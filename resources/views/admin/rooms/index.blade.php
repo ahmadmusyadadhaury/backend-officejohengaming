@@ -100,12 +100,36 @@
                         </td>
 @if(auth()->user()->role !== 'gm')
                         <td>
-                            <div class="flex gap-2">
-                                <button type="button" onclick="openEditModal({{ json_encode(['id'=>$room->id,'name'=>$room->name,'capacity'=>$room->capacity,'location'=>$room->location ?? '','facilities'=>is_array($room->facilities) ? implode("\n",$room->facilities) : '','description'=>$room->description ?? '','is_active'=>$room->is_active,'team_id'=>$room->team_id]) }})" class="btn btn-secondary btn-sm">Edit</button>
-                                <form method="POST" action="{{ route('admin.rooms.destroy', $room) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus ruangan ini?">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
+                            @php
+                                $roomDetail = json_encode([
+                                    'id'=>$room->id,
+                                    'name'=>$room->name,
+                                    'capacity'=>$room->capacity,
+                                    'location'=>$room->location ?? '',
+                                    'facilities'=>is_array($room->facilities) ? implode("\n", $room->facilities) : '',
+                                    'facilities_list'=>is_array($room->facilities) ? array_values($room->facilities) : [],
+                                    'description'=>$room->description ?? '',
+                                    'is_active'=>$room->is_active,
+                                    'team_id'=>$room->team_id,
+                                    'team'=>$room->team?->name ?? '',
+                                ]);
+                            @endphp
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showDetail({{ $roomDetail }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, {{ $room->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-{{ $room->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showDetail({{ $roomDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditModal({{ $roomDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.rooms.destroy', $room) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus ruangan ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </td>
 @endif
@@ -223,6 +247,24 @@
     </div>
 </div>
 
+{{-- Detail Modal --}}
+<div id="detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+    <div class="w-full max-w-[460px] rounded-3xl shadow-2xl flex flex-col" style="max-height:65vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+            <h3 class="text-base font-bold" style="color:var(--text-primary);" id="detail-title">Detail Ruangan</h3>
+            <button type="button" onclick="closeDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="px-6 py-5 overflow-y-auto flex-1" id="detail-body"></div>
+        <div class="px-6 py-4 flex-shrink-0 flex justify-between items-center" style="border-top:1px solid var(--border-color);">
+            <button type="button" onclick="closeDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function toggleFilterMenu(e) {
     e.stopPropagation();
@@ -256,7 +298,77 @@ function closeEditModal() {
     closeModal('edit-modal');
 }
 document.getElementById('edit-modal').addEventListener('click', function(e) { if (e.target === this) closeEditModal(); });
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeEditModal(); closeCreateModal(); } });
+
+function toggleDropdown(btn, id) {
+    document.querySelectorAll('.dropdown-menu').forEach(function(el) {
+        if (el.id !== 'dropdown-' + id) el.style.display = 'none';
+    });
+    const menu = document.getElementById('dropdown-' + id);
+    if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown-wrap')) {
+        document.querySelectorAll('.dropdown-menu').forEach(function(el) { el.style.display = 'none'; });
+    }
+});
+
+function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+}
+
+function renderDetail(rows) {
+    const html = rows.map(function(r, i) {
+        const border = i < rows.length - 1 ? 'style="border-bottom:1px solid var(--border-color);"' : '';
+        if (r.badge !== undefined) {
+            const active = r.badge;
+            return `<div class="flex items-center justify-between py-2.5" ${border}>
+                <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style="background:${active ? '#ecfdf5' : '#fef2f2'};color:${active ? '#059669' : '#dc2626'};border:1px solid ${active ? '#a7f3d0' : '#fecaca'};">${active ? 'Aktif' : 'Nonaktif'}</span>
+            </div>`;
+        }
+        if (r.html) {
+            return `<div class="flex items-center justify-between py-2.5" ${border}>
+                <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
+                <div class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${r.html}</div>
+            </div>`;
+        }
+        return `<div class="flex items-center justify-between py-2.5" ${border}>
+            <p class="text-sm" style="color:var(--text-muted);">${r.label}</p>
+            <p class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">${escHtml(r.value)}</p>
+        </div>`;
+    }).join('');
+    document.getElementById('detail-body').innerHTML = '<div class="space-y-1">' + html + '</div>';
+    openModal('detail-modal');
+}
+
+function showDetail(data) {
+    document.getElementById('detail-title').textContent = 'Detail Ruangan';
+    const facilities = (data.facilities_list || []).filter(Boolean);
+    const facHtml = facilities.length
+        ? facilities.map(function(f) { return '<span class="badge badge-blue" style="font-size:0.65rem;margin:2px;">' + escHtml(f) + '</span>'; }).join('')
+        : '—';
+    renderDetail([
+        { label: 'Nama Ruangan', value: data.name },
+        { label: 'Divisi', value: data.team || 'Umum' },
+        { label: 'Lokasi', value: data.location || '—' },
+        { label: 'Kapasitas', value: data.capacity + ' orang' },
+        { label: 'Fasilitas', html: facHtml },
+        { label: 'Deskripsi', value: data.description || '—' },
+        { label: 'Status', value: data.is_active, badge: data.is_active == 1 },
+    ]);
+}
+
+function closeDetail() { closeModal('detail-modal'); }
+document.getElementById('detail-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeDetail();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeEditModal(); closeCreateModal(); closeDetail(); }
+});
 
 function openCreateModal() {
     document.getElementById('create-form').reset();

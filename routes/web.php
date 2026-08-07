@@ -147,6 +147,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::middleware(['auth', 'admin_hr'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('team-compositions', [TeamCompositionController::class, 'index'])->name('team-compositions.index');
     Route::put('team-compositions', [TeamCompositionController::class, 'update'])->name('team-compositions.update');
+    Route::put('team-compositions/{teamComposition}', [TeamCompositionController::class, 'updateSingle'])->name('team-compositions.update-single');
+    Route::delete('team-compositions/{teamComposition}', [TeamCompositionController::class, 'destroy'])->name('team-compositions.destroy');
     Route::resource('rooms', AdminRoomController::class);
     Route::get('meetings', [AdminMeetingController::class, 'index'])->name('meetings.index');
     Route::get('meetings/{meeting}', [AdminMeetingController::class, 'show'])->name('meetings.show');
