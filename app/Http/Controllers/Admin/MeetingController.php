@@ -155,6 +155,11 @@ class MeetingController extends Controller
             'room_id' => 'required|exists:rooms,id',
         ]);
 
+        $room = Room::find($request->room_id);
+        if ($room && $room->is_weekly_only) {
+            return back()->withErrors(['room_id' => 'Ruangan ini khusus Weekly Meeting dan tidak bisa dipesan untuk meeting biasa.'])->withInput();
+        }
+
         $meeting->update($validated);
 
         return redirect()->route('admin.meetings.index')

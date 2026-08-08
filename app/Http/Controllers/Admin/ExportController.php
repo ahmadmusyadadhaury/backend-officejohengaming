@@ -131,6 +131,7 @@ class ExportController extends Controller
             'Nama Ruangan' => $r->name,
             'Lokasi' => $r->location ?? '-',
             'Kapasitas' => $r->capacity,
+            'Khusus Weekly Meeting' => $r->is_weekly_only ? 'Ya' : 'Tidak',
             'Deskripsi' => $r->description ?? '-',
         ]);
 

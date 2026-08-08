@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Room extends Model
 {
-    protected $fillable = ['name', 'capacity', 'facilities', 'location', 'description', 'is_active', 'team_id'];
+    protected $fillable = ['name', 'capacity', 'facilities', 'location', 'description', 'is_active', 'team_id', 'is_weekly_only'];
 
     protected $casts = [
         'facilities' => 'array',
         'is_active' => 'boolean',
+        'is_weekly_only' => 'boolean',
     ];
 
     public function meetings()

@@ -57,6 +57,7 @@ class RoomController extends Controller
             'description' => $request->description,
             'is_active' => $request->boolean('is_active', true),
             'team_id' => $request->team_id ?: null,
+            'is_weekly_only' => $request->boolean('is_weekly_only'),
         ]);
 
         return redirect()->route('admin.rooms.index')->with('success', 'Ruangan berhasil ditambahkan.');
@@ -86,6 +87,7 @@ class RoomController extends Controller
             'description' => $request->description,
             'is_active' => $request->boolean('is_active'),
             'team_id' => $request->team_id ?: null,
+            'is_weekly_only' => $request->boolean('is_weekly_only'),
         ]);
 
         return redirect()->route('admin.rooms.index')->with('success', 'Ruangan berhasil diperbarui.');

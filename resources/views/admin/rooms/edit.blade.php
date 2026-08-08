@@ -44,6 +44,11 @@
                 <input type="checkbox" name="is_active" id="is_active" value="1" {{ $room->is_active ? 'checked' : '' }} style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
                 <label for="is_active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Ruangan Aktif</label>
             </div>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="is_weekly_only" id="is_weekly_only" value="1" {{ $room->is_weekly_only ? 'checked' : '' }} style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
+                <label for="is_weekly_only" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Khusus Weekly Meeting</label>
+            </div>
+            <p class="text-xs -mt-2" style="color:var(--text-muted);">Ruangan ini hanya boleh dipakai untuk kegiatan weekly meeting, tidak bisa dipesan untuk meeting biasa.</p>
             <div class="flex gap-3 pt-2" style="border-top:1px solid var(--border-color);">
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 <a href="{{ route('admin.rooms.index') }}" class="btn btn-secondary">Batal</a>

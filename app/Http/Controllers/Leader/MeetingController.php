@@ -146,6 +146,10 @@ class MeetingController extends Controller
 
         $room = Room::findOrFail($request->room_id);
 
+        if ($room->is_weekly_only) {
+            return back()->withErrors(['room_id' => 'Ruangan ini khusus Weekly Meeting dan tidak bisa dipesan untuk meeting biasa.'])->withInput();
+        }
+
         // Cek konflik waktu milik sendiri di hari yang sama (prioritas utama)
         $ownConflict = Meeting::where('requested_by', auth()->id())
             ->where('meeting_date', $request->meeting_date)

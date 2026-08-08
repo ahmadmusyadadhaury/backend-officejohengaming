@@ -373,7 +373,7 @@
                     <select id="edit-room" name="room_id" required class="gaming-input gaming-select mt-1">
                         <option value="">Pilih Ruangan</option>
                         @foreach($rooms as $room)
-                            <option value="{{ $room->id }}">{{ $room->name }} ({{ $room->capacity }} orang)</option>
+                            <option value="{{ $room->id }}" {{ $room->is_weekly_only ? 'disabled' : '' }}>{{ $room->name }} ({{ $room->capacity }} orang)@if($room->is_weekly_only) — Khusus Weekly Meeting @endif</option>
                         @endforeach
                     </select>
                 </div>

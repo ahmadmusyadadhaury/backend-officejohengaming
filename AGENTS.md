@@ -47,8 +47,8 @@ composer test
 # Full setup (composer install + .env + key:generate + migrate + npm build)
 composer setup
 
-# Laravel server only
-php artisan serve
+# Laravel server only (port 8001)
+php artisan serve --port=8001
 
 # Queue worker (required for notifications, weekly processing)
 php artisan queue:listen --tries=1 --timeout=0

@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const [rooms] = await req.db.execute(
-      'SELECT id, name, capacity, facilities, location, description, is_active FROM rooms WHERE is_active = 1 ORDER BY name'
+      'SELECT id, name, capacity, facilities, location, description, is_active, is_weekly_only FROM rooms WHERE is_active = 1 ORDER BY name'
     );
 
     // Parse facilities JSON

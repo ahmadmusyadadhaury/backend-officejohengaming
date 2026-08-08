@@ -36,8 +36,8 @@
                         <select name="room_id" required class="gaming-input gaming-select">
                             <option value="">Pilih Ruangan</option>
                             @foreach($rooms as $room)
-                                <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>
-                                    {{ $room->name }} ({{ $room->capacity }} orang)
+                                <option value="{{ $room->id }}" {{ $room->is_weekly_only ? 'disabled' : '' }} {{ old('room_id') == $room->id ? 'selected' : '' }}>
+                                    {{ $room->name }} ({{ $room->capacity }} orang)@if($room->is_weekly_only) — Khusus Weekly Meeting @endif
                                 </option>
                             @endforeach
                         </select>

@@ -94,9 +94,14 @@
                             @endif
                         </td>
                         <td>
-                            <span class="badge {{ $room->is_active ? 'badge-green' : 'badge-red' }}">
-                                {{ $room->is_active ? 'Aktif' : 'Nonaktif' }}
-                            </span>
+                            <div class="flex flex-wrap items-center gap-1">
+                                <span class="badge {{ $room->is_active ? 'badge-green' : 'badge-red' }}">
+                                    {{ $room->is_active ? 'Aktif' : 'Nonaktif' }}
+                                </span>
+                                @if($room->is_weekly_only)
+                                    <span class="badge badge-purple" style="font-size:0.65rem;">Weekly Only</span>
+                                @endif
+                            </div>
                         </td>
 @if(auth()->user()->role !== 'gm')
                         <td>
@@ -110,6 +115,7 @@
                                     'facilities_list'=>is_array($room->facilities) ? array_values($room->facilities) : [],
                                     'description'=>$room->description ?? '',
                                     'is_active'=>$room->is_active,
+                                    'is_weekly_only'=>$room->is_weekly_only,
                                     'team_id'=>$room->team_id,
                                     'team'=>$room->team?->name ?? '',
                                 ]);
@@ -188,6 +194,11 @@
                     <input type="checkbox" name="is_active" id="edit-is-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
                     <label for="edit-is-active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Ruangan Aktif</label>
                 </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="is_weekly_only" id="edit-is-weekly-only" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
+                    <label for="edit-is-weekly-only" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Khusus Weekly Meeting</label>
+                </div>
+                <p class="text-xs -mt-1" style="color:var(--text-muted);">Ruangan ini hanya boleh dipakai untuk kegiatan weekly meeting, tidak bisa dipesan untuk meeting biasa.</p>
             </div>
             <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
@@ -238,6 +249,11 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="is_weekly_only" id="create-is-weekly-only" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
+                    <label for="create-is-weekly-only" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Khusus Weekly Meeting</label>
+                </div>
+                <p class="text-xs -mt-1" style="color:var(--text-muted);">Ruangan ini hanya boleh dipakai untuk kegiatan weekly meeting, tidak bisa dipesan untuk meeting biasa.</p>
             </div>
             <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Buat Ruangan</button>
@@ -291,6 +307,7 @@ function openEditModal(data) {
     document.getElementById('edit-facilities').value = data.facilities;
     document.getElementById('edit-description').value = data.description;
     document.getElementById('edit-is-active').checked = data.is_active == 1;
+    document.getElementById('edit-is-weekly-only').checked = data.is_weekly_only == 1;
     document.getElementById('edit-team-id').value = data.team_id || '';
     openModal('edit-modal');
 }
@@ -357,6 +374,7 @@ function showDetail(data) {
         { label: 'Kapasitas', value: data.capacity + ' orang' },
         { label: 'Fasilitas', html: facHtml },
         { label: 'Deskripsi', value: data.description || '—' },
+        { label: 'Khusus Weekly Meeting', value: data.is_weekly_only == 1 ? 'Ya' : 'Tidak' },
         { label: 'Status', value: data.is_active, badge: data.is_active == 1 },
     ]);
 }

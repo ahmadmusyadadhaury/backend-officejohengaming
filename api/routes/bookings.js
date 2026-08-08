@@ -95,12 +95,16 @@ router.post('/', authenticateToken, [
 
     // Check if room exists and is active
     const [rooms] = await req.db.execute(
-      'SELECT id FROM rooms WHERE id = ? AND is_active = 1',
+      'SELECT id, is_weekly_only FROM rooms WHERE id = ? AND is_active = 1',
       [room_id]
     );
 
     if (rooms.length === 0) {
       return res.status(400).json({ error: 'Invalid or inactive room' });
+    }
+
+    if (rooms[0].is_weekly_only) {
+      return res.status(400).json({ error: 'Room is reserved for weekly meetings only' });
     }
 
     // Check for booking conflicts
