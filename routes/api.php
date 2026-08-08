@@ -67,8 +67,10 @@ Route::middleware('api.auth')->group(function () {
         Route::post('ipl-bulk', [PembayaranApiController::class, 'bulkIpl']);
         Route::post('ipl-ruko-bulk', [PembayaranApiController::class, 'storeBulkIplRuko']);
         Route::post('token-reading', [PembayaranApiController::class, 'storeTokenReading']);
+        Route::get('token-readings', [PembayaranApiController::class, 'indexTokenReadings']);
         Route::delete('token-reading/{id}', [PembayaranApiController::class, 'destroyTokenReading']);
         Route::post('token-topup', [PembayaranApiController::class, 'storeTokenPayment']);
+        Route::get('token-topups', [PembayaranApiController::class, 'indexTokenTopups']);
         Route::delete('token-topup/{id}', [PembayaranApiController::class, 'destroyTokenPayment']);
         Route::post('internet-usage', [PembayaranApiController::class, 'storeInternetUsage']);
         Route::delete('internet-usage/{id}', [PembayaranApiController::class, 'destroyInternetUsage']);

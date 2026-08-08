@@ -80,6 +80,46 @@ class PembayaranApiController extends Controller
         ]);
     }
 
+    public function indexTokenTopups()
+    {
+        $topups = TokenPayment::with('creator')
+            ->orderBy('payment_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $topups->values()->map(fn ($t) => [
+                'id' => $t->id,
+                'amount_kwh' => (float) $t->amount_kwh,
+                'nominal' => (float) $t->nominal,
+                'payment_date' => $t->payment_date?->format('Y-m-d'),
+                'period' => $t->period,
+                'notes' => $t->notes,
+                'bukti_bayar' => $t->bukti_bayar,
+                'creator_name' => $t->creator?->name,
+            ]),
+        ]);
+    }
+
+    public function indexTokenReadings()
+    {
+        $readings = ElectricityTokenReading::with('checker')
+            ->orderBy('checked_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $readings->values()->map(fn ($r) => [
+                'id' => $r->id,
+                'remaining_kwh' => (float) $r->remaining_kwh,
+                'status' => $r->status,
+                'checked_date' => $r->checked_date?->format('Y-m-d'),
+                'notes' => $r->notes,
+                'checker_name' => $r->checker?->name,
+            ]),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $jenis = $request->input('jenis', 'internet');
