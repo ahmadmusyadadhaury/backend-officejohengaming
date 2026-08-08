@@ -74,6 +74,12 @@ Route::middleware('api.auth')->group(function () {
         Route::delete('token-topup/{id}', [PembayaranApiController::class, 'destroyTokenPayment']);
         Route::post('internet-usage', [PembayaranApiController::class, 'storeInternetUsage']);
         Route::delete('internet-usage/{id}', [PembayaranApiController::class, 'destroyInternetUsage']);
+        Route::get('internet-payments', [PembayaranApiController::class, 'indexInternetPayments']);
+        Route::get('internet-checks', [PembayaranApiController::class, 'indexInternetChecks']);
+        Route::get('digital-asset-payments', [PembayaranApiController::class, 'indexDigitalAssetPayments']);
+        Route::get('ipl-ruko-payments', [PembayaranApiController::class, 'indexIplRukoPayments']);
+        Route::get('tagihan', [PembayaranApiController::class, 'indexTagihan']);
+        Route::get('pengajuan', [PembayaranApiController::class, 'indexPengajuan']);
     });
 
     Route::prefix('payment-approvals')->group(function () {

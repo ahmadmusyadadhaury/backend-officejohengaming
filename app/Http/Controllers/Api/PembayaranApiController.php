@@ -120,6 +120,329 @@ class PembayaranApiController extends Controller
         ]);
     }
 
+    public function indexInternetPayments()
+    {
+        $payments = WifiPayment::with('requester')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $payments->values()->map(fn ($w) => [
+                'id' => $w->id,
+                'nama_internet' => $w->nama_internet,
+                'provider' => $w->provider,
+                'pic' => $w->pic,
+                'jabatan' => $w->jabatan,
+                'masa_tenggang' => $w->masa_tenggang?->format('Y-m-d'),
+                'biaya' => (float) $w->biaya,
+                'status' => $w->status,
+                'status_internet' => $w->status_internet,
+                'hari_internet' => $w->hari_internet,
+                'tanggal_bayar' => $w->tanggal_bayar?->format('Y-m-d'),
+                'period' => $w->period,
+                'notes' => $w->notes,
+                'bukti_bayar' => $w->bukti_bayar,
+                'creator_name' => $w->requester?->name,
+            ]),
+        ]);
+    }
+
+    public function indexInternetChecks()
+    {
+        $checks = InternetUsageCheck::with('checker')
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $checks->values()->map(fn ($u) => [
+                'id' => $u->id,
+                'ruangan' => $u->ruangan,
+                'hari' => $u->hari,
+                'tanggal' => $u->tanggal?->format('Y-m-d'),
+                'penggunaan_wifi' => (float) $u->penggunaan_wifi,
+                'penggunaan_ethernet' => (float) $u->penggunaan_ethernet,
+                'keterangan' => $u->keterangan,
+                'checker_name' => $u->checker?->name,
+            ]),
+        ]);
+    }
+
+    public function indexDigitalAssetPayments()
+    {
+        $payments = PembayaranAsetDigital::with('digitalAsset')
+            ->with('requester')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $payments->values()->map(fn ($p) => [
+                'id' => $p->id,
+                'digital_asset_id' => $p->digital_asset_id,
+                'nama_aset' => $p->digitalAsset?->nama_aset,
+                'email' => $p->digitalAsset?->email,
+                'periode' => $p->periode,
+                'tanggal_tagihan' => $p->tanggal_tagihan?->format('Y-m-d'),
+                'jatuh_tempo' => $p->jatuh_tempo?->format('Y-m-d'),
+                'nominal' => (float) $p->nominal,
+                'status' => $p->status,
+                'status_digital' => $p->status_digital,
+                'hari_digital' => $p->hari_digital,
+                'tanggal_bayar' => $p->tanggal_bayar?->format('Y-m-d'),
+                'period' => $p->period,
+                'notes' => $p->notes,
+                'bukti_bayar' => $p->bukti_bayar,
+                'pic' => $p->pic,
+                'jabatan' => $p->jabatan,
+                'creator_name' => $p->requester?->name,
+            ]),
+        ]);
+    }
+
+    public function indexIplRukoPayments()
+    {
+        $payments = PembayaranIplRuko::with('requester')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $payments->values()->map(fn ($p) => [
+                'id' => $p->id,
+                'periode' => $p->periode,
+                'tanggal_tagihan' => $p->tanggal_tagihan?->format('Y-m-d'),
+                'jatuh_tempo' => $p->jatuh_tempo?->format('Y-m-d'),
+                'nominal' => (float) $p->nominal,
+                'pic' => $p->pic,
+                'jabatan' => $p->jabatan,
+                'status' => $p->status,
+                'status_ipl' => $p->status_ipl,
+                'hari_ipl' => $p->hari_ipl,
+                'tanggal_bayar' => $p->tanggal_bayar?->format('Y-m-d'),
+                'period' => $p->period,
+                'notes' => $p->notes,
+                'bukti_bayar' => $p->bukti_bayar,
+                'creator_name' => $p->requester?->name,
+            ]),
+        ]);
+    }
+
+    public function indexTagihan()
+    {
+        $all = collect();
+
+        $internet = WifiPayment::with('requester')
+            ->whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'internet',
+                'jenis_label' => 'Internet',
+                'detail' => $r->nama_internet,
+                'nominal' => (float) ($r->biaya ?? 0),
+                'status' => $r->status_internet,
+                'hari' => $r->hari_internet,
+                'pic' => $r->pic,
+                'jabatan' => $r->jabatan,
+                'jatuh_tempo' => $r->masa_tenggang?->format('Y-m-d'),
+                'tgl_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
+                'notes' => $r->notes,
+                'bukti_bayar' => $r->bukti_bayar,
+                'creator_name' => $r->requester?->name,
+            ]);
+        $all = $all->merge($internet);
+
+        $digital = PembayaranAsetDigital::with('requester')
+            ->whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'aset_digital',
+                'jenis_label' => 'Aset Digital',
+                'detail' => $r->periode,
+                'nominal' => (float) ($r->nominal ?? 0),
+                'status' => $r->status_digital,
+                'hari' => $r->hari_digital,
+                'pic' => $r->pic,
+                'jabatan' => $r->jabatan,
+                'jatuh_tempo' => $r->jatuh_tempo?->format('Y-m-d'),
+                'tgl_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
+                'notes' => $r->notes,
+                'bukti_bayar' => $r->bukti_bayar,
+                'creator_name' => $r->requester?->name,
+            ]);
+        $all = $all->merge($digital);
+
+        $ipl = PembayaranIplRuko::with('requester')
+            ->whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'ipl_ruko',
+                'jenis_label' => 'IPL Ruko',
+                'detail' => $r->periode,
+                'nominal' => (float) ($r->nominal ?? 0),
+                'status' => $r->status_ipl,
+                'hari' => $r->hari_ipl,
+                'pic' => $r->pic,
+                'jabatan' => $r->jabatan,
+                'jatuh_tempo' => $r->jatuh_tempo?->format('Y-m-d'),
+                'tgl_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
+                'notes' => $r->notes,
+                'bukti_bayar' => $r->bukti_bayar,
+                'creator_name' => $r->requester?->name,
+            ]);
+        $all = $all->merge($ipl);
+
+        $asetTim = PembayaranAsetTim::with('requester')
+            ->whereNull('requested_by')
+            ->whereNotIn('status', ['lunas', 'rejected', 'menunggu'])
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'aset_tim',
+                'jenis_label' => 'Aset TIM',
+                'detail' => $r->periode,
+                'nominal' => (float) ($r->nominal ?? 0),
+                'status' => $r->status,
+                'hari' => null,
+                'pic' => $r->pic,
+                'jabatan' => $r->jabatan,
+                'jatuh_tempo' => $r->jatuh_tempo?->format('Y-m-d'),
+                'tgl_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
+                'notes' => $r->notes,
+                'bukti_bayar' => $r->bukti_bayar,
+                'creator_name' => $r->requester?->name,
+            ]);
+        $all = $all->merge($asetTim);
+
+        return response()->json([
+            'data' => $all->values(),
+        ]);
+    }
+
+    public function indexPengajuan()
+    {
+        $all = collect();
+
+        $internet = WifiPayment::with('requester', 'approver')
+            ->whereNotNull('requested_by')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'internet',
+                'jenis_label' => 'Internet',
+                'detail' => $r->nama_internet,
+                'nominal' => (float) ($r->biaya ?? 0),
+                'status' => $r->status,
+                'pic' => $r->pic,
+                'jabatan' => $r->jabatan,
+                'period' => $r->period ?? 'bulanan',
+                'tgl_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
+                'bukti_bayar' => $r->bukti_bayar,
+                'requester_name' => $r->requester?->name,
+                'approver_name' => $r->approver?->name,
+                'approved_at' => $r->approved_at?->format('Y-m-d H:i:s'),
+                'notes' => $r->notes,
+                'created_at' => $r->created_at->format('Y-m-d H:i:s'),
+            ]);
+        $all = $all->merge($internet);
+
+        $digital = PembayaranAsetDigital::with('requester', 'approver')
+            ->whereNotNull('requested_by')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'aset_digital',
+                'jenis_label' => 'Aset Digital',
+                'detail' => $r->periode,
+                'nominal' => (float) ($r->nominal ?? 0),
+                'status' => $r->status,
+                'pic' => $r->pic,
+                'jabatan' => $r->jabatan,
+                'period' => $r->period ?? 'bulanan',
+                'tgl_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
+                'bukti_bayar' => $r->bukti_bayar,
+                'requester_name' => $r->requester?->name,
+                'approver_name' => $r->approver?->name,
+                'approved_at' => $r->approved_at?->format('Y-m-d H:i:s'),
+                'notes' => $r->notes,
+                'created_at' => $r->created_at->format('Y-m-d H:i:s'),
+            ]);
+        $all = $all->merge($digital);
+
+        $ipl = PembayaranIplRuko::with('requester', 'approver')
+            ->whereNotNull('requested_by')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'ipl_ruko',
+                'jenis_label' => 'IPL Ruko',
+                'detail' => $r->periode,
+                'nominal' => (float) ($r->nominal ?? 0),
+                'status' => $r->status,
+                'pic' => $r->pic,
+                'jabatan' => $r->jabatan,
+                'period' => $r->period ?? 'bulanan',
+                'tgl_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
+                'bukti_bayar' => $r->bukti_bayar,
+                'requester_name' => $r->requester?->name,
+                'approver_name' => $r->approver?->name,
+                'approved_at' => $r->approved_at?->format('Y-m-d H:i:s'),
+                'notes' => $r->notes,
+                'created_at' => $r->created_at->format('Y-m-d H:i:s'),
+            ]);
+        $all = $all->merge($ipl);
+
+        $asetTim = PembayaranAsetTim::with('requester', 'approver')
+            ->whereNotNull('requested_by')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'jenis' => 'aset_tim',
+                'jenis_label' => 'Aset TIM',
+                'detail' => $r->periode,
+                'nominal' => (float) ($r->nominal ?? 0),
+                'status' => $r->status,
+                'pic' => $r->pic,
+                'jabatan' => $r->jabatan,
+                'period' => $r->period ?? 'bulanan',
+                'tgl_bayar' => $r->tanggal_bayar?->format('Y-m-d'),
+                'bukti_bayar' => $r->bukti_bayar,
+                'requester_name' => $r->requester?->name,
+                'approver_name' => $r->approver?->name,
+                'approved_at' => $r->approved_at?->format('Y-m-d H:i:s'),
+                'notes' => $r->notes,
+                'created_at' => $r->created_at->format('Y-m-d H:i:s'),
+            ]);
+        $all = $all->merge($asetTim);
+
+        return response()->json([
+            'data' => $all->values(),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $jenis = $request->input('jenis', 'internet');
