@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\PembayaranApiController;
 use App\Http\Controllers\Api\PeralatanKantorApiController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\SimCardApiController;
+use App\Http\Controllers\Api\SosialMediaApiController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\VehicleApiController;
 use App\Http\Controllers\Api\WeeklyMeetingApiController;
@@ -56,6 +57,7 @@ Route::middleware('api.auth')->group(function () {
     Route::get('vehicles', [VehicleApiController::class, 'index']);
     Route::get('sim-cards', [SimCardApiController::class, 'index']);
     Route::get('peralatan-kantor', [PeralatanKantorApiController::class, 'index']);
+    Route::get('sosial-media', [SosialMediaApiController::class, 'index']);
 
     Route::prefix('pembayaran')->group(function () {
         Route::get('/', [PembayaranApiController::class, 'index']);
