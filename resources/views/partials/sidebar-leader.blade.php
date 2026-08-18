@@ -2,6 +2,7 @@
     $isMeetingActive = request()->routeIs('koordinator.meetings.*', 'koordinator.mom.*', 'koordinator.recordings.*', 'calendar');
     $isOperationalActive = request()->routeIs('koordinator.asset-saya.*', 'koordinator.aset-tim.*', 'koordinator.aset-mes.*');
     $isPaymentActive = request()->routeIs('payment-approval.*');
+    $isItActive = request()->routeIs('it-tickets.*');
 
     $now = \Carbon\Carbon::today();
     $sevenDays = $now->copy()->addDays(7);
@@ -94,7 +95,15 @@
     <a href="{{ route('payment-approval.status') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.status') ? 'active' : '' }}"><span class="truncate">Status Pengajuan</span></a>
 </div>
 
-@include('partials.sidebar-bantuan-it')
+<p class="sidebar-section-label">Layanan</p>
+
+<a href="{{ route('it-tickets.index') }}"
+    class="sidebar-item {{ $isItActive ? 'active' : '' }}">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+    </svg>
+    <span class="truncate">Ticketing IT</span>
+</a>
 
 <p class="sidebar-section-label">Akun</p>
 <a href="{{ route('profile.edit') }}"

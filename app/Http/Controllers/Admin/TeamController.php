@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Team;
+use App\Models\TeamComposition;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -42,7 +43,9 @@ class TeamController extends Controller
             'initial' => strtoupper(substr($u->name, 0, 1)),
         ])->values();
 
-        return view('admin.teams.index', compact('teams', 'allTeams', 'availableUsers', 'availableUsersJson'));
+        $compositions = TeamComposition::orderBy('sort_order')->get();
+
+        return view('admin.teams.index', compact('teams', 'allTeams', 'availableUsers', 'availableUsersJson', 'compositions'));
     }
 
     public function show(Team $team)

@@ -7,6 +7,12 @@
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
+    <div class="pill-switcher">
+        <button type="button" class="pill-btn active" onclick="switchTab('teams')">Kelola Tim</button>
+        <button type="button" class="pill-btn" onclick="switchTab('komposisi')">Komposisi Tim</button>
+    </div>
+
+    <div id="tab-teams">
     <div class="gaming-card" style="overflow:visible;">
         <form method="GET" action="{{ route('admin.teams.index') }}" id="filter-form">
         <input type="hidden" name="status" id="status-input" value="{{ request('status') }}">
@@ -126,6 +132,93 @@
             </table>
         </div>
         <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $teams->links() }}</div>
+    </div>
+    </div>
+
+    {{-- ═══════════════════ TAB KOMPOSISI TIM ═══════════════════ --}}
+    <div id="tab-komposisi" style="display:none;">
+    <div class="gaming-card" style="overflow:visible;">
+        <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Komposisi Tim</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Atur jumlah per posisi dalam organisasi</div>
+            </div>
+        </div>
+        <div class="px-6 py-5">
+            @php
+                $roleCards = [
+                    ['key' => 'ceo', 'label' => 'CEO', 'color' => '#fbbf24', 'bg' => 'rgba(251,191,36,0.12)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                    ['key' => 'gm', 'label' => 'General Manager', 'color' => '#a78bfa', 'bg' => 'rgba(167,139,250,0.12)', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
+                    ['key' => 'head_of_store', 'label' => 'Head of Store', 'color' => '#34d399', 'bg' => 'rgba(52,211,153,0.12)', 'icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                    ['key' => 'hr', 'label' => 'HR', 'color' => '#fb923c', 'bg' => 'rgba(251,146,60,0.12)', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'],
+                    ['key' => 'koordinator', 'label' => 'Koordinator', 'color' => '#38bdf8', 'bg' => 'rgba(56,189,248,0.12)', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
+                    ['key' => 'total_team', 'label' => 'Total Tim', 'color' => '#c084fc', 'bg' => 'rgba(192,132,252,0.12)', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
+                    ['key' => 'karyawan', 'label' => 'Karyawan', 'color' => '#f87171', 'bg' => 'rgba(248,113,113,0.12)', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z'],
+                ];
+            @endphp
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 md:gap-3 mb-6">
+                @foreach($roleCards as $card)
+                    @php $comp = $compositions->firstWhere('role', $card['key']); @endphp
+                    <div class="stat-card-compact flex-col items-center text-center py-3" style="border-color:{{ $card['color'] }}20;">
+                        <div class="stat-icon-box mb-1.5" style="background:{{ $card['bg'] }};box-shadow:0 0 12px {{ $card['color'] }}20;">
+                            <svg class="w-4 h-4" style="color:{{ $card['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/>
+                            </svg>
+                        </div>
+                        <div class="stat-num" style="color:{{ $card['color'] }};">{{ $comp->max_count ?? 0 }}</div>
+                        <div class="stat-label-text">{{ $card['label'] }}</div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="overflow-x-auto">
+                <table class="gaming-table w-full">
+                    <thead>
+                        <tr>
+                            <th style="width:8%;">No</th>
+                            <th style="width:40%;">Posisi</th>
+                            <th style="width:20%;">Jumlah</th>
+                            @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($compositions as $comp)
+                        @php $compDetail = json_encode(['id'=>$comp->id,'label'=>$comp->label,'max_count'=>$comp->max_count]); @endphp
+                        <tr>
+                            <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                            <td style="color:var(--text-primary);font-weight:500;">{{ $comp->label }}</td>
+                            <td>
+                                <span class="badge badge-cyan">{{ $comp->max_count }}</span>
+                            </td>
+@if(auth()->user()->role !== 'gm')
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" onclick="showCompDetail({{ $compDetail }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        Lihat Detail
+                                    </button>
+                                    <div class="dropdown-wrap" style="position:relative;">
+                                        <button type="button" onclick="toggleDropdown(this, 'comp-{{ $comp->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                        <div id="dropdown-comp-{{ $comp->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                            <button type="button" onclick="showCompDetail({{ $compDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                            <button type="button" onclick="openCompEditModal({{ $compDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                            <form method="POST" action="{{ route('admin.team-compositions.destroy', $comp) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus komposisi {{ $comp->label }} ini?" style="margin:0;">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+@endif
+                        </tr>
+                        @empty
+                        <tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data komposisi.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     </div>
 </div>
 
@@ -255,6 +348,46 @@
                 <p class="text-sm" style="color:var(--text-muted);">Memuat data...</p>
             </div>
         </div>
+    </div>
+</div>
+
+{{-- ═══════════════════ KOMPOSISI TIM MODALS ═══════════════════ --}}
+<div id="comp-detail-modal" class="modal-modern" onclick="if(event.target===this)closeCompDetailModal()">
+    <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Detail Komposisi Tim</h3>
+            <button type="button" onclick="closeCompDetailModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <div class="modal-modern-body space-y-4" id="comp-detail-body"></div>
+        <div class="modal-modern-footer gap-2">
+            <button type="button" onclick="closeCompDetailModal()" class="btn btn-secondary">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<div id="comp-edit-modal" class="modal-modern" onclick="if(event.target===this)closeCompEditModal()">
+    <div class="modal-modern-panel sm" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Edit Komposisi Tim</h3>
+            <button type="button" onclick="closeCompEditModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <form id="comp-edit-form" method="POST">
+            @csrf @method('PUT')
+            <div class="modal-modern-body space-y-4">
+                <div>
+                    <label class="gaming-label">Posisi</label>
+                    <input type="text" id="comp-edit-label" disabled class="gaming-input" style="background:var(--bg-surface-2);opacity:0.8;">
+                </div>
+                <div>
+                    <label class="gaming-label">Jumlah <span style="color:#f87171;">*</span></label>
+                    <input type="number" name="max_count" id="comp-edit-max-count" required min="0" class="gaming-input">
+                </div>
+            </div>
+            <div class="modal-modern-footer gap-2">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="button" onclick="closeCompEditModal()" class="btn btn-secondary">Batal</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -471,9 +604,46 @@ if (memberSel) {
         }
     });
 }
+
+function switchTab(tab) {
+    document.getElementById('tab-teams').style.display = tab === 'teams' ? '' : 'none';
+    document.getElementById('tab-komposisi').style.display = tab === 'komposisi' ? '' : 'none';
+    document.querySelectorAll('.pill-btn').forEach(function(btn) { btn.classList.remove('active'); });
+    document.querySelectorAll('.pill-btn').forEach(function(btn) {
+        if ((tab === 'teams' && btn.textContent.trim() === 'Kelola Tim') || (tab === 'komposisi' && btn.textContent.trim() === 'Komposisi Tim')) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function showCompDetail(comp) {
+    document.getElementById('comp-detail-body').innerHTML = '<div class="p-4"><table class="w-full text-sm"><tr><td style="color:var(--text-muted);padding:6px 0;">Posisi</td><td style="padding:6px 0;color:var(--text-primary);font-weight:600;">' + comp.label + '</td></tr><tr><td style="color:var(--text-muted);padding:6px 0;">Jumlah Maksimal</td><td style="padding:6px 0;"><span class="badge badge-cyan">' + comp.max_count + '</span></td></tr></table></div>';
+    document.getElementById('comp-detail-modal').classList.add('active');
+    document.body.classList.add('modal-open');
+}
+function closeCompDetailModal() {
+    document.getElementById('comp-detail-modal').classList.remove('active');
+    document.body.classList.remove('modal-open');
+}
+
+function openCompEditModal(comp) {
+    document.getElementById('comp-edit-form').action = '{{ route("admin.team-compositions.update", "REPLACE_ID") }}'.replace('REPLACE_ID', comp.id);
+    document.getElementById('comp-edit-label').value = comp.label;
+    document.getElementById('comp-edit-max-count').value = comp.max_count;
+    document.getElementById('comp-edit-modal').classList.add('active');
+    document.body.classList.add('modal-open');
+}
+function closeCompEditModal() {
+    document.getElementById('comp-edit-modal').classList.remove('active');
+    document.body.classList.remove('modal-open');
+}
 </script>
 @push('styles')
 <style>
+.pill-switcher { display:flex; gap:0.25rem; background:var(--bg-surface-2); border:1px solid var(--border-color); border-radius:0.625rem; padding:0.2rem; width:fit-content; }
+.pill-btn { padding:0.4rem 1rem; border-radius:0.4rem; border:none; background:transparent; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.75rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); cursor:pointer; transition:all 0.18s ease; white-space:nowrap; }
+.pill-btn:hover { color:var(--text-primary); }
+.pill-btn.active { background:var(--sidebar-active-bg); color:white; box-shadow:0 2px 8px rgba(109,94,249,0.35); }
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>

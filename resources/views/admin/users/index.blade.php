@@ -7,6 +7,12 @@
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
+    <div class="pill-switcher">
+        <button type="button" class="pill-btn active" onclick="switchTab('koordinator')">Kelola Koordinator</button>
+        <button type="button" class="pill-btn" onclick="switchTab('karyawan')">Kelola Karyawan</button>
+    </div>
+
+    <div id="tab-koordinator">
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
@@ -122,8 +128,10 @@
         </div>
         <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $users->links() }}</div>
     </div>
+    </div>
 
     {{-- ═══════════════════ TABEL KARYAWAN ═══════════════════ --}}
+    <div id="tab-karyawan" style="display:none;">
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
@@ -213,6 +221,7 @@
             </table>
         </div>
         <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $karyawans->links() }}</div>
+    </div>
     </div>
 </div>
 
@@ -559,6 +568,16 @@
 </div>
 
 <script>
+function switchTab(tab) {
+    document.getElementById('tab-koordinator').style.display = tab === 'koordinator' ? 'block' : 'none';
+    document.getElementById('tab-karyawan').style.display = tab === 'karyawan' ? 'block' : 'none';
+    document.querySelectorAll('.pill-btn').forEach(function(btn) { btn.classList.remove('active'); });
+    if (tab === 'koordinator') {
+        document.querySelector('.pill-btn:first-child').classList.add('active');
+    } else {
+        document.querySelector('.pill-btn:last-child').classList.add('active');
+    }
+}
 function toggleFilterMenu(e) {
     e.stopPropagation();
     var menu = document.getElementById('filter-menu');
@@ -725,6 +744,10 @@ document.addEventListener('keydown', function(e) {
 @endif
 @push('styles')
 <style>
+.pill-switcher { display:flex; gap:0.25rem; background:var(--bg-surface-2); border:1px solid var(--border-color); border-radius:0.625rem; padding:0.2rem; width:fit-content; }
+.pill-btn { padding:0.4rem 1rem; border-radius:0.4rem; border:none; background:transparent; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.75rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); cursor:pointer; transition:all 0.18s ease; white-space:nowrap; }
+.pill-btn:hover { color:var(--text-primary); }
+.pill-btn.active { background:linear-gradient(135deg, var(--color-accent), var(--color-primary-light)); color:white; box-shadow:0 2px 8px rgba(124,58,237,0.35); }
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>

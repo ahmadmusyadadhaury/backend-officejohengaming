@@ -2,11 +2,18 @@
 @section('body-class', 'page-admin')
 @section('title', 'Kelola Akun')
 @section('page-title', 'Overview > Kelola Akun')
-@section('page-subtitle', 'Kelola akun admin, koordinator, dan karyawan.')
+@section('page-subtitle', 'Kelola akun admin, koordinator, dan karyawan dalam satu halaman.')
 @section('sidebar-menu') @include('partials.sidebar-admin') @endsection
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
+    <div class="pill-switcher">
+        <button type="button" class="pill-btn active" onclick="switchTab('admin')">Kelola Admin</button>
+        <button type="button" class="pill-btn" onclick="switchTab('koordinator')">Kelola Koordinator</button>
+        <button type="button" class="pill-btn" onclick="switchTab('karyawan')">Kelola Karyawan</button>
+    </div>
+
+    <div id="tab-admin">
     {{-- ═══════════════════ TABEL ADMIN ═══════════════════ --}}
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
@@ -131,8 +138,88 @@
         </div>
         <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $admins->links() }}</div>
     </div>
+    </div>
+
+    {{-- ═══════════════════ TABEL KOORDINATOR ═══════════════════ --}}
+    <div id="tab-koordinator" style="display:none;">
+    <div class="gaming-card" style="overflow:visible;">
+        <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Koordinator</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Akun koordinator divisi dengan akses terbatas (menu Meeting saja).</div>
+            </div>
+@if(auth()->user()->role !== 'gm')
+            <div class="flex gap-2">
+            <button type="button" onclick="openCreateKoordinatorModal()" class="btn btn-primary btn-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Tambah Koordinator
+            </button>
+            </div>
+@endif
+        </div>
+        <div class="overflow-x-auto">
+            <table class="gaming-table min-w-[700px]">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Username</th>
+                        <th>NIK</th>
+                        <th>Divisi</th>
+                        <th>Status</th>
+@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($koordinators as $koordinator)
+                    <tr>
+                        <td style="color:var(--text-muted);">{{ $koordinators->firstItem() + $loop->index }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $koordinator->name }}</td>
+                        <td><code style="font-size:0.75rem;color:var(--color-neon-blue);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:4px;">{{ $koordinator->username }}</code></td>
+                        <td style="color:var(--text-muted);">{{ $koordinator->nik ?? '—' }}</td>
+                        <td style="color:var(--text-muted);">{{ $koordinator->team?->name ?? '—' }}</td>
+                        <td>
+                            <span class="badge {{ $koordinator->is_active ? 'badge-green' : 'badge-red' }}">
+                                {{ $koordinator->is_active ? 'Aktif' : 'Nonaktif' }}
+                            </span>
+                        </td>
+@if(auth()->user()->role !== 'gm')
+                        <td>
+                            @php $koordinatorDetail = json_encode(['id'=>$koordinator->id,'name'=>$koordinator->name,'username'=>$koordinator->username,'nik'=>$koordinator->nik,'team_id'=>$koordinator->team_id,'team'=>$koordinator->team?->name ?? '—','role_label'=>$koordinator->role_label,'is_active'=>$koordinator->is_active]); @endphp
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showKoordinatorDetail({{ $koordinatorDetail }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, 'koordinator-{{ $koordinator->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-koordinator-{{ $koordinator->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showKoordinatorDetail({{ $koordinatorDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        <button type="button" onclick="openEditKoordinatorModal({{ $koordinatorDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.users.destroy', $koordinator) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun koordinator ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+@endif
+                    </tr>
+                    @empty
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun koordinator ditemukan.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $koordinators->links() }}</div>
+    </div>
+    </div>
 
     {{-- ═══════════════════ TABEL KARYAWAN ═══════════════════ --}}
+    <div id="tab-karyawan" style="display:none;">
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
@@ -218,6 +305,7 @@
             </table>
         </div>
         <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $karyawans->links() }}</div>
+    </div>
     </div>
 </div>
 
@@ -310,6 +398,98 @@
             <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Buat Akun</button>
                 <button type="button" onclick="closeCreateAdminModal()" class="btn btn-secondary">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ═══════════════════ MODALS KOORDINATOR ═══════════════════ --}}
+<div id="edit-koordinator-modal" class="modal-modern" onclick="if(event.target===this)closeEditKoordinatorModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Edit Akun Koordinator</h3>
+            <button type="button" onclick="closeEditKoordinatorModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <form id="edit-koordinator-form" method="POST">
+            @csrf @method('PUT')
+            <div class="modal-modern-body space-y-4">
+                <div>
+                    <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="name" id="edit-koordinator-name" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="username" id="edit-koordinator-username" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" id="edit-koordinator-nik" class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Password Baru <span style="color:var(--text-muted);font-weight:400;">(kosongkan jika tidak diubah)</span></label>
+                    <input type="password" name="password" class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Tim</label>
+                    <select name="team_id" id="edit-koordinator-team-id" class="gaming-input gaming-select">
+                        <option value="">— Pilih Tim —</option>
+                        @foreach($teams as $team)
+                            <option value="{{ $team->id }}">{{ $team->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="is_active" id="edit-koordinator-is-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
+                    <label for="edit-koordinator-is-active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Akun Aktif</label>
+                </div>
+            </div>
+            <div class="modal-modern-footer gap-2">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="button" onclick="closeEditKoordinatorModal()" class="btn btn-secondary">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="create-koordinator-modal" class="modal-modern" onclick="if(event.target===this)closeCreateKoordinatorModal()">
+    <div class="modal-modern-panel md" onclick="event.stopPropagation()">
+        <div class="modal-modern-header">
+            <h3>Tambah Akun Koordinator</h3>
+            <button type="button" onclick="closeCreateKoordinatorModal()" class="modal-modern-close">&times;</button>
+        </div>
+        <form id="create-koordinator-form" method="POST" action="{{ route('admin.users.store') }}">
+            @csrf
+            <div class="modal-modern-body space-y-4">
+                <div>
+                    <label class="gaming-label">Nama Lengkap <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="name" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Username <span style="color:#f87171;">*</span></label>
+                    <input type="text" name="username" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">NIK</label>
+                    <input type="text" name="nik" class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Password <span style="color:#f87171;">*</span></label>
+                    <input type="password" name="password" required class="gaming-input">
+                </div>
+                <div>
+                    <label class="gaming-label">Tim</label>
+                    <select name="team_id" class="gaming-input gaming-select">
+                        <option value="">— Pilih Tim —</option>
+                        @foreach($teams as $team)
+                            <option value="{{ $team->id }}">{{ $team->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <input type="hidden" name="role" value="koordinator">
+            </div>
+            <div class="modal-modern-footer gap-2">
+                <button type="submit" class="btn btn-primary">Buat Akun</button>
+                <button type="button" onclick="closeCreateKoordinatorModal()" class="btn btn-secondary">Batal</button>
             </div>
         </form>
     </div>
@@ -523,6 +703,42 @@ function openCreateAdminModal() {
 }
 function closeCreateAdminModal() { closeModal('create-admin-modal'); }
 
+function openEditKoordinatorModal(data) {
+    document.getElementById('edit-koordinator-form').action = '/admin/users/' + data.id;
+    document.getElementById('edit-koordinator-name').value = data.name;
+    document.getElementById('edit-koordinator-username').value = data.username;
+    document.getElementById('edit-koordinator-nik').value = data.nik || '';
+    document.getElementById('edit-koordinator-team-id').value = data.team_id || '';
+    document.getElementById('edit-koordinator-is-active').checked = data.is_active == 1;
+    openModal('edit-koordinator-modal');
+}
+function closeEditKoordinatorModal() { closeModal('edit-koordinator-modal'); }
+function openCreateKoordinatorModal() {
+    document.getElementById('create-koordinator-form').reset();
+    openModal('create-koordinator-modal');
+}
+function closeCreateKoordinatorModal() { closeModal('create-koordinator-modal'); }
+
+function showKoordinatorDetail(data) {
+    document.getElementById('detail-title').textContent = 'Detail Akun Koordinator';
+    renderDetail([
+        { label: 'Nama Lengkap', value: data.name },
+        { label: 'Username', value: data.username },
+        { label: 'NIK', value: data.nik || '—' },
+        { label: 'Divisi', value: data.team || '—' },
+        { label: 'Status', value: data.is_active, badge: data.is_active == 1 },
+    ]);
+}
+
+function switchTab(tab) {
+    document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none';
+    document.getElementById('tab-koordinator').style.display = tab === 'koordinator' ? 'block' : 'none';
+    document.getElementById('tab-karyawan').style.display = tab === 'karyawan' ? 'block' : 'none';
+    document.querySelectorAll('.pill-btn').forEach(function(btn) { btn.classList.remove('active'); });
+    var idx = { admin: 0, koordinator: 1, karyawan: 2 }[tab];
+    document.querySelectorAll('.pill-btn')[idx].classList.add('active');
+}
+
 function openEditKaryawanModal(data) {
     document.getElementById('edit-karyawan-form').action = '/admin/admins/karyawan/' + data.id;
     document.getElementById('edit-karyawan-name').value = data.name;
@@ -614,6 +830,7 @@ document.getElementById('detail-modal')?.addEventListener('click', function(e) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeEditAdminModal(); closeCreateAdminModal();
+        closeEditKoordinatorModal(); closeCreateKoordinatorModal();
         closeEditKaryawanModal(); closeCreateKaryawanModal();
         closeUploadNikModal(); closeImportKaryawanModal();
         closeDetail();
@@ -666,6 +883,10 @@ document.addEventListener('keydown', function(e) {
 @endif
 @push('styles')
 <style>
+.pill-switcher { display:flex; gap:0.25rem; background:var(--bg-surface-2); border:1px solid var(--border-color); border-radius:0.625rem; padding:0.2rem; width:fit-content; }
+.pill-btn { padding:0.4rem 1rem; border-radius:0.4rem; border:none; background:transparent; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.75rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); cursor:pointer; transition:all 0.18s ease; white-space:nowrap; }
+.pill-btn:hover { color:var(--text-primary); }
+.pill-btn.active { background:var(--sidebar-active-bg); color:white; box-shadow:0 2px 8px rgba(109,94,249,0.35); }
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; font-size:0.8rem; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
 </style>

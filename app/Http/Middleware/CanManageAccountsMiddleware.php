@@ -15,9 +15,9 @@ class CanManageAccountsMiddleware
 
         $role = auth()->user()->role;
 
-        // Route admins (kelola admin) hanya untuk admin master
-        if ($request->routeIs('admin.admins.*') && $role !== 'admin') {
-            return redirect()->back()->with('access_error', 'Hanya Admin Master yang dapat mengelola akun admin.');
+        // Route admins (kelola akun gabungan) untuk admin master dan HR
+        if ($request->routeIs('admin.admins.*') && ! in_array($role, ['admin', 'hr'])) {
+            return redirect()->back()->with('access_error', 'Hanya Admin Master dan HR yang dapat mengelola akun.');
         }
 
         // Route users (kelola akun) untuk admin master dan HR

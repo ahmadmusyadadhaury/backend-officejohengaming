@@ -34,16 +34,6 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
-        // Auto-sync tickets.css (modul IT ticketing) ke public/css
-        $tkSrc = resource_path('css/tickets.css');
-        $tkDest = public_path('css/tickets.css');
-        if (file_exists($tkSrc)) {
-            if (! file_exists($tkDest) || md5_file($tkSrc) !== md5_file($tkDest)) {
-                @mkdir(public_path('css'), 0755, true);
-                @copy($tkSrc, $tkDest);
-            }
-        }
-
         // Auto-sync Tailwind CSS dari Vite build output ke public/css/tailwind.css
         $twDest = public_path('css/tailwind.css');
         $buildDir = public_path('build/assets');

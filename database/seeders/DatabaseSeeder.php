@@ -69,8 +69,5 @@ class DatabaseSeeder extends Seeder
 
         $this->call(WeeklyMeetingSeeder::class);
         $this->call(TeamCompositionSeeder::class);
-        $this->call(TicketCategorySeeder::class);
-        $this->call(TicketSlaSeeder::class);
-        $this->call(TicketTeamMemberSeeder::class);
     }
 }

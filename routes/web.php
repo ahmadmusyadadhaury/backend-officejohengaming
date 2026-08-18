@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\DigitalAssetController;
 use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\ItTicketController;
 use App\Http\Controllers\Admin\MeetingController as AdminMeetingController;
 use App\Http\Controllers\Admin\MomController as AdminMomController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -41,13 +42,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicAssetController;
 use App\Http\Controllers\PushController;
 use App\Http\Controllers\RealtimeController;
-use App\Http\Controllers\Ticket\CategoryController as TicketCategoryController;
-use App\Http\Controllers\Ticket\DashboardController as TicketDashboard;
-use App\Http\Controllers\Ticket\NotificationController as TicketNotificationController;
-use App\Http\Controllers\Ticket\ReportController as TicketReportController;
-use App\Http\Controllers\Ticket\SlaController as TicketSlaController;
-use App\Http\Controllers\Ticket\TicketController;
-use App\Http\Controllers\Ticket\TicketTeamController;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\WeeklySessionController;
 use App\Models\User;
@@ -255,6 +249,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/weekly-session/{session}/extend', [WeeklySessionController::class, 'extend'])->name('weekly.extend');
     Route::post('/weekly-session/{session}/complete', [WeeklySessionController::class, 'complete'])->name('weekly.complete');
 
+    // Ticketing IT — semua role bisa akses, controller handle permission
+    Route::get('it/tickets', [ItTicketController::class, 'index'])->name('it-tickets.index');
+    Route::post('it/tickets', [ItTicketController::class, 'store'])->name('it-tickets.store');
+    Route::patch('it/tickets/{ticket}', [ItTicketController::class, 'update'])->name('it-tickets.update');
+    Route::delete('it/tickets/{ticket}', [ItTicketController::class, 'destroy'])->name('it-tickets.destroy');
+    Route::post('it/tickets/{ticket}/feedback', [ItTicketController::class, 'feedback'])->name('it-tickets.feedback');
+
     // Override Routes
     Route::get('/override/create', [OverrideRequestController::class, 'create'])->name('override.create');
     Route::post('/override', [OverrideRequestController::class, 'store'])->name('override.store');
@@ -264,57 +265,4 @@ Route::middleware('auth')->group(function () {
 
     // MOM Export
     Route::get('/mom/{mom}/export', [MomExportController::class, 'export'])->name('mom.export');
-});
-
-// ============================================================
-// IT Ticketing System (Helpdesk)
-// ============================================================
-
-// Semua user login
-Route::middleware('auth')->prefix('tickets')->name('ticket.')->group(function () {
-    Route::get('/', [TicketDashboard::class, 'index'])->name('dashboard');
-    Route::get('my', [TicketController::class, 'my'])->name('my');
-    Route::get('create', [TicketController::class, 'create'])->name('create');
-    Route::post('/', [TicketController::class, 'store'])->name('store');
-    Route::get('notifications', [TicketNotificationController::class, 'index'])->name('notifications.index');
-    Route::post('notifications/read', [TicketNotificationController::class, 'read'])->name('notifications.read');
-    Route::delete('notifications', [TicketNotificationController::class, 'destroy'])->name('notifications.destroy');
-    Route::get('notifications/unread-count', [TicketNotificationController::class, 'unreadCount'])->name('notifications.unread-count');
-
-    Route::post('{ticket}/comment', [TicketController::class, 'comment'])->name('comment');
-    Route::post('{ticket}/rate', [TicketController::class, 'rate'])->name('rate');
-    Route::post('{ticket}/close', [TicketController::class, 'close'])->name('close');
-    Route::post('{ticket}/reopen', [TicketController::class, 'reopen'])->name('reopen');
-});
-
-// Tim IT — mengelola semua ticket
-Route::middleware(['auth', 'ticket.team'])->prefix('tickets')->name('ticket.')->group(function () {
-    Route::get('manage', [TicketController::class, 'index'])->name('index');
-    Route::post('{ticket}/take', [TicketController::class, 'take'])->name('take');
-    Route::patch('{ticket}/status', [TicketController::class, 'updateStatus'])->name('status');
-    Route::post('{ticket}/resolve', [TicketController::class, 'resolve'])->name('resolve');
-    Route::delete('{ticket}/attachments/{attachment}', [TicketController::class, 'destroyAttachment'])->name('attachment.destroy');
-    Route::get('reports/export', [TicketReportController::class, 'export'])->name('reports.export');
-    Route::get('reports/print', [TicketReportController::class, 'print'])->name('reports.print');
-    Route::get('reports', [TicketReportController::class, 'index'])->name('reports');
-});
-
-// Leader IT — konfigurasi kategori, SLA, tim
-Route::middleware(['auth', 'ticket.leader'])->prefix('tickets')->name('ticket.')->group(function () {
-    Route::post('{ticket}/assign', [TicketController::class, 'assign'])->name('assign');
-    Route::get('categories', [TicketCategoryController::class, 'index'])->name('categories.index');
-    Route::post('categories', [TicketCategoryController::class, 'store'])->name('categories.store');
-    Route::put('categories/{category}', [TicketCategoryController::class, 'update'])->name('categories.update');
-    Route::delete('categories/{category}', [TicketCategoryController::class, 'destroy'])->name('categories.destroy');
-    Route::get('sla', [TicketSlaController::class, 'index'])->name('sla.index');
-    Route::put('sla', [TicketSlaController::class, 'update'])->name('sla.update');
-    Route::get('team', [TicketTeamController::class, 'index'])->name('team.index');
-    Route::post('team', [TicketTeamController::class, 'store'])->name('team.store');
-    Route::put('team/{member}', [TicketTeamController::class, 'update'])->name('team.update');
-    Route::delete('team/{member}', [TicketTeamController::class, 'destroy'])->name('team.destroy');
-});
-
-// Route wildcard terakhir agar tidak menutupi route statis (manage, reports, dll)
-Route::middleware('auth')->prefix('tickets')->name('ticket.')->group(function () {
-    Route::get('{ticket}', [TicketController::class, 'show'])->name('show');
 });

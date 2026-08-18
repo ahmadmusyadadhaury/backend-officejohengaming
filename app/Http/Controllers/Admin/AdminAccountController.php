@@ -33,6 +33,30 @@ class AdminAccountController extends Controller
 
         $admins = $adminQuery->orderBy('name')->paginate(15)->withQueryString();
 
+        // Fetch koordinator accounts
+        $koordinatorQuery = User::with('team')->where('role', 'koordinator');
+
+        if ($search = $request->input('search')) {
+            $koordinatorQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('nik', 'like', "%{$search}%")
+                    ->orWhereHas('team', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $koordinatorQuery->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $koordinatorQuery->where('is_active', false);
+            }
+        }
+
+        $koordinators = $koordinatorQuery->orderBy('name')->paginate(15, ['*'], 'koordinator_page')->withQueryString();
+
         // Fetch karyawan accounts (user role) with team
         $karyawanQuery = User::with('team')->where('role', 'user');
 
@@ -58,7 +82,7 @@ class AdminAccountController extends Controller
         $karyawans = $karyawanQuery->orderBy('name')->paginate(15, ['*'], 'karyawan_page')->withQueryString();
         $teams = Team::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.admins.index', compact('admins', 'karyawans', 'teams'));
+        return view('admin.admins.index', compact('admins', 'koordinators', 'karyawans', 'teams'));
     }
 
     public function create()
@@ -73,7 +97,7 @@ class AdminAccountController extends Controller
             'username' => 'required|string|unique:users,username',
             'nik' => 'nullable|string|max:50|unique:users,nik',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga',
+            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga,koordinator_it,staff_it',
         ]);
 
         if ($request->role === 'ceo' && User::where('role', 'ceo')->exists()) {
@@ -103,7 +127,7 @@ class AdminAccountController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,'.$admin->id,
             'nik' => 'nullable|string|max:50|unique:users,nik,'.$admin->id,
-            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga',
+            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga,koordinator_it,staff_it',
         ]);
 
         if ($request->role === 'ceo' && $admin->role !== 'ceo' && User::where('role', 'ceo')->exists()) {

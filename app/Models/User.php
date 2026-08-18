@@ -37,6 +37,12 @@ class User extends Authenticatable
     // Roles yang punya akses penuh (setara admin)
     const FULL_ACCESS_ROLES = ['admin', 'head_of_store', 'gm', 'hr', 'ceo'];
 
+    const ROLE_KOORDINATOR_IT = 'koordinator_it';
+
+    const ROLE_STAFF_IT = 'staff_it';
+
+    const IT_ROLES = [self::ROLE_KOORDINATOR_IT, self::ROLE_STAFF_IT];
+
     public function team()
     {
         return $this->belongsTo(Team::class);
@@ -78,6 +84,31 @@ class User extends Authenticatable
         return $this->role === 'user';
     }
 
+    public function isKoordinatorIt(): bool
+    {
+        return $this->role === self::ROLE_KOORDINATOR_IT;
+    }
+
+    public function isStaffIt(): bool
+    {
+        return $this->role === self::ROLE_STAFF_IT;
+    }
+
+    public function isItStaff(): bool
+    {
+        return in_array($this->role, self::IT_ROLES);
+    }
+
+    public function canManageTickets(): bool
+    {
+        return $this->hasFullAccess() || $this->isItStaff();
+    }
+
+    public function canGiveFeedback(): bool
+    {
+        return $this->role === 'head_of_store' || $this->hasFullAccess();
+    }
+
     public function hasFullAccess(): bool
     {
         return in_array($this->role, self::FULL_ACCESS_ROLES);
@@ -92,73 +123,11 @@ class User extends Authenticatable
             'ceo' => 'Chief Executive Officer',
             'hr' => 'HR',
             'koordinator' => 'Koordinator',
+            'koordinator_it' => 'Koordinator IT',
+            'staff_it' => 'Staff IT',
             'admin_ga' => 'Admin General Affairs',
             'user' => 'Karyawan',
             default => ucfirst($this->role),
         };
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | IT Ticketing System — relasi & helper (additive)
-    |--------------------------------------------------------------------------
-    */
-
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class, 'user_id');
-    }
-
-    public function assignedTickets()
-    {
-        return $this->hasMany(Ticket::class, 'assigned_to');
-    }
-
-    public function ticketComments()
-    {
-        return $this->hasMany(TicketComment::class);
-    }
-
-    public function ticketRatings()
-    {
-        return $this->hasMany(TicketRating::class);
-    }
-
-    public function ticketTeamMember()
-    {
-        return $this->hasOne(TicketTeamMember::class);
-    }
-
-    public function ticketNotifications()
-    {
-        return $this->hasMany(TicketNotification::class);
-    }
-
-    /**
-     * Apakah user merupakan anggota tim IT (bisa mengelola ticket).
-     * Super admin (role admin) selalu dianggap anggota.
-     */
-    public function isTicketTeam(): bool
-    {
-        if ($this->role === 'admin') {
-            return true;
-        }
-
-        return $this->ticketTeamMember()->exists();
-    }
-
-    /**
-     * Apakah user merupakan leader tim IT (bisa assign, laporan, SLA).
-     * Super admin (role admin) selalu dianggap leader.
-     */
-    public function isTicketLeader(): bool
-    {
-        if ($this->role === 'admin') {
-            return true;
-        }
-
-        $member = $this->ticketTeamMember()->first();
-
-        return $member !== null && $member->is_leader;
     }
 }

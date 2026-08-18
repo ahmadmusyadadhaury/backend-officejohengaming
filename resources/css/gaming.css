@@ -1755,13 +1755,13 @@ body.light .badge-orange {
 }
 .page-leader .btn-primary,
 .page-admin .btn-primary {
-    background: #3b82f6;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+    background: var(--sidebar-active-bg);
+    background: linear-gradient(135deg, var(--sidebar-active-bg), var(--color-accent));
+    box-shadow: 0 2px 8px rgba(109,94,249,0.25);
 }
 .page-leader .btn-primary:hover,
 .page-admin .btn-primary:hover {
-    box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+    box-shadow: 0 4px 14px rgba(109,94,249,0.35);
     transform: translateY(-1px);
 }
 .page-leader .btn-success,

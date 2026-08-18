@@ -3,6 +3,7 @@
     $isAssetActive = request()->routeIs('admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*', 'admin.sosial-media.*', 'admin.aset-mes.*', 'admin.aset-tim.*');
     $isPaymentActive = request()->routeIs('admin.pembayaran.*', 'admin.payment-approvals.*', 'payment-approval.*');
     $isAdminActive = request()->routeIs('admin.users.*', 'admin.admins.*', 'admin.assets.*', 'admin.teams.*', 'admin.rooms.*', 'admin.team-compositions.*');
+    $isItActive = request()->routeIs('admin.it-tickets.*', 'it-tickets.*');
 
     $isFullAccess = in_array(auth()->user()->role, \App\Models\User::FULL_ACCESS_ROLES);
 
@@ -157,16 +158,9 @@
     </button>
 </div>
 <div class="sidebar-submenu {{ $isAdminActive ? '' : 'hidden' }}">
-    <a href="{{ route('admin.users.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"><span class="truncate">Kelola Akun</span></a>
-    @if(auth()->user()->role === 'admin')
-    <a href="{{ route('admin.admins.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}"><span class="truncate">Kelola Admin</span></a>
-    @endif
-    <a href="{{ route('admin.assets.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.assets.*') ? 'active' : '' }}"><span class="truncate">Kelola Aset Meeting</span></a>
-    <a href="{{ route('admin.teams.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.teams.*') ? 'active' : '' }}"><span class="truncate">Kelola Tim</span></a>
-    @if(in_array(auth()->user()->role, ['admin', 'hr']))
-    <a href="{{ route('admin.team-compositions.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.team-compositions.*') ? 'active' : '' }}"><span class="truncate">Komposisi Tim</span></a>
-    @endif
-    <a href="{{ route('admin.rooms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}"><span class="truncate">Kelola Ruangan</span></a>
+    <a href="{{ route('admin.admins.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.admins.*', 'admin.users.*') ? 'active' : '' }}"><span class="truncate">Kelola Akun</span></a>
+    <a href="{{ route('admin.teams.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.teams.*', 'admin.team-compositions.*') ? 'active' : '' }}"><span class="truncate">Kelola Tim</span></a>
+    <a href="{{ route('admin.rooms.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.rooms.*', 'admin.assets.*') ? 'active' : '' }}"><span class="truncate">Kelola Ruangan</span></a>
     <a href="{{ route('admin.settings.email') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.settings.email') ? 'active' : '' }}"><span class="truncate">Pengaturan Email</span></a>
 </div>
 
@@ -181,7 +175,15 @@
 
 @endif
 
-@include('partials.sidebar-bantuan-it')
+<p class="sidebar-section-label">Layanan</p>
+
+<a href="{{ route('it-tickets.index') }}"
+    class="sidebar-item {{ $isItActive ? 'active' : '' }}">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+    </svg>
+    <span class="truncate">Ticketing IT</span>
+</a>
 
 <p class="sidebar-section-label">Akun</p>
 <a href="{{ route('profile.edit') }}"

@@ -8,27 +8,9 @@ use Illuminate\Http\Request;
 
 class AssetController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $query = Asset::query();
-
-        // Search by name
-        if ($search = $request->input('search')) {
-            $query->where('name', 'like', "%{$search}%");
-        }
-
-        // Filter by status
-        if ($status = $request->input('status')) {
-            if ($status === 'active') {
-                $query->where('is_active', true);
-            } elseif ($status === 'inactive') {
-                $query->where('is_active', false);
-            }
-        }
-
-        $assets = $query->orderBy('name')->paginate(15)->withQueryString();
-
-        return view('admin.assets.index', compact('assets'));
+        return redirect()->route('admin.rooms.index');
     }
 
     public function create()

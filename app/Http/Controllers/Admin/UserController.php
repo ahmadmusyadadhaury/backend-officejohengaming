@@ -17,57 +17,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        // Koordinator + admin_ga
-        $query = User::with('team')
-            ->whereIn('role', ['koordinator', 'admin_ga']);
-
-        if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('nik', 'like', "%{$search}%")
-                    ->orWhereHas('team', function ($q2) use ($search) {
-                        $q2->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        if ($status = $request->input('status')) {
-            if ($status === 'active') {
-                $query->where('is_active', true);
-            } elseif ($status === 'inactive') {
-                $query->where('is_active', false);
-            }
-        }
-
-        $users = $query->orderBy('name')->paginate(10)->withQueryString();
-
-        // Karyawan (role user)
-        $karyawanQuery = User::with('team')->where('role', 'user');
-
-        if ($search = $request->input('search')) {
-            $karyawanQuery->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('nik', 'like', "%{$search}%")
-                    ->orWhereHas('team', function ($q2) use ($search) {
-                        $q2->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        if ($status = $request->input('status')) {
-            if ($status === 'active') {
-                $karyawanQuery->where('is_active', true);
-            } elseif ($status === 'inactive') {
-                $karyawanQuery->where('is_active', false);
-            }
-        }
-
-        $karyawans = $karyawanQuery->orderBy('name')->paginate(10, ['*'], 'karyawan_page')->withQueryString();
-        $teams = Team::where('is_active', true)->orderBy('name')->get();
-
-        return view('admin.users.index', compact('users', 'karyawans', 'teams'));
+        return redirect()->route('admin.admins.index');
     }
 
     public function create()

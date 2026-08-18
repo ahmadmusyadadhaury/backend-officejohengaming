@@ -10,9 +10,7 @@ class TeamCompositionController extends Controller
 {
     public function index()
     {
-        $compositions = TeamComposition::orderBy('sort_order')->get();
-
-        return view('admin.team-compositions.index', compact('compositions'));
+        return redirect()->route('admin.teams.index');
     }
 
     public function update(Request $request)

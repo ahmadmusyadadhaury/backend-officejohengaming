@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Asset;
 use App\Models\Room;
 use App\Models\Team;
 use Illuminate\Http\Request;
@@ -30,7 +31,20 @@ class RoomController extends Controller
         $rooms = $query->orderBy('name')->paginate(15)->withQueryString();
         $teams = Team::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.rooms.index', compact('rooms', 'teams'));
+        $assetQuery = Asset::query();
+        if ($assetSearch = $request->input('asset_search')) {
+            $assetQuery->where('name', 'like', "%{$assetSearch}%");
+        }
+        if ($assetStatus = $request->input('asset_status')) {
+            if ($assetStatus === 'active') {
+                $assetQuery->where('is_active', true);
+            } elseif ($assetStatus === 'inactive') {
+                $assetQuery->where('is_active', false);
+            }
+        }
+        $assets = $assetQuery->orderBy('name')->paginate(15)->withQueryString();
+
+        return view('admin.rooms.index', compact('rooms', 'teams', 'assets'));
     }
 
     public function create()
