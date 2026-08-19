@@ -31,7 +31,7 @@ class AdminAccountController extends Controller
             }
         }
 
-        $admins = $adminQuery->orderBy('name')->paginate(15)->withQueryString();
+        $admins = $adminQuery->orderBy('name')->paginate(10)->withQueryString();
 
         // Fetch koordinator accounts
         $koordinatorQuery = User::with('team')->where('role', 'koordinator');

@@ -108,6 +108,11 @@
                     @endforelse
                 </tbody>
             </table>
+            @if(method_exists($assets, 'links') && $assets->hasPages())
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $assets->links() }}
+            </div>
+            @endif
         </div>
     </div>
 </div>

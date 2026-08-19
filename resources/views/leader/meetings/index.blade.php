@@ -175,6 +175,11 @@
                     @endforelse
                 </tbody>
             </table>
+            @if(method_exists($meetings, 'links') && $meetings->hasPages())
+            <div class="px-4 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $meetings->links() }}
+            </div>
+            @endif
         </div>
         <div class="px-6 py-3 flex items-center justify-end" style="border-top:1px solid var(--border-color);">
             <span id="rt-update" style="font-size:0.7rem;color:var(--text-muted);"></span>

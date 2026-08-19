@@ -30,7 +30,7 @@ class MomController extends Controller
             $query->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()]);
         }
 
-        $moms = $query->paginate(20);
+        $moms = $query->paginate(10);
 
         $momsJson = $moms->map(function ($mom) {
             return [

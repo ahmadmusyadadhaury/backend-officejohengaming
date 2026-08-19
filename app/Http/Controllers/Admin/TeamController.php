@@ -26,7 +26,7 @@ class TeamController extends Controller
             }
         }
 
-        $teams = $query->orderBy('name')->paginate(15)->withQueryString();
+        $teams = $query->orderBy('name')->paginate(10)->withQueryString();
 
         $allTeams = Team::where('is_active', true)->orderBy('name')->pluck('name', 'id');
 
@@ -43,14 +43,16 @@ class TeamController extends Controller
             'initial' => strtoupper(substr($u->name, 0, 1)),
         ])->values();
 
-        $compositions = TeamComposition::orderBy('sort_order')->get();
+        $allCompositions = TeamComposition::orderBy('sort_order')->get();
+        $compositions = TeamComposition::orderBy('sort_order')->paginate(10)->withQueryString();
 
-        return view('admin.teams.index', compact('teams', 'allTeams', 'availableUsers', 'availableUsersJson', 'compositions'));
+        return view('admin.teams.index', compact('teams', 'allTeams', 'availableUsers', 'availableUsersJson', 'allCompositions', 'compositions'));
     }
 
     public function show(Team $team)
     {
-        $team->load(['members', 'leader']);
+        $team->load('leader');
+        $members = $team->members()->orderBy('name')->paginate(10)->withQueryString();
         $memberIds = $team->members->pluck('id')->toArray();
 
         $availableUsers = User::whereNull('team_id')
@@ -68,7 +70,7 @@ class TeamController extends Controller
                     'is_active' => $team->is_active,
                     'leader' => $team->leader ? ['id' => $team->leader->id, 'name' => $team->leader->name] : null,
                 ],
-                'members' => $team->members->map(fn($m) => [
+                'members' => $members->getCollection()->map(fn($m) => [
                     'id' => $m->id,
                     'name' => $m->name,
                     'username' => $m->username,
@@ -91,7 +93,7 @@ class TeamController extends Controller
             ]);
         }
 
-        return view('admin.teams.show', compact('team', 'availableUsers'));
+        return view('admin.teams.show', compact('team', 'members', 'availableUsers'));
     }
 
     public function create()

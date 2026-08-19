@@ -15,16 +15,18 @@ class PeralatanKantorController extends Controller
     public function index(Request $request)
     {
         $showAll = $request->boolean('show_all');
-        $items = PeralatanKantor::orderBy('created_at', 'desc')->get();
+        $allItems = PeralatanKantor::orderBy('created_at', 'desc')->get();
 
         $stats = [
-            'total' => $items->count(),
-            'kondisi_baik' => $items->where('kondisi', 'baik')->count(),
-            'perlu_servis' => $items->where('kondisi', 'perlu_servis')->count(),
-            'rusak' => $items->where('kondisi', 'rusak')->count(),
+            'total' => $allItems->count(),
+            'kondisi_baik' => $allItems->where('kondisi', 'baik')->count(),
+            'perlu_servis' => $allItems->where('kondisi', 'perlu_servis')->count(),
+            'rusak' => $allItems->where('kondisi', 'rusak')->count(),
         ];
 
-        $itemsJson = $items->values()->map(function ($i) {
+        $items = PeralatanKantor::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        $itemsJson = $items->getCollection()->values()->map(function ($i) {
             $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
             $penyusutanPerHari = $i->nilai / $masaBarang;
             $waktuPakai = max((int) $i->waktu_pakai_per_hari, 1);

@@ -10,15 +10,17 @@ class SosialMediaController extends Controller
 {
     public function index()
     {
-        $items = SosialMedia::orderBy('created_at', 'desc')->get();
+        $allItems = SosialMedia::orderBy('created_at', 'desc')->get();
 
         $stats = [
-            'total' => $items->count(),
-            'aktif' => $items->where('status', 'aktif')->count(),
-            'nonaktif' => $items->where('status', 'nonaktif')->count(),
+            'total' => $allItems->count(),
+            'aktif' => $allItems->where('status', 'aktif')->count(),
+            'nonaktif' => $allItems->where('status', 'nonaktif')->count(),
         ];
 
-        $itemsJson = $items->values()->map(function ($i) {
+        $items = SosialMedia::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        $itemsJson = $items->getCollection()->values()->map(function ($i) {
             return [
                 'id' => $i->id,
                 'username' => $i->username,

@@ -78,7 +78,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($team->members as $member)
+                    @forelse($members as $member)
                     <tr>
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">
@@ -124,6 +124,11 @@
                     @endforelse
                 </tbody>
             </table>
+            @if(method_exists($members, 'links') && $members->hasPages())
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $members->links() }}
+            </div>
+            @endif
         </div>
     </div>
 </div>

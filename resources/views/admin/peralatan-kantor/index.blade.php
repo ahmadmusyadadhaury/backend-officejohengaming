@@ -235,18 +235,20 @@
                     @endforelse
                 </tbody>
             </table>
+            @if(method_exists($items, 'links') && $items->hasPages())
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $items->links() }}
+            </div>
+            @endif
         </div>
         @if(!$showAll)
-        <div id="pagination-info" class="px-5 py-2.5 flex items-center justify-between" style="border-top:1px solid var(--border-color);">
-            <span id="pagination-text" style="font-size:0.75rem;color:var(--text-muted);"></span>
-            <div class="flex items-center gap-2">
-                <div id="pagination-controls" class="flex items-center gap-1"></div>
-                <a href="{{ route('admin.peralatan-kantor.index') }}?show_all=1" style="margin-left:8px;font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
-            </div>
+        <div class="px-5 py-2.5 flex items-center justify-between" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);">Menampilkan {{ $items->firstItem() }}-{{ $items->lastItem() }} dari {{ $items->total() }} item</span>
+            <a href="{{ route('admin.peralatan-kantor.index') }}?show_all=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
         </div>
         @else
         <div class="px-5 py-2.5 flex items-center justify-between" style="border-top:1px solid var(--border-color);">
-            <span style="font-size:0.75rem;color:var(--text-muted);">Menampilkan semua {{ $items->count() }} item</span>
+            <span style="font-size:0.75rem;color:var(--text-muted);">Menampilkan semua {{ $items->total() }} item</span>
             <a href="{{ route('admin.peralatan-kantor.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;">&larr; Kembali ke Ringkasan</a>
         </div>
         @endif

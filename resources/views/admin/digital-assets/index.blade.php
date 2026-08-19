@@ -264,9 +264,25 @@
                     @endforelse
                 </tbody>
             </table>
+            @if(method_exists($assets, 'links') && $assets->hasPages())
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $assets->links() }}
+            </div>
+            @endif
         </div>
     </div>
 
+</div>
+
+{{-- Popup Alert Aset Digital --}}
+<div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
+    <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:460px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);"></div>
+            <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
+        </div>
+        <div id="alert-popup-body"></div>
+    </div>
 </div>
 
 {{-- Detail Modal --}}
@@ -355,16 +371,6 @@
         </form>
     </div>
 </div>
-{{-- Popup Alert Aset Digital --}}
-<div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
-    <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:460px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);"></div>
-            <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
-        </div>
-        <div id="alert-popup-body"></div>
-    </div>
-</div>
 
 @endsection
 
@@ -427,82 +433,62 @@
 
 @push('scripts')
 <script>
-console.log('[DigitalAssets] Script loaded');
 var alertData = @json($alertJson);
-console.log('[DigitalAssets] alertData:', alertData);
 
 function showAlertPopup(type) {
-    try {
-        console.log('[DigitalAssets] showAlertPopup called with type:', type);
-        var overlay = document.getElementById('alert-overlay');
-        var title = document.getElementById('alert-popup-title');
-        var body = document.getElementById('alert-popup-body');
-        console.log('[DigitalAssets] DOM elements:', { overlay: !!overlay, title: !!title, body: !!body });
+    var overlay = document.getElementById('alert-overlay');
+    var title = document.getElementById('alert-popup-title');
+    var body = document.getElementById('alert-popup-body');
 
-        if (!overlay || !title || !body) {
-            console.error('[DigitalAssets] Missing DOM elements');
-            return;
-        }
+    if (!overlay || !title || !body) return;
 
-        var color, items, titleText;
+    var color, items, titleText;
 
-        if (type === 'jatuh_tempo') {
-            color = '#f97316';
-            items = alertData.filter(function(a) { return a.status_aset === 'jatuh_tempo'; });
-            titleText = 'Aset Digital Jatuh Tempo';
-        } else if (type === 'segera_habis') {
-            color = '#f59e0b';
-            items = alertData.filter(function(a) { return a.status_aset === 'segera_habis'; });
-            titleText = 'Aset Digital Segera Habis';
-        } else {
-            color = '#ef4444';
-            items = alertData.filter(function(a) { return a.status_aset === 'mati'; });
-            titleText = 'Aset Digital Tidak Aktif';
-        }
-
-        console.log('[DigitalAssets] items found:', items.length);
-
-        title.textContent = titleText;
-
-        if (items.length === 0) {
-            body.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada aset digital.</p>';
-        } else {
-            var paymentUrl = '{{ url("payment-approval/tagihan") }}';
-            body.innerHTML = items.map(function(a) {
-                var daysLabel = '';
-                if (a.status_aset === 'mati') {
-                    daysLabel = '<span style="color:#ef4444;font-weight:600;">Sudah expired</span>';
-                } else if (a.status_aset === 'jatuh_tempo') {
-                    daysLabel = 'Berakhir <span style="color:#f97316;font-weight:600;">' + (a.berakhir || '') + '</span> — ' + (a.hari_aset || '');
-                } else {
-                    daysLabel = 'Berakhir <span style="color:#f59e0b;font-weight:600;">' + (a.berakhir || '') + '</span> — ' + (a.hari_aset || '');
-                }
-                return '<div class="flex items-center gap-3 px-4 py-3.5 rounded-xl" style="border:1px solid var(--border-color);margin-bottom:8px;transition:all 0.15s;background:var(--bg-surface-2);" onmouseover="this.style.borderColor=\'' + color + '\'" onmouseout="this.style.borderColor=\'var(--border-color)\'">' +
-                    '<div class="flex-1 min-w-0">' +
-                        '<p style="font-weight:600;font-size:14px;color:var(--text-primary);margin:0;">' + a.nama_aset + '</p>' +
-                        '<p style="font-size:11px;color:var(--text-secondary);margin:4px 0 0;">' + daysLabel + '</p>' +
-                    '</div>' +
-                    '<a href="' + paymentUrl + '?filter=aset_digital" style="flex-shrink:0;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:' + color + ';color:#fff;text-decoration:none;display:inline-block;white-space:nowrap;" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Ajukan Pembayaran</a>' +
-                '</div>';
-            }).join('');
-        }
-
-        overlay.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        console.log('[DigitalAssets] Popup shown');
-    } catch(e) {
-        console.error('[DigitalAssets] showAlertPopup error:', e);
+    if (type === 'jatuh_tempo') {
+        color = '#f97316';
+        items = alertData.filter(function(a) { return a.status_aset === 'jatuh_tempo'; });
+        titleText = 'Aset Digital Jatuh Tempo';
+    } else if (type === 'segera_habis') {
+        color = '#f59e0b';
+        items = alertData.filter(function(a) { return a.status_aset === 'segera_habis'; });
+        titleText = 'Aset Digital Segera Habis';
+    } else {
+        color = '#ef4444';
+        items = alertData.filter(function(a) { return a.status_aset === 'mati'; });
+        titleText = 'Aset Digital Tidak Aktif';
     }
+
+    title.textContent = titleText;
+
+    if (items.length === 0) {
+        body.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada aset digital.</p>';
+    } else {
+        var paymentUrl = '{{ url("payment-approval/tagihan") }}';
+        body.innerHTML = items.map(function(a) {
+            var daysLabel = '';
+            if (a.status_aset === 'mati') {
+                daysLabel = '<span style="color:#ef4444;font-weight:600;">Sudah expired</span>';
+            } else if (a.status_aset === 'jatuh_tempo') {
+                daysLabel = 'Berakhir <span style="color:#f97316;font-weight:600;">' + (a.berakhir || '') + '</span> — ' + (a.hari_aset || '');
+            } else {
+                daysLabel = 'Berakhir <span style="color:#f59e0b;font-weight:600;">' + (a.berakhir || '') + '</span> — ' + (a.hari_aset || '');
+            }
+            return '<div class="flex items-center gap-3 px-4 py-3.5 rounded-xl" style="border:1px solid var(--border-color);margin-bottom:8px;transition:all 0.15s;background:var(--bg-surface-2);" onmouseover="this.style.borderColor=\'' + color + '\'" onmouseout="this.style.borderColor=\'var(--border-color)\'">' +
+                '<div class="flex-1 min-w-0">' +
+                    '<p style="font-weight:600;font-size:14px;color:var(--text-primary);margin:0;">' + a.nama_aset + '</p>' +
+                    '<p style="font-size:11px;color:var(--text-secondary);margin:4px 0 0;">' + daysLabel + '</p>' +
+                '</div>' +
+                '<a href="' + paymentUrl + '?filter=aset_digital" style="flex-shrink:0;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:' + color + ';color:#fff;text-decoration:none;display:inline-block;white-space:nowrap;" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Ajukan Pembayaran</a>' +
+            '</div>';
+        }).join('');
+    }
+
+    overlay.style.display = 'flex';
 }
 
 function closeAlertPopup() {
-    try {
-        var overlay = document.getElementById('alert-overlay');
-        if (overlay) overlay.style.display = 'none';
-        document.body.style.overflow = '';
-    } catch(e) {
-        console.error('[DigitalAssets] closeAlertPopup error:', e);
-    }
+    var overlay = document.getElementById('alert-overlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 const digitalData = @json($assetsJson);

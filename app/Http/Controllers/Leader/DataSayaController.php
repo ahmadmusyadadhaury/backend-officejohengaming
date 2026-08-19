@@ -12,7 +12,7 @@ class DataSayaController extends Controller
     {
         $assets = AsetSaya::where('penanggung_jawab', auth()->id())
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10)->withQueryString();
 
         return view('leader.data-saya.index', compact('assets'));
     }

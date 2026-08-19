@@ -29,7 +29,7 @@ class RecordingController extends Controller
             });
         }
 
-        $recordings = $query->paginate(20);
+        $recordings = $query->paginate(10);
 
         $recordingsJson = $recordings->map(function ($rec) {
             return [

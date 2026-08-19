@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentApprovalController extends Controller
@@ -198,7 +199,17 @@ class PaymentApprovalController extends Controller
 
         $requests = $all->unique(fn ($i) => $i['jenis'].'_'.$i['id'])->sortByDesc('created_at')->values();
 
-        return view('payment-approval.status', compact('requests'));
+        $page = request()->get('page', 1);
+        $perPage = 10;
+        $paged = new LengthAwarePaginator(
+            $requests->forPage($page, $perPage),
+            $requests->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('payment-approval.status', ['requests' => $paged]);
     }
 
     public function tagihan()
@@ -314,7 +325,17 @@ class PaymentApprovalController extends Controller
             ->sort()
             ->values();
 
-        return view('payment-approval.tagihan', compact('tagihan', 'jabatanList'));
+        $page = request()->get('page', 1);
+        $perPage = 10;
+        $paged = new LengthAwarePaginator(
+            $tagihan->forPage($page, $perPage),
+            $tagihan->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('payment-approval.tagihan', ['tagihan' => $paged, 'jabatanList' => $jabatanList]);
     }
 
     public function bayar($id, Request $request)
@@ -426,7 +447,17 @@ class PaymentApprovalController extends Controller
         $requests = $all->sortByDesc('created_at')->values();
         $isApprover = in_array(auth()->user()->role, self::APPROVER_ROLES);
 
-        return view('admin.payment-approvals.index', compact('requests', 'isApprover'));
+        $page = request()->get('page', 1);
+        $perPage = 10;
+        $paged = new LengthAwarePaginator(
+            $requests->forPage($page, $perPage),
+            $requests->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('admin.payment-approvals.index', ['requests' => $paged, 'isApprover' => $isApprover]);
     }
 
     public function approve($id, Request $request)

@@ -92,6 +92,11 @@
                     @endforeach
                 </tbody>
             </table>
+            @if(method_exists($tagihan, 'links') && $tagihan->hasPages())
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $tagihan->links() }}
+            </div>
+            @endif
         </div>
     </div>
     @endif

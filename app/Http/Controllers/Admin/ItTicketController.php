@@ -20,9 +20,9 @@ class ItTicketController extends Controller
         $canViewAll = $user->canGiveFeedback() || $canManage;
 
         if ($canViewAll) {
-            $tickets = ItTicket::with(['requester', 'assignee'])->latest()->get();
+            $allTickets = ItTicket::with(['requester', 'assignee'])->latest()->get();
         } else {
-            $tickets = ItTicket::with('assignee')->where('requester_id', $user->id)->latest()->get();
+            $allTickets = ItTicket::with('assignee')->where('requester_id', $user->id)->latest()->get();
         }
 
         $itUsers = $canManage
@@ -32,11 +32,17 @@ class ItTicketController extends Controller
         $canDelete = $user->hasFullAccess() || $user->isKoordinatorIt();
 
         $stats = [
-            'total' => $tickets->count(),
-            'diproses' => $tickets->where('status', 'diproses')->count(),
-            'dijeda' => $tickets->where('status', 'dijeda')->count(),
-            'selesai' => $tickets->where('status', 'selesai')->count(),
+            'total' => $allTickets->count(),
+            'diproses' => $allTickets->where('status', 'diproses')->count(),
+            'dijeda' => $allTickets->where('status', 'dijeda')->count(),
+            'selesai' => $allTickets->where('status', 'selesai')->count(),
         ];
+
+        if ($canViewAll) {
+            $tickets = ItTicket::with(['requester', 'assignee'])->latest()->paginate(10)->withQueryString();
+        } else {
+            $tickets = ItTicket::with('assignee')->where('requester_id', $user->id)->latest()->paginate(10)->withQueryString();
+        }
 
         return view('admin.it-tickets.index', compact('tickets', 'itUsers', 'canManage', 'canDelete', 'canViewAll', 'stats'));
     }

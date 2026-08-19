@@ -10,15 +10,25 @@ class AsetRukoController extends Controller
 {
     public function index()
     {
-        $items = AsetRuko::orderBy('created_at', 'desc')->get();
+        $allItems = AsetRuko::orderBy('created_at', 'desc')->get();
 
         $stats = [
-            'total' => $items->count(),
-            'kondisi_baik' => $items->where('kondisi', 'baik')->count(),
-            'perlu_servis' => $items->where('kondisi', 'perlu_servis')->count(),
+            'total' => $allItems->count(),
+            'kondisi_baik' => $allItems->where('kondisi', 'baik')->count(),
+            'perlu_servis' => $allItems->where('kondisi', 'perlu_servis')->count(),
         ];
 
-        $itemsJson = $items->values()->map(function ($i) {
+        $alertJson = $allItems->where('kondisi', 'perlu_servis')->values()->map(fn ($i) => [
+            'id' => $i->id,
+            'nama_aset' => $i->nama_aset,
+            'lokasi' => $i->lokasi,
+            'jumlah' => $i->jumlah,
+            'kondisi' => $i->kondisi,
+        ]);
+
+        $items = AsetRuko::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        $itemsJson = $items->getCollection()->values()->map(function ($i) {
             return [
                 'id' => $i->id,
                 'nama_aset' => $i->nama_aset,
@@ -27,14 +37,6 @@ class AsetRukoController extends Controller
                 'kondisi' => $i->kondisi,
             ];
         });
-
-        $alertJson = $items->where('kondisi', 'perlu_servis')->values()->map(fn ($i) => [
-            'id' => $i->id,
-            'nama_aset' => $i->nama_aset,
-            'lokasi' => $i->lokasi,
-            'jumlah' => $i->jumlah,
-            'kondisi' => $i->kondisi,
-        ]);
 
         return view('admin.ruko.index', [
             'items' => $items,

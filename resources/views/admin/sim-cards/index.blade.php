@@ -251,6 +251,11 @@
                     @endforelse
                 </tbody>
             </table>
+            @if(method_exists($cards, 'links') && $cards->hasPages())
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $cards->links() }}
+            </div>
+            @endif
         </div>
     </div>
 

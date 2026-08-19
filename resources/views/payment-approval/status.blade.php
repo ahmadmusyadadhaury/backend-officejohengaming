@@ -120,6 +120,11 @@
                     @endforeach
                 </tbody>
             </table>
+            @if(method_exists($requests, 'links') && $requests->hasPages())
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $requests->links() }}
+            </div>
+            @endif
         </div>
     </div>
     @endif

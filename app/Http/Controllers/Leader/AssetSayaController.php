@@ -51,7 +51,7 @@ class AssetSayaController extends Controller
         $sortDir = $request->input('dir', 'desc');
         $assets = $assets->sortBy($sortField, SORT_REGULAR, $sortDir === 'asc')->values();
 
-        $perPage = 15;
+        $perPage = 10;
         $page = $request->input('page', 1);
         $total = $assets->count();
         $items = $assets->slice(($page - 1) * $perPage, $perPage);

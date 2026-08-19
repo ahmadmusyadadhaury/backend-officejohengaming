@@ -14,7 +14,7 @@ class AsetTimController extends Controller
         $assets = AsetTim::with('penanggungJawab')
             ->where('penanggung_jawab', auth()->id())
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10)->withQueryString();
 
         $allTim = Team::where('is_active', true)->pluck('name')
             ->merge(AsetTim::whereNotNull('tim')->where('tim', '!=', '')->distinct()->pluck('tim'))

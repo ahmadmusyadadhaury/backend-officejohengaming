@@ -771,6 +771,10 @@
                     @endforelse
                 </tbody>
             </table>
+            <div id="payment-pagination" class="px-5 py-3 flex items-center justify-between" style="border-top:1px solid var(--border-color);display:none;">
+                <span id="payment-pagination-info" style="font-size:0.75rem;color:var(--text-muted);"></span>
+                <div class="flex items-center gap-1" id="payment-pagination-controls"></div>
+            </div>
         </div>
     </div>
     @endif
@@ -2008,17 +2012,89 @@ document.addEventListener('click', function(e) {
     }
 });
 
+let paymentPage = 1;
+const paymentPerPage = 10;
+
 function filterTable() {
     const search = (document.getElementById('search-payment')?.value || '').toLowerCase();
     const rows = document.querySelectorAll('#payment-tbody tr:not(#empty-row)');
+    let visibleCount = 0;
     rows.forEach(row => {
         const rowStatus = row.dataset.status;
         const text = row.textContent.toLowerCase();
         const matchStatus = currentFilter === 'all' || rowStatus === currentFilter;
         const matchSearch = !search || text.includes(search);
-        row.style.display = matchStatus && matchSearch ? '' : 'none';
+        const visible = matchStatus && matchSearch;
+        row.dataset.filtered = visible ? '1' : '0';
+        visibleCount++;
     });
+    paymentPage = 1;
+    renderPaymentPage();
 }
+
+function renderPaymentPage() {
+    const rows = document.querySelectorAll('#payment-tbody tr:not(#empty-row)');
+    const filtered = Array.from(rows).filter(r => r.dataset.filtered !== '0');
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / paymentPerPage);
+    const start = (paymentPage - 1) * paymentPerPage;
+    const end = start + paymentPerPage;
+
+    rows.forEach(row => row.style.display = 'none');
+    filtered.forEach((row, i) => {
+        row.style.display = (i >= start && i < end) ? '' : 'none';
+    });
+
+    const emptyRow = document.querySelector('#payment-tbody tr td[colspan]');
+    if (emptyRow) {
+        const parent = emptyRow.closest('tr');
+        if (total === 0) parent.style.display = '';
+        else parent.style.display = 'none';
+    }
+
+    const pag = document.getElementById('payment-pagination');
+    const info = document.getElementById('payment-pagination-info');
+    const controls = document.getElementById('payment-pagination-controls');
+
+    if (total <= paymentPerPage) {
+        pag.style.display = 'none';
+        return;
+    }
+
+    pag.style.display = 'flex';
+    info.textContent = 'Menampilkan ' + (start + 1) + '-' + Math.min(end, total) + ' dari ' + total + ' data';
+
+    let btns = '';
+    btns += '<button onclick="goPaymentPage(' + (paymentPage - 1) + ')" class="px-2.5 py-1 rounded-lg text-xs font-medium transition" style="background:var(--bg-surface-2);color:var(--text-primary);border:1px solid var(--border-color);cursor:pointer;' + (paymentPage <= 1 ? 'opacity:0.4;pointer-events:none;' : '') + '">&laquo;</button>';
+
+    for (let p = 1; p <= totalPages; p++) {
+        if (totalPages > 7 && p > 2 && p < totalPages - 1 && Math.abs(p - paymentPage) > 1) {
+            if (btns.indexOf('...') === -1) btns += '<span style="color:var(--text-muted);font-size:0.7rem;padding:0 4px;">...</span>';
+            continue;
+        }
+        const active = p === paymentPage;
+        btns += '<button onclick="goPaymentPage(' + p + ')" class="px-2.5 py-1 rounded-lg text-xs font-medium transition" style="background:' + (active ? 'var(--color-accent)' : 'var(--bg-surface-2)') + ';color:' + (active ? '#fff' : 'var(--text-primary)') + ';border:1px solid ' + (active ? 'var(--color-accent)' : 'var(--border-color)') + ';cursor:pointer;">' + p + '</button>';
+    }
+
+    btns += '<button onclick="goPaymentPage(' + (paymentPage + 1) + ')" class="px-2.5 py-1 rounded-lg text-xs font-medium transition" style="background:var(--bg-surface-2);color:var(--text-primary);border:1px solid var(--border-color);cursor:pointer;' + (paymentPage >= totalPages ? 'opacity:0.4;pointer-events:none;' : '') + '">&raquo;</button>';
+
+    controls.innerHTML = btns;
+}
+
+function goPaymentPage(p) {
+    const rows = document.querySelectorAll('#payment-tbody tr:not(#empty-row)');
+    const filtered = Array.from(rows).filter(r => r.dataset.filtered !== '0');
+    const totalPages = Math.ceil(filtered.length / paymentPerPage);
+    if (p < 1 || p > totalPages) return;
+    paymentPage = p;
+    renderPaymentPage();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('#payment-tbody tr:not(#empty-row)');
+    rows.forEach(row => { if (!row.dataset.filtered) row.dataset.filtered = '1'; });
+    renderPaymentPage();
+});
 
 
 

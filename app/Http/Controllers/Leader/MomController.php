@@ -20,7 +20,7 @@ class MomController extends Controller
             ->where('created_by', $userId)
             ->latest();
 
-        $moms = $query->paginate(20);
+        $moms = $query->paginate(10);
 
         $momsJson = $moms->map(function ($mom) {
             return [

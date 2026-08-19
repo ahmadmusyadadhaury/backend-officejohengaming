@@ -166,6 +166,11 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                     @endforelse
                 </tbody>
             </table>
+            @if(method_exists($items, 'links') && $items->hasPages())
+            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                {{ $items->links() }}
+            </div>
+            @endif
         </div>
     </div>
 

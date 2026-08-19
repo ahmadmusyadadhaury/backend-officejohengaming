@@ -19,12 +19,12 @@ class AsetTimController extends Controller
             $query->where('tim', $activeTim);
         }
 
-        $assets = $query->orderBy('created_at', 'desc')->get();
+        $allAssets = (clone $query)->orderBy('created_at', 'desc')->get();
 
         $stats = [
-            'total' => $assets->count(),
-            'aktif' => $assets->where('is_active', true)->count(),
-            'nonaktif' => $assets->where('is_active', false)->count(),
+            'total' => $allAssets->count(),
+            'aktif' => $allAssets->where('is_active', true)->count(),
+            'nonaktif' => $allAssets->where('is_active', false)->count(),
         ];
 
         $allTim = Team::where('is_active', true)
@@ -36,7 +36,9 @@ class AsetTimController extends Controller
             ->sort()
             ->values();
 
-        $assetsJson = $assets->values()->map(function ($a) {
+        $assets = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        $assetsJson = $assets->getCollection()->values()->map(function ($a) {
             return [
                 'id' => $a->id,
                 'nama_aset' => $a->nama_aset,

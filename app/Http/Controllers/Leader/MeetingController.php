@@ -38,7 +38,7 @@ class MeetingController extends Controller
             $query->where('status', $status);
         }
 
-        $meetings = $query->latest()->paginate(15)->withQueryString();
+        $meetings = $query->latest()->paginate(10)->withQueryString();
 
         $meetingsJson = $meetings->map(fn ($m) => [
             'id' => $m->id,

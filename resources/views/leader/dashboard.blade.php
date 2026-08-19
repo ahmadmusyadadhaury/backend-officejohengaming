@@ -267,7 +267,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($allMerged->sortBy('due_date') as $p)
+                    @forelse($allMerged->sortBy('due_date')->take(10) as $p)
                     <tr style="cursor:pointer;" onclick="openDashboardBayar({{ $p['id'] }}, '{{ $p['type'] }}')">
                         <td>
                             @php
@@ -296,7 +296,10 @@
             </table>
         </div>
         <div class="modal-modern-footer">
-            <span class="text-[0.65rem]" style="color:var(--text-muted);">Total: {{ $allMerged->count() }} item · Klik baris untuk bayar</span>
+            <span class="text-[0.65rem]" style="color:var(--text-muted);">Menampilkan {{ min($allMerged->count(), 10) }} dari {{ $allMerged->count() }} item · Klik baris untuk bayar</span>
+            @if($allMerged->count() > 10)
+            <a href="{{ route('payment-approval.tagihan') }}" class="text-[0.65rem] font-semibold" style="color:var(--color-accent);text-decoration:none;">Lihat Semua &rarr;</a>
+            @endif
         </div>
     </div>
 </div>

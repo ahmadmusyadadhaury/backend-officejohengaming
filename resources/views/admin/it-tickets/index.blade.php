@@ -236,6 +236,11 @@ $countChip = fn ($key) => $key === 'semua' ? $tickets->count() : $tickets->where
                 @endforelse
             </tbody>
         </table>
+        @if(method_exists($tickets, 'links') && $tickets->hasPages())
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+            {{ $tickets->links() }}
+        </div>
+        @endif
     </div>
 </div>
 @else
@@ -339,6 +344,11 @@ $countChip = fn ($key) => $key === 'semua' ? $tickets->count() : $tickets->where
                 @endforelse
             </tbody>
         </table>
+        @if(method_exists($tickets, 'links') && $tickets->hasPages())
+        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+            {{ $tickets->links() }}
+        </div>
+        @endif
     </div>
 </div>
 @endif

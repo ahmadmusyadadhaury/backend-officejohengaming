@@ -10,21 +10,23 @@ class SimCardController extends Controller
 {
     public function index()
     {
-        $cards = SimCard::orderBy('created_at', 'desc')->get();
+        $allCards = SimCard::orderBy('created_at', 'desc')->get();
 
         $now = now();
 
         $stats = [
-            'total' => $cards->count(),
-            'aktif' => $cards->filter(fn ($c) => $c->status_sim === 'aktif')->count(),
-            'jatuh_tempo' => $cards->filter(fn ($c) => $c->status_sim === 'jatuh_tempo')->count(),
-            'segera_habis' => $cards->filter(fn ($c) => $c->status_sim === 'segera_habis')->count(),
-            'mati' => $cards->filter(fn ($c) => $c->status_sim === 'mati')->count(),
+            'total' => $allCards->count(),
+            'aktif' => $allCards->filter(fn ($c) => $c->status_sim === 'aktif')->count(),
+            'jatuh_tempo' => $allCards->filter(fn ($c) => $c->status_sim === 'jatuh_tempo')->count(),
+            'segera_habis' => $allCards->filter(fn ($c) => $c->status_sim === 'segera_habis')->count(),
+            'mati' => $allCards->filter(fn ($c) => $c->status_sim === 'mati')->count(),
         ];
 
-        $alerts = $cards->filter(fn ($c) => in_array($c->status_sim, ['jatuh_tempo', 'segera_habis', 'mati']))->values();
+        $alerts = $allCards->filter(fn ($c) => in_array($c->status_sim, ['jatuh_tempo', 'segera_habis', 'mati']))->values();
 
-        $cardsJson = $cards->values()->map(function ($c) {
+        $cards = SimCard::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        $cardsJson = $cards->getCollection()->values()->map(function ($c) {
             return [
                 'id' => $c->id,
                 'nomor_sim_card' => $c->nomor_sim_card,

@@ -12,17 +12,28 @@ class DigitalAssetController extends Controller
 {
     public function index()
     {
-        $assets = DigitalAsset::orderBy('created_at', 'desc')->get();
+        $allAssets = DigitalAsset::orderBy('created_at', 'desc')->get();
 
         $stats = [
-            'total' => $assets->count(),
-            'aktif' => $assets->filter(fn ($a) => $a->status_aset === 'aktif')->count(),
-            'jatuh_tempo' => $assets->filter(fn ($a) => $a->status_aset === 'jatuh_tempo')->count(),
-            'segera_habis' => $assets->filter(fn ($a) => $a->status_aset === 'segera_habis')->count(),
-            'nonaktif' => $assets->filter(fn ($a) => $a->status_aset === 'mati')->count(),
+            'total' => $allAssets->count(),
+            'aktif' => $allAssets->filter(fn ($a) => $a->status_aset === 'aktif')->count(),
+            'jatuh_tempo' => $allAssets->filter(fn ($a) => $a->status_aset === 'jatuh_tempo')->count(),
+            'segera_habis' => $allAssets->filter(fn ($a) => $a->status_aset === 'segera_habis')->count(),
+            'nonaktif' => $allAssets->filter(fn ($a) => $a->status_aset === 'mati')->count(),
         ];
 
-        $assetsJson = $assets->values()->map(function ($a) {
+        $alertAssets = $allAssets->filter(fn ($a) => in_array($a->status_aset, ['jatuh_tempo', 'segera_habis', 'mati']));
+        $alertJson = $alertAssets->values()->map(fn ($a) => [
+            'id' => $a->id,
+            'nama_aset' => $a->nama_aset,
+            'berakhir' => $a->berakhir?->format('d/m/Y'),
+            'status_aset' => $a->status_aset,
+            'hari_aset' => $a->hari_aset,
+        ]);
+
+        $assets = DigitalAsset::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        $assetsJson = $assets->getCollection()->values()->map(function ($a) {
             return [
                 'id' => $a->id,
                 'nama_aset' => $a->nama_aset,
@@ -38,15 +49,6 @@ class DigitalAssetController extends Controller
                 'hari_aset' => $a->hari_aset,
             ];
         });
-
-        $alertAssets = $assets->filter(fn ($a) => in_array($a->status_aset, ['jatuh_tempo', 'segera_habis', 'mati']));
-        $alertJson = $alertAssets->values()->map(fn ($a) => [
-            'id' => $a->id,
-            'nama_aset' => $a->nama_aset,
-            'berakhir' => $a->berakhir?->format('d/m/Y'),
-            'status_aset' => $a->status_aset,
-            'hari_aset' => $a->hari_aset,
-        ]);
 
         return view('admin.digital-assets.index', [
             'assets' => $assets,

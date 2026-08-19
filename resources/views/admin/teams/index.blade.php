@@ -158,7 +158,7 @@
             @endphp
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 md:gap-3 mb-6">
                 @foreach($roleCards as $card)
-                    @php $comp = $compositions->firstWhere('role', $card['key']); @endphp
+                    @php $comp = $allCompositions->firstWhere('role', $card['key']); @endphp
                     <div class="stat-card-compact flex-col items-center text-center py-3" style="border-color:{{ $card['color'] }}20;">
                         <div class="stat-icon-box mb-1.5" style="background:{{ $card['bg'] }};box-shadow:0 0 12px {{ $card['color'] }}20;">
                             <svg class="w-4 h-4" style="color:{{ $card['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,6 +216,11 @@
                         @endforelse
                     </tbody>
                 </table>
+                @if(method_exists($compositions, 'links') && $compositions->hasPages())
+                <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
+                    {{ $compositions->links() }}
+                </div>
+                @endif
             </div>
         </div>
     </div>
