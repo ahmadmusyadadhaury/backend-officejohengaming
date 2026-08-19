@@ -77,6 +77,7 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
 
         $kodeAset = $row['Kode Asset'] ?? null;
         $barcode = $row['Barcode'] ?? null;
+        $tanggalPembelian = $row['Tanggal Pembelian'] ?? null;
 
         if (empty($kodeAset)) {
             $kodeAset = PeralatanKantor::generateKodeAset();

@@ -252,5 +252,13 @@ function closeBayar() {
 document.getElementById('bayar-modal')?.addEventListener('click', function(e) {
     if (e.target === this) closeBayar();
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    var params = new URLSearchParams(window.location.search);
+    var filter = params.get('filter');
+    if (filter && document.querySelector('.filter-menu button[data-value="' + filter + '"]')) {
+        setFilter(filter);
+    }
+});
 </script>
 @endpush
