@@ -72,7 +72,7 @@
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td><span class="font-medium" style="color:var(--text-primary);">{{ $a->nama_aset }}</span></td>
                         <td><span class="badge badge-cyan">Aset TIM</span></td>
-                        <td><span style="color:var(--text-secondary);">{{ $a->keterangan ? Str::limit($a->keterangan, 40) : '-' }}</span></td>
+                        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span style="color:var(--text-secondary);">{{ $a->keterangan ? Str::limit($a->keterangan, 40) : '-' }}</span></td>
                         <td><span style="color:var(--text-secondary);">{{ $a->jumlah }}</span></td>
                         <td>
                             <div class="flex items-center gap-1">

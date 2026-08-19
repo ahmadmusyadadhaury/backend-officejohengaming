@@ -123,7 +123,7 @@
                         <td style="color:var(--text-muted);">{{ $a->jumlah }}</td>
                         <td style="color:var(--text-muted);">{{ $a->penanggungJawab?->name ?? '-' }}</td>
                         <td><span class="badge {{ $a->is_active ? 'badge-green' : 'badge-red' }}">{{ $a->is_active ? 'Aktif' : 'Tidak Aktif' }}</span></td>
-                        <td style="max-width:150px;color:var(--text-muted);">{{ $a->keterangan ?? '-' }}</td>
+                        <td style="max-width:150px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $a->keterangan ?? '-' }}">{{ $a->keterangan ?? '-' }}</td>
                         @if(auth()->user()->role !== 'gm')<td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $a->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
