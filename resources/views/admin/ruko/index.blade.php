@@ -9,44 +9,38 @@
 <div class="pt-2 space-y-4 animate-fade-in">
 
     {{-- 3 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
-                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 md:gap-3">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(124,58,237,0.12);box-shadow:0 0 14px rgba(124,58,237,0.20);">
+                <svg style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div id="stat-total" class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total Aset Ruko</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
+            <div>
+                <div id="stat-total" class="stat-num">{{ $stats['total'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Total Aset Ruko</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
-                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(16,185,129,0.12);box-shadow:0 0 14px rgba(16,185,129,0.20);">
+                <svg style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div id="stat-baik" class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['kondisi_baik'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Kondisi Baik</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
+                <div id="stat-baik" class="stat-num" style="color:#34d399;">{{ $stats['kondisi_baik'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Kondisi Baik</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
-                <svg class="w-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(245,158,11,0.12);box-shadow:0 0 14px rgba(245,158,11,0.20);">
+                <svg style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div id="stat-perlu" class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['perlu_servis'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Perlu Servis</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);"></div>
+                <div id="stat-perlu" class="stat-num" style="color:#fbbf24;">{{ $stats['perlu_servis'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Perlu Servis</div>
             </div>
         </div>
     </div>
@@ -130,7 +124,7 @@
                         $kondisiLabel = $i->kondisi === 'baik' ? 'Baik' : 'Perlu Servis';
                     @endphp
                     <tr data-id="{{ $i->id }}" data-kondisi="{{ $i->kondisi }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-muted);">{{ ($items->currentPage() - 1) * $items->perPage() + $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $i->nama_aset }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $i->lokasi }}</td>
                         <td><span class="badge badge-cyan">{{ $i->jumlah }}</span></td>
@@ -162,11 +156,16 @@
                     @endforelse
                 </tbody>
             </table>
-            @if(method_exists($items, 'links') && $items->hasPages())
-            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
-                {{ $items->links() }}
+        </div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                Menampilkan {{ $items->firstItem() }}-{{ $items->lastItem() }} dari {{ $items->total() }} item
+            </span>
+            <div style="margin-left:auto;">
+                @if(method_exists($items, 'links') && $items->hasPages())
+                    {{ $items->links() }}
+                @endif
             </div>
-            @endif
         </div>
     </div>
 

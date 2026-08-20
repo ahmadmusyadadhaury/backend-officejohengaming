@@ -8,53 +8,49 @@
 <div class="pt-2 space-y-4 animate-fade-in">
 
     {{-- 4 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.15);">
-                <svg class="w-[18px] h-[18px]" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-3">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(239,68,68,0.15);box-shadow:0 0 14px rgba(239,68,68,0.20);">
+                <svg style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Rekaman</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh rekap rapat</div>
+            <div>
+                <div class="stat-num" style="color:#f87171;">{{ $stats['total'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Total Rekaman</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(59,130,246,0.15);">
-                <svg class="w-[18px] h-[18px]" style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(59,130,246,0.15);box-shadow:0 0 14px rgba(59,130,246,0.20);">
+                <svg style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#60a5fa;">{{ $stats['this_month'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Bulan Ini</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Rekaman {{ now()->locale('id')->isoFormat('MMMM YYYY') }}</div>
+                <div class="stat-num" style="color:#60a5fa;">{{ $stats['this_month'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Bulan Ini</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(16,185,129,0.15);">
-                <svg class="w-[18px] h-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(16,185,129,0.15);box-shadow:0 0 14px rgba(16,185,129,0.20);">
+                <svg style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['finalized'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Final</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Sudah difinalisasi</div>
+                <div class="stat-num" style="color:#34d399;">{{ $stats['finalized'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Final</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(245,158,11,0.15);">
-                <svg class="w-[18px] h-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(245,158,11,0.15);box-shadow:0 0 14px rgba(245,158,11,0.20);">
+                <svg style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['draft'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Draft</div>
-                <div class="text-[11px] mt-0.5 leading-tight" style="color:var(--text-muted);">Belum difinalisasi</div>
+                <div class="stat-num" style="color:#fbbf24;">{{ $stats['draft'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Draft</div>
             </div>
         </div>
     </div>

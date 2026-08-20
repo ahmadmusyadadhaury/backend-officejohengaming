@@ -22,9 +22,17 @@ class PeralatanKantorController extends Controller
             'kondisi_baik' => $allItems->where('kondisi', 'baik')->count(),
             'perlu_servis' => $allItems->where('kondisi', 'perlu_servis')->count(),
             'rusak' => $allItems->where('kondisi', 'rusak')->count(),
+            'total_nilai' => $allItems->sum('nilai'),
+            'total_harga_sekarang' => $allItems->sum(function ($i) {
+                $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
+                $waktuPakai = max((int) $i->waktu_pakai_per_hari, 1);
+                $pengurangan = ($i->nilai / $masaBarang) * $waktuPakai;
+
+                return max($i->nilai - $pengurangan, 0);
+            }),
         ];
 
-        $items = PeralatanKantor::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $items = PeralatanKantor::orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
         $itemsJson = $items->getCollection()->values()->map(function ($i) {
             $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);

@@ -8,54 +8,53 @@
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- 4 Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
-                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                </svg>
-            </div>
-            <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total Peralatan</div>
-            </div>
-        </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
-                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    {{-- Stat Cards: Count --}}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 md:gap-3">
+        @php
+            $countCards = [
+                ['label' => 'Total Peralatan', 'count' => $stats['total'], 'color' => '#a78bfa', 'bg' => 'rgba(124,58,237,0.12)', 'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
+                ['label' => 'Kondisi Baik', 'count' => $stats['kondisi_baik'], 'color' => '#34d399', 'bg' => 'rgba(16,185,129,0.12)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['label' => 'Perlu Servis', 'count' => $stats['perlu_servis'], 'color' => '#fbbf24', 'bg' => 'rgba(245,158,11,0.12)', 'icon' => 'M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['label' => 'Rusak', 'count' => $stats['rusak'], 'color' => '#ef4444', 'bg' => 'rgba(239,68,68,0.12)', 'icon' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'],
+            ];
+        @endphp
+        @foreach($countCards as $card)
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:{{ $card['bg'] }};box-shadow:0 0 14px {{ $card['color'] }}20;">
+                <svg style="color:{{ $card['color'] }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['kondisi_baik'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Kondisi Baik</div>
+                <div class="stat-num">{{ $card['count'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">{{ $card['label'] }}</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
-                <svg class="w-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        @endforeach
+    </div>
+
+    {{-- Stat Cards: Nominal --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 md:gap-3">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(59,130,246,0.12);box-shadow:0 0 14px rgba(59,130,246,0.20);">
+                <svg style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#fbbf24;">{{ $stats['perlu_servis'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Perlu Servis</div>
+                <div class="stat-num" style="color:#60a5fa;">Rp {{ number_format($stats['total_nilai'], 0, ',', '.') }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Total Nilai (Pembelian)</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:none rgba(239,68,68,0.2);">
-                <svg class="w-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(245,158,11,0.12);box-shadow:0 0 14px rgba(245,158,11,0.20);">
+                <svg style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['rusak'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Rusak</div>
+                <div class="stat-num" style="color:#fbbf24;">Rp {{ number_format($stats['total_harga_sekarang'], 0, ',', '.') }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Total Harga Saat Ini</div>
             </div>
         </div>
     </div>
@@ -181,7 +180,7 @@
                         $nilaiSekarang = max($i->nilai - $penguranganHariIni, 0);
                     @endphp
                     <tr data-kondisi="{{ $i->kondisi }}">
-                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ ($items->currentPage() - 1) * $items->perPage() + $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;white-space:nowrap;font-size:0.75rem;">{{ $i->nama_barang }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->jumlah }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->detail ?? '-' }}</td>
@@ -235,23 +234,26 @@
                     @endforelse
                 </tbody>
             </table>
-            @if(method_exists($items, 'links') && $items->hasPages())
-            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
-                {{ $items->links() }}
-            </div>
+        </div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if(!$showAll)
+                    Menampilkan {{ $items->firstItem() }}-{{ $items->lastItem() }} dari {{ $items->total() }} item
+                @else
+                    Menampilkan semua {{ $items->total() }} item
+                @endif
+            </span>
+            @if(!$showAll)
+                <a href="{{ route('admin.peralatan-kantor.index') }}?show_all=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+            @else
+                <a href="{{ route('admin.peralatan-kantor.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
             @endif
+            <div style="margin-left:auto;">
+                @if(method_exists($items, 'links') && $items->hasPages())
+                    {{ $items->links() }}
+                @endif
+            </div>
         </div>
-        @if(!$showAll)
-        <div class="px-5 py-2.5 flex items-center justify-between" style="border-top:1px solid var(--border-color);">
-            <span style="font-size:0.75rem;color:var(--text-muted);">Menampilkan {{ $items->firstItem() }}-{{ $items->lastItem() }} dari {{ $items->total() }} item</span>
-            <a href="{{ route('admin.peralatan-kantor.index') }}?show_all=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
-        </div>
-        @else
-        <div class="px-5 py-2.5 flex items-center justify-between" style="border-top:1px solid var(--border-color);">
-            <span style="font-size:0.75rem;color:var(--text-muted);">Menampilkan semua {{ $items->total() }} item</span>
-            <a href="{{ route('admin.peralatan-kantor.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;">&larr; Kembali ke Ringkasan</a>
-        </div>
-        @endif
     </div>
 
 </div>

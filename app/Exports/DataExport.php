@@ -28,13 +28,16 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
 
     protected array $hyperlinkColumns;
 
-    public function __construct(Collection $data, array $headings, string $title, string $sheetTitle = 'Data', array $hyperlinkColumns = [])
+    protected array $totals;
+
+    public function __construct(Collection $data, array $headings, string $title, string $sheetTitle = 'Data', array $hyperlinkColumns = [], array $totals = [])
     {
         $this->data = $data;
         $this->headings = $headings;
         $this->title = $title;
         $this->sheetTitle = $sheetTitle;
         $this->hyperlinkColumns = $hyperlinkColumns;
+        $this->totals = $totals;
     }
 
     public function collection(): Collection
@@ -114,6 +117,45 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
                             }
                         }
                     }
+                }
+
+                if (! empty($this->totals)) {
+                    $lastDataRow = $sheet->getHighestRow();
+                    $totalRow = $lastDataRow + 2;
+                    $firstDataRow = 4;
+
+                    $sheet->setCellValue("A{$totalRow}", 'TOTAL');
+                    $sheet->getStyle("A{$totalRow}")->getFont()->setBold(true)->setSize(11);
+                    $sheet->getStyle("A{$totalRow}")->getFill()
+                        ->setFillType(Fill::FILL_SOLID)
+                        ->getStartColor()->setRGB('6C5CFF');
+                    $sheet->getStyle("A{$totalRow}")->getFont()->getColor()->setRGB('FFFFFF');
+
+                    foreach ($this->totals as $total) {
+                        $colLetter = $total['column'];
+
+                        for ($row = $firstDataRow; $row <= $lastDataRow; $row++) {
+                            $dataCell = "{$colLetter}{$row}";
+                            $val = $sheet->getCell($dataCell)->getValue();
+                            if (is_numeric($val)) {
+                                $sheet->getStyle($dataCell)->getNumberFormat()->setFormatCode('#,##0');
+                            }
+                        }
+
+                        $totalCell = "{$colLetter}{$totalRow}";
+                        $formula = "=SUM({$colLetter}{$firstDataRow}:{$colLetter}{$lastDataRow})";
+                        $sheet->setCellValue($totalCell, $formula);
+                        $sheet->getStyle($totalCell)->getNumberFormat()->setFormatCode('#,##0');
+                        $sheet->getStyle($totalCell)->getFont()->setBold(true)->setSize(11);
+                        $sheet->getStyle($totalCell)->getFill()
+                            ->setFillType(Fill::FILL_SOLID)
+                            ->getStartColor()->setRGB('6C5CFF');
+                        $sheet->getStyle($totalCell)->getFont()->getColor()->setRGB('FFFFFF');
+                    }
+
+                    $highestCol = $sheet->getHighestColumn();
+                    $sheet->getStyle("A{$totalRow}:{$highestCol}{$totalRow}")->getBorders()->getAllBorders()
+                        ->setBorderStyle(Border::BORDER_THIN);
                 }
             },
         ];

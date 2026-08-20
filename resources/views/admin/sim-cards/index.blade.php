@@ -66,70 +66,60 @@
     @endif
 
     {{-- Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);box-shadow:none rgba(124,58,237,0.25);">
-                <svg class="w-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 md:gap-3">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(124,58,237,0.15);box-shadow:0 0 14px rgba(124,58,237,0.2);">
+                <svg style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3h14a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zM3 13h18v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-primary);">Total SIM Card</div>
-                <div class="text-xs mt-0.5 leading-tight" style="color:var(--text-muted);">Seluruh nomor SIM Card</div>
+            <div>
+                <div class="stat-num" style="color:#a78bfa;">{{ $stats['total'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Total SIM Card</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);box-shadow:none rgba(16,185,129,0.2);">
-                <svg class="w-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(16,185,129,0.15);box-shadow:0 0 14px rgba(16,185,129,0.2);">
+                <svg style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Aktif</div>
-                
+                <div class="stat-num" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Aktif</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(249,115,22,0.15);box-shadow:none rgba(249,115,22,0.2);">
-                <svg class="w-[18px]" style="color:#fb923c;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(249,115,22,0.15);box-shadow:0 0 14px rgba(249,115,22,0.2);">
+                <svg style="color:#fb923c;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#fb923c;">{{ $stats['jatuh_tempo'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Jatuh Tempo</div>
-                
+                <div class="stat-num" style="color:#fb923c;">{{ $stats['jatuh_tempo'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Jatuh Tempo</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.15);box-shadow:none rgba(245,158,11,0.2);">
-                <svg class="w-[18px]" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(245,158,11,0.15);box-shadow:0 0 14px rgba(245,158,11,0.2);">
+                <svg style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#f59e0b;">{{ $stats['segera_habis'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Segera Habis</div>
-                
+                <div class="stat-num" style="color:#f59e0b;">{{ $stats['segera_habis'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Segera Habis</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);box-shadow:none rgba(239,68,68,0.2);">
-                <svg class="w-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(239,68,68,0.15);box-shadow:0 0 14px rgba(239,68,68,0.2);">
+                <svg style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['mati'] }}</div>
-                <div class="text-[11px] font-semibold mt-0.5" style="color:var(--text-secondary);">Mati</div>
-                
+                <div class="stat-num" style="color:#ef4444;">{{ $stats['mati'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Mati</div>
             </div>
         </div>
     </div>

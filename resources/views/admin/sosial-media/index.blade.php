@@ -13,41 +13,38 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
 <div class="pt-2 space-y-5 animate-fade-in">
 
     {{-- Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.15);">
-                <svg class="w-[18px] h-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 md:gap-3">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(124,58,237,0.12);box-shadow:0 0 14px rgba(124,58,237,0.20);">
+                <svg style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
             </div>
-            <div class="min-w-0">
-                <div class="text-xl font-gaming font-bold" style="color:var(--text-primary);">{{ $stats['total'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-primary);">Total Akun</div>
+            <div>
+                <div class="stat-num" style="color:#a78bfa;">{{ $stats['total'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Total Akun</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.15);">
-                <svg class="w-[18px] h-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(16,185,129,0.12);box-shadow:0 0 14px rgba(16,185,129,0.20);">
+                <svg style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#34d399;">{{ $stats['aktif'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Akun Aktif</div>
+                <div class="stat-num" style="color:#34d399;">{{ $stats['aktif'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Akun Aktif</div>
             </div>
         </div>
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.15);">
-                <svg class="w-[18px] h-[18px]" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(239,68,68,0.12);box-shadow:0 0 14px rgba(239,68,68,0.20);">
+                <svg style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div class="text-xl font-gaming font-bold" style="color:#ef4444;">{{ $stats['nonaktif'] }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--text-secondary);">Akun Tidak Aktif</div>
+                <div class="stat-num" style="color:#ef4444;">{{ $stats['nonaktif'] }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Akun Tidak Aktif</div>
             </div>
         </div>
     </div>
@@ -122,7 +119,7 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                     @forelse($items as $i)
                     @php $bClass = $badgeVariants[$loop->index % count($badgeVariants)]; @endphp
                     <tr data-platform="{{ $i->platform }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-muted);">{{ ($items->currentPage() - 1) * $items->perPage() + $loop->iteration }}</td>
                         <td><span style="color:var(--text-primary);font-weight:600;">{{ $i->username }}</span></td>
                         <td style="color:var(--text-muted);">{{ $i->nama }}</td>
                         <td style="color:var(--text-muted);">{{ $i->followers ?? '—' }}</td>
@@ -166,11 +163,20 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                     @endforelse
                 </tbody>
             </table>
-            @if(method_exists($items, 'links') && $items->hasPages())
-            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
-                {{ $items->links() }}
+            <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+                <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                    @if(method_exists($items, 'firstItem'))
+                        Menampilkan {{ $items->firstItem() }}-{{ $items->lastItem() }} dari {{ $items->total() }} item
+                    @else
+                        Menampilkan {{ $items->count() }} item
+                    @endif
+                </span>
+                <div style="margin-left:auto;">
+                    @if(method_exists($items, 'links') && $items->hasPages())
+                        {{ $items->links() }}
+                    @endif
+                </div>
             </div>
-            @endif
         </div>
     </div>
 

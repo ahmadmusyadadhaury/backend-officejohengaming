@@ -9,64 +9,51 @@
 <div class="pt-2 space-y-5 animate-fade-in">
 
     {{-- Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background:rgba(124,58,237,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-3">
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(124,58,237,0.12);box-shadow:0 0 14px rgba(124,58,237,0.2);">
+                <svg style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
             </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:var(--text-primary);">{{ $totalMeeting }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Total Permintaan</div>
+            <div>
+                <div class="stat-num" style="color:#a78bfa;">{{ $totalMeeting }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Total Permintaan</div>
             </div>
         </div>
-
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background:rgba(245,158,11,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(245,158,11,0.12);box-shadow:0 0 14px rgba(245,158,11,0.2);">
+                <svg style="color:#fbbf24;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:#fbbf24;">{{ $menungguMeeting }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Menunggu Review</div>
+            <div>
+                <div class="stat-num" style="color:#fbbf24;">{{ $menungguMeeting }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Menunggu Review</div>
             </div>
         </div>
-
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background:rgba(16,185,129,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(16,185,129,0.12);box-shadow:0 0 14px rgba(16,185,129,0.2);">
+                <svg style="color:#34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:#34d399;">{{ $disetujuiMeeting }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Disetujui</div>
+            <div>
+                <div class="stat-num" style="color:#34d399;">{{ $disetujuiMeeting }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Disetujui</div>
             </div>
         </div>
-
-        <div class="gaming-card p-4 flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style="background:rgba(239,68,68,0.12);">
-                <svg class="w-[18px] h-[18px]" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="stat-card-compact">
+            <div class="stat-icon-box" style="background:rgba(239,68,68,0.12);box-shadow:0 0 14px rgba(239,68,68,0.2);">
+                <svg style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <div class="min-w-0 flex-1">
-                <div class="text-xl font-bold" style="color:#f87171;">{{ $ditolakMeeting }}</div>
-                <div class="text-[11px] font-medium mt-px" style="color:var(--text-muted);">Ditolak</div>
+            <div>
+                <div class="stat-num" style="color:#f87171;">{{ $ditolakMeeting }}</div>
+                <div class="stat-label-text" style="font-size:0.7rem;">Ditolak</div>
             </div>
         </div>
-
     </div>
 
     {{-- Table --}}
