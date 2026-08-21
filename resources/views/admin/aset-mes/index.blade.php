@@ -66,6 +66,24 @@
         </div>
     </div>
 
+    {{-- Alert Aset Tidak Aktif --}}
+    @if($alertItems->isNotEmpty())
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#ef4444;">{{ $alertItems->count() }} Aset Tidak Aktif</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $alertItems->count() }} aset MES berstatus tidak aktif.</div>
+                </div>
+                <button type="button" onclick="showAlertPopup()" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- ===== MES PUTRA ===== --}}
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
@@ -99,6 +117,7 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
+                <a href="{{ route('admin.export', ['type' => 'aset-mes', 'filter' => 'putra']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                     <button type="button" onclick="toggleStatusMenu(event, 'putra')" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
                         <span id="status-label-putra">Semua Status</span>
@@ -112,7 +131,6 @@
                         <button type="button" data-value="0" onclick="setStatusFilter('0', 'putra')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
                     </div>
                 </div>
-                <a href="{{ route('admin.export', ['type' => 'aset-mes', 'filter' => 'putra']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
             </div>
         </div>
         <div class="table-responsive">
@@ -223,6 +241,7 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
+                <a href="{{ route('admin.export', ['type' => 'aset-mes', 'filter' => 'putri']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                     <button type="button" onclick="toggleStatusMenu(event, 'putri')" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
                         <span id="status-label-putri">Semua Status</span>
@@ -236,7 +255,6 @@
                         <button type="button" data-value="0" onclick="setStatusFilter('0', 'putri')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Tidak Aktif</button>
                     </div>
                 </div>
-                <a href="{{ route('admin.export', ['type' => 'aset-mes', 'filter' => 'putri']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
             </div>
         </div>
         <div class="table-responsive">
@@ -396,6 +414,18 @@
         </form>
     </div>
 </div>
+
+{{-- Popup Alert Aset MES --}}
+<div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
+    <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:460px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);">Aset MES Tidak Aktif</div>
+            <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
+        </div>
+        <div id="alert-popup-body"></div>
+    </div>
+</div>
+
 @endsection
 
 @push('styles')
@@ -420,6 +450,37 @@
 @push('scripts')
 <script>
 const assets = @json($assetsJson);
+const alertData = @json($alertJson);
+
+function showAlertPopup() {
+    const title = document.getElementById('alert-popup-title');
+    const body = document.getElementById('alert-popup-body');
+    var color = '#ef4444';
+
+    title.textContent = 'Aset MES Tidak Aktif';
+    const items = alertData.filter(function(a) { return !a.is_active; });
+
+    if (items.length === 0) {
+        body.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada aset tidak aktif.</p>';
+    } else {
+        body.innerHTML = items.map(function(a) {
+            return '<div class="flex items-center gap-3 px-4 py-3.5 rounded-xl" style="border:1px solid var(--border-color);margin-bottom:8px;cursor:pointer;transition:all 0.15s;background:var(--bg-surface-2);" onclick="openEditModal(' + a.id + ')" onmouseover="this.style.borderColor=\'' + color + '\'" onmouseout="this.style.borderColor=\'var(--border-color)\'">' +
+                '<div class="flex-1 min-w-0">' +
+                    '<p style="font-weight:600;font-size:14px;color:var(--text-primary);margin:0;">' + a.nama_aset + '</p>' +
+                    '<p style="font-size:12px;color:var(--text-muted);margin:2px 0 0;">' + (a.kategori === 'putra' ? 'Mes Putra' : 'Mes Putri') + ' — PIC: ' + (a.pic || '-') + '</p>' +
+                    '<p style="font-size:11px;color:#ef4444;margin:4px 0 0;font-weight:600;">Tidak Aktif</p>' +
+                '</div>' +
+                '<span onclick="event.stopPropagation()"><button onclick="openEditModal(' + a.id + ')" style="flex-shrink:0;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:' + color + ';color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3);" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Perbaiki</button></span>' +
+            '</div>';
+        }).join('');
+    }
+
+    document.getElementById('alert-overlay').style.display = 'flex';
+}
+
+function closeAlertPopup() {
+    document.getElementById('alert-overlay').style.display = 'none';
+}
 
 let currentStatus = { putra: 'all', putri: 'all' };
 

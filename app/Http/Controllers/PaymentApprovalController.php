@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Services\TagihanService;
 
 class PaymentApprovalController extends Controller
 {
@@ -215,81 +216,14 @@ class PaymentApprovalController extends Controller
     public function tagihan()
     {
         $all = collect();
-        $today = Carbon::today();
 
-        $userId = auth()->id();
-        $userName = auth()->user()->name;
-        $myAsetTimIds = AsetTim::where('penanggung_jawab', $userId)->pluck('id');
-        $myAsetMesIds = AsetMes::where('penanggung_jawab', $userId)->pluck('id');
+        TagihanService::syncVehiclePajakRequests();
 
-        $expiringVehicles = Vehicle::where(function ($q) {
-            $q->whereDate('pajak_tahunan', '<=', now()->addDays(7))
-              ->orWhereDate('pajak_5_tahun', '<=', now()->addDays(7));
-        })->get();
+        foreach (TagihanService::JENIS_MODELS as $jenis => $class) {
+            $query = TagihanService::itemsQuery($jenis)->with('requester');
 
-        foreach ($expiringVehicles as $vehicle) {
-            $jenisPajakList = [];
-            if ($vehicle->pajak_tahunan && $vehicle->pajak_tahunan->lte(now()->addDays(7))) {
-                $jenisPajakList[] = 'tahunan';
-            }
-            if ($vehicle->pajak_5_tahun && $vehicle->pajak_5_tahun->lte(now()->addDays(7))) {
-                $jenisPajakList[] = '5_tahunan';
-            }
-            foreach ($jenisPajakList as $jenisPajak) {
-                $hasPending = VehiclePajakRequest::where('vehicle_id', $vehicle->id)
-                    ->where('jenis', $jenisPajak)
-                    ->whereNotIn('status', ['approved', 'rejected'])
-                    ->exists();
-                if (!$hasPending) {
-                    $nominal = $jenisPajak === 'tahunan'
-                        ? ($vehicle->biaya_pajak_tahunan ?? $vehicle->biaya_kendaraan)
-                        : ($vehicle->biaya_pajak_5_tahun ?? $vehicle->biaya_kendaraan);
-                    VehiclePajakRequest::create([
-                        'vehicle_id' => $vehicle->id,
-                        'jenis' => $jenisPajak,
-                        'nominal' => $nominal,
-                        'status' => 'pending',
-                        'requested_by' => null,
-                        'bukti_bayar' => null,
-                    ]);
-                }
-            }
-        }
-
-        foreach ([
-            'internet' => WifiPayment::class,
-            'aset_digital' => PembayaranAsetDigital::class,
-            'pajak_kendaraan' => VehiclePajakRequest::class,
-            'ipl_ruko' => PembayaranIplRuko::class,
-            'aset_tim' => PembayaranAsetTim::class,
-            'aset_mes' => PembayaranAsetMes::class,
-        ] as $jenis => $class) {
-            $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
-
-            $query = $class::with('requester')
-                ->whereNull('requested_by')
-                ->whereNotIn('status', ['lunas', 'rejected', 'menunggu']);
-
-            if ($jenis === 'aset_digital') {
-                if (! in_array(auth()->user()->role, User::FULL_ACCESS_ROLES)) {
-                    $query->where(function ($q) use ($userName) {
-                        $q->where('pic', $userName)
-                          ->orWhereHas('digitalAsset', fn ($q) => $q->where('pic', $userName));
-                    });
-                }
-            } elseif ($jenis === 'pajak_kendaraan') {
+            if ($jenis === 'pajak_kendaraan') {
                 $query->with('vehicle');
-                if (! in_array(auth()->user()->role, User::FULL_ACCESS_ROLES)) {
-                    $query->whereHas('vehicle', fn ($q) => $q->where('pic', $userName));
-                }
-            } else {
-                $query->where($dateField, '<', $today);
-            }
-
-            if ($jenis === 'aset_tim') {
-                $query->whereIn('aset_tim_id', $myAsetTimIds);
-            } elseif ($jenis === 'aset_mes') {
-                $query->whereIn('aset_mes_id', $myAsetMesIds);
             }
 
             $records = $query->orderBy('created_at', 'desc')->get()

@@ -19,42 +19,14 @@
               });
         })->exists();
 
-    $now = \Carbon\Carbon::today();
-    $sevenDays = $now->copy()->addDays(7);
-
-    $totalTagihan = \App\Models\WifiPayment::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('masa_tenggang', '<=', $sevenDays)
-            ->count()
-        + \App\Models\PembayaranAsetDigital::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count()
-        + \App\Models\PembayaranIplRuko::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count()
-        + \App\Models\PembayaranAsetMes::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count()
-        + \App\Models\PembayaranAsetTim::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count()
-        ;
+    $totalTagihan = \App\Services\TagihanService::tagihanCount();
 
     $role = auth()->user()->role;
     $approverRoles = ['admin', 'head_of_store', 'hr', 'gm', 'ceo'];
     $isApprover = in_array($role, $approverRoles);
     $totalApproval = 0;
     if ($isApprover) {
-        $totalApproval = \App\Models\WifiPayment::where('status', 'pending')->count()
-            + \App\Models\PembayaranAsetDigital::where('status', 'pending')->count()
-            + \App\Models\PembayaranIplRuko::where('status', 'pending')->count()
-            + \App\Models\PembayaranAsetMes::where('status', 'pending')->count()
-            + \App\Models\PembayaranAsetTim::where('status', 'pending')->count()
-            ;
+        $totalApproval = \App\Services\TagihanService::approvalCount();
     }
 @endphp
 

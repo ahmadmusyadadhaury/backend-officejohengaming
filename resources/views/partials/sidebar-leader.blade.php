@@ -4,26 +4,7 @@
     $isPaymentActive = request()->routeIs('payment-approval.*');
     $isItActive = request()->routeIs('it-tickets.*');
 
-    $now = \Carbon\Carbon::today();
-    $sevenDays = $now->copy()->addDays(7);
-    $userId = auth()->id();
-    $myAsetTimIds = \App\Models\AsetTim::where('penanggung_jawab', $userId)->pluck('id');
-    $myAsetMesIds = \App\Models\AsetMes::where('penanggung_jawab', $userId)->pluck('id');
-
-    $totalTagihan = ($myAsetTimIds->isNotEmpty()
-            ? \App\Models\PembayaranAsetTim::whereNull('requested_by')
-                ->whereNotIn('status', ['lunas', 'rejected'])
-                ->whereIn('aset_tim_id', $myAsetTimIds)
-                ->where('jatuh_tempo', '<=', $sevenDays)
-                ->count()
-            : 0)
-        + ($myAsetMesIds->isNotEmpty()
-            ? \App\Models\PembayaranAsetMes::whereNull('requested_by')
-                ->whereNotIn('status', ['lunas', 'rejected'])
-                ->whereIn('aset_mes_id', $myAsetMesIds)
-                ->where('jatuh_tempo', '<=', $sevenDays)
-                ->count()
-            : 0);
+    $totalTagihan = \App\Services\TagihanService::tagihanCount();
 @endphp
 
 <p class="sidebar-section-label">Menu Utama</p>

@@ -28,6 +28,16 @@ class AsetTimController extends Controller
             'nonaktif' => $allAssets->where('is_active', false)->count(),
         ];
 
+        $alertItems = $allAssets->where('is_active', false)->values();
+
+        $alertJson = $alertItems->map(fn ($a) => [
+            'id' => $a->id,
+            'nama_aset' => $a->nama_aset,
+            'tim' => $a->tim,
+            'pic' => $a->pic,
+            'is_active' => $a->is_active,
+        ]);
+
         $allTim = Team::where('is_active', true)
             ->whereNotNull('name')
             ->where('name', '!=', '')
@@ -39,7 +49,7 @@ class AsetTimController extends Controller
 
         $assets = $query->orderBy('created_at', 'desc')->paginate($showAll ? max($allAssets->count(), 1) : 10)->withQueryString();
 
-        $assetsJson = $assets->getCollection()->values()->map(function ($a) {
+        $assetsJson = $allAssets->values()->map(function ($a) {
             return [
                 'id' => $a->id,
                 'nama_aset' => $a->nama_aset,
@@ -58,6 +68,8 @@ class AsetTimController extends Controller
             'assets' => $assets,
             'assetsJson' => $assetsJson,
             'stats' => $stats,
+            'alertItems' => $alertItems,
+            'alertJson' => $alertJson,
             'allTim' => $allTim,
             'activeTim' => $activeTim,
             'showAll' => $showAll,

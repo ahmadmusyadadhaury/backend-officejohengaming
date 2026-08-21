@@ -36,7 +36,19 @@ class AsetMesController extends Controller
             'putri' => $countPutri,
         ];
 
-        $assetsJson = collect([...$assetsPutra->items(), ...$assetsPutri->items()])
+        $alertItems = AsetMes::where('is_active', false)->orderBy('created_at', 'desc')->get();
+
+        $alertJson = $alertItems->map(fn ($a) => [
+            'id' => $a->id,
+            'nama_aset' => $a->nama_aset,
+            'kategori' => $a->kategori,
+            'pic' => $a->pic,
+            'is_active' => $a->is_active,
+        ]);
+
+        $assetsJson = AsetMes::with('penanggungJawab')
+            ->orderBy('created_at', 'desc')
+            ->get()
             ->map(fn ($a) => [
                 'id' => $a->id,
                 'nama_aset' => $a->nama_aset,
@@ -56,6 +68,8 @@ class AsetMesController extends Controller
             'assetsPutri' => $assetsPutri,
             'assetsJson' => $assetsJson,
             'stats' => $stats,
+            'alertItems' => $alertItems,
+            'alertJson' => $alertJson,
             'penanggungJawabMes' => AsetMes::PENANGGUNG_JAWAB_MES,
             'showAllPutra' => $showAllPutra,
             'showAllPutri' => $showAllPutri,

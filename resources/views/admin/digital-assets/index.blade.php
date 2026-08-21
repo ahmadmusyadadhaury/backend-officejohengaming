@@ -178,7 +178,6 @@
                         <th>Status</th>
                         <th>PIC</th>
                         <th class="hidden lg:table-cell">Jabatan</th>
-                        <th class="hidden md:table-cell">Keterangan</th>
                         @if(auth()->user()->role !== 'gm')
                         <th>Aksi</th>
                         @endif
@@ -217,14 +216,6 @@
                         </td>
                         <td style="color:var(--text-muted);">{{ $a->pic }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $a->jabatan }}</td>
-                        <td class="hidden md:table-cell" style="max-width:150px;">
-                            <div style="display:flex;align-items:center;gap:4px;">
-                                <span id="kep-{{ $a->id }}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted);" title="{{ $a->keperluan }}">{{ $a->keperluan ?? '-' }}</span>
-                                <button type="button" onclick="editKeterangan({{ $a->id }})" style="flex-shrink:0;padding:2px;border:none;background:none;cursor:pointer;color:var(--text-muted);border-radius:4px;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                </button>
-                            </div>
-                        </td>
                         @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
@@ -249,7 +240,7 @@
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="10" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset digital.</td>
+                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data aset digital.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -367,10 +358,6 @@
                             <option value="Koordinator">Koordinator</option>
                             <option value="Karyawan">Karyawan</option>
                         </select>
-                    </div>
-                    <div class="field-group" style="grid-column:1/-1;">
-                        <label class="gaming-label">Keterangan <span class="field-req">*</span></label>
-                        <textarea name="keperluan" id="f-keperluan" required placeholder="Masukan keperluan" rows="2" class="gaming-input" style="resize:vertical;"></textarea>
                     </div>
                 </div>
 
@@ -540,7 +527,6 @@ function showDetail(id) {
         { label: 'Biaya', value: rp },
         { label: 'PIC', value: a.pic },
         { label: 'Jabatan', value: a.jabatan },
-        { label: 'Keterangan', value: a.keperluan || '-' },
     ];
 
     const detailBody = document.getElementById('detail-body');
@@ -600,7 +586,6 @@ function openEditModal(id) {
     document.getElementById('f-biaya').value = a.biaya;
     document.getElementById('f-pic').value = a.pic;
     document.getElementById('f-jabatan').value = a.jabatan;
-    document.getElementById('f-keperluan').value = a.keperluan;
 
     showModal();
 }
@@ -648,49 +633,6 @@ function filterDigital() {
         const matchSearch = !search || text.includes(search);
         row.style.display = matchStatus && matchSearch ? '' : 'none';
     });
-}
-
-function editKeterangan(id) {
-    var span = document.getElementById('kep-' + id);
-    if (!span) return;
-    var current = span.textContent === '-' ? '' : span.textContent;
-    var input = document.createElement('input');
-    input.type = 'text';
-    input.value = current;
-    input.style.cssText = 'padding:2px 6px;font-size:13px;width:100%;box-sizing:border-box;border-radius:6px;background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;';
-    span.style.display = 'none';
-    span.parentNode.insertBefore(input, span.nextSibling);
-    input.focus();
-    input.select();
-
-    function done() {
-        var val = input.value.trim();
-        fetch('/admin/digital-assets/' + id, {
-            method: 'PUT',
-            headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ keperluan: val || '' }),
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.success) {
-                span.textContent = val || '-';
-                span.title = val || '';
-                var a = digitalData.find(function(i) { return i.id === id; });
-                if (a) a.keperluan = val;
-            }
-        })
-        .catch(function() {})
-        .finally(function() {
-            span.style.display = '';
-            input.remove();
-        });
-    }
-
-    input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); done(); }
-        if (e.key === 'Escape') { span.style.display = ''; input.remove(); }
-    });
-    input.addEventListener('blur', done);
 }
 
 </script>

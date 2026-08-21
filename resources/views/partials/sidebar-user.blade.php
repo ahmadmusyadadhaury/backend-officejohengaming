@@ -2,25 +2,7 @@
     $isMeetingActive = request()->routeIs('user.*');
     $isItActive = request()->routeIs('it-tickets.*');
 
-    $now = \Carbon\Carbon::today();
-    $sevenDays = $now->copy()->addDays(7);
-    $totalTagihan = \App\Models\WifiPayment::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('masa_tenggang', '<=', $sevenDays)
-            ->count()
-        + \App\Models\PembayaranAsetDigital::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count()
-        + \App\Models\PembayaranIplRuko::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count()
-        + \App\Models\PembayaranAsetMes::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected'])
-            ->where('jatuh_tempo', '<=', $sevenDays)
-            ->count()
-        ;
+    $totalTagihan = \App\Services\TagihanService::tagihanCount();
 @endphp
 
 <p class="sidebar-section-label">Menu Utama</p>

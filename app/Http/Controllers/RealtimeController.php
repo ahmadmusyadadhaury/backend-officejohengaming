@@ -16,6 +16,7 @@ use App\Models\WeeklyMeetingInvitation;
 use App\Models\WeeklyMeetingSession;
 use App\Models\WifiPayment;
 use App\Services\MeetingQueueService;
+use App\Services\TagihanService;
 use App\Services\WeeklyMeetingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -105,6 +106,9 @@ class RealtimeController extends Controller
 
     public function notifCount()
     {
+        TagihanService::cleanupStaleNotifications(auth()->id());
+        TagihanService::syncVehiclePajakRequests();
+
         $activeInvitations = MeetingInvitation::where('user_id', auth()->id())
             ->whereHas('meeting', function ($q) {
                 $q->whereIn('status', ['approved', 'confirmed', 'in_progress'])
@@ -139,15 +143,10 @@ class RealtimeController extends Controller
             ->whereHas('session', fn ($q) => $q->whereIn('status', ['active', 'extended']))
             ->count();
 
-        $totalTagihan = Notification::where('user_id', auth()->id())
-            ->where('type', 'tagihan')
-            ->where('is_read', false)
-            ->count();
+        $totalTagihan = TagihanService::tagihanCount();
 
-        $totalApproval = Notification::where('user_id', auth()->id())
-            ->where('type', 'approval')
-            ->where('is_read', false)
-            ->count();
+        $isApprover = in_array(auth()->user()->role, ['admin', 'head_of_store', 'hr', 'gm', 'ceo']);
+        $totalApproval = $isApprover ? TagihanService::approvalCount() : 0;
 
         return response()->json([
             'total_active' => $activeInvitations + $activeWeeklyInvitations,

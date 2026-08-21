@@ -19,9 +19,20 @@ class SosialMediaController extends Controller
             'nonaktif' => $allItems->where('status', 'nonaktif')->count(),
         ];
 
+        $alertItems = $allItems->where('status', 'nonaktif')->values();
+
+        $alertJson = $alertItems->map(fn ($i) => [
+            'id' => $i->id,
+            'username' => $i->username,
+            'nama' => $i->nama,
+            'platform' => $i->platform,
+            'pic' => $i->pic,
+            'status' => $i->status,
+        ]);
+
         $items = SosialMedia::orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
-        $itemsJson = $items->getCollection()->values()->map(function ($i) {
+        $itemsJson = $allItems->values()->map(function ($i) {
             return [
                 'id' => $i->id,
                 'username' => $i->username,
@@ -39,6 +50,8 @@ class SosialMediaController extends Controller
             'items' => $items,
             'itemsJson' => $itemsJson,
             'stats' => $stats,
+            'alertItems' => $alertItems,
+            'alertJson' => $alertJson,
             'showAll' => $showAll,
         ]);
     }
@@ -53,6 +66,7 @@ class SosialMediaController extends Controller
             'divisi' => 'required|string|max:255',
             'pic' => 'required|string|max:255',
             'ket' => 'nullable|string',
+            'status' => 'required|in:aktif,nonaktif',
         ]);
 
         SosialMedia::create($data);
@@ -70,6 +84,7 @@ class SosialMediaController extends Controller
             'divisi' => 'required|string|max:255',
             'pic' => 'required|string|max:255',
             'ket' => 'nullable|string',
+            'status' => 'required|in:aktif,nonaktif',
         ]);
 
         $sosialMedium->update($data);

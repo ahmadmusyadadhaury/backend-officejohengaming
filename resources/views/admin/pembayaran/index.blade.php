@@ -25,38 +25,48 @@
         }
     @endphp
     @if(isset($alerts) && $alerts->isNotEmpty())
-    <div class="space-y-2">
-        @if(isset($alertGroups['mati']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #ef4444;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['mati']->count() }} WiFi</span>
-                <span style="color:var(--text-muted);"> dengan masa tenggang sudah lewat.</span>
+    @if(isset($alertGroups['mati']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#ef4444;">WiFi Mati</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['mati']->count() }} WiFi dengan masa tenggang sudah lewat.
                 <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
-        @if(isset($alertGroups['segera_habis']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f59e0b;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['segera_habis']->count() }} WiFi</span>
-                <span style="color:var(--text-muted);"> akan segera habis masa tenggangnya (≤3 hari).</span>
+    </div>
+    @endif
+    @if(isset($alertGroups['segera_habis']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#f59e0b;">Segera Habis</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['segera_habis']->count() }} WiFi akan segera habis masa tenggangnya (≤3 hari).
                 <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
-        @if(isset($alertGroups['jatuh_tempo']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f97316;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['jatuh_tempo']->count() }} WiFi</span>
-                <span style="color:var(--text-muted);"> akan jatuh tempo (≤7 hari).</span>
+    </div>
+    @endif
+    @if(isset($alertGroups['jatuh_tempo']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#f97316;">Jatuh Tempo</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['jatuh_tempo']->count() }} WiFi akan jatuh tempo (≤7 hari).
                 <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
     </div>
+    @endif
     @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -140,38 +150,48 @@
         }
     @endphp
     @if(isset($alerts) && $alerts->isNotEmpty())
-    <div class="space-y-2">
-        @if(isset($alertGroups['mati']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #ef4444;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['mati']->count() }} Aset Digital</span>
-                <span style="color:var(--text-muted);"> lewat jatuh tempo.</span>
+    @if(isset($alertGroups['mati']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#ef4444;">Lewat Jatuh Tempo</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['mati']->count() }} Aset Digital lewat jatuh tempo.
                 <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
-        @if(isset($alertGroups['segera_habis']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f59e0b;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['segera_habis']->count() }} Aset Digital</span>
-                <span style="color:var(--text-muted);"> akan segera jatuh tempo (≤3 hari).</span>
+    </div>
+    @endif
+    @if(isset($alertGroups['segera_habis']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#f59e0b;">Segera Jatuh Tempo</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['segera_habis']->count() }} Aset Digital akan segera jatuh tempo (≤3 hari).
                 <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
-        @if(isset($alertGroups['jatuh_tempo']))
-        <div class="gaming-card p-3 flex items-start gap-3" style="border-left:3px solid #f97316;">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <div class="text-xs" style="color:var(--text-primary);">
-                <span style="font-weight:600;">{{ $alertGroups['jatuh_tempo']->count() }} Aset Digital</span>
-                <span style="color:var(--text-muted);"> akan jatuh tempo (≤7 hari).</span>
+    </div>
+    @endif
+    @if(isset($alertGroups['jatuh_tempo']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#f97316;">Jatuh Tempo</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['jatuh_tempo']->count() }} Aset Digital akan jatuh tempo (≤7 hari).
                 <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
     </div>
+    @endif
     @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -255,50 +275,48 @@
         }
     @endphp
     @if(isset($alerts) && $alerts->isNotEmpty())
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        @if(isset($alertGroups['mati']))
-        <div style="flex:1;min-width:260px;">
-            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
-                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#ef4444;">{{ $alertGroups['mati']->count() }} IPL Ruko Lewat Jatuh Tempo</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $alertGroups['mati']->count() }} IPL Ruko lewat jatuh tempo.</div>
-                </div>
-                <button type="button" onclick="setFilter('mati')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
+    @if(isset($alertGroups['mati']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#ef4444;">Lewat Jatuh Tempo</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['mati']->count() }} IPL Ruko lewat jatuh tempo.
+                <button type="button" onclick="setFilter('mati')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
             </div>
         </div>
-        @endif
-        @if(isset($alertGroups['segera_habis']))
-        <div style="flex:1;min-width:260px;">
-            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
-                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#f59e0b;">{{ $alertGroups['segera_habis']->count() }} IPL Ruko Segera Jatuh Tempo</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $alertGroups['segera_habis']->count() }} IPL Ruko akan segera jatuh tempo (≤3 hari).</div>
-                </div>
-                <button type="button" onclick="setFilter('segera_habis')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
-            </div>
-        </div>
-        @endif
-        @if(isset($alertGroups['jatuh_tempo']))
-        <div style="flex:1;min-width:260px;">
-            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);">
-                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#f97316;">{{ $alertGroups['jatuh_tempo']->count() }} IPL Ruko Jatuh Tempo</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $alertGroups['jatuh_tempo']->count() }} IPL Ruko akan jatuh tempo (≤7 hari).</div>
-                </div>
-                <button type="button" onclick="setFilter('jatuh_tempo')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(249,115,22,0.12);color:#f97316;border:1px solid rgba(249,115,22,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
-            </div>
-        </div>
-        @endif
     </div>
+    @endif
+    @if(isset($alertGroups['segera_habis']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#f59e0b;">Segera Jatuh Tempo</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['segera_habis']->count() }} IPL Ruko akan segera jatuh tempo (≤3 hari).
+                <button type="button" onclick="setFilter('segera_habis')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+    </div>
+    @endif
+    @if(isset($alertGroups['jatuh_tempo']))
+    <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="margin-bottom:8px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+            <div class="text-sm font-bold" style="color:#f97316;">Jatuh Tempo</div>
+            <div class="text-sm mt-1" style="color:var(--text-secondary);">
+                {{ $alertGroups['jatuh_tempo']->count() }} IPL Ruko akan jatuh tempo (≤7 hari).
+                <button type="button" onclick="setFilter('jatuh_tempo')" class="text-xs font-semibold" style="color:#a78bfa;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-left:4px;">Lihat</button>
+            </div>
+        </div>
+    </div>
+    @endif
     @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -482,18 +500,23 @@
     </div>
     @endif
 
+    {{-- Pill Switcher Internet --}}
+    @if($jenis === 'internet')
+    <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:10px;padding:3px;background:var(--bg-card);width:fit-content;margin-bottom:12px;">
+        <button type="button" id="pill-internet-bayar" onclick="switchInternetTab('bayar')" style="padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:rgba(124,58,237,0.15);color:#a78bfa;">Pembayaran Internet</button>
+        <button type="button" id="pill-internet-usage" onclick="switchInternetTab('usage')" style="padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;background:none;color:var(--text-muted);">Pengecekan Usage</button>
+    </div>
+    @endif
+
     @if($jenis !== 'listrik')
     {{-- Table --}}
+    <div id="internet-tab-bayar">
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pembayaran {{ $jenisLabels[$jenis] }}</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
-                    @if($jenis === 'internet')
-                        Data WiFi.
-                    @else
-                        Data tagihan {{ $jenisLabels[$jenis] }}.
-                    @endif
+                    Data tagihan {{ $jenisLabels[$jenis] }}.
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -525,7 +548,7 @@
                     style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
-                <a href="{{ route('admin.export', ['type' => 'pembayaran', 'jenis' => $jenis, 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">Download Excel</a>
+                <a href="{{ route('admin.export', ['type' => 'pembayaran', 'jenis' => $jenis, 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
@@ -777,23 +800,21 @@
             </div>
         </div>
     </div>
+    </div>
     @endif
 
     {{-- Pengecekan Usage Internet --}}
     @if($jenis === 'internet')
+    <div id="internet-tab-usage" style="display:none;">
     <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+        <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
             <div>
                 <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Usage Internet</div>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
                     Lakukan pengecekan usage internet per ruangan setiap hari.
                 </div>
             </div>
-            <div class="flex items-center gap-2 flex-wrap">
-                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
-                    <input type="hidden" name="jenis" value="internet">
-                    <input type="month" name="internet_usage_date" value="{{ $internetUsageDate }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
-                </form>
+            <div class="flex items-center gap-2">
                 @if(auth()->user()->role !== 'gm')
                 <button type="button" onclick="openInternetUsageModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -802,6 +823,23 @@
                     Input Usage
                 </button>
                 @endif
+            </div>
+        </div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div class="relative flex-1 min-w-0 max-w-full sm:min-w-[200px] sm:max-w-[260px]">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="search-usage" placeholder="Cari ruangan / keterangan..." oninput="filterUsageTable()"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+            </div>
+            <div class="flex items-center gap-2" style="margin-left:auto;">
+                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                    <input type="hidden" name="jenis" value="internet">
+                    <input type="month" name="internet_usage_date" value="{{ $internetUsageDate }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                </form>
+                <a href="{{ route('admin.export', ['type' => 'internet-usage', 'internet_usage_date' => $internetUsageDate]) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" title="Export Usage Internet"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
             </div>
         </div>
         <div class="overflow-x-auto">
@@ -821,7 +859,7 @@
                         @endif
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="usage-tbody">
                     @forelse($internetUsages as $i => $u)
                     <tr>
                         <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
@@ -862,106 +900,18 @@
             </table>
         </div>
     </div>
+    </div>
     @endif
 
-    {{-- Riwayat Top Up Token --}}
+    {{-- Pill Switcher Listrik --}}
     @if($jenis === 'listrik')
-    <div class="gaming-card" style="overflow:visible;">
-        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
-            <div>
-                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Riwayat Top Up Token</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Riwayat pembelian/pengisian token listrik.</div>
-            </div>
-            <div class="flex items-center gap-2 flex-wrap">
-                <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
-                    <button type="button" onclick="setTopupRange('harian')" class="topup-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'harian' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'harian' ? '#a78bfa' : 'var(--text-muted)' }};">Harian</button>
-                    <button type="button" onclick="setTopupRange('mingguan')" class="topup-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? '#a78bfa' : 'var(--text-muted)' }};">Mingguan</button>
-                    <button type="button" onclick="setTopupRange('bulanan')" class="topup-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? '#a78bfa' : 'var(--text-muted)' }};">Bulanan</button>
-                </div>
-                <a href="{{ route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan']) }}" class="btn btn-secondary btn-sm" title="Download Excel Riwayat Top Up">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Excel
-                </a>
-                @if(auth()->user()->role !== 'gm')
-                <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Top Up Baru
-                </button>
-                @endif
-            </div>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="gaming-table w-full">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Tanggal Bayar</th>
-                        <th>Periode</th>
-                        <th>Jumlah KWH</th>
-                        <th>Nominal</th>
-                        <th>Oleh</th>
-                        <th>Bukti</th>
-                        <th>Catatan</th>
-                        @if(auth()->user()->role !== 'gm')
-                        <th>Aksi</th>
-                        @endif
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($topupHistory as $i => $t)
-                    <tr>
-                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
-                        <td style="color:var(--text-primary);">{{ $t->payment_date->format('d M Y') }}</td>
-                        <td style="color:var(--text-muted);">{{ $t->period }}</td>
-                        <td style="font-weight:600;color:var(--text-primary);">{{ number_format($t->amount_kwh, 0) }} KWH</td>
-                        <td style="color:var(--text-primary);">Rp {{ number_format($t->nominal, 0) }}</td>
-                        <td style="color:var(--text-primary);">{{ $t->creator?->name ?? '-' }}</td>
-                        <td>
-                            @if($t->bukti_bayar)
-                            <a href="{{ route('files.show', $t->bukti_bayar) }}" target="_blank" rel="noopener" title="Lihat bukti pembayaran">
-                                <img src="{{ route('files.show', $t->bukti_bayar) }}" alt="Bukti" style="width:60px;height:40px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);display:block;">
-                            </a>
-                            @else
-                            <span style="color:var(--text-muted);">-</span>
-                            @endif
-                        </td>
-                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $t->notes ?: 'Tidak ada catatan' }}</td>
-                        @if(auth()->user()->role !== 'gm')
-                        <td>
-                            <div class="flex items-center gap-1">
-                                <button type="button" onclick="showTopupDetail({{ $t->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                    Lihat Detail
-                                </button>
-                                <div class="dropdown-wrap" style="position:relative;">
-                                    <button type="button" onclick="toggleDropdown(this, 'tp-{{ $t->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
-                                    <div id="dropdown-tp-{{ $t->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
-                                        <button type="button" onclick="showTopupDetail({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
-                                        <button type="button" onclick="openEditTopup({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <form method="POST" action="{{ route('admin.pembayaran.token-topup.destroy', $t->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up ini?" style="margin:0;">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        @endif
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="{{ auth()->user()->role !== 'gm' ? 8 : 7 }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+    <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:10px;padding:3px;background:var(--bg-card);width:fit-content;margin-bottom:12px;">
+        <button type="button" id="pill-listrik-topup" onclick="switchListrikTab('topup')" style="padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:rgba(124,58,237,0.15);color:#a78bfa;">Riwayat Top Up</button>
+        <button type="button" id="pill-listrik-reading" onclick="switchListrikTab('reading')" style="padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;background:none;color:var(--text-muted);">Pengecekan Token</button>
     </div>
 
-    @if($jenis === 'listrik')
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    {{-- Baris Statistik Token (selalu tampil) --}}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" style="margin-bottom:12px;">
         <div class="gaming-card p-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(124,58,237,0.12);">
                 <svg class="w-5 h-5" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1008,7 +958,102 @@
     </div>
     @endif
 
+    {{-- Riwayat Top Up Token --}}
+    @if($jenis === 'listrik')
+    <div id="listrik-tab-topup">
+    <div class="gaming-card" style="overflow:visible;">
+        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Riwayat Top Up Token</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">Riwayat pembelian/pengisian token listrik.</div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
+                    <button type="button" onclick="setTopupRange('harian')" class="topup-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'harian' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'harian' ? '#a78bfa' : 'var(--text-muted)' }};">Harian</button>
+                    <button type="button" onclick="setTopupRange('mingguan')" class="topup-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? '#a78bfa' : 'var(--text-muted)' }};">Mingguan</button>
+                    <button type="button" onclick="setTopupRange('bulanan')" class="topup-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? '#a78bfa' : 'var(--text-muted)' }};">Bulanan</button>
+                </div>
+                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                    <input type="hidden" name="jenis" value="listrik">
+                    <input type="hidden" name="topup_range" value="{{ $topupRange }}">
+                    <input type="hidden" name="token_month" value="{{ $tokenMonth }}">
+                    <input type="month" name="topup_month" value="{{ $topupMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                </form>
+                <a href="{{ route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan', 'topup_month' => $topupMonth]) }}" class="btn btn-secondary btn-sm" title="Export Riwayat Top Up">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Export
+                </a>
+                @if(auth()->user()->role !== 'gm')
+                <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Top Up Baru
+                </button>
+                @endif
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="gaming-table w-full">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal Bayar</th>
+                        <th>Periode</th>
+                        <th>Jumlah KWH</th>
+                        <th>Nominal</th>
+                        <th>Oleh</th>
+                        <th>Catatan</th>
+                        @if(auth()->user()->role !== 'gm')
+                        <th>Aksi</th>
+                        @endif
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($topupHistory as $i => $t)
+                    <tr>
+                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
+                        <td style="color:var(--text-primary);">{{ $t->payment_date->format('d M Y') }}</td>
+                        <td style="color:var(--text-muted);">{{ $t->period }}</td>
+                        <td style="font-weight:600;color:var(--text-primary);">{{ number_format($t->amount_kwh, 0) }} KWH</td>
+                        <td style="color:var(--text-primary);">Rp {{ number_format($t->nominal, 0) }}</td>
+                        <td style="color:var(--text-primary);">{{ $t->creator?->name ?? '-' }}</td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $t->notes ?: 'Tidak ada catatan' }}</td>
+                        @if(auth()->user()->role !== 'gm')
+                        <td>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showTopupDetail({{ $t->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, 'tp-{{ $t->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-tp-{{ $t->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showTopupDetail({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        <button type="button" onclick="openEditTopup({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.pembayaran.token-topup.destroy', $t->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        @endif
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="{{ auth()->user()->role !== 'gm' ? 7 : 6 }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
     {{-- Pengecekan Token Listrik --}}
+    <div id="listrik-tab-reading" style="display:none;">
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
             <div>
@@ -1027,9 +1072,9 @@
                     <input type="hidden" name="jenis" value="listrik">
                     <input type="month" name="token_month" value="{{ $tokenMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
                 </form>
-                <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Download Excel Pengecekan Token">
+                <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Export Pengecekan Token">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Excel
+                    Export
                 </a>
                 @if(auth()->user()->role !== 'gm')
                 <button type="button" onclick="openTokenModal()" class="btn btn-primary btn-sm">
@@ -1085,7 +1130,7 @@
                                     <div id="dropdown-tr-{{ $r->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showTokenReadingDetail({{ $r->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
                                         <button type="button" onclick="openEditTokenReading({{ $r->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
-                                        <a href="{{ route('admin.export', ['type' => 'token-readings']) }}" target="_blank" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;text-decoration:none;box-sizing:border-box;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Download Excel</a>
+                                        <a href="{{ route('admin.export', ['type' => 'token-readings']) }}" target="_blank" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;text-decoration:none;box-sizing:border-box;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Export</a>
                                         <form method="POST" action="{{ route('admin.pembayaran.token-reading.destroy', $r->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data pengecekan ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
@@ -1105,6 +1150,7 @@
             </table>
         </div>
     </div>
+    </div>
 
     @endif
 
@@ -1123,7 +1169,7 @@
             </button>
         </div>
         <div class="px-6 py-5 overflow-y-auto flex-1">
-            <form method="POST" id="token-form" action="{{ route('admin.pembayaran.token-reading.store') }}">
+            <form method="POST" id="token-form" action="{{ route('admin.pembayaran.token-reading.store') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" id="token-method" value="POST">
                 <div class="space-y-4">
@@ -1148,6 +1194,35 @@
                     <div class="field-group">
                         <label class="gaming-label">Catatan</label>
                         <textarea name="notes" id="f-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Bukti Pengecekan KWH</label>
+                        <div style="display:flex;gap:8px;">
+                            <button type="button" onclick="openKwhCamera()" class="px-3 py-2 rounded-xl text-xs font-medium transition" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:rgba(108,92,255,0.12);color:#6c5cff;border:1px solid rgba(108,92,255,0.35);cursor:pointer;">📷 Ambil Foto</button>
+                            <label for="f-token-bukti" class="px-3 py-2 rounded-xl text-xs font-medium transition" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--bg-surface-2);color:var(--text-primary);border:1px solid var(--border-color);cursor:pointer;">📎 Upload Dokumen</label>
+                            <input type="file" name="bukti_foto" id="f-token-bukti" accept="image/jpeg,image/png,application/pdf" style="display:none;" onchange="showTokenBuktiPreview(this.files[0])">
+                        </div>
+                        <div id="kwh-camera-panel" style="display:none;margin-top:10px;">
+                            <video id="kwh-video" autoplay playsinline muted style="width:100%;max-height:240px;border-radius:12px;background:#000;display:block;object-fit:cover;"></video>
+                            <div style="display:flex;gap:8px;margin-top:8px;">
+                                <button type="button" onclick="snapKwhPhoto()" class="px-4 py-2 rounded-xl text-xs font-medium" style="flex:1;background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">📸 Jepret</button>
+                                <button type="button" onclick="stopKwhCamera()" class="px-4 py-2 rounded-xl text-xs font-medium" style="background:var(--bg-surface-2);color:var(--text-primary);border:1px solid var(--border-color);cursor:pointer;">Tutup Kamera</button>
+                            </div>
+                        </div>
+                        <canvas id="kwh-canvas" style="display:none;"></canvas>
+                        <div id="token-bukti-preview" style="display:none;margin-top:10px;">
+                            <div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1px solid var(--border-color);background:var(--bg-surface-2);">
+                                <img id="token-bukti-thumb" src="" alt="" style="width:56px;height:56px;border-radius:8px;object-fit:cover;border:1px solid var(--border-color);display:none;">
+                                <div id="token-bukti-fileicon" style="width:56px;height:56px;border-radius:8px;display:none;align-items:center;justify-content:center;font-size:24px;background:rgba(108,92,255,0.12);">📄</div>
+                                <div style="flex:1;min-width:0;">
+                                    <div id="token-bukti-name" class="text-xs font-semibold" style="color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                                    <div id="token-bukti-existing" style="font-size:10px;color:var(--text-muted);margin-top:2px;display:none;">Bukti tersimpan — pilih file baru untuk mengganti.</div>
+                                </div>
+                                <a id="token-bukti-link" href="#" target="_blank" rel="noopener" style="font-size:11px;color:#6c5cff;text-decoration:none;display:none;">Lihat</a>
+                                <button type="button" onclick="clearTokenBukti()" title="Hapus pilihan bukti" style="padding:4px 8px;border-radius:8px;border:none;background:none;color:#ef4444;cursor:pointer;font-size:14px;">✕</button>
+                            </div>
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Foto meteran KWH atau dokumen pendukung (JPG/PNG/PDF, maks 2MB). Opsional.</div>
                     </div>
                 </div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
@@ -2098,6 +2173,99 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+let kwhCamStream = null;
+let kwhExistingBukti = null;
+
+function openKwhCamera() {
+    if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(stream => {
+            kwhCamStream = stream;
+            document.getElementById('kwh-video').srcObject = stream;
+            document.getElementById('kwh-camera-panel').style.display = 'block';
+        }).catch(() => {
+            alert('Kamera tidak dapat diakses. Gunakan tombol Upload Dokumen.\n\nCatatan: fitur kamera memerlukan akses HTTPS.');
+        });
+    } else {
+        alert('Browser tidak mendukung akses kamera. Gunakan tombol Upload Dokumen.');
+    }
+}
+
+function snapKwhPhoto() {
+    const video = document.getElementById('kwh-video');
+    const canvas = document.getElementById('kwh-canvas');
+    if (!video.videoWidth) return;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    canvas.toBlob(blob => {
+        if (!blob) return;
+        const file = new File([blob], 'bukti-kwh-' + Date.now() + '.jpg', { type: 'image/jpeg' });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        document.getElementById('f-token-bukti').files = dt.files;
+        showTokenBuktiPreview(file);
+        stopKwhCamera();
+    }, 'image/jpeg', 0.9);
+}
+
+function stopKwhCamera() {
+    if (kwhCamStream) {
+        kwhCamStream.getTracks().forEach(t => t.stop());
+        kwhCamStream = null;
+    }
+    document.getElementById('kwh-camera-panel').style.display = 'none';
+}
+
+function showTokenBuktiPreview(file) {
+    if (!file) return;
+    const thumb = document.getElementById('token-bukti-thumb');
+    const icon = document.getElementById('token-bukti-fileicon');
+    document.getElementById('token-bukti-name').textContent = file.name;
+    document.getElementById('token-bukti-existing').style.display = kwhExistingBukti ? 'block' : 'none';
+    document.getElementById('token-bukti-link').style.display = 'none';
+    if (file.type && file.type.startsWith('image/')) {
+        thumb.src = URL.createObjectURL(file);
+        thumb.style.display = 'block';
+        icon.style.display = 'none';
+    } else {
+        thumb.style.display = 'none';
+        icon.style.display = 'flex';
+    }
+    document.getElementById('token-bukti-preview').style.display = 'block';
+}
+
+function showTokenBuktiExisting(path) {
+    kwhExistingBukti = path || null;
+    const prev = document.getElementById('token-bukti-preview');
+    const thumb = document.getElementById('token-bukti-thumb');
+    const icon = document.getElementById('token-bukti-fileicon');
+    const link = document.getElementById('token-bukti-link');
+    if (!path) { prev.style.display = 'none'; return; }
+    const url = '{{ url('files') }}/' + path;
+    document.getElementById('token-bukti-name').textContent = path.split('/').pop();
+    document.getElementById('token-bukti-existing').style.display = 'block';
+    if (/\.(jpe?g|png)$/i.test(path)) {
+        thumb.src = url;
+        thumb.style.display = 'block';
+        icon.style.display = 'none';
+    } else {
+        thumb.style.display = 'none';
+        icon.style.display = 'flex';
+    }
+    link.href = url;
+    link.style.display = 'inline';
+    prev.style.display = 'block';
+}
+
+function clearTokenBukti() {
+    document.getElementById('f-token-bukti').value = '';
+    if (kwhExistingBukti) {
+        showTokenBuktiExisting(kwhExistingBukti);
+    } else {
+        document.getElementById('token-bukti-preview').style.display = 'none';
+    }
+}
+
 function resetTokenForm() {
     const form = document.getElementById('token-form');
     form.action = '{{ route('admin.pembayaran.token-reading.store') }}';
@@ -2112,6 +2280,9 @@ function resetTokenForm() {
     document.getElementById('f-checked_date').value = '{{ date('Y-m-d') }}';
     const defChecked = document.getElementById('f-checked_by').querySelector('option[selected]');
     if (defChecked) document.getElementById('f-checked_by').value = defChecked.value;
+    stopKwhCamera();
+    kwhExistingBukti = null;
+    document.getElementById('token-bukti-preview').style.display = 'none';
 }
 
 function openTokenModal() {
@@ -2122,6 +2293,7 @@ function openTokenModal() {
 }
 
 function closeTokenModal() {
+    stopKwhCamera();
     document.getElementById('token-modal').style.display = 'none';
     document.body.style.overflow = '';
 }
@@ -2138,6 +2310,7 @@ function openEditTokenReading(id) {
     document.getElementById('f-checked_date').value = r.checked_date;
     document.getElementById('f-checked_by').value = r.checked_by;
     document.getElementById('f-notes').value = r.notes || '';
+    showTokenBuktiExisting(r.bukti_foto);
     document.getElementById('token-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
     document.getElementById('f-remaining_kwh').focus();
@@ -2155,12 +2328,20 @@ function showTokenReadingDetail(id) {
     if (!r) return;
     const fmtDate = new Date(r.checked_date + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     const st = tokenReadingStatusMap[r.status] || tokenReadingStatusMap.aman;
+    let buktiValue = '-';
+    if (r.bukti_foto) {
+        const buktiUrl = '{{ url('files') }}/' + r.bukti_foto;
+        buktiValue = /\.(jpe?g|png)$/i.test(r.bukti_foto)
+            ? `<a href="${buktiUrl}" target="_blank" rel="noopener" title="Lihat bukti pengecekan KWH"><img src="${buktiUrl}" alt="Bukti KWH" style="max-width:140px;max-height:90px;border-radius:8px;object-fit:cover;border:1px solid var(--border-color);display:block;margin-left:auto;"></a>`
+            : `<a href="${buktiUrl}" target="_blank" rel="noopener" style="color:#6c5cff;">Lihat Dokumen</a>`;
+    }
     const rows = [
         { label: 'Tanggal Check', value: fmtDate },
         { label: 'Sisa KWH', value: Number(r.remaining_kwh).toLocaleString('id-ID') + ' KWH' },
         { label: 'Terpakai', value: Number(r.terpakai).toLocaleString('id-ID') + ' KWH' },
         { label: 'Pengecek', value: r.checker ? r.checker.name : '-' },
         { label: 'Catatan', value: r.notes || '-' },
+        { label: 'Bukti', value: buktiValue },
     ];
     const statusBlock = `<div class="mt-3"><div class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);margin-bottom:6px;">Status</div>
         <span class="badge text-xs" style="background:${st.bg};color:${st.color};border:1px solid ${st.border};">${st.label}</span></div>`;
@@ -2182,6 +2363,40 @@ function showTokenReadingDetail(id) {
 function closeTokenReadingDetail() {
     document.getElementById('token-reading-detail-modal').style.display = 'none';
     document.body.style.overflow = '';
+}
+
+function setTabPill(activeId, inactiveId) {
+    const on = document.getElementById(activeId);
+    const off = document.getElementById(inactiveId);
+    if (!on || !off) return;
+    on.style.background = 'rgba(124,58,237,0.15)';
+    on.style.color = '#a78bfa';
+    on.style.fontWeight = '600';
+    off.style.background = 'none';
+    off.style.color = 'var(--text-muted)';
+    off.style.fontWeight = '500';
+}
+
+function switchListrikTab(tab) {
+    const isTopup = tab === 'topup';
+    document.getElementById('listrik-tab-topup').style.display = isTopup ? '' : 'none';
+    document.getElementById('listrik-tab-reading').style.display = isTopup ? 'none' : '';
+    setTabPill(isTopup ? 'pill-listrik-topup' : 'pill-listrik-reading', isTopup ? 'pill-listrik-reading' : 'pill-listrik-topup');
+}
+
+function switchInternetTab(tab) {
+    const isBayar = tab === 'bayar';
+    document.getElementById('internet-tab-bayar').style.display = isBayar ? '' : 'none';
+    document.getElementById('internet-tab-usage').style.display = isBayar ? 'none' : '';
+    setTabPill(isBayar ? 'pill-internet-bayar' : 'pill-internet-usage', isBayar ? 'pill-internet-usage' : 'pill-internet-bayar');
+}
+
+function filterUsageTable() {
+    const q = (document.getElementById('search-usage')?.value || '').toLowerCase();
+    document.querySelectorAll('#usage-tbody tr').forEach(tr => {
+        if (tr.querySelector('td[colspan]')) return;
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
 }
 
 function openInternetUsageModal() {

@@ -59,6 +59,44 @@
         </div>
     </div>
 
+    {{-- Alert Kondisi Peralatan --}}
+    @php
+        $perluServisCount = $alertItems->where('kondisi', 'perlu_servis')->count();
+        $rusakCount = $alertItems->where('kondisi', 'rusak')->count();
+    @endphp
+    @if($alertItems->isNotEmpty())
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        @if($perluServisCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#f59e0b;">{{ $perluServisCount }} Perlu Servis</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $perluServisCount }} peralatan dengan kondisi perlu servis.</div>
+                </div>
+                <button type="button" onclick="showAlertPopup('warning')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
+            </div>
+        </div>
+        @endif
+        @if($rusakCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#ef4444;">{{ $rusakCount }} Rusak</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $rusakCount }} peralatan dengan kondisi rusak.</div>
+                </div>
+                <button type="button" onclick="showAlertPopup('danger')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
+            </div>
+        </div>
+        @endif
+    </div>
+    @endif
+
     {{-- Tabel --}}
     <div class="gaming-card" style="overflow:visible;">
         <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border-color);">
@@ -920,6 +958,17 @@
     </div>
 </div>
 @endif
+{{-- Popup Alert Kondisi Peralatan --}}
+<div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
+    <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:460px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);">Detail Kondisi Peralatan</div>
+            <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
+        </div>
+        <div id="alert-popup-body"></div>
+    </div>
+</div>
+
 @endsection
 
 @push('styles')
@@ -1026,6 +1075,49 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 const itemsData = @json($itemsJson);
+const alertData = @json($alertJson);
+
+function showAlertPopup(type) {
+    const title = document.getElementById('alert-popup-title');
+    const body = document.getElementById('alert-popup-body');
+    var color, items, titleText;
+
+    if (type === 'danger') {
+        color = '#ef4444';
+        items = alertData.filter(function(i) { return i.kondisi === 'rusak'; });
+        titleText = 'Peralatan Kondisi Rusak';
+    } else {
+        color = '#f59e0b';
+        items = alertData.filter(function(i) { return i.kondisi === 'perlu_servis'; });
+        titleText = 'Peralatan Perlu Servis';
+    }
+
+    title.textContent = titleText;
+
+    if (items.length === 0) {
+        body.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada peralatan.</p>';
+    } else {
+        body.innerHTML = items.map(function(i) {
+            var kondisiLabel = i.kondisi === 'rusak'
+                ? '<span style="color:#ef4444;font-weight:600;">Rusak</span>'
+                : '<span style="color:#f59e0b;font-weight:600;">Perlu Servis</span>';
+            return '<div class="flex items-center gap-3 px-4 py-3.5 rounded-xl" style="border:1px solid var(--border-color);margin-bottom:8px;cursor:pointer;transition:all 0.15s;background:var(--bg-surface-2);" onclick="openEditModal(' + i.id + ')" onmouseover="this.style.borderColor=\'' + color + '\'" onmouseout="this.style.borderColor=\'var(--border-color)\'">' +
+                '<div class="flex-1 min-w-0">' +
+                    '<p style="font-weight:600;font-size:14px;color:var(--text-primary);margin:0;">' + i.nama_barang + '</p>' +
+                    '<p style="font-size:12px;color:var(--text-muted);margin:2px 0 0;">' + (i.kode_aset || '-') + ' — Lokasi: ' + (i.lokasi_unit || '-') + '</p>' +
+                    '<p style="font-size:11px;color:var(--text-secondary);margin:4px 0 0;">Kondisi: ' + kondisiLabel + '</p>' +
+                '</div>' +
+                '<span onclick="event.stopPropagation()"><button onclick="openEditModal(' + i.id + ')" style="flex-shrink:0;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:' + color + ';color:#fff;box-shadow:0 4px 12px ' + (type === 'danger' ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)') + ';" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Perbaiki</button></span>' +
+            '</div>';
+        }).join('');
+    }
+
+    document.getElementById('alert-overlay').style.display = 'flex';
+}
+
+function closeAlertPopup() {
+    document.getElementById('alert-overlay').style.display = 'none';
+}
 const scanUrl = '{{ route("admin.peralatan-kantor.scan") }}';
 const showAll = @json($showAll);
 let currentStep = 1;

@@ -288,9 +288,11 @@ class PaymentController extends Controller
         $topupHistoryJson = collect();
         $topupRange = $request->get('topup_range', 'bulanan');
         $readingRange = $request->get('reading_range', 'bulanan');
+        $topupMonth = now()->format('Y-m');
 
         if ($jenis === 'listrik') {
             $tokenMonth = $request->get('token_month', now()->format('Y-m'));
+            $topupMonth = $request->get('topup_month', now()->format('Y-m'));
             $startDate = Carbon::parse($tokenMonth.'-01')->startOfMonth();
             $endDate = $startDate->copy()->endOfMonth();
 
@@ -310,6 +312,10 @@ class PaymentController extends Controller
                 $topupQuery->whereDate('payment_date', Carbon::today());
             } elseif ($topupRange === 'mingguan') {
                 $topupQuery->whereBetween('payment_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+            } else {
+                $topupStart = Carbon::parse($topupMonth.'-01')->startOfMonth();
+                $topupEnd = $topupStart->copy()->endOfMonth();
+                $topupQuery->whereBetween('payment_date', [$topupStart, $topupEnd]);
             }
             $topupHistory = $topupQuery->orderBy('payment_date', 'desc')
                 ->orderBy('id', 'desc')
@@ -335,6 +341,7 @@ class PaymentController extends Controller
                 'checked_by' => $r->checked_by,
                 'status' => $r->status,
                 'notes' => $r->notes,
+                'bukti_foto' => $r->bukti_foto,
                 'terpakai' => max(0, $capacityKwh - (float) $r->remaining_kwh),
                 'checker' => $r->checker ? ['name' => $r->checker->name] : null,
             ]);
@@ -410,7 +417,7 @@ class PaymentController extends Controller
             'jenis', 'items', 'itemsJson', 'stats', 'alertItems', 'alerts',
             'jenisLabels', 'jenisIcons', 'tokenReadings', 'tokenReadingsJson', 'latestReading',
             'tokenAlert', 'capacityKwh', 'usedKwh', 'tokenMonth',
-            'latestPayment', 'topupHistory', 'topupHistoryJson', 'topupRange', 'readingRange',
+            'latestPayment', 'topupHistory', 'topupHistoryJson', 'topupRange', 'readingRange', 'topupMonth',
             'users', 'digitalAssets', 'internetUsages', 'internetUsagesJson', 'internetUsageDate', 'tahun', 'availableYears',
         ));
     }
@@ -771,7 +778,12 @@ class PaymentController extends Controller
             'checked_date' => 'required|date',
             'checked_by' => 'required|exists:users,id',
             'notes' => 'nullable|string|max:500',
+            'bukti_foto' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
         ]);
+
+        if ($request->hasFile('bukti_foto')) {
+            $data['bukti_foto'] = $request->file('bukti_foto')->store('token-reading-bukti', 'public');
+        }
 
         $remaining = $data['remaining_kwh'];
         $data['status'] = match (true) {
@@ -809,7 +821,15 @@ class PaymentController extends Controller
             'checked_date' => 'required|date',
             'checked_by' => 'required|exists:users,id',
             'notes' => 'nullable|string|max:500',
+            'bukti_foto' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
         ]);
+
+        if ($request->hasFile('bukti_foto')) {
+            if ($reading->bukti_foto) {
+                Storage::disk('public')->delete($reading->bukti_foto);
+            }
+            $data['bukti_foto'] = $request->file('bukti_foto')->store('token-reading-bukti', 'public');
+        }
 
         $data['status'] = match (true) {
             $data['remaining_kwh'] < 500 => 'segera_isi',
@@ -827,6 +847,11 @@ class PaymentController extends Controller
     public function destroyTokenReading($id)
     {
         $reading = ElectricityTokenReading::findOrFail($id);
+
+        if ($reading->bukti_foto) {
+            Storage::disk('public')->delete($reading->bukti_foto);
+        }
+
         $reading->delete();
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => 'listrik'])

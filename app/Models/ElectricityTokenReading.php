@@ -13,6 +13,7 @@ class ElectricityTokenReading extends Model
         'checked_date',
         'checked_by',
         'notes',
+        'bukti_foto',
     ];
 
     protected function casts(): array

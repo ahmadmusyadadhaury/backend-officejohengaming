@@ -25,9 +25,18 @@ class SimCardController extends Controller
 
         $alerts = $allCards->filter(fn ($c) => in_array($c->status_sim, ['jatuh_tempo', 'segera_habis', 'mati']))->values();
 
+        $alertJson = $alerts->map(fn ($c) => [
+            'id' => $c->id,
+            'nomor_sim_card' => $c->nomor_sim_card,
+            'pic' => $c->pic,
+            'masa_tenggang' => $c->masa_tenggang?->format('d/m/Y'),
+            'status_sim' => $c->status_sim,
+            'hari_sim' => $c->hari_sim,
+        ]);
+
         $cards = SimCard::orderBy('created_at', 'desc')->paginate($showAll ? max($allCards->count(), 1) : 10)->withQueryString();
 
-        $cardsJson = $cards->getCollection()->values()->map(function ($c) {
+        $cardsJson = $allCards->values()->map(function ($c) {
             return [
                 'id' => $c->id,
                 'nomor_sim_card' => $c->nomor_sim_card,
@@ -49,6 +58,7 @@ class SimCardController extends Controller
             'cardsJson' => $cardsJson,
             'stats' => $stats,
             'alerts' => $alerts,
+            'alertJson' => $alertJson,
             'showAll' => $showAll,
         ]);
     }

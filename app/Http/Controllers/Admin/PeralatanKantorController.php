@@ -32,9 +32,19 @@ class PeralatanKantorController extends Controller
             }),
         ];
 
+        $alertItems = $allItems->whereIn('kondisi', ['perlu_servis', 'rusak'])->values();
+
+        $alertJson = $alertItems->map(fn ($i) => [
+            'id' => $i->id,
+            'nama_barang' => $i->nama_barang,
+            'kode_aset' => $i->kode_aset,
+            'lokasi_unit' => $i->lokasi_unit,
+            'kondisi' => $i->kondisi,
+        ]);
+
         $items = PeralatanKantor::orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
-        $itemsJson = $items->getCollection()->values()->map(function ($i) {
+        $itemsJson = $allItems->values()->map(function ($i) {
             $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
             $penyusutanPerHari = $i->nilai / $masaBarang;
             $waktuPakai = max((int) $i->waktu_pakai_per_hari, 1);
@@ -79,6 +89,8 @@ class PeralatanKantorController extends Controller
             'items' => $items,
             'itemsJson' => $itemsJson,
             'stats' => $stats,
+            'alertItems' => $alertItems,
+            'alertJson' => $alertJson,
             'showAll' => $showAll,
         ]);
     }

@@ -8,63 +8,6 @@
 @section('content')
 <div class="pt-2 space-y-4 animate-fade-in">
 
-    {{-- Alert Banners --}}
-    @php
-        $alertGroups = $alerts->groupBy(function($c) {
-            $s = $c->status_sim;
-            if ($s === 'mati') return 'mati';
-            if ($s === 'segera_habis') return 'segera_habis';
-            if ($s === 'jatuh_tempo') return 'jatuh_tempo';
-            return 'other';
-        });
-        $matiCount = isset($alertGroups['mati']) ? $alertGroups['mati']->count() : 0;
-        $jatuhTempoCount = isset($alertGroups['jatuh_tempo']) ? $alertGroups['jatuh_tempo']->count() : 0;
-        $segeraCount = isset($alertGroups['segera_habis']) ? $alertGroups['segera_habis']->count() : 0;
-    @endphp
-    @if($alerts->isNotEmpty())
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        @if($matiCount > 0)
-        <div style="flex:1;min-width:260px;">
-            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
-                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#ef4444;">{{ $matiCount }} Tidak Aktif</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $matiCount }} SIM Card dengan masa tenggang sudah habis.</div>
-                </div>
-            </div>
-        </div>
-        @endif
-        @if($jatuhTempoCount > 0)
-        <div style="flex:1;min-width:260px;">
-            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);">
-                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#f97316;">{{ $jatuhTempoCount }} Jatuh Tempo</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $jatuhTempoCount }} SIM Card akan berakhir dalam 4-7 hari.</div>
-                </div>
-            </div>
-        </div>
-        @endif
-        @if($segeraCount > 0)
-        <div style="flex:1;min-width:260px;">
-            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
-                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#f59e0b;">{{ $segeraCount }} Segera Habis</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $segeraCount }} SIM Card akan berakhir dalam 1-3 hari.</div>
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>
-    @endif
-
     {{-- Stat Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 md:gap-3">
         <div class="stat-card-compact">
@@ -123,6 +66,66 @@
             </div>
         </div>
     </div>
+
+    {{-- Alert Banners --}}
+    @php
+        $alertGroups = $alerts->groupBy(function($c) {
+            $s = $c->status_sim;
+            if ($s === 'mati') return 'mati';
+            if ($s === 'segera_habis') return 'segera_habis';
+            if ($s === 'jatuh_tempo') return 'jatuh_tempo';
+            return 'other';
+        });
+        $matiCount = isset($alertGroups['mati']) ? $alertGroups['mati']->count() : 0;
+        $jatuhTempoCount = isset($alertGroups['jatuh_tempo']) ? $alertGroups['jatuh_tempo']->count() : 0;
+        $segeraCount = isset($alertGroups['segera_habis']) ? $alertGroups['segera_habis']->count() : 0;
+    @endphp
+    @if($alerts->isNotEmpty())
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        @if($matiCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#ef4444;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#ef4444;">{{ $matiCount }} Tidak Aktif</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $matiCount }} SIM Card dengan masa tenggang sudah habis.</div>
+                </div>
+                <button type="button" onclick="showAlertPopup('danger')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
+            </div>
+        </div>
+        @endif
+        @if($jatuhTempoCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f97316;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#f97316;">{{ $jatuhTempoCount }} Jatuh Tempo</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $jatuhTempoCount }} SIM Card akan berakhir dalam 4-7 hari.</div>
+                </div>
+                <button type="button" onclick="showAlertPopup('jatuh_tempo')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(249,115,22,0.12);color:#f97316;border:1px solid rgba(249,115,22,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
+            </div>
+        </div>
+        @endif
+        @if($segeraCount > 0)
+        <div style="flex:1;min-width:260px;">
+            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold" style="color:#f59e0b;">{{ $segeraCount }} Segera Habis</div>
+                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $segeraCount }} SIM Card akan berakhir dalam 1-3 hari.</div>
+                </div>
+                <button type="button" onclick="showAlertPopup('warning')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
+            </div>
+        </div>
+        @endif
+    </div>
+    @endif
 
     {{-- Tabel --}}
     <div class="gaming-card" style="overflow:visible;">
@@ -289,6 +292,17 @@
     </div>
 </div>
 
+{{-- Popup Alert SIM Card --}}
+<div id="alert-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-overlay);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAlertPopup()">
+    <div style="background:var(--bg-surface);border-radius:16px;padding:24px;width:90%;max-width:460px;max-height:65vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div id="alert-popup-title" style="font-weight:700;font-size:16px;color:var(--text-primary);">Detail SIM Card</div>
+            <button type="button" onclick="closeAlertPopup()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:20px;line-height:1;">&times;</button>
+        </div>
+        <div id="alert-popup-body"></div>
+    </div>
+</div>
+
 {{-- Modal Tambah / Edit SIM Card --}}
 <div id="sim-modal" class="modal-modern" onclick="if(event.target===this)closeModal('sim-modal')">
     <div class="modal-modern-panel md" onclick="event.stopPropagation()">
@@ -431,6 +445,62 @@
 @push('scripts')
 <script>
 const simData = @json($cardsJson);
+const alertData = @json($alertJson);
+
+function showAlertPopup(type) {
+    const title = document.getElementById('alert-popup-title');
+    const body = document.getElementById('alert-popup-body');
+    var color, bgColor, borderColor, items, titleText, isDanger;
+
+    if (type === 'jatuh_tempo') {
+        color = '#f97316';
+        bgColor = 'rgba(249,115,22,0.08)';
+        borderColor = 'rgba(249,115,22,0.2)';
+        items = alertData.filter(function(c) { return c.status_sim === 'jatuh_tempo'; });
+        titleText = 'SIM Card dengan Masa Tenggang Jatuh Tempo';
+    } else {
+        isDanger = type === 'danger';
+        color = isDanger ? '#ef4444' : '#f59e0b';
+        bgColor = isDanger ? 'rgba(239,68,68,0.08)' : 'rgba(245,158,11,0.08)';
+        borderColor = isDanger ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.2)';
+        items = alertData.filter(function(c) {
+            if (isDanger) return c.status_sim === 'mati';
+            return c.status_sim === 'segera_habis';
+        });
+        titleText = isDanger ? 'SIM Card Tidak Aktif' : 'SIM Card Segera Habis';
+    }
+
+    title.textContent = titleText;
+
+    if (items.length === 0) {
+        body.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-muted);">Tidak ada SIM Card.</p>';
+    } else {
+        body.innerHTML = items.map(function(c) {
+            var daysLabel = '';
+            if (type === 'jatuh_tempo') {
+                daysLabel = '<span style="color:#f97316;font-weight:600;">' + (c.hari_sim || '') + '</span>';
+            } else if (type === 'danger') {
+                daysLabel = '<span style="color:#ef4444;font-weight:600;">Masa tenggang sudah habis</span>';
+            } else {
+                daysLabel = 'Berakhir <span style="color:#f59e0b;font-weight:600;">' + (c.masa_tenggang || '-') + '</span> (' + (c.hari_sim || '') + ')';
+            }
+            return '<div class="flex items-center gap-3 px-4 py-3.5 rounded-xl" style="border:1px solid var(--border-color);margin-bottom:8px;cursor:pointer;transition:all 0.15s;background:var(--bg-surface-2);" onclick="openEditModal(' + c.id + ')" onmouseover="this.style.borderColor=\'' + color + '\'" onmouseout="this.style.borderColor=\'var(--border-color)\'">' +
+                '<div class="flex-1 min-w-0">' +
+                    '<p style="font-weight:600;font-size:14px;color:var(--text-primary);margin:0;font-family:monospace;">' + c.nomor_sim_card + '</p>' +
+                    '<p style="font-size:12px;color:var(--text-muted);margin:2px 0 0;">PIC: ' + (c.pic || '-') + '</p>' +
+                    '<p style="font-size:11px;color:var(--text-secondary);margin:4px 0 0;">' + daysLabel + '</p>' +
+                '</div>' +
+                '<span onclick="event.stopPropagation()"><button onclick="openEditModal(' + c.id + ')" style="flex-shrink:0;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;background:' + color + ';color:#fff;box-shadow:0 4px 12px ' + (isDanger ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)') + ';" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Perpanjang</button></span>' +
+            '</div>';
+        }).join('');
+    }
+
+    document.getElementById('alert-overlay').style.display = 'flex';
+}
+
+function closeAlertPopup() {
+    document.getElementById('alert-overlay').style.display = 'none';
+}
 
 function openCreateModal() {
     document.getElementById('modal-title').textContent = 'Tambah SIM Card';

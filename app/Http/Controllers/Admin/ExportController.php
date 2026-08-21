@@ -17,6 +17,7 @@ use App\Models\PembayaranIplRuko;
 use App\Models\PeralatanKantor;
 use App\Models\Room;
 use App\Models\SimCard;
+use App\Models\SosialMedia;
 use App\Models\Team;
 use App\Models\TokenPayment;
 use App\Models\User;
@@ -44,6 +45,7 @@ class ExportController extends Controller
             'vehicles' => fn () => $this->vehiclesExport($filter),
             'digital-assets' => fn () => $this->digitalAssetsExport($filter),
             'sim-cards' => fn () => $this->simCardsExport($filter),
+            'sosial-media' => fn () => $this->sosialMediaExport($filter),
             'peralatan-kantor' => fn () => $this->peralatanKantorExport($filter),
             'aset-tim' => fn () => $this->asetTimExport($request),
             'aset-mes' => fn () => $this->asetMesExport($filter),
@@ -278,6 +280,28 @@ class ExportController extends Controller
         );
     }
 
+    protected function sosialMediaExport($filter = 'all')
+    {
+        $query = SosialMedia::orderBy('username');
+        if ($filter !== 'all') {
+            $query->where('status', $filter);
+        }
+        $data = $query->get()->map(fn ($i) => [
+            'Username' => $i->username,
+            'Nama' => $i->nama,
+            'Followers' => $i->followers ?? '-',
+            'Platform' => $i->platform,
+            'Status' => $i->status === 'aktif' ? 'Aktif' : 'Nonaktif',
+            'Divisi' => $i->divisi,
+            'PIC' => $i->pic,
+        ]);
+
+        return Excel::download(
+            new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Sosial Media', 'Sosial Media'),
+            'Data_Sosial_Media.xlsx'
+        );
+    }
+
     protected function peralatanKantorExport($filter = 'all')
     {
         $query = PeralatanKantor::orderBy('nama_barang');
@@ -479,6 +503,11 @@ class ExportController extends Controller
             $query->whereDate('payment_date', Carbon::today());
         } elseif ($range === 'mingguan') {
             $query->whereBetween('payment_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } else {
+            $topupMonth = $request->get('topup_month', now()->format('Y-m'));
+            $startDate = Carbon::parse($topupMonth.'-01')->startOfMonth();
+            $endDate = $startDate->copy()->endOfMonth();
+            $query->whereBetween('payment_date', [$startDate, $endDate]);
         }
         $data = $query->orderBy('payment_date', 'desc')
             ->get()->map(fn ($t) => [
