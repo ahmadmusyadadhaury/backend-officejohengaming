@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 
 class AsetRukoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $showAll = $request->boolean('show_all');
         $allItems = AsetRuko::orderBy('created_at', 'desc')->get();
 
         $stats = [
@@ -26,7 +27,7 @@ class AsetRukoController extends Controller
             'kondisi' => $i->kondisi,
         ]);
 
-        $items = AsetRuko::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $items = AsetRuko::orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
         $itemsJson = $items->getCollection()->values()->map(function ($i) {
             return [
@@ -43,6 +44,7 @@ class AsetRukoController extends Controller
             'itemsJson' => $itemsJson,
             'alertJson' => $alertJson,
             'stats' => $stats,
+            'showAll' => $showAll,
         ]);
     }
 

@@ -12,6 +12,7 @@ class AsetTimController extends Controller
     public function index(Request $request)
     {
         $activeTim = $request->input('tim');
+        $showAll = $request->boolean('show_all');
 
         $query = AsetTim::with('penanggungJawab');
 
@@ -36,7 +37,7 @@ class AsetTimController extends Controller
             ->sort()
             ->values();
 
-        $assets = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $assets = $query->orderBy('created_at', 'desc')->paginate($showAll ? max($allAssets->count(), 1) : 10)->withQueryString();
 
         $assetsJson = $assets->getCollection()->values()->map(function ($a) {
             return [
@@ -59,6 +60,7 @@ class AsetTimController extends Controller
             'stats' => $stats,
             'allTim' => $allTim,
             'activeTim' => $activeTim,
+            'showAll' => $showAll,
         ]);
     }
 

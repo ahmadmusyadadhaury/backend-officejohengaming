@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 
 class SosialMediaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $showAll = $request->boolean('show_all');
         $allItems = SosialMedia::orderBy('created_at', 'desc')->get();
 
         $stats = [
@@ -18,7 +19,7 @@ class SosialMediaController extends Controller
             'nonaktif' => $allItems->where('status', 'nonaktif')->count(),
         ];
 
-        $items = SosialMedia::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $items = SosialMedia::orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
         $itemsJson = $items->getCollection()->values()->map(function ($i) {
             return [
@@ -38,6 +39,7 @@ class SosialMediaController extends Controller
             'items' => $items,
             'itemsJson' => $itemsJson,
             'stats' => $stats,
+            'showAll' => $showAll,
         ]);
     }
 

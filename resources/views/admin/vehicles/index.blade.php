@@ -207,7 +207,7 @@
                         };
                     @endphp
                     <tr data-status="{{ $isPeralatan ? 'non_pajak' : $v->status_pajak }}">
-                        <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
+                        <td style="color:var(--text-muted);">{{ ($vehicles->currentPage() - 1) * $vehicles->perPage() + $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $v->nama_kendaraan }}@if($isPeralatan) <span class="badge badge-gray" style="margin-left:4px;vertical-align:middle;">Peralatan Kantor</span>@endif</td>
                         <td style="color:var(--text-muted);font-family:monospace;font-weight:600;">{{ $v->plat_nomor ?? '-' }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-primary);">{{ $v->jenis_kendaraan }}</td>
@@ -273,6 +273,31 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if($vehicles->firstItem())
+                    @if(!$showAll)
+                        Menampilkan {{ $vehicles->firstItem() }}-{{ $vehicles->lastItem() }} dari {{ $vehicles->total() }} item
+                    @else
+                        Menampilkan semua {{ $vehicles->total() }} item
+                    @endif
+                @else
+                    Menampilkan 0 dari {{ $vehicles->total() }} item
+                @endif
+            </span>
+            @if($vehicles->total() > 0)
+                @if(!$showAll)
+                    <a href="{{ request()->fullUrlWithQuery(['show_all' => 1]) }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+                @else
+                    <a href="{{ request()->fullUrlWithoutQuery('show_all') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+                @endif
+            @endif
+            <div style="margin-left:auto;">
+                @if(method_exists($vehicles, 'links') && $vehicles->hasPages())
+                    {{ $vehicles->links() }}
+                @endif
+            </div>
         </div>
     </div>
 

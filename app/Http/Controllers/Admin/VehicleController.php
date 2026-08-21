@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PeralatanKantor;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
@@ -74,14 +75,31 @@ class VehicleController extends Controller
             'hari_pajak' => $v->hari_pajak,
         ]);
 
+        $showAll = $request->boolean('show_all');
+
+        $merged = $filtered->values()->concat($statusFilter === 'all' ? $peralatanKendaraan : collect())->values();
+
+        $perPage = $showAll ? max($merged->count(), 1) : 10;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $pagedItems = $merged->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $paginatedVehicles = new LengthAwarePaginator(
+            $pagedItems,
+            $merged->count(),
+            $perPage,
+            $currentPage,
+            ['path' => LengthAwarePaginator::resolveCurrentPath(), 'query' => $request->query()]
+        );
+
         return view('admin.vehicles.index', [
-            'vehicles' => $filtered->values()->concat($statusFilter === 'all' ? $peralatanKendaraan : collect()),
+            'vehicles' => $paginatedVehicles,
             'vehiclesJson' => $vehiclesJson,
             'stats' => $stats,
             'statusFilter' => $statusFilter,
             'alertVehicles' => $alertVehicles,
             'alertJson' => $alertJson,
             'peralatanCount' => $peralatanKendaraan->count(),
+            'showAll' => $showAll,
         ]);
     }
 

@@ -159,8 +159,23 @@
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
             <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
-                Menampilkan {{ $items->firstItem() }}-{{ $items->lastItem() }} dari {{ $items->total() }} item
+                @if($items->firstItem())
+                    @if(!$showAll)
+                        Menampilkan {{ $items->firstItem() }}-{{ $items->lastItem() }} dari {{ $items->total() }} item
+                    @else
+                        Menampilkan semua {{ $items->total() }} item
+                    @endif
+                @else
+                    Menampilkan 0 dari {{ $items->total() }} item
+                @endif
             </span>
+            @if($items->total() > 0)
+                @if(!$showAll)
+                    <a href="{{ route('admin.ruko.index') }}?show_all=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+                @else
+                    <a href="{{ route('admin.ruko.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+                @endif
+            @endif
             <div style="margin-left:auto;">
                 @if(method_exists($items, 'links') && $items->hasPages())
                     {{ $items->links() }}

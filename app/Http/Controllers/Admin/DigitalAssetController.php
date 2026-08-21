@@ -10,8 +10,9 @@ use Illuminate\Http\Request;
 
 class DigitalAssetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $showAll = $request->boolean('show_all');
         $allAssets = DigitalAsset::orderBy('created_at', 'desc')->get();
 
         $stats = [
@@ -31,7 +32,7 @@ class DigitalAssetController extends Controller
             'hari_aset' => $a->hari_aset,
         ]);
 
-        $assets = DigitalAsset::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $assets = DigitalAsset::orderBy('created_at', 'desc')->paginate($showAll ? max($allAssets->count(), 1) : 10)->withQueryString();
 
         $assetsJson = $assets->getCollection()->values()->map(function ($a) {
             return [
@@ -56,6 +57,7 @@ class DigitalAssetController extends Controller
             'stats' => $stats,
             'alertAssets' => $alertAssets,
             'alertJson' => $alertJson,
+            'showAll' => $showAll,
         ]);
     }
 

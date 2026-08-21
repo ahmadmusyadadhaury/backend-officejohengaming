@@ -241,11 +241,31 @@
                     @endforelse
                 </tbody>
             </table>
-            @if(method_exists($cards, 'links') && $cards->hasPages())
-            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
-                {{ $cards->links() }}
-            </div>
+        </div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if($cards->firstItem())
+                    @if(!$showAll)
+                        Menampilkan {{ $cards->firstItem() }}-{{ $cards->lastItem() }} dari {{ $cards->total() }} item
+                    @else
+                        Menampilkan semua {{ $cards->total() }} item
+                    @endif
+                @else
+                    Menampilkan 0 dari {{ $cards->total() }} item
+                @endif
+            </span>
+            @if($cards->total() > 0)
+                @if(!$showAll)
+                    <a href="{{ route('admin.sim-cards.index') }}?show_all=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+                @else
+                    <a href="{{ route('admin.sim-cards.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+                @endif
             @endif
+            <div style="margin-left:auto;">
+                @if(method_exists($cards, 'links') && $cards->hasPages())
+                    {{ $cards->links() }}
+                @endif
+            </div>
         </div>
     </div>
 

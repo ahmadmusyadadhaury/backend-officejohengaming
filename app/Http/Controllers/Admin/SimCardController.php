@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 
 class SimCardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $showAll = $request->boolean('show_all');
         $allCards = SimCard::orderBy('created_at', 'desc')->get();
 
         $now = now();
@@ -24,7 +25,7 @@ class SimCardController extends Controller
 
         $alerts = $allCards->filter(fn ($c) => in_array($c->status_sim, ['jatuh_tempo', 'segera_habis', 'mati']))->values();
 
-        $cards = SimCard::orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $cards = SimCard::orderBy('created_at', 'desc')->paginate($showAll ? max($allCards->count(), 1) : 10)->withQueryString();
 
         $cardsJson = $cards->getCollection()->values()->map(function ($c) {
             return [
@@ -48,6 +49,7 @@ class SimCardController extends Controller
             'cardsJson' => $cardsJson,
             'stats' => $stats,
             'alerts' => $alerts,
+            'showAll' => $showAll,
         ]);
     }
 

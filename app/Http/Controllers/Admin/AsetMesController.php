@@ -8,26 +8,32 @@ use Illuminate\Http\Request;
 
 class AsetMesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $showAllPutra = $request->boolean('show_all_putra');
+        $showAllPutri = $request->boolean('show_all_putri');
+
+        $countPutra = AsetMes::where('kategori', 'putra')->count();
+        $countPutri = AsetMes::where('kategori', 'putri')->count();
+
         $assetsPutra = AsetMes::with('penanggungJawab')
             ->where('kategori', 'putra')
             ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'page_putra')
+            ->paginate($showAllPutra ? max($countPutra, 1) : 10, ['*'], 'page_putra')
             ->withQueryString();
 
         $assetsPutri = AsetMes::with('penanggungJawab')
             ->where('kategori', 'putri')
             ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'page_putri')
+            ->paginate($showAllPutri ? max($countPutri, 1) : 10, ['*'], 'page_putri')
             ->withQueryString();
 
         $stats = [
             'total' => AsetMes::count(),
             'aktif' => AsetMes::where('is_active', true)->count(),
             'nonaktif' => AsetMes::where('is_active', false)->count(),
-            'putra' => AsetMes::where('kategori', 'putra')->count(),
-            'putri' => AsetMes::where('kategori', 'putri')->count(),
+            'putra' => $countPutra,
+            'putri' => $countPutri,
         ];
 
         $assetsJson = collect([...$assetsPutra->items(), ...$assetsPutri->items()])
@@ -51,6 +57,8 @@ class AsetMesController extends Controller
             'assetsJson' => $assetsJson,
             'stats' => $stats,
             'penanggungJawabMes' => AsetMes::PENANGGUNG_JAWAB_MES,
+            'showAllPutra' => $showAllPutra,
+            'showAllPutri' => $showAllPutri,
         ]);
     }
 

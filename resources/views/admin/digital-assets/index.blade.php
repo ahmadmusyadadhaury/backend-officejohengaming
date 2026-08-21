@@ -254,11 +254,31 @@
                     @endforelse
                 </tbody>
             </table>
-            @if(method_exists($assets, 'links') && $assets->hasPages())
-            <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
-                {{ $assets->links() }}
-            </div>
+        </div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if($assets->firstItem())
+                    @if(!$showAll)
+                        Menampilkan {{ $assets->firstItem() }}-{{ $assets->lastItem() }} dari {{ $assets->total() }} item
+                    @else
+                        Menampilkan semua {{ $assets->total() }} item
+                    @endif
+                @else
+                    Menampilkan 0 dari {{ $assets->total() }} item
+                @endif
+            </span>
+            @if($assets->total() > 0)
+                @if(!$showAll)
+                    <a href="{{ route('admin.digital-assets.index') }}?show_all=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+                @else
+                    <a href="{{ route('admin.digital-assets.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+                @endif
             @endif
+            <div style="margin-left:auto;">
+                @if(method_exists($assets, 'links') && $assets->hasPages())
+                    {{ $assets->links() }}
+                @endif
+            </div>
         </div>
     </div>
 

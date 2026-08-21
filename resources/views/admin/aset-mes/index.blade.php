@@ -163,9 +163,31 @@
                 </tbody>
             </table>
         </div>
-        @if($assetsPutra->hasPages())
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $assetsPutra->links() }}</div>
-        @endif
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if($assetsPutra->firstItem())
+                    @if(!$showAllPutra)
+                        Menampilkan {{ $assetsPutra->firstItem() }}-{{ $assetsPutra->lastItem() }} dari {{ $assetsPutra->total() }} item
+                    @else
+                        Menampilkan semua {{ $assetsPutra->total() }} item
+                    @endif
+                @else
+                    Menampilkan 0 dari {{ $assetsPutra->total() }} item
+                @endif
+            </span>
+            @if($assetsPutra->total() > 0)
+                @if(!$showAllPutra)
+                    <a href="{{ route('admin.aset-mes.index') }}?show_all_putra=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+                @else
+                    <a href="{{ route('admin.aset-mes.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+                @endif
+            @endif
+            <div style="margin-left:auto;">
+                @if(method_exists($assetsPutra, 'links') && $assetsPutra->hasPages())
+                    {{ $assetsPutra->links() }}
+                @endif
+            </div>
+        </div>
     </div>
 
     {{-- ===== MES PUTRI ===== --}}
@@ -265,9 +287,31 @@
                 </tbody>
             </table>
         </div>
-        @if($assetsPutri->hasPages())
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $assetsPutri->links() }}</div>
-        @endif
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if($assetsPutri->firstItem())
+                    @if(!$showAllPutri)
+                        Menampilkan {{ $assetsPutri->firstItem() }}-{{ $assetsPutri->lastItem() }} dari {{ $assetsPutri->total() }} item
+                    @else
+                        Menampilkan semua {{ $assetsPutri->total() }} item
+                    @endif
+                @else
+                    Menampilkan 0 dari {{ $assetsPutri->total() }} item
+                @endif
+            </span>
+            @if($assetsPutri->total() > 0)
+                @if(!$showAllPutri)
+                    <a href="{{ route('admin.aset-mes.index') }}?show_all_putri=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+                @else
+                    <a href="{{ route('admin.aset-mes.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+                @endif
+            @endif
+            <div style="margin-left:auto;">
+                @if(method_exists($assetsPutri, 'links') && $assetsPutri->hasPages())
+                    {{ $assetsPutri->links() }}
+                @endif
+            </div>
+        </div>
     </div>
 </div>
 
