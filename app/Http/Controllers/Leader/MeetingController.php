@@ -234,8 +234,8 @@ class MeetingController extends Controller
             }
         }
 
-        // Auto-approve jika yang request adalah HR
-        if (auth()->user()->role === 'hr') {
+        // Auto-approve jika yang request adalah HR atau Asisten Manager
+        if (auth()->user()->role === 'hr' || auth()->user()->role === 'assistant_manager') {
             $meeting->update([
                 'status' => 'approved',
                 'approved_by' => auth()->id(),

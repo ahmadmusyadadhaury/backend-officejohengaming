@@ -22,7 +22,7 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
                 'Penanda Buku', '1',
                 'Merah, orange, pink, kuning, hijau, neon, cyan, biru dan ungu', 'Bagus',
                 'Lantai 1', 'Resepsionis', '2026', '2026-01-01',
-                'Kecil', 'Kecil', 'ATK (Alat Tulis Kantor)', 'Perusahaan',
+                'Kecil', 'Kecil', 'ATK (Alat Tulis Kantor)', 'Tim IT', 'Perusahaan',
                 '15000', '8', '720',
                 '18.75', '14981.25',
                 'Yuliana Sventy Yasmine Aulhia Sugiat', 'Human Resources Generalist',
@@ -46,6 +46,7 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
             'Kategori Nilai',
             'Kategori Ukuran',
             'Sub-Kategori',
+            'Tim',
             'Milik',
             'Nilai (in Rupiah)',
             'Waktu Pakai Barang Perhari Ini',
@@ -63,7 +64,7 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
 
     public function styles(Worksheet $sheet): array
     {
-        $lastCol = 'W';
+        $lastCol = 'X';
 
         $sheet->getStyle("A1:{$lastCol}1")->applyFromArray([
             'font' => [
@@ -114,18 +115,19 @@ class PeralatanKantorTemplateExport implements FromCollection, WithColumnWidths,
             'I' => 16,
             'J' => 16,
             'K' => 28,
-            'L' => 16,
+            'L' => 18,
             'M' => 16,
-            'N' => 28,
-            'O' => 22,
-            'P' => 28,
-            'Q' => 26,
-            'R' => 35,
-            'S' => 28,
+            'N' => 16,
+            'O' => 28,
+            'P' => 22,
+            'Q' => 28,
+            'R' => 26,
+            'S' => 35,
             'T' => 28,
-            'U' => 22,
-            'V' => 16,
+            'U' => 28,
+            'V' => 22,
             'W' => 16,
+            'X' => 16,
         ];
     }
 

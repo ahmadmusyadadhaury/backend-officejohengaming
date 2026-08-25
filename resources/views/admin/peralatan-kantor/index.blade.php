@@ -137,7 +137,7 @@
                     </svg>
                     Import Excel
                 </button>
-                <a href="{{ route('admin.export', ['type' => 'peralatan-kantor', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
+                <a href="{{ route('admin.export', ['type' => 'peralatan-kantor', 'filter' => 'all'] + ($activeTim ? ['tim' => $activeTim] : [])) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 @if(auth()->user()->role === 'admin')
                 <button type="button" onclick="confirmResetData()" class="btn btn-sm inline-flex items-center gap-1.5" style="color:#ef4444;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -159,7 +159,24 @@
                     <button type="button" data-value="perlu_servis" onclick="setFilter('perlu_servis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Perlu Servis</button>
                     <button type="button" data-value="rusak" onclick="setFilter('rusak')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Rusak</button>
                 </div>
-            </div>
+                </div>
+                <div class="filter-dropdown-wrap" style="position:relative;">
+                    <button type="button" onclick="toggleTimFilterMenu(event)" class="filter-btn"
+                        style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
+                        <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span id="tim-filter-label">{{ $activeTim ?: 'Semua Tim' }}</span>
+                        <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="tim-filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:180px;max-height:300px;overflow-y:auto;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                        <button type="button" data-tim="" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;border-radius:6px;cursor:pointer;{{ $activeTim ? 'color:var(--text-primary);font-weight:400;' : 'color:#a78bfa;font-weight:700;' }}" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Tim</button>
+                        @foreach($allTim as $tim)
+                        @php $isTimActive = $activeTim === $tim; @endphp
+                        <button type="button" data-tim="{{ $tim }}" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;border-radius:6px;cursor:pointer;{{ $isTimActive ? 'color:#a78bfa;font-weight:700;' : 'color:var(--text-primary);font-weight:400;' }}" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">{{ $tim }}</button>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
         <div class="table-responsive">
@@ -168,6 +185,7 @@
                     <tr>
                         <th style="width:40px;white-space:nowrap;font-size:0.7rem;">No</th>
                         <th style="white-space:nowrap;font-size:0.7rem;">Nama Barang</th>
+                        <th style="white-space:nowrap;font-size:0.7rem;">Tim</th>
                         <th style="white-space:nowrap;font-size:0.7rem;">Jumlah</th>
                         <th style="white-space:nowrap;font-size:0.7rem;">Detail</th>
                         <th style="white-space:nowrap;font-size:0.7rem;">Keterangan</th>
@@ -220,6 +238,7 @@
                     <tr data-kondisi="{{ $i->kondisi }}">
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ ($items->currentPage() - 1) * $items->perPage() + $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;white-space:nowrap;font-size:0.75rem;">{{ $i->nama_barang }}</td>
+                        <td>@if($i->tim)<span class="badge" style="background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.25);">{{ $i->tim }}</span>@else<span style="color:var(--text-muted);font-size:0.75rem;">-</span>@endif</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->jumlah }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->detail ?? '-' }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->keterangan ?? '-' }}</td>
@@ -555,6 +574,15 @@
                                 <option value="Elektronik">Elektronik</option>
                                 <option value="Furniture">Furniture</option>
                                 <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="gaming-label">Tim (Aset Tim)</label>
+                            <select name="tim" id="f-tim" class="gaming-input">
+                                <option value="">— Tanpa Tim —</option>
+                                @foreach($allTim as $tim)
+                                <option value="{{ $tim }}">{{ $tim }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div>
@@ -1144,6 +1172,9 @@ function openCreateModal() {
         }
     });
     document.getElementById('f-sub_kategori').value = 'Peralatan Kantor';
+    const fTim = document.getElementById('f-tim');
+    fTim.value = '{{ $activeTim }}';
+    if (fTim.value !== '{{ $activeTim }}') fTim.value = '';
     document.getElementById('f-milik').value = 'Milik Perusahaan';
     document.getElementById('f-kategori_nilai').value = 'Rendah';
     document.getElementById('f-kategori_ukuran').value = 'Kecil';
@@ -1165,6 +1196,7 @@ function renderDetailCards(i) {
             title: 'Informasi Umum',
             rows: [
                 { label: 'Nama Barang', value: i.nama_barang },
+                { label: 'Tim', value: i.tim || '-' },
                 { label: 'Jumlah', value: i.jumlah },
                 { label: 'Detail', value: i.detail || '-' },
                 { label: 'Keterangan', value: i.keterangan || '-' },
@@ -1474,6 +1506,14 @@ function openEditModal(id) {
     document.getElementById('f-jumlah').value = i.jumlah;
     document.getElementById('f-detail').value = i.detail || '';
     document.getElementById('f-sub_kategori').value = i.sub_kategori;
+    const fTim = document.getElementById('f-tim');
+    fTim.value = i.tim || '';
+    if (i.tim && fTim.value !== i.tim) {
+        const opt = document.createElement('option');
+        opt.value = i.tim; opt.textContent = i.tim;
+        fTim.appendChild(opt);
+        fTim.value = i.tim;
+    }
     document.getElementById('f-keterangan').value = i.keterangan || '';
     document.getElementById('f-lokasi_unit').value = i.lokasi_unit;
     document.getElementById('f-ruangan').value = i.ruangan;
@@ -2193,7 +2233,8 @@ let currentFilter = 'all';
 function toggleFilterMenu(e) {
     e.stopPropagation();
     const menu = document.getElementById('filter-menu');
-    document.querySelectorAll('.filter-menu').forEach(m => { if (m.id !== 'filter-menu') m.style.display = 'none'; });
+    const timMenu = document.getElementById('tim-filter-menu');
+    if (timMenu) timMenu.style.display = 'none';
     menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
 }
 
@@ -2205,9 +2246,34 @@ function setFilter(value) {
     filterItems();
 }
 
+function toggleTimFilterMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('tim-filter-menu');
+    document.getElementById('filter-menu').style.display = 'none';
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function setTimFilter(value) {
+    const url = new URL(window.location.href);
+    if (value) {
+        url.searchParams.set('tim', value);
+    } else {
+        url.searchParams.delete('tim');
+    }
+    window.location.href = url.toString();
+}
+
+document.querySelectorAll('#tim-filter-menu button[data-tim]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        setTimFilter(btn.dataset.tim);
+    });
+});
+
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.filter-dropdown-wrap')) {
         document.getElementById('filter-menu').style.display = 'none';
+        const timMenu = document.getElementById('tim-filter-menu');
+        if (timMenu) timMenu.style.display = 'none';
     }
 });
 

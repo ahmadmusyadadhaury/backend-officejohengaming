@@ -35,7 +35,7 @@ class User extends Authenticatable
     }
 
     // Roles yang punya akses penuh (setara admin)
-    const FULL_ACCESS_ROLES = ['admin', 'head_of_store', 'gm', 'hr', 'ceo'];
+    const FULL_ACCESS_ROLES = ['admin', 'head_of_store', 'gm', 'hr', 'ceo', 'assistant_manager'];
 
     const ROLE_KOORDINATOR_IT = 'koordinator_it';
 
@@ -122,6 +122,7 @@ class User extends Authenticatable
             'gm' => 'General Manager',
             'ceo' => 'Chief Executive Officer',
             'hr' => 'HR',
+            'assistant_manager' => 'Asisten Manager',
             'koordinator' => 'Koordinator',
             'koordinator_it' => 'Koordinator IT',
             'staff_it' => 'Staff IT',

@@ -29,7 +29,7 @@ use App\Services\TagihanService;
 
 class PaymentApprovalController extends Controller
 {
-    private const APPROVER_ROLES = ['admin', 'head_of_store', 'hr', 'gm', 'ceo'];
+    private const APPROVER_ROLES = ['admin', 'head_of_store', 'hr', 'gm', 'ceo', 'assistant_manager'];
 
     private function getModel(string $jenis)
     {

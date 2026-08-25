@@ -36,7 +36,7 @@ class DashboardController extends Controller
             'total_ceo' => User::where('role', 'ceo')->where('is_active', true)->count(),
             'total_gm' => User::where('role', 'gm')->where('is_active', true)->count(),
             'total_head_store' => User::where('role', 'head_of_store')->where('is_active', true)->count(),
-            'total_hr' => User::where('role', 'hr')->where('is_active', true)->count(),
+            'total_hr' => User::whereIn('role', ['hr', 'assistant_manager'])->where('is_active', true)->count(),
             'total_koordinator' => User::where('role', 'koordinator')->count(),
             'total_karyawan' => User::where('role', 'user')->where('is_active', true)->count(),
             'total_team' => Team::count(),

@@ -78,6 +78,10 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
         $kodeAset = $row['Kode Asset'] ?? null;
         $barcode = $row['Barcode'] ?? null;
         $tanggalPembelian = $row['Tanggal Pembelian'] ?? null;
+        $tim = isset($row['Tim']) ? trim((string) $row['Tim']) : null;
+        if ($tim === '') {
+            $tim = null;
+        }
 
         if (empty($kodeAset)) {
             $kodeAset = PeralatanKantor::generateKodeAset();
@@ -100,6 +104,7 @@ class PeralatanKantorImport implements SkipsOnFailure, ToModel, WithBatchInserts
             'kategori_nilai' => $row['Kategori Nilai'],
             'kategori_ukuran' => $row['Kategori Ukuran'],
             'sub_kategori' => $row['Sub-Kategori'],
+            'tim' => $tim,
             'milik' => $row['Milik'],
             'nilai' => $nilai,
             'waktu_pakai_per_hari' => $waktuPakai,

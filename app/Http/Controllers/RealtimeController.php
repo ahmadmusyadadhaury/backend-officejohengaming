@@ -145,7 +145,7 @@ class RealtimeController extends Controller
 
         $totalTagihan = TagihanService::tagihanCount();
 
-        $isApprover = in_array(auth()->user()->role, ['admin', 'head_of_store', 'hr', 'gm', 'ceo']);
+        $isApprover = in_array(auth()->user()->role, ['admin', 'head_of_store', 'hr', 'gm', 'ceo', 'assistant_manager']);
         $totalApproval = $isApprover ? TagihanService::approvalCount() : 0;
 
         return response()->json([
@@ -172,7 +172,7 @@ class RealtimeController extends Controller
             ]);
         }
 
-        if ($role === 'koordinator' || in_array($role, ['head_of_store', 'gm', 'hr', 'ceo'])) {
+        if ($role === 'koordinator' || in_array($role, ['head_of_store', 'gm', 'hr', 'ceo', 'assistant_manager'])) {
             return response()->json([
                 'pending' => Meeting::where('requested_by', auth()->id())->where('status', 'pending')->count(),
                 'approved' => Meeting::where('requested_by', auth()->id())->where('status', 'approved')->count(),

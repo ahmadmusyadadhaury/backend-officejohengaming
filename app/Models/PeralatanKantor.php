@@ -16,6 +16,7 @@ class PeralatanKantor extends Model
         'jumlah',
         'detail',
         'sub_kategori',
+        'tim',
         'keterangan',
         'lokasi_unit',
         'ruangan',

@@ -1,6 +1,6 @@
 @php
     $isMeetingActive = request()->routeIs('admin.meetings.*', 'admin.moms.*', 'admin.recordings.*', 'koordinator.recordings.*', 'calendar', 'koordinator.meetings.*', 'koordinator.mom.*');
-    $isAssetActive = request()->routeIs('admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*', 'admin.sosial-media.*', 'admin.aset-mes.*', 'admin.aset-tim.*');
+    $isAssetActive = request()->routeIs('admin.vehicles.*', 'admin.digital-assets.*', 'admin.sim-cards.*', 'admin.peralatan-kantor.*', 'admin.ruko.*', 'admin.sosial-media.*', 'admin.aset-mes.*');
     $isPaymentActive = request()->routeIs('admin.pembayaran.*', 'admin.payment-approvals.*', 'payment-approval.*');
     $isAdminActive = request()->routeIs('admin.users.*', 'admin.admins.*', 'admin.assets.*', 'admin.teams.*', 'admin.rooms.*', 'admin.team-compositions.*');
     $isItActive = request()->routeIs('admin.it-tickets.*', 'it-tickets.*');
@@ -81,7 +81,6 @@
     <a href="{{ route('admin.peralatan-kantor.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.peralatan-kantor.*') ? 'active' : '' }}"><span class="truncate">Peralatan Kantor</span></a>
     <a href="{{ route('admin.ruko.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.ruko.*') ? 'active' : '' }}"><span class="truncate">Aset Ruko</span></a>
     <a href="{{ route('admin.aset-mes.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.aset-mes.*') ? 'active' : '' }}"><span class="truncate">Aset MES</span></a>
-    <a href="{{ route('admin.aset-tim.index') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('admin.aset-tim.*') ? 'active' : '' }}"><span class="truncate">Aset TIM</span></a>
 </div>
 
 <div class="sidebar-section">

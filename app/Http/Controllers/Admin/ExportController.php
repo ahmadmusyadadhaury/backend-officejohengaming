@@ -46,7 +46,7 @@ class ExportController extends Controller
             'digital-assets' => fn () => $this->digitalAssetsExport($filter),
             'sim-cards' => fn () => $this->simCardsExport($filter),
             'sosial-media' => fn () => $this->sosialMediaExport($filter),
-            'peralatan-kantor' => fn () => $this->peralatanKantorExport($filter),
+            'peralatan-kantor' => fn () => $this->peralatanKantorExport($filter, $request->query('tim')),
             'aset-tim' => fn () => $this->asetTimExport($request),
             'aset-mes' => fn () => $this->asetMesExport($filter),
             'ruko' => fn () => $this->rukoExport($filter),
@@ -98,7 +98,7 @@ class ExportController extends Controller
 
     protected function adminsExport($filter = 'all')
     {
-        $data = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo'])
+        $data = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo', 'assistant_manager'])
             ->orderBy('name')->get()->map(fn ($u) => [
                 'Nama' => $u->name,
                 'Email' => $u->email,
@@ -302,11 +302,14 @@ class ExportController extends Controller
         );
     }
 
-    protected function peralatanKantorExport($filter = 'all')
+    protected function peralatanKantorExport($filter = 'all', ?string $tim = null)
     {
         $query = PeralatanKantor::orderBy('nama_barang');
         if ($filter !== 'all') {
             $query->where('kondisi', $filter);
+        }
+        if ($tim) {
+            $query->where('tim', $tim);
         }
         $data = $query->get()->map(fn ($p) => [
             'Nama Barang' => $p->nama_barang,
@@ -320,6 +323,7 @@ class ExportController extends Controller
             'Kategori Nilai' => $p->kategori_nilai,
             'Kategori Ukuran' => $p->kategori_ukuran,
             'Sub-Kategori' => $p->sub_kategori,
+            'Tim' => $p->tim ?? '-',
             'Milik' => $p->milik,
             'Nilai (in Rupiah)' => $p->nilai ?? 0,
             'Waktu Pakai Barang Perhari Ini' => $p->waktu_pakai_per_hari,
@@ -335,8 +339,8 @@ class ExportController extends Controller
         ]);
 
         $totals = [
-            ['column' => 'M', 'label' => 'Total Nilai'],
-            ['column' => 'Q', 'label' => 'Total Harga Saat Ini'],
+            ['column' => 'N', 'label' => 'Total Nilai'],
+            ['column' => 'R', 'label' => 'Total Harga Saat Ini'],
         ];
 
         return Excel::download(

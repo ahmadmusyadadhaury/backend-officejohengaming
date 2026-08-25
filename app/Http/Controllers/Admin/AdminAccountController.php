@@ -12,8 +12,8 @@ class AdminAccountController extends Controller
 {
     public function index(Request $request)
     {
-        // Fetch admin accounts (admin, head_of_store, gm, hr, ceo, admin_ga)
-        $adminQuery = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo', 'admin_ga']);
+        // Fetch admin accounts (admin, head_of_store, gm, hr, ceo, admin_ga, assistant_manager)
+        $adminQuery = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo', 'admin_ga', 'assistant_manager']);
 
         if ($search = $request->input('search')) {
             $adminQuery->where(function ($q) use ($search) {
@@ -97,7 +97,7 @@ class AdminAccountController extends Controller
             'username' => 'required|string|unique:users,username',
             'nik' => 'nullable|string|max:50|unique:users,nik',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga,koordinator_it,staff_it',
+            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga,koordinator_it,staff_it,assistant_manager',
         ]);
 
         if ($request->role === 'ceo' && User::where('role', 'ceo')->exists()) {
@@ -127,7 +127,7 @@ class AdminAccountController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,'.$admin->id,
             'nik' => 'nullable|string|max:50|unique:users,nik,'.$admin->id,
-            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga,koordinator_it,staff_it',
+            'role' => 'required|in:admin,head_of_store,gm,hr,ceo,admin_ga,koordinator_it,staff_it,assistant_manager',
         ]);
 
         if ($request->role === 'ceo' && $admin->role !== 'ceo' && User::where('role', 'ceo')->exists()) {

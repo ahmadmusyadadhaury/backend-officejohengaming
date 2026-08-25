@@ -34,7 +34,7 @@ class VehiclePajakRequestController extends Controller
         $jenisLabel = $data['jenis'] === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahunan';
         $message = "Pengajuan pembayaran {$jenisLabel} {$vehicle->nama_kendaraan} ({$vehicle->plat_nomor}) menunggu approval.";
 
-        $approvers = User::whereIn('role', ['head_of_store', 'gm', 'hr', 'admin', 'ceo'])->get();
+        $approvers = User::whereIn('role', ['head_of_store', 'gm', 'hr', 'admin', 'ceo', 'assistant_manager'])->get();
 
         foreach ($approvers as $approver) {
             Notification::send($approver->id, 'activity', 'Pengajuan Pajak Kendaraan', $message, 'https://office.johengaming.store/');

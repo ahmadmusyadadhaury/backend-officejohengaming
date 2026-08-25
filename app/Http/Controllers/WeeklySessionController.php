@@ -49,7 +49,7 @@ class WeeklySessionController extends Controller
     public function contribute(Request $request, WeeklyMeetingSession $session)
     {
         // Cek akses
-        if (! in_array(auth()->user()->role, ['koordinator', 'head_of_store', 'gm', 'admin', 'hr', 'ceo'])) {
+        if (! in_array(auth()->user()->role, ['koordinator', 'head_of_store', 'gm', 'admin', 'hr', 'ceo', 'assistant_manager'])) {
             abort(403);
         }
 
@@ -76,7 +76,7 @@ class WeeklySessionController extends Controller
     // Perpanjang waktu meeting
     public function extend(Request $request, WeeklyMeetingSession $session)
     {
-        if (! in_array(auth()->user()->role, ['koordinator', 'head_of_store', 'gm', 'admin', 'hr', 'ceo'])) {
+        if (! in_array(auth()->user()->role, ['koordinator', 'head_of_store', 'gm', 'admin', 'hr', 'ceo', 'assistant_manager'])) {
             abort(403);
         }
 
@@ -96,7 +96,7 @@ class WeeklySessionController extends Controller
     // Selesaikan manual
     public function complete(WeeklyMeetingSession $session)
     {
-        if (! in_array(auth()->user()->role, ['koordinator', 'head_of_store', 'gm', 'admin', 'hr', 'ceo'])) {
+        if (! in_array(auth()->user()->role, ['koordinator', 'head_of_store', 'gm', 'admin', 'hr', 'ceo', 'assistant_manager'])) {
             abort(403);
         }
 

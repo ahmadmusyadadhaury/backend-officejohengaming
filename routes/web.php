@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\AdminAccountController;
 use App\Http\Controllers\Admin\AsetMesController;
 use App\Http\Controllers\Admin\AsetRukoController;
-use App\Http\Controllers\Admin\AsetTimController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
@@ -94,7 +93,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('peralatan-kantor/reset', [PeralatanKantorController::class, 'resetData'])->name('peralatan-kantor.reset');
     Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
-    Route::resource('aset-tim', AsetTimController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-mes', AsetMesController::class)->except(['create', 'show', 'edit'])->parameters(['aset-mes' => 'asetMes']);
     Route::get('pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
     Route::post('pembayaran', [PaymentController::class, 'store'])->name('pembayaran.store');

@@ -32,6 +32,7 @@
                     <option value="gm"            {{ $admin->role === 'gm'            ? 'selected' : '' }}>General Manager (GM)</option>
                     <option value="ceo"           {{ $admin->role === 'ceo'           ? 'selected' : '' }}>Chief Executive Officer (CEO)</option>
                     <option value="hr"            {{ $admin->role === 'hr'            ? 'selected' : '' }}>HR (Human Resources)</option>
+                    <option value="assistant_manager" {{ $admin->role === 'assistant_manager' ? 'selected' : '' }}>Asisten Manager</option>
                     <option value="admin_ga"      {{ $admin->role === 'admin_ga'      ? 'selected' : '' }}>Admin General Affairs</option>
                 </select>
             </div>

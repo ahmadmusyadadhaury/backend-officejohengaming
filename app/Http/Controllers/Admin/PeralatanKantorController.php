@@ -6,6 +6,7 @@ use App\Exports\PeralatanKantorTemplateExport;
 use App\Http\Controllers\Controller;
 use App\Imports\PeralatanKantorImport;
 use App\Models\PeralatanKantor;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,7 +16,15 @@ class PeralatanKantorController extends Controller
     public function index(Request $request)
     {
         $showAll = $request->boolean('show_all');
-        $allItems = PeralatanKantor::orderBy('created_at', 'desc')->get();
+        $activeTim = $request->input('tim');
+
+        $query = PeralatanKantor::query();
+
+        if ($activeTim) {
+            $query->where('tim', $activeTim);
+        }
+
+        $allItems = (clone $query)->orderBy('created_at', 'desc')->get();
 
         $stats = [
             'total' => $allItems->count(),
@@ -42,7 +51,7 @@ class PeralatanKantorController extends Controller
             'kondisi' => $i->kondisi,
         ]);
 
-        $items = PeralatanKantor::orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
+        $items = (clone $query)->orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
         $itemsJson = $allItems->values()->map(function ($i) {
             $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
@@ -61,6 +70,7 @@ class PeralatanKantorController extends Controller
                 'jumlah' => $i->jumlah,
                 'detail' => $i->detail,
                 'sub_kategori' => $i->sub_kategori,
+                'tim' => $i->tim,
                 'keterangan' => $i->keterangan,
                 'lokasi_unit' => $i->lokasi_unit,
                 'ruangan' => $i->ruangan,
@@ -85,12 +95,24 @@ class PeralatanKantorController extends Controller
             ];
         });
 
+        $allTim = Team::where('is_active', true)
+            ->whereNotNull('name')
+            ->where('name', '!=', '')
+            ->orderBy('name')
+            ->pluck('name')
+            ->merge(PeralatanKantor::whereNotNull('tim')->where('tim', '!=', '')->distinct()->pluck('tim'))
+            ->unique()
+            ->sort()
+            ->values();
+
         return view('admin.peralatan-kantor.index', [
             'items' => $items,
             'itemsJson' => $itemsJson,
             'stats' => $stats,
             'alertItems' => $alertItems,
             'alertJson' => $alertJson,
+            'allTim' => $allTim,
+            'activeTim' => $activeTim,
             'showAll' => $showAll,
         ]);
     }
@@ -105,6 +127,7 @@ class PeralatanKantorController extends Controller
             'jumlah' => 'required|integer|min:1',
             'detail' => 'nullable|string',
             'sub_kategori' => 'required|string|max:255',
+            'tim' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
             'lokasi_unit' => 'required|string|max:255',
             'ruangan' => 'required|string|max:255',
@@ -154,6 +177,7 @@ class PeralatanKantorController extends Controller
             'jumlah' => 'required|integer|min:1',
             'detail' => 'nullable|string',
             'sub_kategori' => 'required|string|max:255',
+            'tim' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
             'lokasi_unit' => 'required|string|max:255',
             'ruangan' => 'required|string|max:255',
@@ -249,6 +273,7 @@ class PeralatanKantorController extends Controller
             'jumlah' => $item->jumlah,
             'detail' => $item->detail,
             'sub_kategori' => $item->sub_kategori,
+            'tim' => $item->tim,
             'keterangan' => $item->keterangan,
             'lokasi_unit' => $item->lokasi_unit,
             'ruangan' => $item->ruangan,
