@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('body-class', 'page-admin')
 @section('title', 'Persetujuan Pembayaran')
 @section('page-title', 'Persetujuan Pembayaran')
@@ -110,7 +110,7 @@
                         </td>
                         <td>
                             @if($isApprover)
-                            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
+                            @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
                             <div class="flex gap-2">
                                 <button type="button" onclick="approve({{ $r['id'] }}, '{{ $r['jenis'] }}')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Setujui</button>
                                 <button type="button" onclick="openReject({{ $r['id'] }}, '{{ $r['jenis'] }}')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#ef4444;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Tolak</button>

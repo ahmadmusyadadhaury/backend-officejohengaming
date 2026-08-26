@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('body-class', 'page-admin')
 @section('title', 'Peralatan Kantor')
 @section('page-title', 'Data Aset > Peralatan Kantor')
@@ -270,7 +270,7 @@
                                     <button type="button" onclick="toggleDropdown(this, {{ $i->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $i->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
-                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
+                                        @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
                                         <button type="button" onclick="openEditModal({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.peralatan-kantor.destroy', $i) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" style="margin:0;">
                                             @csrf @method('DELETE')
@@ -331,7 +331,7 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                     Label
                 </button>
-                @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
+                @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
                 <button id="detail-edit-btn" onclick="openEditModal(currentDetailId)" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;cursor:pointer;">Edit</button>
                 <form id="detail-delete-form" method="POST" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" data-action="{{ url('admin/peralatan-kantor') }}/" style="margin:0;">
                     @csrf @method('DELETE')

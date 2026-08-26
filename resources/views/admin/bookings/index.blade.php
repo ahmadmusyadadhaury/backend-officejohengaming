@@ -40,7 +40,7 @@
                             <span class="badge {{ $sc }}">{{ ucfirst($booking->status) }}</span>
                         </td>
                         <td>
-                            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
+                            @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
                             <form method="POST" action="{{ route('admin.bookings.destroy', $booking) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus booking ini?">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>

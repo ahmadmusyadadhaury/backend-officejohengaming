@@ -178,7 +178,7 @@ $countChip = fn ($key) => $key === 'semua' ? $tickets->count() : $tickets->where
                     <tr class="ticket-row"
                         data-status="{{ $ticket->status }}"
                         data-search="{{ strtolower($ticket->kode . ' ' . $ticket->judul . ' ' . $ticket->requester->name) }}"
-                        data-ticket='@json($td)'
+                        data-ticket='{{ json_encode($td) }}'
                     >
                         <td style="color:var(--text-muted);">{{ $loop->iteration }}</td>
                         <td><span style="font-family:monospace;font-weight:600;color:var(--text-primary);">{{ $ticket->kode }}</span></td>

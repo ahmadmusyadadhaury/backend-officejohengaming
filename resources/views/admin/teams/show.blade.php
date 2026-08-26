@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('body-class', 'page-admin')
 @section('title', 'Detail Tim')
 @section('page-title', 'Overview > Kelola Tim > Detail')
@@ -99,7 +99,7 @@
                             </span>
                         </td>
                         <td>
-                            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
+                            @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
                             <form method="POST" action="{{ route('admin.teams.members.destroy', [$team, $member]) }}"
                                 onsubmit="confirmSubmit(event, this)" data-confirm="Hapus {{ $member->name }} dari tim ini?">
                                 @csrf @method('DELETE')

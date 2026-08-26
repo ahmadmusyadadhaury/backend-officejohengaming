@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('body-class', 'page-admin')
 @section('title', 'Meeting Mingguan')
 @section('page-title', 'Meeting Mingguan')
@@ -43,7 +43,7 @@
                     <span class="text-sm" style="color:var(--text-primary);">{{ substr($weekly->start_time,0,5) }} – {{ substr($weekly->end_time,0,5) }}</span>
                 </div>
             </div>
-            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
+            @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
             <div class="flex gap-2 pt-3" style="border-top:1px solid var(--border-color);">
                 <a href="{{ route('admin.weekly-meetings.edit', $weekly) }}" class="btn btn-secondary btn-sm flex-1">Edit</a>
                 <form method="POST" action="{{ route('admin.weekly-meetings.destroy', $weekly) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus jadwal ini?" class="flex-1">
