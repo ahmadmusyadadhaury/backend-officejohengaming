@@ -17,15 +17,14 @@ use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehiclePajakRequest;
 use App\Models\WifiPayment;
-use Carbon\Carbon;
+use App\Services\TagihanService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Services\TagihanService;
 
 class PaymentApprovalController extends Controller
 {
@@ -238,9 +237,9 @@ class PaymentApprovalController extends Controller
                         'aset_tim' => 'Aset TIM',
                         'aset_mes' => 'Aset MES',
                     },
-                    'detail' => $jenis === 'internet' ? $r->nama_internet : ($jenis === 'pajak_kendaraan' ? $r->vehicle?->nama_kendaraan . ' (' . ($r->jenis === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahun') . ')' : $r->periode),
+                    'detail' => $jenis === 'internet' ? $r->nama_internet : ($jenis === 'pajak_kendaraan' ? $r->vehicle?->nama_kendaraan.' ('.($r->jenis === 'tahunan' ? 'Pajak Tahunan' : 'Pajak 5 Tahun').')' : $r->periode),
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
-                    'status' => $r->status,
+                    'status' => $jenis === 'ipl_ruko' ? $r->status_ipl : ($jenis === 'aset_digital' ? $r->status_digital ?? $r->status : $r->status),
                     'pic' => $jenis === 'pajak_kendaraan' ? ($r->vehicle?->pic ?? '-') : $r->pic,
                     'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
                 ]);
@@ -281,7 +280,7 @@ class PaymentApprovalController extends Controller
             'tanggal_bayar' => 'required|date',
             'pic' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
-            'period' => 'required|in:bulanan,tahunan',
+            'period' => 'nullable|in:bulanan,tahunan',
         ]);
 
         $class = $this->getModelClass($jenis);
@@ -306,7 +305,7 @@ class PaymentApprovalController extends Controller
             'jabatan' => $request->input('jabatan'),
             'tanggal_bayar' => $request->input('tanggal_bayar'),
             'bukti_bayar' => $buktiPath,
-            'period' => $request->input('period'),
+            'period' => $request->input('period', 'bulanan'),
         ]);
 
         $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
@@ -420,6 +419,19 @@ class PaymentApprovalController extends Controller
             'approved_at' => now(),
         ]);
 
+        if ($jenis === 'pajak_kendaraan' && $record->vehicle) {
+            if ($record->jenis === 'tahunan') {
+                $record->vehicle->update([
+                    'pajak_tahunan' => now()->addYear(),
+                ]);
+            } elseif ($record->jenis === '5_tahunan') {
+                $record->vehicle->update([
+                    'pajak_5_tahun' => now()->addYears(5),
+                    'pajak_tahunan' => now()->addYear(),
+                ]);
+            }
+        }
+
         if (! in_array($jenis, ['aset_digital', 'pajak_kendaraan'])) {
             // Auto-create tagihan baru hanya jika tanggal baru masih di masa depan
             $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
@@ -448,13 +460,18 @@ class PaymentApprovalController extends Controller
             }
         }
 
-        $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
+        $detail = match ($jenis) {
+            'internet' => $record->nama_internet,
+            'pajak_kendaraan' => $record->vehicle?->nama_kendaraan ?? 'Kendaraan',
+            default => $record->periode,
+        };
         $jenisLabel = match ($jenis) {
             'internet' => 'Internet',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
             'aset_tim' => 'Aset TIM',
             'aset_mes' => 'Aset MES',
+            'pajak_kendaraan' => 'Pajak Kendaraan',
             default => ucfirst($jenis),
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) telah disetujui oleh ".auth()->user()->name.'.';
@@ -485,6 +502,7 @@ class PaymentApprovalController extends Controller
             'ipl_ruko' => PembayaranIplRuko::class,
             'aset_tim' => PembayaranAsetTim::class,
             'aset_mes' => PembayaranAsetMes::class,
+            'pajak_kendaraan' => VehiclePajakRequest::class,
         ];
 
         $types = $jenisFilter && isset($typeMap[$jenisFilter]) ? [$jenisFilter => $typeMap[$jenisFilter]] : $typeMap;
@@ -499,47 +517,67 @@ class PaymentApprovalController extends Controller
                     continue;
                 }
 
-                $period = $record->period ?? 'bulanan';
-                $offsetMonths = $period === 'tahunan' ? 12 : 1;
-
                 $record->update([
                     'status' => 'lunas',
                     'approved_by' => auth()->id(),
                     'approved_at' => now(),
                 ]);
 
-                $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
-                $nextDate = $record->{$dateField}?->copy()->addMonths($offsetMonths);
-
-                if ($nextDate && $nextDate->isFuture()) {
-                    $fillable = $record->getFillable();
-                    $newData = [];
-                    foreach ($fillable as $col) {
-                        if (in_array($col, ['id', 'status', 'tanggal_bayar', 'requested_by', 'approved_by', 'approved_at', 'bukti_bayar', 'notes', 'created_at', 'updated_at', 'period'])) {
-                            continue;
-                        }
-                        $newData[$col] = $record->$col;
+                if ($jenis === 'pajak_kendaraan' && $record->vehicle) {
+                    if ($record->jenis === 'tahunan') {
+                        $record->vehicle->update([
+                            'pajak_tahunan' => now()->addYear(),
+                        ]);
+                    } elseif ($record->jenis === '5_tahunan') {
+                        $record->vehicle->update([
+                            'pajak_5_tahun' => now()->addYears(5),
+                            'pajak_tahunan' => now()->addYear(),
+                        ]);
                     }
-
-                    $newData['period'] = $period;
-                    $newData[$dateField] = $nextDate;
-                    $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
-
-                    if ($jenis !== 'internet') {
-                        $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
-                        $newData['periode'] = $nextDate->locale('id')->translatedFormat('F Y');
-                    }
-
-                    $class::create($newData);
                 }
 
-                $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
+                if ($jenis !== 'pajak_kendaraan') {
+                    $period = $record->period ?? 'bulanan';
+                    $offsetMonths = $period === 'tahunan' ? 12 : 1;
+
+                    $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
+                    $nextDate = $record->{$dateField}?->copy()->addMonths($offsetMonths);
+
+                    if ($nextDate && $nextDate->isFuture()) {
+                        $fillable = $record->getFillable();
+                        $newData = [];
+                        foreach ($fillable as $col) {
+                            if (in_array($col, ['id', 'status', 'tanggal_bayar', 'requested_by', 'approved_by', 'approved_at', 'bukti_bayar', 'notes', 'created_at', 'updated_at', 'period'])) {
+                                continue;
+                            }
+                            $newData[$col] = $record->$col;
+                        }
+
+                        $newData['period'] = $period;
+                        $newData[$dateField] = $nextDate;
+                        $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+
+                        if ($jenis !== 'internet') {
+                            $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
+                            $newData['periode'] = $nextDate->locale('id')->translatedFormat('F Y');
+                        }
+
+                        $class::create($newData);
+                    }
+                }
+
+                $detail = match ($jenis) {
+                    'internet' => $record->nama_internet,
+                    'pajak_kendaraan' => $record->vehicle?->nama_kendaraan ?? 'Kendaraan',
+                    default => $record->periode,
+                };
                 $jenisLabel = match ($jenis) {
                     'internet' => 'Internet',
                     'aset_digital' => 'Aset Digital',
                     'ipl_ruko' => 'IPL Ruko',
                     'aset_tim' => 'Aset TIM',
                     'aset_mes' => 'Aset MES',
+                    'pajak_kendaraan' => 'Pajak Kendaraan',
                     default => ucfirst($jenis),
                 };
                 $message = "Pembayaran {$jenisLabel} ({$detail}) telah disetujui oleh ".auth()->user()->name.'.';
@@ -590,13 +628,18 @@ class PaymentApprovalController extends Controller
             'notes' => $data['notes'],
         ]);
 
-        $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
+        $detail = match ($jenis) {
+            'internet' => $record->nama_internet,
+            'pajak_kendaraan' => $record->vehicle?->nama_kendaraan ?? 'Kendaraan',
+            default => $record->periode,
+        };
         $jenisLabel = match ($jenis) {
             'internet' => 'Internet',
             'aset_digital' => 'Aset Digital',
             'ipl_ruko' => 'IPL Ruko',
             'aset_tim' => 'Aset TIM',
             'aset_mes' => 'Aset MES',
+            'pajak_kendaraan' => 'Pajak Kendaraan',
             default => ucfirst($jenis),
         };
         $message = "Pembayaran {$jenisLabel} ({$detail}) ditolak. Alasan: {$data['notes']}";

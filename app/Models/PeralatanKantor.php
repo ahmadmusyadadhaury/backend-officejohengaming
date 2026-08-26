@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PeralatanKantor extends Model
 {
@@ -61,6 +62,40 @@ class PeralatanKantor extends Model
             }
             if (empty($model->barcode)) {
                 $model->barcode = $model->kode_aset;
+            }
+        });
+    }
+
+    public function scopeOfTim($query, ?string $tim)
+    {
+        if (! $tim) {
+            return $query;
+        }
+
+        $teamIds = Team::where('name', $tim)->pluck('id');
+
+        $hasKoordinator = User::where('role', 'koordinator')
+            ->whereIn('team_id', $teamIds)
+            ->exists();
+
+        if (! $hasKoordinator) {
+            return $query->where('tim', $tim);
+        }
+
+        $memberNames = User::whereIn('team_id', $teamIds)
+            ->get(['name', 'username'])
+            ->flatMap(fn ($user) => [$user->name, $user->username])
+            ->map(fn ($name) => mb_strtolower(trim((string) $name)))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        return $query->where(function ($q) use ($tim, $memberNames) {
+            $q->where('tim', $tim);
+
+            if ($memberNames !== []) {
+                $q->orWhereIn(DB::raw('LOWER(TRIM(pic))'), $memberNames);
             }
         });
     }

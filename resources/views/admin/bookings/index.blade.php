@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('body-class', 'page-admin')
 @section('title', 'Kelola Booking')
 @section('page-title', 'Overview > Kelola Booking')
@@ -17,7 +17,7 @@
                         <th>Mulai</th>
                         <th>Selesai</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,14 +39,14 @@
                             @endphp
                             <span class="badge {{ $sc }}">{{ ucfirst($booking->status) }}</span>
                         </td>
-@if(auth()->user()->role !== 'gm')
                         <td>
+                            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                             <form method="POST" action="{{ route('admin.bookings.destroy', $booking) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus booking ini?">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>
                             </form>
+                            @endif
                         </td>
-@endif
                     </tr>
                     @empty
                     <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada booking.</td></tr>

@@ -18,11 +18,7 @@ class PeralatanKantorController extends Controller
         $showAll = $request->boolean('show_all');
         $activeTim = $request->input('tim');
 
-        $query = PeralatanKantor::query();
-
-        if ($activeTim) {
-            $query->where('tim', $activeTim);
-        }
+        $query = PeralatanKantor::query()->ofTim($activeTim);
 
         $allItems = (clone $query)->orderBy('created_at', 'desc')->get();
 
@@ -105,6 +101,12 @@ class PeralatanKantorController extends Controller
             ->sort()
             ->values();
 
+        $timKoordinators = Team::with('leader:id,name,team_id,role')
+            ->get()
+            ->filter(fn ($team) => $team->leader)
+            ->mapWithKeys(fn ($team) => [$team->name => ['pic' => $team->leader->name]])
+            ->toArray();
+
         return view('admin.peralatan-kantor.index', [
             'items' => $items,
             'itemsJson' => $itemsJson,
@@ -113,6 +115,7 @@ class PeralatanKantorController extends Controller
             'alertJson' => $alertJson,
             'allTim' => $allTim,
             'activeTim' => $activeTim,
+            'timKoordinators' => $timKoordinators,
             'showAll' => $showAll,
         ]);
     }

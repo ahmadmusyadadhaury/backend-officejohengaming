@@ -304,12 +304,9 @@ class ExportController extends Controller
 
     protected function peralatanKantorExport($filter = 'all', ?string $tim = null)
     {
-        $query = PeralatanKantor::orderBy('nama_barang');
+        $query = PeralatanKantor::query()->ofTim($tim)->orderBy('nama_barang');
         if ($filter !== 'all') {
             $query->where('kondisi', $filter);
-        }
-        if ($tim) {
-            $query->where('tim', $tim);
         }
         $data = $query->get()->map(fn ($p) => [
             'Nama Barang' => $p->nama_barang,
@@ -474,6 +471,9 @@ class ExportController extends Controller
             $query->whereDate('checked_date', Carbon::today());
         } elseif ($range === 'mingguan') {
             $query->whereBetween('checked_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } elseif ($range === 'tahunan') {
+            $readingYear = $request->get('reading_year', now()->year);
+            $query->whereYear('checked_date', $readingYear);
         } else {
             $tokenMonth = $request->get('token_month', now()->format('Y-m'));
             $startDate = Carbon::parse($tokenMonth.'-01')->startOfMonth();
@@ -507,6 +507,9 @@ class ExportController extends Controller
             $query->whereDate('payment_date', Carbon::today());
         } elseif ($range === 'mingguan') {
             $query->whereBetween('payment_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } elseif ($range === 'tahunan') {
+            $topupYear = $request->get('topup_year', now()->year);
+            $query->whereYear('payment_date', $topupYear);
         } else {
             $topupMonth = $request->get('topup_month', now()->format('Y-m'));
             $startDate = Carbon::parse($topupMonth.'-01')->startOfMonth();

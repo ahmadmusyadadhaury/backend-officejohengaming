@@ -289,12 +289,30 @@ class PaymentController extends Controller
         $topupRange = $request->get('topup_range', 'bulanan');
         $readingRange = $request->get('reading_range', 'bulanan');
         $topupMonth = now()->format('Y-m');
+        $topupYear = $request->get('topup_year', (string) now()->year);
+        $readingYear = $request->get('reading_year', (string) now()->year);
+        $listrikAvailableYears = [];
 
         if ($jenis === 'listrik') {
             $tokenMonth = $request->get('token_month', now()->format('Y-m'));
             $topupMonth = $request->get('topup_month', now()->format('Y-m'));
-            $startDate = Carbon::parse($tokenMonth.'-01')->startOfMonth();
-            $endDate = $startDate->copy()->endOfMonth();
+
+            $listrikAvailableYears = ElectricityTokenReading::selectRaw('YEAR(checked_date) as year')
+                ->pluck('year')
+                ->merge(TokenPayment::selectRaw('YEAR(payment_date) as year')->pluck('year'))
+                ->unique()
+                ->filter()
+                ->sort()
+                ->values()
+                ->toArray();
+
+            if ($readingRange === 'tahunan') {
+                $startDate = Carbon::createFromDate($readingYear, 1, 1)->startOfYear();
+                $endDate = Carbon::createFromDate($readingYear, 12, 31)->endOfYear();
+            } else {
+                $startDate = Carbon::parse($tokenMonth.'-01')->startOfMonth();
+                $endDate = $startDate->copy()->endOfMonth();
+            }
 
             $tokenReadings = ElectricityTokenReading::with('checker')
                 ->whereBetween('checked_date', [$startDate, $endDate])
@@ -312,6 +330,9 @@ class PaymentController extends Controller
                 $topupQuery->whereDate('payment_date', Carbon::today());
             } elseif ($topupRange === 'mingguan') {
                 $topupQuery->whereBetween('payment_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+            } elseif ($topupRange === 'tahunan') {
+                $topupYear = $request->get('topup_year', now()->year);
+                $topupQuery->whereYear('payment_date', $topupYear);
             } else {
                 $topupStart = Carbon::parse($topupMonth.'-01')->startOfMonth();
                 $topupEnd = $topupStart->copy()->endOfMonth();
@@ -419,6 +440,7 @@ class PaymentController extends Controller
             'tokenAlert', 'capacityKwh', 'usedKwh', 'tokenMonth',
             'latestPayment', 'topupHistory', 'topupHistoryJson', 'topupRange', 'readingRange', 'topupMonth',
             'users', 'digitalAssets', 'internetUsages', 'internetUsagesJson', 'internetUsageDate', 'tahun', 'availableYears',
+            'topupYear', 'readingYear', 'listrikAvailableYears',
         ));
     }
 

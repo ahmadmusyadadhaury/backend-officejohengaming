@@ -130,9 +130,7 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                         <th style="width:90px;">Status</th>
                         <th class="hidden md:table-cell">Divisi</th>
                         <th class="hidden lg:table-cell">PIC</th>
-                        @if(auth()->user()->role !== 'gm')
                         <th style="width:130px;">Aksi</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody id="sosmed-tbody">
@@ -147,7 +145,6 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                         <td><span class="badge {{ $i->status === 'aktif' ? 'badge-green' : 'badge-red' }}">{{ $i->status === 'aktif' ? 'Aktif' : 'Nonaktif' }}</span></td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $i->divisi }}</td>
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $i->pic }}</td>
-                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $i->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -158,16 +155,17 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                                     <button type="button" onclick="toggleDropdown(this, {{ $i->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $i->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="openEditModal({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.sosial-media.destroy', $i) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun {{ $i->username }}?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:6px 10px;border:none;background:none;font-size:12px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        @endif
                     </tr>
                     @empty
                     <tr id="empty-row">

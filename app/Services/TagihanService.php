@@ -95,7 +95,7 @@ class TagihanService
                 $query->whereHas('vehicle', fn ($q) => $q->where('pic', $userName));
             }
         } else {
-            $query->where($dateField, '<', Carbon::today());
+            $query->where($dateField, '<=', Carbon::today());
         }
 
         if ($jenis === 'aset_tim') {

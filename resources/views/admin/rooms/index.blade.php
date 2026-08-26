@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('body-class', 'page-admin')
 @section('title', 'Kelola Ruangan')
 @section('page-title', 'Overview > Kelola Ruangan')
@@ -67,7 +67,7 @@
                         <th>Kapasitas</th>
                         <th>Fasilitas</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -110,7 +110,6 @@
                                 @endif
                             </div>
                         </td>
-@if(auth()->user()->role !== 'gm')
                         <td>
                             @php
                                 $roomDetail = json_encode([
@@ -136,16 +135,17 @@
                                     <button type="button" onclick="toggleDropdown(this, 'room-{{ $room->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-room-{{ $room->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showRoomDetail({{ $roomDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="openRoomEditModal({{ $roomDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.rooms.destroy', $room) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus ruangan ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-@endif
                     </tr>
                     @empty
                     <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada ruangan ditemukan.</td></tr>
@@ -211,7 +211,7 @@
                         <th>Deskripsi</th>
                         <th>Jumlah</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -228,7 +228,6 @@
                                 {{ $asset->is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
                         </td>
-@if(auth()->user()->role !== 'gm')
                         <td>
                             @php $assetDetail = json_encode(['id'=>$asset->id,'name'=>$asset->name,'description'=>$asset->description ?? '','quantity'=>$asset->quantity,'is_active'=>$asset->is_active]); @endphp
                             <div class="flex items-center gap-1">
@@ -240,16 +239,17 @@
                                     <button type="button" onclick="toggleDropdown(this, 'asset-{{ $asset->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-asset-{{ $asset->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showAssetDetail({{ $assetDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="openAssetEditModal({{ $assetDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.assets.destroy', $asset) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus aset ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-@endif
                     </tr>
                     @empty
                     <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada aset ditemukan.</td></tr>

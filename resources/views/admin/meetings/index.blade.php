@@ -127,9 +127,7 @@
                         <th class="hidden sm:table-cell" style="width:95px">Waktu</th>
                         <th style="width:85px">Status</th>
                         <th class="hidden md:table-cell" style="width:85px">Antrian</th>
-                        @if(auth()->user()->role !== 'gm')
                         <th style="width:80px">Aksi</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody id="meetings-tbody">
@@ -182,7 +180,6 @@
                                 <span style="color:var(--text-muted);font-size:0.8rem;">—</span>
                             @endif
                         </td>
-                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
                                 <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
@@ -206,6 +203,7 @@
                                             </svg>
                                             Detail
                                         </button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="showEditModal({{ $meeting->id }})" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -220,11 +218,11 @@
                                             Hapus
                                         </button>
                                         @endif
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        @endif
                     </tr>
                     @empty
                     <tr id="empty-row">

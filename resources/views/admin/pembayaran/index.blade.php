@@ -619,9 +619,7 @@
                         @endif
                         <th>Status</th>
                             <th class="hidden md:table-cell">Tgl Bayar</th>
-                            @if(auth()->user()->role !== 'gm')
-                        <th>Aksi</th>
-                        @endif
+                            <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="payment-tbody">
@@ -764,7 +762,6 @@
                         @endif
                         <td><span class="badge {{ $badgeClass }}">{{ $badgeLabel }}</span></td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ ($item->tanggal_bayar) ? $item->tanggal_bayar->format('d/m/Y') : '-' }}</td>
-                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $itemId }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -775,17 +772,18 @@
                                     <button type="button" onclick="toggleDropdown(this, {{ $itemId }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $itemId }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="openEditModal({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.pembayaran.destroy', $itemId) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <input type="hidden" name="jenis" value="{{ $jenis }}">
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        @endif
                     </tr>
                     @empty
                     <tr>
@@ -854,9 +852,7 @@
                         <th>Penggunaan Ethernet/Hari</th>
                         <th>Pengecek</th>
                         <th>Keterangan</th>
-                        @if(auth()->user()->role !== 'gm')
                         <th>Aksi</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody id="usage-tbody">
@@ -870,7 +866,6 @@
                         <td style="color:var(--text-muted);">{{ number_format($u->penggunaan_ethernet, 2) }} GB</td>
                         <td style="color:var(--text-primary);">{{ $u->checker?->name ?? '-' }}</td>
                         <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $u->keterangan ?: '-' }}</td>
-                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showInternetUsageDetail({{ $u->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -881,15 +876,16 @@
                                     <button type="button" onclick="toggleDropdown(this, {{ $u->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $u->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showInternetUsageDetail({{ $u->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <form method="POST" action="{{ route('admin.pembayaran.internet-usage.destroy', $u->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data usage ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        @endif
                     </tr>
                     @empty
                     <tr>
@@ -972,14 +968,27 @@
                     <button type="button" onclick="setTopupRange('harian')" class="topup-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'harian' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'harian' ? '#a78bfa' : 'var(--text-muted)' }};">Harian</button>
                     <button type="button" onclick="setTopupRange('mingguan')" class="topup-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'mingguan' ? '#a78bfa' : 'var(--text-muted)' }};">Mingguan</button>
                     <button type="button" onclick="setTopupRange('bulanan')" class="topup-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'bulanan' ? '#a78bfa' : 'var(--text-muted)' }};">Bulanan</button>
+                    <button type="button" onclick="setTopupRange('tahunan')" class="topup-range-btn" data-range="tahunan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($topupRange ?? 'bulanan') === 'tahunan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($topupRange ?? 'bulanan') === 'tahunan' ? '#a78bfa' : 'var(--text-muted)' }};">Tahunan</button>
                 </div>
                 <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
                     <input type="hidden" name="jenis" value="listrik">
                     <input type="hidden" name="topup_range" value="{{ $topupRange }}">
                     <input type="hidden" name="token_month" value="{{ $tokenMonth }}">
-                    <input type="month" name="topup_month" value="{{ $topupMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                    <input type="hidden" name="reading_range" value="{{ $readingRange }}">
+                    @if($topupRange === 'tahunan')
+                        <select name="topup_year" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                            @foreach($listrikAvailableYears as $year)
+                                <option value="{{ $year }}" {{ (string) $year === (string) $topupYear ? 'selected' : '' }}>{{ $year }}</option>
+                            @endforeach
+                            @if(empty($listrikAvailableYears) || !in_array(now()->year, $listrikAvailableYears ?? []))
+                                <option value="{{ now()->year }}" {{ (string) now()->year === (string) $topupYear ? 'selected' : '' }}>{{ now()->year }}</option>
+                            @endif
+                        </select>
+                    @else
+                        <input type="month" name="topup_month" value="{{ $topupMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                    @endif
                 </form>
-                <a href="{{ route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan', 'topup_month' => $topupMonth]) }}" class="btn btn-secondary btn-sm" title="Export Riwayat Top Up">
+                <a href="{{ route('admin.export', ['type' => 'token-topups', 'range' => $topupRange ?? 'bulanan', 'topup_month' => $topupMonth, 'topup_year' => $topupYear ?? now()->year]) }}" class="btn btn-secondary btn-sm" title="Export Riwayat Top Up">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Export
                 </a>
@@ -1004,9 +1013,7 @@
                         <th>Nominal</th>
                         <th>Oleh</th>
                         <th>Catatan</th>
-                        @if(auth()->user()->role !== 'gm')
                         <th>Aksi</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -1019,7 +1026,6 @@
                         <td style="color:var(--text-primary);">Rp {{ number_format($t->nominal, 0) }}</td>
                         <td style="color:var(--text-primary);">{{ $t->creator?->name ?? '-' }}</td>
                         <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $t->notes ?: 'Tidak ada catatan' }}</td>
-                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showTopupDetail({{ $t->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -1030,20 +1036,21 @@
                                     <button type="button" onclick="toggleDropdown(this, 'tp-{{ $t->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-tp-{{ $t->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showTopupDetail({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="openEditTopup({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.pembayaran.token-topup.destroy', $t->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        @endif
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ auth()->user()->role !== 'gm' ? 7 : 6 }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
+                        <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat top up token.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -1067,12 +1074,26 @@
                     <button type="button" onclick="setReadingRange('harian')" class="reading-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'harian' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'harian' ? '#60a5fa' : 'var(--text-muted)' }};">Harian</button>
                     <button type="button" onclick="setReadingRange('mingguan')" class="reading-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'mingguan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'mingguan' ? '#60a5fa' : 'var(--text-muted)' }};">Mingguan</button>
                     <button type="button" onclick="setReadingRange('bulanan')" class="reading-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'bulanan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'bulanan' ? '#60a5fa' : 'var(--text-muted)' }};">Bulanan</button>
+                    <button type="button" onclick="setReadingRange('tahunan')" class="reading-range-btn" data-range="tahunan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($readingRange ?? 'bulanan') === 'tahunan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($readingRange ?? 'bulanan') === 'tahunan' ? '#60a5fa' : 'var(--text-muted)' }};">Tahunan</button>
                 </div>
                 <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
                     <input type="hidden" name="jenis" value="listrik">
-                    <input type="month" name="token_month" value="{{ $tokenMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                    <input type="hidden" name="topup_range" value="{{ $topupRange }}">
+                    <input type="hidden" name="reading_range" value="{{ $readingRange }}">
+                    @if($readingRange === 'tahunan')
+                        <select name="reading_year" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                            @foreach($listrikAvailableYears as $year)
+                                <option value="{{ $year }}" {{ (string) $year === (string) $readingYear ? 'selected' : '' }}>{{ $year }}</option>
+                            @endforeach
+                            @if(empty($listrikAvailableYears) || !in_array(now()->year, $listrikAvailableYears ?? []))
+                                <option value="{{ now()->year }}" {{ (string) now()->year === (string) $readingYear ? 'selected' : '' }}>{{ now()->year }}</option>
+                            @endif
+                        </select>
+                    @else
+                        <input type="month" name="token_month" value="{{ $tokenMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                    @endif
                 </form>
-                <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth]) }}" class="btn btn-secondary btn-sm" title="Export Pengecekan Token">
+                <a href="{{ route('admin.export', ['type' => 'token-readings', 'range' => $readingRange ?? 'bulanan', 'token_month' => $tokenMonth, 'reading_year' => $readingYear ?? now()->year]) }}" class="btn btn-secondary btn-sm" title="Export Pengecekan Token">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Export
                 </a>
@@ -1097,9 +1118,7 @@
                         <th>Status</th>
                         <th>Pengecek</th>
                         <th>Catatan</th>
-                        @if(auth()->user()->role !== 'gm')
                         <th>Aksi</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -1118,7 +1137,6 @@
                         <td><span class="badge text-xs" style="background:{{ $statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)')) }};color:{{ $statusColor }};border:1px solid {{ $statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : ($statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : ($statusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)')) }};">{{ $statusLabel }}</span></td>
                         <td style="color:var(--text-primary);">{{ $r->checker->name }}</td>
                         <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->notes ?: 'Tidak ada catatan' }}</td>
-                        @if(auth()->user()->role !== 'gm')
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showTokenReadingDetail({{ $r->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -1129,17 +1147,18 @@
                                     <button type="button" onclick="toggleDropdown(this, 'tr-{{ $r->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-tr-{{ $r->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showTokenReadingDetail({{ $r->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="openEditTokenReading({{ $r->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <a href="{{ route('admin.export', ['type' => 'token-readings']) }}" target="_blank" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;text-decoration:none;box-sizing:border-box;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Export</a>
                                         <form method="POST" action="{{ route('admin.pembayaran.token-reading.destroy', $r->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data pengecekan ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        @endif
                     </tr>
                     @empty
                     <tr>

@@ -280,21 +280,24 @@ class DashboardController extends Controller
 
             $tagihan = PembayaranAsetDigital::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + PembayaranIplRuko::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + WifiPayment::where('status', '!=', 'rejected')->whereBetween('created_at', [$start, $end])->sum('biaya')
+                + WifiPayment::where('status', '!=', 'rejected')->whereBetween('masa_tenggang', [$start, $end])->sum('biaya')
                 + PembayaranAsetTim::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + PembayaranAsetMes::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal');
+                + PembayaranAsetMes::where('status', '!=', 'rejected')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + VehiclePajakRequest::where('status', '!=', 'rejected')->whereBetween('created_at', [$start, $end])->sum('nominal');
 
             $bayar = PembayaranAsetDigital::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + PembayaranIplRuko::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + WifiPayment::where('status', 'lunas')->whereBetween('created_at', [$start, $end])->sum('biaya')
+                + WifiPayment::where('status', 'lunas')->whereBetween('masa_tenggang', [$start, $end])->sum('biaya')
                 + PembayaranAsetTim::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + PembayaranAsetMes::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal');
+                + PembayaranAsetMes::where('status', 'lunas')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + VehiclePajakRequest::where('status', 'lunas')->whereBetween('created_at', [$start, $end])->sum('nominal');
 
             $persetujuan = PembayaranAsetDigital::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
                 + PembayaranIplRuko::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + WifiPayment::where('status', 'pending')->whereBetween('created_at', [$start, $end])->sum('biaya')
+                + WifiPayment::where('status', 'pending')->whereBetween('masa_tenggang', [$start, $end])->sum('biaya')
                 + PembayaranAsetTim::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
-                + PembayaranAsetMes::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal');
+                + PembayaranAsetMes::where('status', 'pending')->whereBetween('tanggal_tagihan', [$start, $end])->sum('nominal')
+                + VehiclePajakRequest::where('status', 'pending')->whereBetween('created_at', [$start, $end])->sum('nominal');
 
             $monthlyTagihan[] = (int) $tagihan;
             $monthlyBayar[] = (int) $bayar;

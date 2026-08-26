@@ -88,9 +88,7 @@
                         <th style="width:110px">Nominal</th>
                         <th style="width:75px">Tgl Bayar</th>
                         <th style="width:50px">Bukti</th>
-                        @if(auth()->user()->role !== 'gm')
                         <th style="width:115px">Aksi</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody id="approval-tbody">
@@ -110,18 +108,18 @@
                             <span class="text-xs" style="color:var(--text-muted);">-</span>
                             @endif
                         </td>
-                        @if(auth()->user()->role !== 'gm')
                         <td>
                             @if($isApprover)
+                            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                             <div class="flex gap-2">
                                 <button type="button" onclick="approve({{ $r['id'] }}, '{{ $r['jenis'] }}')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#10b981;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Setujui</button>
                                 <button type="button" onclick="openReject({{ $r['id'] }}, '{{ $r['jenis'] }}')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#ef4444;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Tolak</button>
                             </div>
+                            @endif
                             @else
                             <span class="text-xs" style="color:var(--text-muted);">-</span>
                             @endif
                         </td>
-                        @endif
                     </tr>
                     @endforeach
                 </tbody>

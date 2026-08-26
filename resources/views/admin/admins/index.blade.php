@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('body-class', 'page-admin')
 @section('title', 'Kelola Akun')
 @section('page-title', 'Overview > Kelola Akun')
@@ -75,7 +75,7 @@
                         <th>NIK</th>
                         <th>Role</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -93,6 +93,7 @@
                                     'gm'            => 'badge-cyan',
                                     'ceo'           => 'badge-primary',
                                     'hr'            => 'badge-green',
+                                    'assistant_manager' => 'badge-purple',
                                     default         => 'badge-gray',
                                 };
                             @endphp
@@ -103,10 +104,9 @@
                                 {{ $admin->is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
                         </td>
-@if(auth()->user()->role !== 'gm')
                         <td>
                             @if($admin->id !== auth()->id())
-                                @php $adminDetail = json_encode(['id'=>$admin->id,'name'=>$admin->name,'username'=>$admin->username,'nik'=>$admin->nik,'role'=>$admin->role,'role_label'=>$admin->role_label,'is_active'=>$admin->is_active]); @endphp
+                                @php $adminDetail = json_encode(['id'=>$admin->id,'name'=>$admin->name,'username'=>$admin->username,'nik'=>$admin->nik,'role'=>$admin->role,'role_label'=>$admin->role_label,'is_active'=>$admin->is_active']); @endphp
                                 <div class="flex items-center gap-1">
                                     <button type="button" onclick="showAdminDetail({{ $adminDetail }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -116,11 +116,13 @@
                                         <button type="button" onclick="toggleDropdown(this, 'admin-{{ $admin->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                         <div id="dropdown-admin-{{ $admin->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                             <button type="button" onclick="showAdminDetail({{ $adminDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                             <button type="button" onclick="openEditAdminModal({{ $adminDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                             <form method="POST" action="{{ route('admin.admins.destroy', $admin) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun admin ini?" style="margin:0;">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                             </form>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -128,7 +130,6 @@
                                 <span class="badge badge-gray">Akun kamu</span>
                             @endif
                         </td>
-@endif
                     </tr>
                     @empty
                     <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun admin ditemukan.</td></tr>
@@ -169,7 +170,7 @@
                         <th>NIK</th>
                         <th>Divisi</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -185,7 +186,6 @@
                                 {{ $koordinator->is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
                         </td>
-@if(auth()->user()->role !== 'gm')
                         <td>
                             @php $koordinatorDetail = json_encode(['id'=>$koordinator->id,'name'=>$koordinator->name,'username'=>$koordinator->username,'nik'=>$koordinator->nik,'team_id'=>$koordinator->team_id,'team'=>$koordinator->team?->name ?? '—','role_label'=>$koordinator->role_label,'is_active'=>$koordinator->is_active]); @endphp
                             <div class="flex items-center gap-1">
@@ -197,16 +197,17 @@
                                     <button type="button" onclick="toggleDropdown(this, 'koordinator-{{ $koordinator->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-koordinator-{{ $koordinator->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showKoordinatorDetail({{ $koordinatorDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="openEditKoordinatorModal({{ $koordinatorDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.users.destroy', $koordinator) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun koordinator ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-@endif
                     </tr>
                     @empty
                     <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun koordinator ditemukan.</td></tr>
@@ -259,7 +260,7 @@
                         <th>NIK</th>
                         <th>Divisi</th>
                         <th>Status</th>
-@if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+<th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -275,7 +276,6 @@
                                 {{ $karyawan->is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
                         </td>
-@if(auth()->user()->role !== 'gm')
                         <td>
                             @php $karyawanDetail = json_encode(['id'=>$karyawan->id,'name'=>$karyawan->name,'username'=>$karyawan->username,'nik'=>$karyawan->nik,'team_id'=>$karyawan->team_id,'team'=>$karyawan->team?->name ?? '—','role_label'=>$karyawan->role_label,'is_active'=>$karyawan->is_active]); @endphp
                             <div class="flex items-center gap-1">
@@ -287,16 +287,17 @@
                                     <button type="button" onclick="toggleDropdown(this, 'karyawan-{{ $karyawan->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-karyawan-{{ $karyawan->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showKaryawanDetail({{ $karyawanDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                         <button type="button" onclick="openEditKaryawanModal({{ $karyawanDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.admins.karyawan.destroy', $karyawan) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus akun karyawan ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </td>
-@endif
                     </tr>
                     @empty
                     <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada akun karyawan ditemukan.</td></tr>
@@ -343,6 +344,7 @@
                         <option value="gm">General Manager (GM)</option>
                         <option value="ceo">Chief Executive Officer (CEO)</option>
                         <option value="hr">HR (Human Resources)</option>
+                        <option value="assistant_manager">Assistant Manager</option>
                     </select>
                 </div>
                 <div class="flex items-center gap-2">
@@ -392,6 +394,7 @@
                         <option value="gm">General Manager (GM)</option>
                         <option value="ceo">Chief Executive Officer (CEO)</option>
                         <option value="hr">HR (Human Resources)</option>
+                        <option value="assistant_manager">Assistant Manager</option>
                     </select>
                 </div>
             </div>

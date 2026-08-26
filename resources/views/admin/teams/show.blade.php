@@ -72,9 +72,7 @@
                         <th>Nama</th>
                         <th>Username</th>
                         <th>Role</th>
-                        @if(auth()->user()->role !== 'gm')
                         <th>Aksi</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -100,8 +98,8 @@
                                 {{ $member->role_label }}
                             </span>
                         </td>
-                        @if(auth()->user()->role !== 'gm')
                         <td>
+                            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                             <form method="POST" action="{{ route('admin.teams.members.destroy', [$team, $member]) }}"
                                 onsubmit="confirmSubmit(event, this)" data-confirm="Hapus {{ $member->name }} dari tim ini?">
                                 @csrf @method('DELETE')
@@ -112,8 +110,8 @@
                                     Keluarkan
                                 </button>
                             </form>
+                            @endif
                         </td>
-                        @endif
                     </tr>
                     @empty
                     <tr>

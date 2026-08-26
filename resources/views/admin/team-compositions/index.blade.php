@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('body-class', 'page-admin')
 @section('title', 'Komposisi Tim')
 @section('page-title', 'Overview > Komposisi Tim')
@@ -51,7 +51,7 @@
                             <th style="width:8%;">No</th>
                             <th style="width:40%;">Posisi</th>
                             <th style="width:20%;">Jumlah</th>
-                            @if(auth()->user()->role !== 'gm')<th>Aksi</th>@endif
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,7 +63,6 @@
                             <td>
                                 <span class="badge badge-cyan">{{ $comp->max_count }}</span>
                             </td>
-@if(auth()->user()->role !== 'gm')
                             <td>
                                 <div class="flex items-center gap-1">
                                     <button type="button" onclick="showDetail({{ $compDetail }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -74,16 +73,17 @@
                                         <button type="button" onclick="toggleDropdown(this, {{ $comp->id }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                         <div id="dropdown-{{ $comp->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                             <button type="button" onclick="showDetail({{ $compDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
+                                            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                                             <button type="button" onclick="openEditModal({{ $compDetail }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                             <form method="POST" action="{{ route('admin.team-compositions.destroy', $comp) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus komposisi {{ $comp->label }} ini?" style="margin:0;">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                             </form>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             </td>
-@endif
                         </tr>
                         @empty
                         <tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data komposisi.</td></tr>

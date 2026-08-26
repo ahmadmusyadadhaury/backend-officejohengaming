@@ -6,7 +6,7 @@
 
 @section('sidebar-menu')
     @php $role = auth()->user()->role; @endphp
-    @include(in_array($role, ['koordinator', 'admin_ga']) ? 'partials.sidebar-leader' : (in_array($role, ['admin','hr','head_of_store','gm','ceo']) ? 'partials.sidebar-admin' : 'partials.sidebar-user'))
+    @include(in_array($role, ['koordinator', 'admin_ga']) ? 'partials.sidebar-leader' : (in_array($role, ['admin','hr','head_of_store','gm','ceo','assistant_manager']) ? 'partials.sidebar-admin' : 'partials.sidebar-user'))
 @endsection
 
 @section('content')
@@ -84,7 +84,32 @@
                         <td style="color:var(--text-primary);font-weight:500;">{{ $r['detail'] }}</td>
                         <td style="color:var(--text-secondary);font-size:13px;">{{ $r['pic'] ?? '-' }}</td>
                         <td style="color:var(--text-primary);">Rp {{ number_format($r['nominal'], 0, ',', '.') }}</td>
-                        <td><span class="badge badge-red" style="white-space:nowrap;">Jatuh Tempo</span></td>
+                        <td>
+                            @php
+                                $statusColor = match($r['status']) {
+                                    'mati' => '#ef4444',
+                                    'jatuh_tempo' => '#f97316',
+                                    'segera_habis' => '#f59e0b',
+                                    'pending' => '#a78bfa',
+                                    default => '#ef4444',
+                                };
+                                $statusBg = match($r['status']) {
+                                    'mati' => 'rgba(239,68,68,0.1)',
+                                    'jatuh_tempo' => 'rgba(249,115,22,0.1)',
+                                    'segera_habis' => 'rgba(245,158,11,0.1)',
+                                    'pending' => 'rgba(167,139,250,0.1)',
+                                    default => 'rgba(239,68,68,0.1)',
+                                };
+                                $statusLabel = match($r['status']) {
+                                    'mati' => 'Mati',
+                                    'jatuh_tempo' => 'Jatuh Tempo',
+                                    'segera_habis' => 'Segera Habis',
+                                    'pending' => 'Menunggu',
+                                    default => ucfirst(str_replace('_', ' ', $r['status'])),
+                                };
+                            @endphp
+                            <span class="badge" style="white-space:nowrap;background:{{ $statusBg }};color:{{ $statusColor }};border:1px solid {{ $statusColor }}30;">{{ $statusLabel }}</span>
+                        </td>
                         <td>
                             <button type="button" onclick="openBayar({{ $r['id'] }}, '{{ $r['jenis'] }}', '{{ $r['detail'] }}', {{ $r['nominal'] }})" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Bayar</button>
                         </td>

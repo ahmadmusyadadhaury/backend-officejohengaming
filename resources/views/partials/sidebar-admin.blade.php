@@ -99,7 +99,7 @@
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'internet']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'internet' ? 'active' : '' }}"><span class="truncate">Internet</span></a>
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'aset_digital']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'aset_digital' ? 'active' : '' }}"><span class="truncate">Aset Digital</span></a>
     <a href="{{ route('admin.pembayaran.index', ['jenis' => 'ipl_ruko']) }}" class="sidebar-item sidebar-submenu-item {{ request('jenis') === 'ipl_ruko' ? 'active' : '' }}"><span class="truncate">IPL Ruko</span></a>
-    @if(in_array(auth()->user()->role, ['admin', 'hr', 'admin_ga']))
+    @if(in_array(auth()->user()->role, ['admin', 'hr', 'admin_ga', 'assistant_manager']))
     <a href="{{ route('payment-approval.tagihan') }}" class="sidebar-item sidebar-submenu-item {{ request()->routeIs('payment-approval.tagihan') ? 'active' : '' }}">
         <span class="truncate">Tagihan</span>
         <span class="sidebar-badge tagihan-badge" style="{{ $totalTagihan > 0 ? '' : 'display:none;' }}background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;line-height:1.4;">{{ $totalTagihan }}</span>
