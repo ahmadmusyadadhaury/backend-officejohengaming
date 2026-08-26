@@ -46,6 +46,16 @@ class WifiPayment extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
+    public function quotaTopups()
+    {
+        return $this->hasMany(InternetQuotaTopup::class);
+    }
+
+    public function quotaReadings()
+    {
+        return $this->hasMany(InternetQuotaReading::class);
+    }
+
     public function getStatusInternetAttribute(): string
     {
         if (in_array($this->status, ['lunas', 'pending', 'rejected'])) {

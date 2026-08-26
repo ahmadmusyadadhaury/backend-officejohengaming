@@ -107,6 +107,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('token-topup/{id}', [PaymentController::class, 'destroyTokenPayment'])->name('pembayaran.token-topup.destroy');
     Route::post('internet-usage', [PaymentController::class, 'storeInternetUsage'])->name('pembayaran.internet-usage.store');
     Route::delete('internet-usage/{id}', [PaymentController::class, 'destroyInternetUsage'])->name('pembayaran.internet-usage.destroy');
+    Route::post('internet-quota-topup', [PaymentController::class, 'storeInternetQuotaTopup'])->name('pembayaran.internet-quota-topup.store');
+    Route::put('internet-quota-topup/{id}', [PaymentController::class, 'updateInternetQuotaTopup'])->name('pembayaran.internet-quota-topup.update');
+    Route::delete('internet-quota-topup/{id}', [PaymentController::class, 'destroyInternetQuotaTopup'])->name('pembayaran.internet-quota-topup.destroy');
+    Route::post('internet-quota-reading', [PaymentController::class, 'storeInternetQuotaReading'])->name('pembayaran.internet-quota-reading.store');
+    Route::put('internet-quota-reading/{id}', [PaymentController::class, 'updateInternetQuotaReading'])->name('pembayaran.internet-quota-reading.update');
+    Route::delete('internet-quota-reading/{id}', [PaymentController::class, 'destroyInternetQuotaReading'])->name('pembayaran.internet-quota-reading.destroy');
     Route::post('pembayaran/ipl-ruko/bulk', [PaymentController::class, 'storeBulkIplRuko'])->name('pembayaran.ipl-ruko.bulk');
     Route::get('payment-approvals', [PaymentApprovalController::class, 'index'])->name('payment-approvals.index');
     Route::post('payment-approvals/{id}/approve', [PaymentApprovalController::class, 'approve'])->name('payment-approvals.approve');

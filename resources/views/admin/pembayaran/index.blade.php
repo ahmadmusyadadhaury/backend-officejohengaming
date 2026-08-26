@@ -505,6 +505,8 @@
     <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:10px;padding:3px;background:var(--bg-card);width:fit-content;margin-bottom:12px;">
         <button type="button" id="pill-internet-bayar" onclick="switchInternetTab('bayar')" style="padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:rgba(124,58,237,0.15);color:#a78bfa;">Pembayaran Internet</button>
         <button type="button" id="pill-internet-usage" onclick="switchInternetTab('usage')" style="padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;background:none;color:var(--text-muted);">Pengecekan Usage</button>
+        <button type="button" id="pill-internet-quota-topup" onclick="switchInternetTab('quota-topup')" style="padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;background:none;color:var(--text-muted);">Pembelian Kuota</button>
+        <button type="button" id="pill-internet-quota-reading" onclick="switchInternetTab('quota-reading')" style="padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;background:none;color:var(--text-muted);">Pengecekan Kuota</button>
     </div>
     @endif
 
@@ -890,6 +892,269 @@
                     @empty
                     <tr>
                         <td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data usage internet.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    {{-- Pembelian Kuota Internet --}}
+    <div id="internet-tab-quota-topup" style="display:none;">
+    <div class="gaming-card" style="overflow:visible;">
+        @if(isset($quotaAlert))
+        @php
+            $qaColor = match($quotaAlert['level'] ?? 'info') { 'danger' => '#ef4444', 'warning' => '#f59e0b', default => '#3b82f6' };
+            $qaBg = match($quotaAlert['level'] ?? 'info') { 'danger' => 'rgba(239,68,68,0.05)', 'warning' => 'rgba(245,158,11,0.05)', default => 'rgba(59,130,246,0.05)' };
+            $qaLabel = match($quotaAlert['level'] ?? 'info') { 'danger' => 'Kuota Hampir Habis', 'warning' => 'Perhatian Kuota', default => 'Info Kuota' };
+        @endphp
+        <div class="flex items-start gap-3 px-5 py-3.5" style="border-bottom:1px solid var(--border-color);background:{{ $qaBg }};">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:{{ $qaColor }};" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+                <div class="text-sm font-bold" style="color:{{ $qaColor }};">{{ $qaLabel }}</div>
+                <div class="text-sm mt-1" style="color:var(--text-secondary);">{{ $quotaAlert['message'] }}</div>
+            </div>
+        </div>
+        @endif
+        <div class="px-5 py-4" style="border-bottom:1px solid var(--border-color);">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" style="margin-bottom:12px;">
+                <div class="gaming-card p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(124,58,237,0.12);">
+                        <svg class="w-5 h-5" style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs font-semibold" style="color:var(--text-muted);">Top Up Terakhir</div>
+                        <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);">{{ $latestQuotaTopup ? number_format($latestQuotaTopup->amount_gb, 2) : '0' }} GB</div>
+                        <div class="text-xs font-medium" style="color:var(--text-muted);">{{ $latestQuotaTopup && $latestQuotaTopup->nominal ? 'Rp '.number_format($latestQuotaTopup->nominal, 0) : '' }}</div>
+                        <div class="text-xs" style="color:var(--text-muted);">{{ $latestQuotaTopup ? $latestQuotaTopup->payment_date->format('d M Y') : '-' }} · {{ $latestQuotaTopup?->creator?->name ?? '-' }}</div>
+                    </div>
+                </div>
+                <div class="gaming-card p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(59,130,246,0.12);">
+                        <svg class="w-5 h-5" style="color:#60a5fa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold" style="color:var(--text-muted);">Terpakai</div>
+                        <div class="text-lg font-gaming font-bold" style="color:var(--text-primary);">{{ number_format($quotaUsedGb, 2) }} GB</div>
+                    </div>
+                </div>
+                <div class="gaming-card p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:{{ ($quotaRemainingGb ?? 0) < 10 ? 'rgba(239,68,68,0.12)' : (($quotaRemainingGb ?? 0) < 30 ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.12)') }};">
+                        <svg class="w-5 h-5" style="color:{{ ($quotaRemainingGb ?? 0) < 10 ? '#ef4444' : (($quotaRemainingGb ?? 0) < 30 ? '#f59e0b' : '#34d399') }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2m0 4h.01"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-xs font-semibold" style="color:var(--text-muted);">Sisa Kuota</div>
+                        <div class="text-lg font-gaming font-bold" style="color:{{ ($quotaRemainingGb ?? 0) < 10 ? '#ef4444' : (($quotaRemainingGb ?? 0) < 30 ? '#f59e0b' : 'var(--text-primary)') }};">
+                            {{ number_format($quotaRemainingGb ?? 0, 2) }} GB
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Riwayat Pembelian Kuota</div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
+                        <button type="button" onclick="setQuotaTopupRange('harian')" class="quota-topup-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($quotaTopupRange ?? 'bulanan') === 'harian' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($quotaTopupRange ?? 'bulanan') === 'harian' ? '#a78bfa' : 'var(--text-muted)' }};">Harian</button>
+                        <button type="button" onclick="setQuotaTopupRange('mingguan')" class="quota-topup-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($quotaTopupRange ?? 'bulanan') === 'mingguan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($quotaTopupRange ?? 'bulanan') === 'mingguan' ? '#a78bfa' : 'var(--text-muted)' }};">Mingguan</button>
+                        <button type="button" onclick="setQuotaTopupRange('bulanan')" class="quota-topup-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($quotaTopupRange ?? 'bulanan') === 'bulanan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($quotaTopupRange ?? 'bulanan') === 'bulanan' ? '#a78bfa' : 'var(--text-muted)' }};">Bulanan</button>
+                        <button type="button" onclick="setQuotaTopupRange('tahunan')" class="quota-topup-range-btn" data-range="tahunan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($quotaTopupRange ?? 'bulanan') === 'tahunan' ? 'rgba(124,58,237,0.2)' : 'none' }};color:{{ ($quotaTopupRange ?? 'bulanan') === 'tahunan' ? '#a78bfa' : 'var(--text-muted)' }};">Tahunan</button>
+                    </div>
+                    <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                        <input type="hidden" name="jenis" value="internet">
+                        <input type="hidden" name="quota_topup_range" value="{{ $quotaTopupRange ?? 'bulanan' }}">
+                        @if(($quotaTopupRange ?? 'bulanan') === 'tahunan')
+                            <select name="quota_topup_year" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                                @foreach($internetAvailableYears as $year)
+                                    <option value="{{ $year }}" {{ (string) $year === (string) ($quotaTopupYear ?? now()->year) ? 'selected' : '' }}>{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input type="month" name="quota_topup_month" value="{{ $quotaTopupMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                        @endif
+                    </form>
+                    <a href="{{ route('admin.export', ['type' => 'internet-quota-topups', 'range' => $quotaTopupRange ?? 'bulanan', 'quota_topup_month' => $quotaTopupMonth, 'quota_topup_year' => $quotaTopupYear ?? now()->year]) }}" class="btn btn-secondary btn-sm" title="Export Riwayat Pembelian Kuota">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Export
+                    </a>
+                    @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
+                    <button type="button" onclick="openQuotaTopupModal()" class="btn btn-primary btn-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Top Up Baru
+                    </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="gaming-table w-full">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal Bayar</th>
+                        <th>Internet</th>
+                        <th>Periode</th>
+                        <th>Jumlah GB</th>
+                        <th>Nominal</th>
+                        <th>Oleh</th>
+                        <th>Catatan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($quotaTopupHistory as $i => $t)
+                    <tr>
+                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
+                        <td style="color:var(--text-primary);">{{ $t->payment_date->format('d M Y') }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $t->wifiPayment->nama_internet ?? '-' }}</td>
+                        <td style="color:var(--text-muted);">{{ $t->period }}</td>
+                        <td style="font-weight:600;color:var(--text-primary);">{{ number_format($t->amount_gb, 2) }} GB</td>
+                        <td style="color:var(--text-primary);">Rp {{ number_format($t->nominal, 0) }}</td>
+                        <td style="color:var(--text-primary);">{{ $t->creator?->name ?? '-' }}</td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $t->notes ?: 'Tidak ada catatan' }}</td>
+                        <td>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showQuotaTopupDetail({{ $t->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, 'qt-{{ $t->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-qt-{{ $t->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showQuotaTopupDetail({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
+                                        <button type="button" onclick="openEditQuotaTopup({{ $t->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.pembayaran.internet-quota-topup.destroy', $t->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data top up kuota ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada riwayat pembelian kuota.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    {{-- Pengecekan Kuota Internet --}}
+    <div id="internet-tab-quota-reading" style="display:none;">
+    <div class="gaming-card" style="overflow:visible;">
+        <div class="px-5 py-4 flex items-center justify-between flex-wrap gap-3" style="border-bottom:1px solid var(--border-color);">
+            <div>
+                <div style="font-weight:600;font-size:15px;color:var(--text-primary);">Pengecekan Kuota Internet</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:400;">
+                    Lakukan pengecekan sisa kuota internet secara berkala.
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-1" style="border:1px solid var(--border-color);border-radius:8px;padding:2px;background:var(--bg-card);">
+                    <button type="button" onclick="setQuotaReadingRange('harian')" class="quota-reading-range-btn" data-range="harian" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($quotaReadingRange ?? 'bulanan') === 'harian' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($quotaReadingRange ?? 'bulanan') === 'harian' ? '#60a5fa' : 'var(--text-muted)' }};">Harian</button>
+                    <button type="button" onclick="setQuotaReadingRange('mingguan')" class="quota-reading-range-btn" data-range="mingguan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($quotaReadingRange ?? 'bulanan') === 'mingguan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($quotaReadingRange ?? 'bulanan') === 'mingguan' ? '#60a5fa' : 'var(--text-muted)' }};">Mingguan</button>
+                    <button type="button" onclick="setQuotaReadingRange('bulanan')" class="quota-reading-range-btn" data-range="bulanan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($quotaReadingRange ?? 'bulanan') === 'bulanan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($quotaReadingRange ?? 'bulanan') === 'bulanan' ? '#60a5fa' : 'var(--text-muted)' }};">Bulanan</button>
+                    <button type="button" onclick="setQuotaReadingRange('tahunan')" class="quota-reading-range-btn" data-range="tahunan" style="padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;background:{{ ($quotaReadingRange ?? 'bulanan') === 'tahunan' ? 'rgba(59,130,246,0.2)' : 'none' }};color:{{ ($quotaReadingRange ?? 'bulanan') === 'tahunan' ? '#60a5fa' : 'var(--text-muted)' }};">Tahunan</button>
+                </div>
+                <form method="GET" action="{{ route('admin.pembayaran.index') }}" class="flex items-center gap-2">
+                    <input type="hidden" name="jenis" value="internet">
+                    <input type="hidden" name="quota_reading_range" value="{{ $quotaReadingRange ?? 'bulanan' }}">
+                    @if(($quotaReadingRange ?? 'bulanan') === 'tahunan')
+                        <select name="quota_reading_year" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                            @foreach($internetAvailableYears as $year)
+                                <option value="{{ $year }}" {{ (string) $year === (string) ($quotaReadingYear ?? now()->year) ? 'selected' : '' }}>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    @else
+                        <input type="month" name="quota_reading_month" value="{{ $quotaReadingMonth }}" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
+                    @endif
+                </form>
+                <a href="{{ route('admin.export', ['type' => 'internet-quota-readings', 'range' => $quotaReadingRange ?? 'bulanan', 'quota_reading_month' => $quotaReadingMonth, 'quota_reading_year' => $quotaReadingYear ?? now()->year]) }}" class="btn btn-secondary btn-sm" title="Export Pengecekan Kuota">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Export
+                </a>
+                @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
+                <button type="button" onclick="openQuotaReadingModal()" class="btn btn-primary btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Input Pengecekan
+                </button>
+                @endif
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="gaming-table w-full">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal Check</th>
+                        <th>Internet</th>
+                        <th>Sisa GB</th>
+                        <th>Terpakai</th>
+                        <th>Status</th>
+                        <th>Pengecek</th>
+                        <th>Catatan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($quotaReadings as $i => $r)
+                    @php
+                        $quotaStatusMap = ['habis' => ['#ef4444', 'Habis'], 'segera_habis' => ['#f97316', 'Segera Habis'], 'perhatian' => ['#3b82f6', 'Perhatian'], 'aman' => ['#10b981', 'Aman']];
+                        $quotaStatusColor = $quotaStatusMap[$r->status][0] ?? '#10b981';
+                        $quotaStatusLabel = $quotaStatusMap[$r->status][1] ?? 'Aman';
+                    @endphp
+                    <tr>
+                        <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
+                        <td style="color:var(--text-primary);">{{ $r->checked_date->format('d M Y') }}</td>
+                        <td style="color:var(--text-primary);font-weight:500;">{{ $r->wifiPayment->nama_internet ?? '-' }}</td>
+                        <td style="font-weight:600;color:var(--text-primary);">{{ number_format($r->remaining_gb, 2) }} GB</td>
+                        <td style="color:var(--text-muted);">{{ $r->used_gb ? number_format($r->used_gb, 2) . ' GB' : '-' }}</td>
+                        <td><span class="badge text-xs" style="background:{{ $quotaStatusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : ($quotaStatusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : ($quotaStatusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)')) }};color:{{ $quotaStatusColor }};border:1px solid {{ $quotaStatusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : ($quotaStatusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : ($quotaStatusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)')) }};">{{ $quotaStatusLabel }}</span></td>
+                        <td style="color:var(--text-primary);">{{ $r->checker->name ?? '-' }}</td>
+                        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->notes ?: 'Tidak ada catatan' }}</td>
+                        <td>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="showQuotaReadingDetail({{ $r->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </button>
+                                <div class="dropdown-wrap" style="position:relative;">
+                                    <button type="button" onclick="toggleDropdown(this, 'qr-{{ $r->id }}')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
+                                    <div id="dropdown-qr-{{ $r->id }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
+                                        <button type="button" onclick="showQuotaReadingDetail({{ $r->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Lihat Detail</button>
+                                        @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
+                                        <button type="button" onclick="openEditQuotaReading({{ $r->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <form method="POST" action="{{ route('admin.pembayaran.internet-quota-reading.destroy', $r->id) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data pengecekan kuota ini?" style="margin:0;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
+                                        </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data pengecekan kuota internet.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -1671,6 +1936,162 @@
             </div>
         </div>
     </div>
+
+    {{-- Quota Top Up Modal --}}
+    <div id="quota-topup-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:92vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);" id="quota-topup-modal-title">Pembelian Kuota Internet</h3>
+                <button type="button" onclick="closeQuotaTopupModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-5 overflow-y-auto flex-1">
+                <form method="POST" id="quota-topup-form" action="{{ route('admin.pembayaran.internet-quota-topup.store') }}" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="_method" id="quota-topup-method" value="POST">
+                    <div class="space-y-4">
+                        <div class="field-group">
+                            <label class="gaming-label">Internet <span class="field-req">*</span></label>
+                            <select name="wifi_payment_id" id="f-qt-wifi_payment_id" required class="gaming-input">
+                                <option value="">Pilih internet</option>
+                                @foreach($items as $item)
+                                    <option value="{{ $item->id }}">{{ $item->nama_internet }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Jumlah GB <span class="field-req">*</span></label>
+                            <input type="number" name="amount_gb" id="f-qt-amount_gb" required step="0.01" min="0.01" placeholder="Contoh: 50" class="gaming-input">
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Jumlah kuota yang dibeli (GB).</div>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Nominal (Rp) <span class="field-req">*</span></label>
+                            <input type="number" name="nominal" id="f-qt-nominal" required step="0.01" min="0" placeholder="Contoh: 100000" class="gaming-input">
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Nominal harga kuota.</div>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Tanggal Bayar <span class="field-req">*</span></label>
+                            <input type="date" name="payment_date" id="f-qt-payment_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Catatan</label>
+                            <textarea name="notes" id="f-qt-notes" rows="1" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Bukti Pembayaran</label>
+                            <input type="file" name="bukti_bayar" id="f-qt-bukti" accept="image/jpeg,image/png" class="gaming-input" style="padding:8px;">
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;" id="quota-topup-bukti-hint">Foto/scan bukti pembayaran (JPG/PNG, maks 2MB). Opsional.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+                        <button type="button" onclick="closeQuotaTopupModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
+                        <button type="submit" id="quota-topup-submit-btn" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Quota Top Up Detail Modal --}}
+    <div id="quota-topup-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Pembelian Kuota</h3>
+                <button type="button" onclick="closeQuotaTopupDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-5 overflow-y-auto flex-1" id="quota-topup-detail-body"></div>
+            <div class="px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);display:flex;justify-content:flex-end;">
+                <button type="button" onclick="closeQuotaTopupDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Quota Reading Modal --}}
+    <div id="quota-reading-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:92vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);" id="quota-reading-modal-title">Input Pengecekan Kuota</h3>
+                <button type="button" onclick="closeQuotaReadingModal()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-5 overflow-y-auto flex-1">
+                <form method="POST" id="quota-reading-form" action="{{ route('admin.pembayaran.internet-quota-reading.store') }}" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="_method" id="quota-reading-method" value="POST">
+                    <div class="space-y-4">
+                        <div class="field-group">
+                            <label class="gaming-label">Internet <span class="field-req">*</span></label>
+                            <select name="wifi_payment_id" id="f-qr-wifi_payment_id" required class="gaming-input">
+                                <option value="">Pilih internet</option>
+                                @foreach($items as $item)
+                                    <option value="{{ $item->id }}">{{ $item->nama_internet }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Sisa Kuota (GB) <span class="field-req">*</span></label>
+                            <input type="number" name="remaining_gb" id="f-qr-remaining_gb" required step="0.01" min="0" placeholder="Contoh: 25.50" class="gaming-input">
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Input sisa kuota yang tersisa.</div>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Tanggal Pengecekan <span class="field-req">*</span></label>
+                            <input type="date" name="checked_date" id="f-qr-checked_date" required value="{{ date('Y-m-d') }}" class="gaming-input">
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Pengecek <span class="field-req">*</span></label>
+                            <select name="checked_by" id="f-qr-checked_by" required class="gaming-input">
+                                <option value="">Pilih pengecek</option>
+                                @foreach($users as $u)
+                                    <option value="{{ $u->id }}" {{ $u->id === auth()->id() ? 'selected' : '' }}>{{ $u->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Catatan</label>
+                            <textarea name="notes" id="f-qr-notes" rows="2" placeholder="Catatan (opsional)" class="gaming-input" style="resize:vertical;"></textarea>
+                        </div>
+                        <div class="field-group">
+                            <label class="gaming-label">Bukti Pengecekan</label>
+                            <input type="file" name="bukti_foto" id="f-qr-bukti" accept="image/jpeg,image/png,application/pdf" class="gaming-input" style="padding:8px;">
+                            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;" id="quota-reading-bukti-hint">Foto/dokumen pendukung (JPG/PNG/PDF, maks 2MB). Opsional.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+                        <button type="button" onclick="closeQuotaReadingModal()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Batal</button>
+                        <button type="submit" id="quota-reading-submit-btn" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="background:linear-gradient(135deg,#6c5cff,#8b7bff);color:#fff;border:none;box-shadow:0 4px 15px rgba(108,92,255,0.3);cursor:pointer;">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Quota Reading Detail Modal --}}
+    <div id="quota-reading-detail-modal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:16px;background:var(--bg-overlay);">
+        <div class="w-full max-w-[420px] rounded-3xl shadow-2xl flex flex-col" style="max-height:90vh;background:var(--bg-surface);" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--border-color);">
+                <h3 class="text-base font-bold" style="color:var(--text-primary);">Detail Pengecekan Kuota</h3>
+                <button type="button" onclick="closeQuotaReadingDetail()" class="p-1.5 rounded-xl transition" style="color:var(--text-muted);background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-5 overflow-y-auto flex-1" id="quota-reading-detail-body"></div>
+            <div class="px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--border-color);display:flex;justify-content:flex-end;">
+                <button type="button" onclick="closeQuotaReadingDetail()" class="px-5 py-2 rounded-xl text-sm font-medium transition" style="color:var(--text-primary);border:1px solid var(--border-color);background:var(--bg-surface);cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='var(--bg-surface)'">Tutup</button>
+            </div>
+        </div>
+    </div>
 @endif
 
 <script>
@@ -1681,6 +2102,9 @@ const paymentData = @json($itemsJson);
 const internetUsageData = @json($internetUsagesJson);
 const topupData = @json($topupHistoryJson);
 const tokenReadingData = @json($tokenReadingsJson);
+const quotaTopupData = @json($quotaTopupHistoryJson ?? collect());
+const quotaReadingData = @json($quotaReadingsJson ?? collect());
+const internetWifiItems = @json($items->pluck('nama_internet', 'id'));
 const currentJenis = '{{ $jenis }}';
 const dueField = currentJenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
 const jenisLabel = @json($jenisLabels[$jenis] ?? $jenis);
@@ -2404,10 +2828,19 @@ function switchListrikTab(tab) {
 }
 
 function switchInternetTab(tab) {
-    const isBayar = tab === 'bayar';
-    document.getElementById('internet-tab-bayar').style.display = isBayar ? '' : 'none';
-    document.getElementById('internet-tab-usage').style.display = isBayar ? 'none' : '';
-    setTabPill(isBayar ? 'pill-internet-bayar' : 'pill-internet-usage', isBayar ? 'pill-internet-usage' : 'pill-internet-bayar');
+    const tabs = ['bayar', 'usage', 'quota-topup', 'quota-reading'];
+    const tabIds = { 'bayar': 'internet-tab-bayar', 'usage': 'internet-tab-usage', 'quota-topup': 'internet-tab-quota-topup', 'quota-reading': 'internet-tab-quota-reading' };
+    const pillIds = { 'bayar': 'pill-internet-bayar', 'usage': 'pill-internet-usage', 'quota-topup': 'pill-internet-quota-topup', 'quota-reading': 'pill-internet-quota-reading' };
+    tabs.forEach(function(t) {
+        const el = document.getElementById(tabIds[t]);
+        const pill = document.getElementById(pillIds[t]);
+        if (el) el.style.display = t === tab ? '' : 'none';
+        if (pill) {
+            pill.style.background = t === tab ? 'rgba(124,58,237,0.15)' : 'none';
+            pill.style.color = t === tab ? '#a78bfa' : 'var(--text-muted)';
+            pill.style.fontWeight = t === tab ? '600' : '500';
+        }
+    });
 }
 
 function filterUsageTable() {
@@ -2433,6 +2866,10 @@ document.getElementById('internet-usage-modal')?.addEventListener('click', funct
 document.getElementById('token-reading-detail-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTokenReadingDetail(); });
 document.getElementById('topup-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTopupModal(); });
 document.getElementById('topup-detail-modal')?.addEventListener('click', function(e) { if (e.target === this) closeTopupDetail(); });
+document.getElementById('quota-topup-modal')?.addEventListener('click', function(e) { if (e.target === this) closeQuotaTopupModal(); });
+document.getElementById('quota-topup-detail-modal')?.addEventListener('click', function(e) { if (e.target === this) closeQuotaTopupDetail(); });
+document.getElementById('quota-reading-modal')?.addEventListener('click', function(e) { if (e.target === this) closeQuotaReadingModal(); });
+document.getElementById('quota-reading-detail-modal')?.addEventListener('click', function(e) { if (e.target === this) closeQuotaReadingDetail(); });
 
 function resetTopupForm() {
     const form = document.getElementById('topup-form');
@@ -2535,6 +2972,200 @@ function setReadingRange(range) {
     window.location.search = params.toString();
 }
 
+function setQuotaTopupRange(range) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('jenis', 'internet');
+    params.set('quota_topup_range', range);
+    params.delete('quota_reading_range');
+    window.location.search = params.toString();
+}
+
+function setQuotaReadingRange(range) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('jenis', 'internet');
+    params.set('quota_reading_range', range);
+    params.delete('quota_topup_range');
+    window.location.search = params.toString();
+}
+
+function resetQuotaTopupForm() {
+    const form = document.getElementById('quota-topup-form');
+    form.action = '{{ route('admin.pembayaran.internet-quota-topup.store') }}';
+    document.getElementById('quota-topup-method').value = 'POST';
+    document.getElementById('quota-topup-modal-title').textContent = 'Pembelian Kuota Internet';
+    document.getElementById('quota-topup-submit-btn').textContent = 'Simpan';
+    document.getElementById('quota-topup-bukti-hint').textContent = 'Foto/scan bukti pembayaran (JPG/PNG, maks 2MB). Opsional.';
+    form.querySelectorAll('input, textarea, select').forEach(function(el) {
+        if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method' && el.name !== 'payment_date') {
+            el.value = '';
+        }
+    });
+    document.getElementById('f-qt-payment_date').value = '{{ date('Y-m-d') }}';
+}
+
+function openQuotaTopupModal() {
+    resetQuotaTopupForm();
+    document.getElementById('quota-topup-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-qt-amount_gb').focus();
+}
+
+function closeQuotaTopupModal() {
+    document.getElementById('quota-topup-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function openEditQuotaTopup(id) {
+    const t = quotaTopupData.find(function(x) { return x.id === id; });
+    if (!t) return;
+    resetQuotaTopupForm();
+    document.getElementById('quota-topup-modal-title').textContent = 'Edit Pembelian Kuota';
+    document.getElementById('quota-topup-submit-btn').textContent = 'Simpan Perubahan';
+    document.getElementById('quota-topup-bukti-hint').textContent = t.bukti_bayar ? 'Bukti saat ini tersedia. Kosongkan jika tidak mengganti.' : 'Belum ada bukti. Opsional.';
+    document.getElementById('quota-topup-method').value = 'PUT';
+    document.getElementById('quota-topup-form').action = '{{ route('admin.pembayaran.internet-quota-topup.update', ['id' => 0]) }}'.slice(0, -1) + id;
+    document.getElementById('f-qt-wifi_payment_id').value = t.wifi_payment_id;
+    document.getElementById('f-qt-amount_gb').value = t.amount_gb;
+    document.getElementById('f-qt-nominal').value = t.nominal;
+    document.getElementById('f-qt-payment_date').value = String(t.payment_date).slice(0, 10);
+    document.getElementById('f-qt-notes').value = t.notes || '';
+    document.getElementById('f-qt-bukti').value = '';
+    document.getElementById('quota-topup-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-qt-amount_gb').focus();
+}
+
+function showQuotaTopupDetail(id) {
+    var t = quotaTopupData.find(function(x) { return x.id === id; });
+    if (!t) return;
+    var fmtDate = new Date(t.payment_date + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    var nominal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(t.nominal);
+    var wifiName = internetWifiItems[t.wifi_payment_id] || '-';
+    var rows = [
+        { label: 'Tanggal Bayar', value: fmtDate },
+        { label: 'Internet', value: wifiName },
+        { label: 'Periode', value: t.period || '-' },
+        { label: 'Jumlah GB', value: Number(t.amount_gb).toLocaleString('id-ID', { minimumFractionDigits: 2 }) + ' GB' },
+        { label: 'Nominal', value: nominal },
+        { label: 'Oleh', value: t.creator ? t.creator.name : '-' },
+        { label: 'Catatan', value: t.notes || '-' },
+    ];
+    var buktiBlock = t.bukti_bayar
+        ? '<div class="mt-3"><div class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);margin-bottom:6px;">Bukti Pembayaran</div>' +
+           '<a href="{{ url("files") }}/' + t.bukti_bayar + '" target="_blank" rel="noopener">' +
+               '<img src="{{ url("files") }}/' + t.bukti_bayar + '" alt="Bukti" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--border-color);object-fit:contain;display:block;">' +
+           '</a></div>'
+        : '<div class="mt-3"><div class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);">Bukti Pembayaran</div>' +
+           '<div class="text-sm" style="color:var(--text-muted);">Tidak ada bukti</div></div>';
+
+    document.getElementById('quota-topup-detail-body').innerHTML =
+        '<div class="space-y-0">' +
+            rows.map(function(r, idx) {
+                return '<div class="flex items-center justify-between py-2.5" style="' + (idx < rows.length - 1 ? 'border-bottom:1px solid var(--border-color);' : '') + '">' +
+                    '<span class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);">' + r.label + '</span>' +
+                    '<span class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">' + r.value + '</span>' +
+                '</div>';
+            }).join('') +
+        '</div>' + buktiBlock;
+    document.getElementById('quota-topup-detail-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeQuotaTopupDetail() {
+    document.getElementById('quota-topup-detail-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function resetQuotaReadingForm() {
+    var form = document.getElementById('quota-reading-form');
+    form.action = '{{ route('admin.pembayaran.internet-quota-reading.store') }}';
+    document.getElementById('quota-reading-method').value = 'POST';
+    document.getElementById('quota-reading-modal-title').textContent = 'Input Pengecekan Kuota';
+    document.getElementById('quota-reading-submit-btn').textContent = 'Simpan';
+    document.getElementById('quota-reading-bukti-hint').textContent = 'Foto/dokumen pendukung (JPG/PNG/PDF, maks 2MB). Opsional.';
+    form.querySelectorAll('input, textarea, select').forEach(function(el) {
+        if (el.type !== 'hidden' && el.name !== '_token' && el.name !== '_method' && el.name !== 'checked_date') {
+            el.value = '';
+        }
+    });
+    document.getElementById('f-qr-checked_date').value = '{{ date('Y-m-d') }}';
+    document.getElementById('f-qr-checked_by').value = '{{ auth()->id() }}';
+}
+
+function openQuotaReadingModal() {
+    resetQuotaReadingForm();
+    document.getElementById('quota-reading-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-qr-remaining_gb').focus();
+}
+
+function closeQuotaReadingModal() {
+    document.getElementById('quota-reading-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function openEditQuotaReading(id) {
+    var r = quotaReadingData.find(function(x) { return x.id === id; });
+    if (!r) return;
+    resetQuotaReadingForm();
+    document.getElementById('quota-reading-modal-title').textContent = 'Edit Pengecekan Kuota';
+    document.getElementById('quota-reading-submit-btn').textContent = 'Simpan Perubahan';
+    document.getElementById('quota-reading-bukti-hint').textContent = r.bukti_foto ? 'Bukti saat ini tersedia. Kosongkan jika tidak mengganti.' : 'Belum ada bukti. Opsional.';
+    document.getElementById('quota-reading-method').value = 'PUT';
+    document.getElementById('quota-reading-form').action = '{{ route('admin.pembayaran.internet-quota-reading.update', ['id' => 0]) }}'.slice(0, -1) + id;
+    document.getElementById('f-qr-wifi_payment_id').value = r.wifi_payment_id;
+    document.getElementById('f-qr-remaining_gb').value = r.remaining_gb;
+    document.getElementById('f-qr-checked_date').value = String(r.checked_date).slice(0, 10);
+    document.getElementById('f-qr-checked_by').value = r.checked_by;
+    document.getElementById('f-qr-notes').value = r.notes || '';
+    document.getElementById('f-qr-bukti').value = '';
+    document.getElementById('quota-reading-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('f-qr-remaining_gb').focus();
+}
+
+function showQuotaReadingDetail(id) {
+    var r = quotaReadingData.find(function(x) { return x.id === id; });
+    if (!r) return;
+    var fmtDate = new Date(r.checked_date + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    var statusMap = { 'habis': ['#ef4444', 'Habis'], 'segera_habis': ['#f97316', 'Segera Habis'], 'perhatian': ['#3b82f6', 'Perhatian'], 'aman': ['#10b981', 'Aman'] };
+    var statusColor = (statusMap[r.status] || ['#10b981', 'Aman'])[0];
+    var statusLabel = (statusMap[r.status] || ['#10b981', 'Aman'])[1];
+    var wifiName = internetWifiItems[r.wifi_payment_id] || '-';
+    var rows = [
+        { label: 'Tanggal Check', value: fmtDate },
+        { label: 'Internet', value: wifiName },
+        { label: 'Sisa Kuota', value: Number(r.remaining_gb).toLocaleString('id-ID', { minimumFractionDigits: 2 }) + ' GB' },
+        { label: 'Status', value: '<span class="badge text-xs" style="background:' + (statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : (statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : (statusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)'))) + ';color:' + statusColor + ';border:1px solid ' + (statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : (statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : (statusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)')) + ';">' + statusLabel + '</span>' },
+        { label: 'Pengecek', value: r.checker ? r.checker.name : '-' },
+        { label: 'Catatan', value: r.notes || '-' },
+    ];
+    var buktiBlock = r.bukti_foto
+        ? '<div class="mt-3"><div class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);margin-bottom:6px;">Bukti Pengecekan</div>' +
+           '<a href="{{ url("files") }}/' + r.bukti_foto + '" target="_blank" rel="noopener">' +
+               '<img src="{{ url("files") }}/' + r.bukti_foto + '" alt="Bukti" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid var(--border-color);object-fit:contain;display:block;">' +
+           '</a></div>'
+        : '<div class="mt-3"><div class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);">Bukti Pengecekan</div>' +
+           '<div class="text-sm" style="color:var(--text-muted);">Tidak ada bukti</div></div>';
+
+    document.getElementById('quota-reading-detail-body').innerHTML =
+        '<div class="space-y-0">' +
+            rows.map(function(r, idx) {
+                return '<div class="flex items-center justify-between py-2.5" style="' + (idx < rows.length - 1 ? 'border-bottom:1px solid var(--border-color);' : '') + '">' +
+                    '<span class="text-xs font-medium uppercase tracking-wider" style="color:var(--text-muted);">' + r.label + '</span>' +
+                    '<span class="text-sm font-semibold text-right" style="color:var(--text-primary);max-width:55%;">' + r.value + '</span>' +
+                '</div>';
+            }).join('') +
+        '</div>' + buktiBlock;
+    document.getElementById('quota-reading-detail-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeQuotaReadingDetail() {
+    document.getElementById('quota-reading-detail-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
 function openBulkIplModal() {
     document.getElementById('bulk-ipl-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -2579,6 +3210,10 @@ document.addEventListener('keydown', function(e) {
         closeBulkIplModal();
         closeAlertPopup();
         closeBayarModal();
+        closeQuotaTopupModal();
+        closeQuotaTopupDetail();
+        closeQuotaReadingModal();
+        closeQuotaReadingDetail();
         document.body.style.overflow = '';
     }
 });

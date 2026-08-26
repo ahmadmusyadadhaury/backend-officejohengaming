@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\InternetQuotaLowMail;
 use App\Mail\TokenLowMail;
 use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
+use App\Models\InternetQuotaReading;
+use App\Models\InternetQuotaTopup;
 use App\Models\InternetUsageCheck;
 use App\Models\Notification;
 use App\Models\PembayaranAsetDigital;
@@ -98,6 +101,116 @@ class PaymentController extends Controller
                 'keterangan' => $u->keterangan,
                 'checker' => $u->checker?->name,
             ]);
+
+            $quotaTopupRange = $request->get('quota_topup_range', 'bulanan');
+            $quotaReadingRange = $request->get('quota_reading_range', 'bulanan');
+            $quotaTopupMonth = now()->format('Y-m');
+            $quotaReadingMonth = now()->format('Y-m');
+            $quotaTopupYear = $request->get('quota_topup_year', (string) now()->year);
+            $quotaReadingYear = $request->get('quota_reading_year', (string) now()->year);
+            $internetQuotaAvailableYears = [];
+            $quotaCapacityGb = 0;
+            $quotaUsedGb = 0;
+            $quotaRemainingGb = 0;
+            $quotaAlert = null;
+            $quotaTopupHistory = collect();
+            $quotaTopupHistoryJson = collect();
+            $quotaReadings = collect();
+            $quotaReadingsJson = collect();
+            $latestQuotaTopup = null;
+            $latestQuotaReading = null;
+
+            if ($jenis === 'internet') {
+                $quotaTopupMonth = $request->get('quota_topup_month', now()->format('Y-m'));
+                $quotaReadingMonth = $request->get('quota_reading_month', now()->format('Y-m'));
+
+                $internetQuotaAvailableYears = InternetQuotaTopup::selectRaw('YEAR(payment_date) as year')
+                    ->pluck('year')
+                    ->merge(InternetQuotaReading::selectRaw('YEAR(checked_date) as year')->pluck('year'))
+                    ->unique()->filter()->sort()->values()->toArray();
+
+                $latestQuotaTopup = InternetQuotaTopup::with('creator', 'wifiPayment')
+                    ->orderBy('payment_date', 'desc')->orderBy('id', 'desc')->first();
+
+                $quotaCapacityGb = $latestQuotaTopup ? (float) $latestQuotaTopup->amount_gb : 0;
+
+                if ($quotaTopupRange === 'harian') {
+                    $quotaTopupQuery = InternetQuotaTopup::with('creator', 'wifiPayment')->whereDate('payment_date', Carbon::today());
+                } elseif ($quotaTopupRange === 'mingguan') {
+                    $quotaTopupQuery = InternetQuotaTopup::with('creator', 'wifiPayment')->whereBetween('payment_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                } elseif ($quotaTopupRange === 'tahunan') {
+                    $quotaTopupQuery = InternetQuotaTopup::with('creator', 'wifiPayment')->whereYear('payment_date', $quotaTopupYear);
+                } else {
+                    $qs = Carbon::parse($quotaTopupMonth.'-01')->startOfMonth();
+                    $qe = $qs->copy()->endOfMonth();
+                    $quotaTopupQuery = InternetQuotaTopup::with('creator', 'wifiPayment')->whereBetween('payment_date', [$qs, $qe]);
+                }
+                $quotaTopupHistory = $quotaTopupQuery->orderBy('payment_date', 'desc')->orderBy('id', 'desc')->get();
+                $quotaTopupHistoryJson = $quotaTopupHistory->map(fn ($t) => [
+                    'id' => $t->id,
+                    'wifi_payment_id' => $t->wifi_payment_id,
+                    'internet_name' => $t->wifiPayment?->nama_internet ?? '-',
+                    'amount_gb' => (float) $t->amount_gb,
+                    'nominal' => (float) $t->nominal,
+                    'payment_date' => $t->payment_date->format('Y-m-d'),
+                    'period' => $t->period,
+                    'notes' => $t->notes,
+                    'bukti_bayar' => $t->bukti_bayar,
+                    'creator' => $t->creator ? ['name' => $t->creator->name] : null,
+                ]);
+
+                if ($quotaReadingRange === 'harian') {
+                    $quotaReadingQuery = InternetQuotaReading::with('checker', 'wifiPayment')->whereDate('checked_date', Carbon::today());
+                } elseif ($quotaReadingRange === 'mingguan') {
+                    $quotaReadingQuery = InternetQuotaReading::with('checker', 'wifiPayment')->whereBetween('checked_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                } elseif ($quotaReadingRange === 'tahunan') {
+                    $quotaReadingQuery = InternetQuotaReading::with('checker', 'wifiPayment')->whereYear('checked_date', $quotaReadingYear);
+                } else {
+                    $rs = Carbon::parse($quotaReadingMonth.'-01')->startOfMonth();
+                    $re = $rs->copy()->endOfMonth();
+                    $quotaReadingQuery = InternetQuotaReading::with('checker', 'wifiPayment')->whereBetween('checked_date', [$rs, $re]);
+                }
+                $quotaReadings = $quotaReadingQuery->orderBy('checked_date', 'desc')->orderBy('id', 'desc')->get();
+                $quotaReadingsJson = $quotaReadings->map(fn ($r) => [
+                    'id' => $r->id,
+                    'wifi_payment_id' => $r->wifi_payment_id,
+                    'internet_name' => $r->wifiPayment?->nama_internet ?? '-',
+                    'remaining_gb' => (float) $r->remaining_gb,
+                    'checked_date' => $r->checked_date->format('Y-m-d'),
+                    'status' => $r->status,
+                    'notes' => $r->notes,
+                    'bukti_foto' => $r->bukti_foto,
+                    'terpakai' => max(0, $quotaCapacityGb - (float) $r->remaining_gb),
+                    'checker' => $r->checker ? ['name' => $r->checker->name] : null,
+                ]);
+
+                if ($latestQuotaTopup) {
+                    $latestQuotaReading = InternetQuotaReading::with('checker')
+                        ->where('created_at', '>=', $latestQuotaTopup->created_at)
+                        ->orderBy('created_at', 'desc')->first();
+                }
+
+                if ($latestQuotaReading) {
+                    $quotaRemainingGb = (float) $latestQuotaReading->remaining_gb;
+                    $quotaUsedGb = $quotaCapacityGb - $quotaRemainingGb;
+                }
+
+                $quotaAlert = null;
+                if ($quotaCapacityGb > 0 && $latestQuotaReading) {
+                    $pct = ($quotaRemainingGb / $quotaCapacityGb) * 100;
+                    if ($pct < 10) {
+                        $quotaAlert = ['level' => 'danger', 'message' => "Sisa kuota internet tinggal {$quotaRemainingGb} GB! Segera lakukan pembelian kuota."];
+                    } elseif ($pct < 25) {
+                        $quotaAlert = ['level' => 'warning', 'message' => "Sisa kuota internet {$quotaRemainingGb} GB. Segera persiapkan pembelian kuota."];
+                    } elseif ($pct < 50) {
+                        $quotaAlert = ['level' => 'info', 'message' => "Sisa kuota internet {$quotaRemainingGb} GB. Lakukan pengecekan rutin."];
+                    }
+                } elseif ($quotaCapacityGb > 0 && ! $latestQuotaReading) {
+                    $quotaAlert = ['level' => 'info', 'message' => 'Belum ada pengecekan setelah pembelian kuota terakhir.'];
+                } elseif (! $latestQuotaTopup) {
+                    $quotaAlert = ['level' => 'warning', 'message' => 'Belum ada pembelian kuota internet.'];
+                }
+            }
         } elseif ($jenis === 'aset_digital') {
             $expiringAssets = DigitalAsset::where(function ($q) {
                 $q->where('berakhir', '<=', now()->addDays(7))
@@ -441,6 +554,11 @@ class PaymentController extends Controller
             'latestPayment', 'topupHistory', 'topupHistoryJson', 'topupRange', 'readingRange', 'topupMonth',
             'users', 'digitalAssets', 'internetUsages', 'internetUsagesJson', 'internetUsageDate', 'tahun', 'availableYears',
             'topupYear', 'readingYear', 'listrikAvailableYears',
+            'quotaTopupRange', 'quotaReadingRange', 'quotaTopupMonth', 'quotaReadingMonth',
+            'quotaTopupYear', 'quotaReadingYear', 'internetQuotaAvailableYears',
+            'quotaCapacityGb', 'quotaUsedGb', 'quotaRemainingGb', 'quotaAlert',
+            'quotaTopupHistory', 'quotaTopupHistoryJson', 'quotaReadings', 'quotaReadingsJson',
+            'latestQuotaTopup', 'latestQuotaReading',
         ));
     }
 
@@ -1025,5 +1143,157 @@ class PaymentController extends Controller
 
         return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
             ->with('success', 'Data usage internet berhasil dihapus.');
+    }
+
+    public function storeInternetQuotaTopup(Request $request)
+    {
+        $data = $request->validate([
+            'wifi_payment_id' => 'required|exists:wifi_payments,id',
+            'amount_gb' => 'required|numeric|min:1',
+            'nominal' => 'required|numeric|min:0',
+            'payment_date' => 'required|date',
+            'notes' => 'nullable|string|max:500',
+            'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('bukti_bayar')) {
+            $data['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
+        }
+
+        $data['period'] = Carbon::parse($data['payment_date'])->format('Y-m');
+        $data['created_by'] = auth()->id();
+
+        InternetQuotaTopup::create($data);
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
+            ->with('success', 'Pembelian kuota sebanyak '.number_format($data['amount_gb'], 0).' GB berhasil disimpan.');
+    }
+
+    public function updateInternetQuotaTopup($id, Request $request)
+    {
+        $payment = InternetQuotaTopup::findOrFail($id);
+
+        $data = $request->validate([
+            'wifi_payment_id' => 'required|exists:wifi_payments,id',
+            'amount_gb' => 'required|numeric|min:1',
+            'nominal' => 'required|numeric|min:0',
+            'payment_date' => 'required|date',
+            'notes' => 'nullable|string|max:500',
+            'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $data['period'] = Carbon::parse($data['payment_date'])->format('Y-m');
+        unset($data['bukti_bayar']);
+
+        if ($request->hasFile('bukti_bayar')) {
+            if ($payment->bukti_bayar) {
+                Storage::disk('public')->delete($payment->bukti_bayar);
+            }
+            $data['bukti_bayar'] = $request->file('bukti_bayar')->store('payment-bukti', 'public');
+        }
+
+        $payment->update($data);
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
+            ->with('success', 'Data pembelian kuota berhasil diperbarui.');
+    }
+
+    public function destroyInternetQuotaTopup($id)
+    {
+        $payment = InternetQuotaTopup::findOrFail($id);
+        if ($payment->bukti_bayar) {
+            Storage::disk('public')->delete($payment->bukti_bayar);
+        }
+        $payment->delete();
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
+            ->with('success', 'Riwayat pembelian kuota berhasil dihapus.');
+    }
+
+    public function storeInternetQuotaReading(Request $request)
+    {
+        $data = $request->validate([
+            'wifi_payment_id' => 'required|exists:wifi_payments,id',
+            'remaining_gb' => 'required|numeric|min:0|max:99999',
+            'checked_date' => 'required|date',
+            'checked_by' => 'required|exists:users,id',
+            'notes' => 'nullable|string|max:500',
+            'bukti_foto' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
+        ]);
+
+        if ($request->hasFile('bukti_foto')) {
+            $data['bukti_foto'] = $request->file('bukti_foto')->store('internet-quota-reading-bukti', 'public');
+        }
+
+        $remaining = $data['remaining_gb'];
+        $data['status'] = match (true) {
+            $remaining < 1 => 'segera_isi',
+            $remaining < 3 => 'warning',
+            $remaining < 5 => 'perhatian',
+            default => 'aman',
+        };
+
+        InternetQuotaReading::create($data);
+
+        $recipients = array_map('trim', explode(',', (string) env('TOKEN_LOW_EMAIL_RECIPIENTS', '')));
+        $recipients = array_filter($recipients);
+
+        if ($remaining < 1 && $recipients) {
+            foreach ($recipients as $email) {
+                Mail::to($email)->send(new InternetQuotaLowMail($remaining, 'danger'));
+            }
+        } elseif ($remaining < 3 && $recipients) {
+            foreach ($recipients as $email) {
+                Mail::to($email)->send(new InternetQuotaLowMail($remaining, 'warning'));
+            }
+        }
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
+            ->with('success', 'Pengecekan kuota berhasil disimpan. Sisa: '.$remaining.' GB.');
+    }
+
+    public function updateInternetQuotaReading($id, Request $request)
+    {
+        $reading = InternetQuotaReading::findOrFail($id);
+
+        $data = $request->validate([
+            'wifi_payment_id' => 'required|exists:wifi_payments,id',
+            'remaining_gb' => 'required|numeric|min:0|max:99999',
+            'checked_date' => 'required|date',
+            'checked_by' => 'required|exists:users,id',
+            'notes' => 'nullable|string|max:500',
+            'bukti_foto' => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:2048',
+        ]);
+
+        if ($request->hasFile('bukti_foto')) {
+            if ($reading->bukti_foto) {
+                Storage::disk('public')->delete($reading->bukti_foto);
+            }
+            $data['bukti_foto'] = $request->file('bukti_foto')->store('internet-quota-reading-bukti', 'public');
+        }
+
+        $data['status'] = match (true) {
+            $data['remaining_gb'] < 1 => 'segera_isi',
+            $data['remaining_gb'] < 3 => 'warning',
+            $data['remaining_gb'] < 5 => 'perhatian',
+            default => 'aman',
+        };
+
+        $reading->update($data);
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
+            ->with('success', 'Data pengecekan kuota berhasil diperbarui.');
+    }
+
+    public function destroyInternetQuotaReading($id)
+    {
+        $reading = InternetQuotaReading::findOrFail($id);
+        if ($reading->bukti_foto) {
+            Storage::disk('public')->delete($reading->bukti_foto);
+        }
+        $reading->delete();
+
+        return redirect()->route('admin.pembayaran.index', ['jenis' => 'internet'])
+            ->with('success', 'Data pengecekan kuota berhasil dihapus.');
     }
 }

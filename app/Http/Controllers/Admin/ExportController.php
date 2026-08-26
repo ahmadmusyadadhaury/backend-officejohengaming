@@ -10,6 +10,8 @@ use App\Models\AsetTim;
 use App\Models\Asset;
 use App\Models\DigitalAsset;
 use App\Models\ElectricityTokenReading;
+use App\Models\InternetQuotaReading;
+use App\Models\InternetQuotaTopup;
 use App\Models\InternetUsageCheck;
 use App\Models\Meeting;
 use App\Models\PembayaranAsetDigital;
@@ -54,6 +56,8 @@ class ExportController extends Controller
             'token-readings' => fn () => $this->tokenReadingsExport($request),
             'token-topups' => fn () => $this->tokenTopupsExport($request),
             'internet-usage' => fn () => $this->internetUsageExport($request),
+            'internet-quota-topups' => fn () => $this->internetQuotaTopupsExport($request),
+            'internet-quota-readings' => fn () => $this->internetQuotaReadingsExport($request),
         ];
 
         if (! isset($exports[$type])) {
@@ -556,6 +560,79 @@ class ExportController extends Controller
         return Excel::download(
             new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Pengecekan Usage Internet', 'Usage Internet'),
             'Data_Usage_Internet.xlsx'
+        );
+    }
+
+    protected function internetQuotaTopupsExport($request)
+    {
+        $range = $request->get('range', 'bulanan');
+        $query = InternetQuotaTopup::with('creator', 'wifiPayment');
+        if ($range === 'harian') {
+            $query->whereDate('payment_date', Carbon::today());
+        } elseif ($range === 'mingguan') {
+            $query->whereBetween('payment_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } elseif ($range === 'tahunan') {
+            $year = $request->get('quota_topup_year', now()->year);
+            $query->whereYear('payment_date', $year);
+        } else {
+            $month = $request->get('quota_topup_month', now()->format('Y-m'));
+            $start = Carbon::parse($month.'-01')->startOfMonth();
+            $end = $start->copy()->endOfMonth();
+            $query->whereBetween('payment_date', [$start, $end]);
+        }
+        $data = $query->orderBy('payment_date', 'desc')
+            ->get()->map(fn ($t) => [
+                'Tanggal Bayar' => $t->payment_date->format('d/m/Y'),
+                'Internet' => $t->wifiPayment?->nama_internet ?? '-',
+                'Periode' => $t->period,
+                'Jumlah GB' => $t->amount_gb,
+                'Nominal' => $t->nominal,
+                'Oleh' => $t->creator?->name ?? '-',
+                'Bukti' => $t->bukti_bayar ? route('files.show', $t->bukti_bayar) : '-',
+                'Catatan' => $t->notes ?: 'Tidak ada catatan',
+            ]);
+
+        return Excel::download(
+            new DataExport(collect($data), array_keys($data->first() ?? []), 'Riwayat Pembelian Kuota Internet', 'Kuota Internet'),
+            'Riwayat_Pembelian_Kuota.xlsx'
+        );
+    }
+
+    protected function internetQuotaReadingsExport($request)
+    {
+        $range = $request->get('range', 'bulanan');
+        $query = InternetQuotaReading::with('checker', 'wifiPayment');
+        if ($range === 'harian') {
+            $query->whereDate('checked_date', Carbon::today());
+        } elseif ($range === 'mingguan') {
+            $query->whereBetween('checked_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } elseif ($range === 'tahunan') {
+            $year = $request->get('quota_reading_year', now()->year);
+            $query->whereYear('checked_date', $year);
+        } else {
+            $month = $request->get('quota_reading_month', now()->format('Y-m'));
+            $start = Carbon::parse($month.'-01')->startOfMonth();
+            $end = $start->copy()->endOfMonth();
+            $query->whereBetween('checked_date', [$start, $end]);
+        }
+
+        $latestTopup = InternetQuotaTopup::orderBy('payment_date', 'desc')->first();
+        $capacityGb = $latestTopup ? (float) $latestTopup->amount_gb : 0;
+
+        $data = $query->orderBy('checked_date', 'desc')
+            ->get()->map(fn ($r) => [
+                'Tanggal Check' => $r->checked_date->format('d/m/Y'),
+                'Internet' => $r->wifiPayment?->nama_internet ?? '-',
+                'Sisa GB' => $r->remaining_gb,
+                'Terpakai' => max(0, $capacityGb - (float) $r->remaining_gb),
+                'Status' => $r->status ?? '-',
+                'Pengecek' => $r->checker?->name ?? '-',
+                'Catatan' => $r->notes ?: 'Tidak ada catatan',
+            ]);
+
+        return Excel::download(
+            new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Pengecekan Kuota Internet', 'Kuota Internet'),
+            'Data_Kuota_Internet.xlsx'
         );
     }
 }
