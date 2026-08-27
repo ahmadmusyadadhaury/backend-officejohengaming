@@ -1888,16 +1888,16 @@ function downloadBarcode() {
 
         // Rasio 1mm = 32px pada canvas 1600x960 (50mm x 30mm)
         const GAP = 64;           // 2mm
-        const PAD = 192;          // 6mm padding nyaman di sisi label
-        const QR = 416;           // 13mm QR
+        const PAD = 96;           // 3mm padding nyaman di sisi label
+        const QR_MIN = 416;       // ukuran QR minimal
 
         // ---- Header: logo + judul di-center sebagai satu grup ----
-        const logoSize = 192;      // 6mm logo
-        ctx.font = '800 66px Poppins, Arial, sans-serif'; // 2.1mm judul
+        const logoSize = 176;      // 5.5mm logo
+        ctx.font = '800 64px Poppins, Arial, sans-serif'; // 2mm judul
         const titleW = ctx.measureText(title).width;
         const headW = logoSize + GAP + titleW;
         const headX = (canvasW - headW) / 2;
-        const headY = 96;         // posisi vertikal header
+        const headY = 72;         // posisi vertikal header
 
         if (logoReady) {
             ctx.drawImage(logo, headX, headY, logoSize, logoSize);
@@ -1907,19 +1907,38 @@ function downloadBarcode() {
         ctx.textBaseline = 'middle';
         ctx.fillText(title, headX + logoSize + GAP, headY + logoSize / 2);
 
-        // ---- Konten: barcode + QR di-center ----
-        const bcRatio = bcImg.width / bcImg.height || 4;
-        const contentH = Math.max(QR, bcImg.height > 0 ? bcImg.height : 300);
-        const bcW = Math.max(300, bcImg.height > 0 ? bcImg.height * bcRatio : 640);
-        const contentW = bcW + (hasQr ? GAP + QR : 0);
-        const contentX = (canvasW - contentW) / 2;
-        const y = headY + logoSize + Math.max(GAP / 2, 48);
-        const cy = y;
+        // ---- Konten: barcode + QR mengisi ruang vertikal di tengah ----
+        const urlZone = 76;                                  // tinggi area URL di bawah
+        const contentTop = headY + logoSize + Math.max(GAP / 2, 64);
+        const contentBottom = canvasH - urlZone - 64;
+        const availH = Math.max(QR_MIN, contentBottom - contentTop);
 
-        ctx.drawImage(bcImg, contentX, cy, bcW, bcImg.height > 0 ? bcImg.height : 300);
+        const bcRatio = (bcImg.width > 0 && bcImg.height > 0) ? (bcImg.width / bcImg.height) : 5;
+
+        // ukur konten: barcode setinggi availH (lebar sesuai rasio), QR square = availH
+        let bcH = availH;
+        let bcW = Math.round(bcH * bcRatio);
+        let qrSize = availH;
+
+        // ruang horizontal yang tersedia setelah padding
+        const availW = canvasW - PAD * 2;
+        const mediaW = bcW + (hasQr ? GAP + qrSize : 0);
+        if (mediaW > availW) {
+            const shrink = availW / mediaW;
+            bcH = Math.round(bcH * shrink);
+            bcW = Math.round(bcW * shrink);
+            qrSize = Math.round(qrSize * shrink);
+        }
+
+        const mediaH = Math.max(bcH, qrSize);
+        const mediaW2 = bcW + (hasQr ? GAP + qrSize : 0);
+        // posisikan area konten secara vertikal di tengah ruang tersedia
+        const mediaY = contentTop + (availH - mediaH) / 2;
+        const mediaX = (canvasW - mediaW2) / 2;
+
+        ctx.drawImage(bcImg, mediaX, mediaY, bcW, bcH);
         if (hasQr && qrReady()) {
-            const qry = cy;
-            ctx.drawImage(qrImg, contentX + bcW + GAP, qry, QR, QR);
+            ctx.drawImage(qrImg, mediaX + bcW + GAP, mediaY, qrSize, qrSize);
         }
 
         // ---- URL kecil di bawah ----
