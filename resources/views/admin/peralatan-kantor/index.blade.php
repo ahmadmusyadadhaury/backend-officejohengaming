@@ -1819,24 +1819,35 @@ function roundedRectPath(ctx, x, y, w, h, r) {
 }
 
 function downloadBarcode() {
-    const clone = prepareBlackBarcode();
-    if (!clone) return;
-    const svgData = new XMLSerializer().serializeToString(clone);
+    const detailId = currentDetailId || 'aset';
+    const i = itemsData.find(function(x) { return x.id === detailId; });
     const qrEl = document.getElementById('detail-qr-img');
     const qrRow = document.getElementById('detail-qr-row');
     const hasQr = qrEl && qrRow && !qrRow.classList.contains('hidden') && qrEl.src && qrEl.complete && qrEl.naturalWidth > 0;
-    const scale = 2;
-    const pad = 12;
-    const logoSize = 40;
-    const qrSize = 56;
-    const gap = 8;
+
+    const logoUrl = '{{ asset("images/logo/logo johengaming.jpg") }}';
+    const qrUrl = '{{ url("/aset") }}/' + encodeURIComponent(i ? (i.kode_aset || detailId) : detailId) + '/qr';
     const title = 'JSA PERALATAN KANTOR';
+
+    // Buat salinan SVG barcode hitam pekat agar tajam saat digambar ke canvas
+    const clone = prepareBlackBarcode();
+    if (!clone) return;
+    const svgData = new XMLSerializer().serializeToString(clone);
+
+    // Ukuran canvas mengikuti rasio 50x30 mm (5:3), resolusi tinggi agar tajam
+    const canvasW = 1600;
+    const canvasH = 960;
     const logo = new Image();
     const bcImg = new Image();
+    const qrImg = new Image();
     let logoOk = false;
     let logoReady = false;
     let bcOk = false;
     let fontReady = false;
+
+    // Barcode SVG -> data URL lalu jadi img (didukung canvas; html2canvas tidak bisa render SVG)
+    const bcblob = new Blob([svgData], { type: 'image/svg+xml' });
+    const bcDataUrl = URL.createObjectURL(bcblob);
 
     function ensurePoppinsLoaded() {
         return new Promise(function(resolve) {
@@ -1863,84 +1874,82 @@ function downloadBarcode() {
             }
         });
     }
-
-    ensurePoppinsLoaded().then(function() {
-        fontReady = true;
-        build();
-    });
+    ensurePoppinsLoaded().then(function() { fontReady = true; build(); });
 
     function build() {
         if (!logoOk || !bcOk || !fontReady) return;
-        const w = parseInt(clone.getAttribute('width')) || 300;
-        const h = parseInt(clone.getAttribute('height')) || 120;
-        const qw = hasQr ? qrSize : 0;
-        const contentW = w + (hasQr ? gap + qw : 0);
-        const contentH = Math.max(h, qw);
 
         const canvas = document.createElement('canvas');
+        canvas.width = canvasW;
+        canvas.height = canvasH;
         const ctx = canvas.getContext('2d');
-        ctx.font = '800 ' + (15 * scale) + 'px Poppins, Arial, sans-serif';
-        ctx.letterSpacing = '0.08em';
-        const titleW = ctx.measureText(title).width;
-        const headerW = (logoReady ? logoSize + 8 : 0) + titleW;
-        const totalW = Math.max(headerW, contentW) + pad * 2;
-        const headerH = Math.max(logoReady ? logoSize : 0, 20);
-        const totalH = pad + headerH + 12 + contentH + pad;
-
-        canvas.width = totalW * scale;
-        canvas.height = totalH * scale;
-        ctx.font = '800 ' + (15 * scale) + 'px Poppins, Arial, sans-serif';
-        ctx.letterSpacing = '0.08em';
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, canvasW, canvasH);
 
-        const lw = 1 * scale;
-        ctx.strokeStyle = '#dddddd';
-        ctx.lineWidth = lw;
-        roundedRectPath(ctx, lw / 2, lw / 2, canvas.width - lw, canvas.height - lw, 10 * scale);
-        ctx.stroke();
+        // Rasio 1mm = 32px pada canvas 1600x960 (50mm x 30mm)
+        const GAP = 64;           // 2mm
+        const PAD = 192;          // 6mm padding nyaman di sisi label
+        const QR = 416;           // 13mm QR
 
-        const hy = pad + headerH / 2;
-        const headerX = pad + (totalW - pad * 2 - headerW) / 2;
-        let hx = headerX;
+        // ---- Header: logo + judul di-center sebagai satu grup ----
+        const logoSize = 192;      // 6mm logo
+        ctx.font = '800 66px Poppins, Arial, sans-serif'; // 2.1mm judul
+        const titleW = ctx.measureText(title).width;
+        const headW = logoSize + GAP + titleW;
+        const headX = (canvasW - headW) / 2;
+        const headY = 96;         // posisi vertikal header
+
         if (logoReady) {
-            ctx.drawImage(logo, hx * scale, (hy - logoSize / 2) * scale, logoSize * scale, logoSize * scale);
-            hx += logoSize + 8;
+            ctx.drawImage(logo, headX, headY, logoSize, logoSize);
         }
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
-        ctx.fillText(title, hx * scale, hy * scale);
+        ctx.fillText(title, headX + logoSize + GAP, headY + logoSize / 2);
 
-        const y = pad + headerH + 12;
-        const contentX = pad + (totalW - pad * 2 - contentW) / 2;
-        let x = contentX;
-        ctx.drawImage(bcImg, x * scale, (y + (contentH - h) / 2) * scale, w * scale, h * scale);
-        x += w + gap;
-        if (hasQr) {
-            ctx.drawImage(qrEl, x * scale, (y + (contentH - qw) / 2) * scale, qw * scale, qw * scale);
+        // ---- Konten: barcode + QR di-center ----
+        const bcRatio = bcImg.width / bcImg.height || 4;
+        const contentH = Math.max(QR, bcImg.height > 0 ? bcImg.height : 300);
+        const bcW = Math.max(300, bcImg.height > 0 ? bcImg.height * bcRatio : 640);
+        const contentW = bcW + (hasQr ? GAP + QR : 0);
+        const contentX = (canvasW - contentW) / 2;
+        const y = headY + logoSize + Math.max(GAP / 2, 48);
+        const cy = y;
+
+        ctx.drawImage(bcImg, contentX, cy, bcW, bcImg.height > 0 ? bcImg.height : 300);
+        if (hasQr && qrReady()) {
+            const qry = cy;
+            ctx.drawImage(qrImg, contentX + bcW + GAP, qry, QR, QR);
         }
 
+        // ---- URL kecil di bawah ----
+        var url = '{{ url("/aset") }}/' + encodeURIComponent(i ? (i.kode_aset || detailId) : detailId);
+        ctx.font = '600 34px Poppins, Arial, sans-serif';
+        ctx.fillStyle = '#94a3b8';
+        ctx.textAlign = 'center';
+        ctx.fillText(url, canvasW / 2, canvasH - 80);
+
         const a = document.createElement('a');
-        a.download = 'barcode-qr-' + (currentDetailId || 'aset') + '.png';
+        a.download = 'barcode-qr-' + detailId + '.png';
         a.href = canvas.toDataURL('image/png');
         a.click();
+        URL.revokeObjectURL(bcDataUrl);
+    }
+
+    function qrReady() {
+        return qrEl && qrEl.complete && qrEl.naturalWidth > 0;
     }
 
     logo.onload = function() { logoOk = true; logoReady = true; build(); };
     logo.onerror = function() { logoOk = true; build(); };
     bcImg.onload = function() { bcOk = true; build(); };
-    bcImg.onerror = function() {
-        const blob = new Blob([svgData], { type: 'image/svg+xml' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.download = 'barcode-' + (currentDetailId || 'aset') + '.svg';
-        a.href = url;
-        a.click();
-        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-    };
+    bcImg.onerror = function() { bcOk = true; build(); };
     logo.src = '{{ asset("images/logo/logo johengaming.jpg") }}';
-    bcImg.src = getBarcodeSvgDataUrl(clone);
+    bcImg.src = bcDataUrl;
+    if (hasQr) {
+        qrImg.onload = function() { build(); };
+        qrImg.src = qrEl.src;
+    }
 }
 
 /* ===== SCAN BARCODE ===== */
