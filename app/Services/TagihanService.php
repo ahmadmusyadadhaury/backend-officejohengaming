@@ -79,7 +79,7 @@ class TagihanService
         $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
 
         $query = $class::whereNull('requested_by')
-            ->whereNotIn('status', ['lunas', 'rejected', 'menunggu']);
+            ->whereNotIn('status', ['lunas', 'rejected']);
 
         if ($jenis === 'aset_digital') {
             if (! in_array(auth()->user()->role, User::FULL_ACCESS_ROLES)) {
@@ -95,7 +95,7 @@ class TagihanService
                 $query->whereHas('vehicle', fn ($q) => $q->where('pic', $userName));
             }
         } else {
-            $query->where($dateField, '<=', Carbon::today());
+            $query->where($dateField, '<=', Carbon::today()->addDays(7));
         }
 
         if ($jenis === 'aset_tim') {
@@ -150,7 +150,7 @@ class TagihanService
                 $record = $class::find($m[3]);
                 $stillRelevant = $record && ($n->type === 'approval'
                     ? $record->status === 'pending'
-                    : is_null($record->requested_by) && ! in_array($record->status, ['lunas', 'rejected', 'menunggu']));
+                    : is_null($record->requested_by) && ! in_array($record->status, ['lunas', 'rejected']));
 
                 if (! $stillRelevant) {
                     $staleIds[] = $n->id;

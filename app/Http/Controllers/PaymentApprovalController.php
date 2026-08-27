@@ -286,7 +286,7 @@ class PaymentApprovalController extends Controller
         $class = $this->getModelClass($jenis);
         $record = $class::findOrFail($id);
 
-        if (in_array($record->status, ['lunas', 'rejected', 'menunggu'])) {
+        if (in_array($record->status, ['lunas', 'rejected'])) {
             return redirect()->route('payment-approval.tagihan')
                 ->with('error', 'Tagihan belum memasuki masa pembayaran.');
         }

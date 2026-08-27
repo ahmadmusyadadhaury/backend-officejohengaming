@@ -973,7 +973,7 @@
                         <input type="hidden" name="quota_topup_range" value="{{ $quotaTopupRange ?? 'bulanan' }}">
                         @if(($quotaTopupRange ?? 'bulanan') === 'tahunan')
                             <select name="quota_topup_year" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
-                                @foreach($internetAvailableYears as $year)
+                                @foreach($internetQuotaAvailableYears as $year)
                                     <option value="{{ $year }}" {{ (string) $year === (string) ($quotaTopupYear ?? now()->year) ? 'selected' : '' }}>{{ $year }}</option>
                                 @endforeach
                             </select>
@@ -1077,7 +1077,7 @@
                     <input type="hidden" name="quota_reading_range" value="{{ $quotaReadingRange ?? 'bulanan' }}">
                     @if(($quotaReadingRange ?? 'bulanan') === 'tahunan')
                         <select name="quota_reading_year" class="gaming-input" style="padding:6px 10px;font-size:13px;" onchange="this.form.submit()">
-                            @foreach($internetAvailableYears as $year)
+                            @foreach($internetQuotaAvailableYears as $year)
                                 <option value="{{ $year }}" {{ (string) $year === (string) ($quotaReadingYear ?? now()->year) ? 'selected' : '' }}>{{ $year }}</option>
                             @endforeach
                         </select>
@@ -3136,7 +3136,7 @@ function showQuotaReadingDetail(id) {
         { label: 'Tanggal Check', value: fmtDate },
         { label: 'Internet', value: wifiName },
         { label: 'Sisa Kuota', value: Number(r.remaining_gb).toLocaleString('id-ID', { minimumFractionDigits: 2 }) + ' GB' },
-        { label: 'Status', value: '<span class="badge text-xs" style="background:' + (statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : (statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : (statusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)'))) + ';color:' + statusColor + ';border:1px solid ' + (statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : (statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : (statusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)')) + ';">' + statusLabel + '</span>' },
+        { label: 'Status', value: '<span class="badge text-xs" style="background:' + (statusColor === '#10b981' ? 'rgba(16,185,129,0.15)' : (statusColor === '#3b82f6' ? 'rgba(59,130,246,0.15)' : (statusColor === '#f97316' ? 'rgba(249,115,22,0.15)' : 'rgba(239,68,68,0.15)'))) + ';color:' + statusColor + ';border:1px solid ' + (statusColor === '#10b981' ? 'rgba(16,185,129,0.3)' : (statusColor === '#3b82f6' ? 'rgba(59,130,246,0.3)' : (statusColor === '#f97316' ? 'rgba(249,115,22,0.3)' : 'rgba(239,68,68,0.3)'))) + ';">' + statusLabel + '</span>' },
         { label: 'Pengecek', value: r.checker ? r.checker.name : '-' },
         { label: 'Catatan', value: r.notes || '-' },
     ];

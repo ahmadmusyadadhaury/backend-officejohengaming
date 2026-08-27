@@ -45,6 +45,24 @@ class PaymentController extends Controller
         $availableYears = [];
         $alerts = collect();
 
+        $quotaTopupRange = 'bulanan';
+        $quotaReadingRange = 'bulanan';
+        $quotaTopupMonth = now()->format('Y-m');
+        $quotaReadingMonth = now()->format('Y-m');
+        $quotaTopupYear = (string) now()->year;
+        $quotaReadingYear = (string) now()->year;
+        $internetQuotaAvailableYears = [];
+        $quotaCapacityGb = 0;
+        $quotaUsedGb = 0;
+        $quotaRemainingGb = 0;
+        $quotaAlert = null;
+        $quotaTopupHistory = collect();
+        $quotaTopupHistoryJson = collect();
+        $quotaReadings = collect();
+        $quotaReadingsJson = collect();
+        $latestQuotaTopup = null;
+        $latestQuotaReading = null;
+
         if ($jenis === 'internet') {
             $items = WifiPayment::orderBy('created_at', 'desc')->get();
             $all = WifiPayment::all();
