@@ -1422,7 +1422,7 @@ function closeLabelModal() {
 function printLabelFromModal() {
     const card = document.getElementById('label-card');
     const win = window.open('', '_blank', 'width=400,height=520');
-    win.document.write('<!DOCTYPE html><html><head><title>Cetak Label</title><style>@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");@page{margin:0;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"Poppins",sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px;background:#fff;}@media print{body{padding:0;}}</style></head><body>' + card.outerHTML + '<script>setTimeout(function(){window.print();},500);<\/script></body></html>');
+    win.document.write('<!DOCTYPE html><html><head><title>Cetak Label</title><style>@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");@page{size:50mm 30mm;margin:0;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"Poppins",sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:0;background:#fff;}#label-card{width:50mm !important;height:30mm !important;padding:2mm !important;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;}@media print{body{padding:0;}#label-card{border-color:#1e1e2e;}}</style></head><body>' + card.outerHTML + '<script>setTimeout(function(){window.print();},500);<\/script></body></html>');
     win.document.close();
 }
 
@@ -1460,21 +1460,21 @@ function printLabel(id) {
         <html><head><title>Cetak Label - ${i.kode_aset}</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
-            @page { margin: 0; }
+            @page { size: 50mm 30mm; margin: 0; }
             * { box-sizing: border-box; margin: 0; padding: 0; }
-            body { font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
-            .label { width: 320px; border: 2px solid #1e1e2e; border-radius: 12px; padding: 16px; text-align: center; }
-            .head-line { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 10px; }
-            .logo { width: 40px; height: 40px; object-fit: contain; }
-            .brand { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: #1e1e2e; }
-            .name { font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 4px; }
-            .code { font-size: 11px; font-family: monospace; color: #7c3aed; font-weight: 700; margin-bottom: 10px; }
-            .media-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 auto 8px; }
+            body { font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 0; }
+            .label { width: 50mm; height: 30mm; border: 1px solid #1e1e2e; border-radius: 3px; padding: 2mm; text-align: center; display: flex; flex-direction: column; justify-content: flex-start; overflow: hidden; }
+            .head-line { display: flex; align-items: center; justify-content: center; gap: 2mm; margin-bottom: 1.5mm; }
+            .logo { width: 6mm; height: 6mm; object-fit: contain; }
+            .brand { font-size: 2.2mm; font-weight: 800; letter-spacing: 0.05em; color: #1e1e2e; white-space: nowrap; }
+            .name { font-size: 2mm; font-weight: 600; color: #0f172a; margin-bottom: 0.8mm; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .code { font-size: 2mm; font-family: monospace; color: #7c3aed; font-weight: 700; margin-bottom: 1.2mm; }
+            .media-row { display: flex; align-items: center; justify-content: center; gap: 2mm; margin: 0 auto 1mm; }
             .qr { flex-shrink: 0; }
-            .qr img { width: 56px; height: 56px; display: block; }
+            .qr img { width: 13mm; height: 13mm; display: block; }
             .barcode { flex: 1; min-width: 0; }
             .barcode svg { width: 100%; height: auto; display: block; }
-            .url { font-size: 7px; color: #94a3b8; word-break: break-all; }
+            .url { font-size: 1.4mm; color: #94a3b8; word-break: break-all; line-height: 1.2; }
             @media print { body { padding: 0; } .label { border-width: 1px; } }
         </style></head><body>
         <div class="label">
@@ -1799,7 +1799,7 @@ function printBarcode() {
     const w = clone.getAttribute('width') || 300;
     const h = clone.getAttribute('height') || 120;
     const win = window.open('', '_blank', 'width=' + w + ',height=' + h);
-    win.document.write('<!DOCTYPE html><html><head><title>Cetak Barcode</title><style>@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");@page{margin:0;}*{box-sizing:border-box;margin:0;padding:0;}body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:12px;font-family:monospace;background:#fff;}.wrap{width:max-content;margin:0 auto;text-align:center;background:#fff;border:1px solid #ddd;border-radius:10px;padding:12px;}.head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}.head img{width:40px;height:40px;object-fit:contain;}.head .title{font-family:"Poppins",sans-serif;font-size:15px;font-weight:800;letter-spacing:0.08em;color:#000;}.row{display:flex;align-items:center;justify-content:center;gap:8px;}.row>div{min-width:0;}.row svg{height:auto;display:block;}@media print{body{padding:0;}.wrap{border:none;}}</style></head><body><div class="wrap"><div class="head"><img src="' + logoUrl + '" alt="Logo"><div class="title">JSA PERALATAN KANTOR</div></div><div class="row">' + qrHtml + '<div>' + svgData + '</div></div></div><script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>');
+    win.document.write('<!DOCTYPE html><html><head><title>Cetak Barcode</title><style>@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");@page{size:50mm 30mm;margin:0;}*{box-sizing:border-box;margin:0;padding:0;}body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:0;font-family:monospace;background:#fff;}.wrap{width:50mm;height:30mm;margin:0 auto;text-align:center;background:#fff;border:1px solid #ddd;border-radius:3px;padding:2mm;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;}.head{display:flex;align-items:center;justify-content:center;gap:2mm;margin-bottom:1.5mm;}.head img{width:6mm;height:6mm;object-fit:contain;}.head .title{font-family:"Poppins",sans-serif;font-size:2.2mm;font-weight:800;letter-spacing:0.05em;color:#000;white-space:nowrap;}.row{display:flex;align-items:center;justify-content:center;gap:2mm;}.row>div{min-width:0;}.row svg{height:auto;display:block;max-width:100%;}.row img{width:13mm;height:13mm;flex-shrink:0;display:block;}@media print{body{padding:0;}.wrap{border:none;}}</style></head><body><div class="wrap"><div class="head"><img src="' + logoUrl + '" alt="Logo"><div class="title">JSA PERALATAN KANTOR</div></div><div class="row">' + qrHtml + '<div>' + svgData + '</div></div></div><script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>');
     win.document.close();
 }
 
