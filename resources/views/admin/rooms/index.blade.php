@@ -579,22 +579,22 @@ function openRoomEditModal(data) {
     document.getElementById('room-edit-is-active').checked = data.is_active == 1;
     document.getElementById('room-edit-is-weekly-only').checked = data.is_weekly_only == 1;
     document.getElementById('room-edit-team-id').value = data.team_id || '';
-    document.getElementById('room-edit-modal').classList.add('active');
+    document.getElementById('room-edit-modal').classList.add('is-open');
     document.body.classList.add('modal-open');
 }
 function closeRoomEditModal() {
-    document.getElementById('room-edit-modal').classList.remove('active');
+    document.getElementById('room-edit-modal').classList.remove('is-open');
     document.body.classList.remove('modal-open');
 }
 document.getElementById('room-edit-modal')?.addEventListener('click', function(e) { if (e.target === this) closeRoomEditModal(); });
 
 function openRoomCreateModal() {
     document.getElementById('room-create-form').reset();
-    document.getElementById('room-create-modal').classList.add('active');
+    document.getElementById('room-create-modal').classList.add('is-open');
     document.body.classList.add('modal-open');
 }
 function closeRoomCreateModal() {
-    document.getElementById('room-create-modal').classList.remove('active');
+    document.getElementById('room-create-modal').classList.remove('is-open');
     document.body.classList.remove('modal-open');
 }
 document.getElementById('room-create-modal')?.addEventListener('click', function(e) { if (e.target === this) closeRoomCreateModal(); });
@@ -626,22 +626,22 @@ function openAssetEditModal(data) {
     document.getElementById('asset-edit-description').value = data.description;
     document.getElementById('asset-edit-quantity').value = data.quantity;
     document.getElementById('asset-edit-is-active').checked = data.is_active == 1;
-    document.getElementById('asset-edit-modal').classList.add('active');
+    document.getElementById('asset-edit-modal').classList.add('is-open');
     document.body.classList.add('modal-open');
 }
 function closeAssetEditModal() {
-    document.getElementById('asset-edit-modal').classList.remove('active');
+    document.getElementById('asset-edit-modal').classList.remove('is-open');
     document.body.classList.remove('modal-open');
 }
 document.getElementById('asset-edit-modal')?.addEventListener('click', function(e) { if (e.target === this) closeAssetEditModal(); });
 
 function openAssetCreateModal() {
     document.getElementById('asset-create-form').reset();
-    document.getElementById('asset-create-modal').classList.add('active');
+    document.getElementById('asset-create-modal').classList.add('is-open');
     document.body.classList.add('modal-open');
 }
 function closeAssetCreateModal() {
-    document.getElementById('asset-create-modal').classList.remove('active');
+    document.getElementById('asset-create-modal').classList.remove('is-open');
     document.body.classList.remove('modal-open');
 }
 document.getElementById('asset-create-modal')?.addEventListener('click', function(e) { if (e.target === this) closeAssetCreateModal(); });
