@@ -27,6 +27,14 @@ async function checkBookingConflict(db, roomId, startTime, endTime, excludeBooki
   return conflicts.length > 0;
 }
 
+// Helper: smoking area cannot be booked during lunch break (12:00 - 13:00 WIB)
+function overlapsLunchBreak(startTime, endTime) {
+  const fmt = (iso) => new Date(iso).toLocaleTimeString('en-GB', {
+    timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false
+  });
+  return fmt(startTime) < '13:00' && fmt(endTime) > '12:00';
+}
+
 // GET /bookings?date=YYYY-MM-DD
 router.get('/', authenticateToken, [
   query('date').optional().isISO8601()
@@ -95,7 +103,7 @@ router.post('/', authenticateToken, [
 
     // Check if room exists and is active
     const [rooms] = await req.db.execute(
-      'SELECT id, is_weekly_only FROM rooms WHERE id = ? AND is_active = 1',
+      'SELECT id, name, is_weekly_only FROM rooms WHERE id = ? AND is_active = 1',
       [room_id]
     );
 
@@ -105,6 +113,10 @@ router.post('/', authenticateToken, [
 
     if (rooms[0].is_weekly_only) {
       return res.status(400).json({ error: 'Room is reserved for weekly meetings only' });
+    }
+
+    if (rooms[0].name.toLowerCase().trim() === 'smoking area' && overlapsLunchBreak(start_time, end_time)) {
+      return res.status(400).json({ error: 'Smoking Area is not available during lunch break (12:00 - 13:00 WIB)' });
     }
 
     // Check for booking conflicts

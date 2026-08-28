@@ -150,6 +150,10 @@ class MeetingController extends Controller
             return back()->withErrors(['room_id' => 'Ruangan ini khusus Weekly Meeting dan tidak bisa dipesan untuk meeting biasa.'])->withInput();
         }
 
+        if ($room->isSmokingArea() && Room::lunchBreakOverlaps($request->start_time, $request->end_time)) {
+            return back()->withErrors(['room_id' => 'Smoking Area tidak dapat digunakan pada jam istirahat (12.00 - 13.00 WIB).'])->withInput();
+        }
+
         // Cek konflik waktu milik sendiri di hari yang sama (prioritas utama)
         $ownConflict = Meeting::where('requested_by', auth()->id())
             ->where('meeting_date', $request->meeting_date)

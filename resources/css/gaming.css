@@ -1526,11 +1526,20 @@ body.light .badge-orange {
 }
 
 /* ============================================
-   SMALL LAPTOP — SIDEBAR ONLY (1024px - 1366px)
+   SIDEBAR OFFSET — DESKTOP (≥1024px)
+   Main content must always clear the fixed sidebar.
 ============================================ */
 @media (min-width: 1024px) and (max-width: 1366px) {
-    .gaming-sidebar { width: 13rem; }
-    #sidebar + div { margin-left: 13rem; }
+    :root { --gaming-sidebar-width: 13rem; }
+}
+
+@media (min-width: 1367px) {
+    :root { --gaming-sidebar-width: 15rem; }
+}
+
+@media (min-width: 1024px) {
+    .gaming-sidebar { width: var(--gaming-sidebar-width); }
+    #sidebar + div { margin-left: var(--gaming-sidebar-width); }
 }
 
 /* ============================================

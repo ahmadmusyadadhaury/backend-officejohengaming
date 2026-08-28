@@ -40,4 +40,14 @@ class Room extends Model
 
         return ! $query->exists();
     }
+
+    public function isSmokingArea(): bool
+    {
+        return strtolower(trim($this->name)) === 'smoking area';
+    }
+
+    public static function lunchBreakOverlaps(string $startTime, string $endTime): bool
+    {
+        return $startTime < '13:00' && $endTime > '12:00';
+    }
 }
