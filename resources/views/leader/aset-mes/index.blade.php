@@ -35,9 +35,12 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-aset-putra" placeholder="Cari..." oninput="filterTable('putra')"
-                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('koordinator.aset-mes.index') }}">
+                    <input type="hidden" name="search_putri" value="{{ $searchPutri }}">
+                    <input type="text" name="search_putra" value="{{ $searchPutra }}" placeholder="Cari..." oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
             </div>
         </div>
 
@@ -117,9 +120,12 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-aset-putri" placeholder="Cari..." oninput="filterTable('putri')"
-                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('koordinator.aset-mes.index') }}">
+                    <input type="hidden" name="search_putra" value="{{ $searchPutra }}">
+                    <input type="text" name="search_putri" value="{{ $searchPutri }}" placeholder="Cari..." oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
             </div>
         </div>
 
@@ -274,13 +280,6 @@
 @push('scripts')
 <script>
 const assets = @json($assetsJson);
-
-function filterTable(kategori) {
-    const q = (document.getElementById('search-aset-' + kategori)?.value || '').toLowerCase();
-    document.querySelectorAll('#aset-tbody-' + kategori + ' tr').forEach(row => {
-        row.style.display = !q || row.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
-}
 
 function closeAsetModal() { document.getElementById('aset-modal').style.display = 'none'; document.body.style.overflow = ''; }
 

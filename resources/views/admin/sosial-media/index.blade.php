@@ -90,26 +90,25 @@ $badgeVariants = ['badge-primary', 'badge-blue', 'badge-green', 'badge-yellow', 
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-sosmed" placeholder="Cari username, nama, atau platform" oninput="filterSosmed()"
-                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('admin.sosial-media.index') }}">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari username, nama, atau platform" oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
                 <a href="{{ route('admin.export', ['type' => 'sosial-media', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <span id="filter-label">Semua Platform</span>
+                    <span id="filter-label">{{ $status && $status !== 'all' ? $status : 'Semua Platform' }}</span>
                     <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
                 </button>
                 <div id="filter-menu" class="filter-menu" style="display:none;position:absolute;right:0;top:100%;z-index:40;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                     <button type="button" data-value="all" onclick="setFilter('all')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Semua Platform</button>
-                    @php
-                        $uniquePlatforms = $items->pluck('platform')->unique()->sort();
-                    @endphp
-                    @foreach($uniquePlatforms as $platform)
+                    @foreach($platforms as $platform)
                     <button type="button" data-value="{{ $platform }}" onclick="setFilter('{{ $platform }}')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">{{ $platform }}</button>
                     @endforeach
                 </div>
@@ -581,8 +580,6 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { closeDetail(); closeModal('sosmed-modal'); }
 });
 
-let currentFilter = 'all';
-
 function toggleFilterMenu(e) {
     e.stopPropagation();
     const menu = document.getElementById('filter-menu');
@@ -602,11 +599,10 @@ function toggleFilterMenu(e) {
 }
 
 function setFilter(value) {
-    currentFilter = value;
-    const label = document.querySelector(`.filter-menu button[data-value="${value}"]`).textContent;
-    document.getElementById('filter-label').textContent = label;
-    document.getElementById('filter-menu').style.display = 'none';
-    filterSosmed();
+    const url = new URL(window.location.href);
+    if (value === 'all') url.searchParams.delete('status');
+    else url.searchParams.set('status', value);
+    window.location.href = url.toString();
 }
 
 document.addEventListener('click', function(e) {
@@ -626,16 +622,5 @@ document.addEventListener('click', function(e) {
     }
 });
 
-function filterSosmed() {
-    const search = (document.getElementById('search-sosmed')?.value || '').toLowerCase();
-    const rows = document.querySelectorAll('#sosmed-tbody tr:not(#empty-row)');
-    rows.forEach(row => {
-        const rowPlatform = row.dataset.platform;
-        const text = row.textContent.toLowerCase();
-        const matchStatus = currentFilter === 'all' || rowPlatform === currentFilter;
-        const matchSearch = !search || text.includes(search);
-        row.style.display = matchStatus && matchSearch ? '' : 'none';
-    });
-}
 </script>
 @endpush

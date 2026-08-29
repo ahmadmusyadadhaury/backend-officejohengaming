@@ -28,8 +28,11 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-approval" placeholder="Cari..." oninput="filterTable()"
-                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('admin.payment-approvals.index') }}">
+                    <input type="hidden" name="jenis" value="{{ $jenis }}">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari..." oninput="this.form.submit()"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
                 <a href="{{ route('admin.payment-approvals.export') }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
@@ -49,7 +52,7 @@
                 <div class="filter-dropdown-wrap" style="position:relative;">
                     <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                         style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                        <span id="filter-label">Semua Jenis</span>
+                        <span id="filter-label">{{ $jenis === 'internet' ? 'Internet' : ($jenis === 'listrik' ? 'Listrik' : ($jenis === 'aset_digital' ? 'Aset Digital' : ($jenis === 'ipl_ruko' ? 'IPL Ruko' : ($jenis === 'pajak_kendaraan' ? 'Pajak Kendaraan' : 'Semua Jenis')))) }}</span>
                         <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -186,7 +189,6 @@
 @endpush
 @push('scripts')
 <script>
-let currentFilter = 'all';
 let approveId = null;
 let approveJenis = null;
 let rejectId = null;
@@ -209,11 +211,11 @@ function toggleFilterMenu(e) {
 }
 
 function setFilter(value) {
-    currentFilter = value;
-    const label = document.querySelector(`.filter-menu button[data-value="${value}"]`).textContent;
-    document.getElementById('filter-label').textContent = label;
-    document.getElementById('filter-menu').style.display = 'none';
-    filterTable();
+    const url = new URL(window.location.href);
+    if (value === 'all') url.searchParams.delete('jenis');
+    else url.searchParams.set('jenis', value);
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
 }
 
 document.addEventListener('click', function(e) {
@@ -221,18 +223,6 @@ document.addEventListener('click', function(e) {
         document.getElementById('filter-menu').style.display = 'none';
     }
 });
-
-function filterTable() {
-    const search = (document.getElementById('search-approval')?.value || '').toLowerCase();
-    const rows = document.querySelectorAll('#approval-tbody tr');
-    rows.forEach(row => {
-        const rowJenis = row.dataset.jenis;
-        const text = row.textContent.toLowerCase();
-        const matchFilter = currentFilter === 'all' || rowJenis === currentFilter;
-        const matchSearch = !search || text.includes(search);
-        row.style.display = matchFilter && matchSearch ? '' : 'none';
-    });
-}
 
 function showToast(message, type) {
     const isSuccess = type === 'success';
@@ -365,7 +355,7 @@ function confirmApproveAll() {
 }
 
 function executeApproveAll() {
-    const currentFilterVal = currentFilter !== 'all' ? currentFilter : '';
+    const currentFilterVal = new URL(window.location.href).searchParams.get('jenis') || '';
     const params = currentFilterVal ? '?jenis=' + currentFilterVal : '';
 
     fetch('{{ url('admin/payment-approvals/approve-all') }}' + params, {

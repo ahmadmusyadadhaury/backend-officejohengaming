@@ -20,7 +20,15 @@ class MomController extends Controller
             ->where('created_by', $userId)
             ->latest();
 
-        $moms = $query->paginate(10);
+        $search = trim((string) $request->input('search', ''));
+
+        if ($search !== '') {
+            $query->whereHas('meeting', function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%");
+            });
+        }
+
+        $moms = $query->paginate(10)->withQueryString();
 
         $momsJson = $moms->map(function ($mom) {
             return [
@@ -51,7 +59,7 @@ class MomController extends Controller
             'draft_moms' => Mom::where('created_by', $userId)->where('status', 'draft')->count(),
         ];
 
-        return view('leader.mom.index', compact('moms', 'momStats', 'momsJson'));
+        return view('leader.mom.index', compact('moms', 'momStats', 'momsJson', 'search'));
     }
 
     public function create(Meeting $meeting)

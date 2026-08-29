@@ -70,9 +70,12 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-meeting" placeholder="Cari pemohon..." oninput="filterMeetings()"
-                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('admin.meetings.index') }}">
+                    <input type="hidden" name="meeting_month" value="{{ $meetingMonth ?? now()->format('Y-m') }}">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari pemohon..." oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
             </div>
             <div class="flex items-center gap-2 ml-auto">
                 <div>
@@ -89,7 +92,7 @@
                 <div class="filter-dropdown-wrap" style="position:relative;">
                     <button type="button" onclick="toggleMeetingFilter(event)" class="filter-btn"
                         style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                        <span id="meeting-filter-label" data-value="all">Semua Status</span>
+                        <span id="meeting-filter-label" data-value="{{ $status ?: 'all' }}">{{ $status ? ucfirst($status) : 'Semua Status' }}</span>
                         <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -621,20 +624,6 @@ document.getElementById('d-reject-form')?.addEventListener('submit', function(e)
     }).then(r => r.json()).then(() => { location.reload(); }).catch(() => { location.reload(); });
 });
 
-function filterMeetings() {
-    const status = document.getElementById('meeting-filter-label').dataset.value || 'all';
-    const search = (document.getElementById('search-meeting')?.value || '').toLowerCase();
-    const rows = document.querySelectorAll('#meetings-tbody tr:not(#empty-row)');
-
-    rows.forEach(row => {
-        const rowStatus = row.dataset.status;
-        const pemohon = (row.querySelector('.meeting-pemohon')?.textContent || '').toLowerCase();
-        const matchStatus = status === 'all' || rowStatus === status;
-        const matchSearch = !search || pemohon.includes(search);
-        row.style.display = matchStatus && matchSearch ? '' : 'none';
-    });
-}
-
 function toggleMeetingFilter(e) {
     e.stopPropagation();
     const menu = document.getElementById('meeting-filter-menu');
@@ -644,12 +633,10 @@ function toggleMeetingFilter(e) {
 }
 
 function setMeetingFilter(value) {
-    const label = document.getElementById('meeting-filter-label');
-    const map = { all: 'Semua Status', pending: 'Menunggu Review', approved: 'Disetujui', rejected: 'Ditolak' };
-    label.textContent = map[value] || value;
-    label.dataset.value = value;
-    document.getElementById('meeting-filter-menu').style.display = 'none';
-    filterMeetings();
+    const url = new URL(window.location.href);
+    if (value === 'all') url.searchParams.delete('status');
+    else url.searchParams.set('status', value);
+    window.location.href = url.toString();
 }
 
 document.addEventListener('click', function(e) {

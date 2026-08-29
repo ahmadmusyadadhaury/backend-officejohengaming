@@ -14,6 +14,14 @@ class MomController extends Controller
         $query = Mom::with(['meeting.room', 'meeting.requester', 'creator'])
             ->latest();
 
+        $search = trim((string) $request->input('search', ''));
+
+        if ($search !== '') {
+            $query->whereHas('meeting', function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%");
+            });
+        }
+
         $period = $request->input('period', 'all');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -30,7 +38,7 @@ class MomController extends Controller
             $query->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()]);
         }
 
-        $moms = $query->paginate(10);
+        $moms = $query->paginate(10)->withQueryString();
 
         $momsJson = $moms->map(function ($mom) {
             return [
@@ -63,6 +71,6 @@ class MomController extends Controller
             'unreviewed_moms' => Mom::where('status', 'draft')->count(),
         ];
 
-        return view('admin.moms.index', compact('moms', 'period', 'momStats', 'momsJson'));
+        return view('admin.moms.index', compact('moms', 'period', 'momStats', 'momsJson', 'search'));
     }
 }

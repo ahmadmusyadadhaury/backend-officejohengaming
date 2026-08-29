@@ -11,7 +11,21 @@ class AsetRukoController extends Controller
     public function index(Request $request)
     {
         $showAll = $request->boolean('show_all');
-        $allItems = AsetRuko::orderBy('created_at', 'desc')->get();
+        $search = trim((string) $request->input('search', ''));
+        $kondisi = $request->input('kondisi', '');
+
+        $baseQuery = AsetRuko::query();
+        if ($search !== '') {
+            $baseQuery->where(function ($q) use ($search) {
+                $q->where('nama_aset', 'like', "%{$search}%")
+                    ->orWhere('lokasi', 'like', "%{$search}%");
+            });
+        }
+        if ($kondisi && $kondisi !== 'all') {
+            $baseQuery->where('kondisi', $kondisi);
+        }
+
+        $allItems = (clone $baseQuery)->orderBy('created_at', 'desc')->get();
 
         $stats = [
             'total' => $allItems->count(),
@@ -27,9 +41,9 @@ class AsetRukoController extends Controller
             'kondisi' => $i->kondisi,
         ]);
 
-        $items = AsetRuko::orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
+        $items = (clone $baseQuery)->orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
-        $itemsJson = $items->getCollection()->values()->map(function ($i) {
+        $itemsJson = $allItems->values()->map(function ($i) {
             return [
                 'id' => $i->id,
                 'nama_aset' => $i->nama_aset,
@@ -45,6 +59,8 @@ class AsetRukoController extends Controller
             'alertJson' => $alertJson,
             'stats' => $stats,
             'showAll' => $showAll,
+            'search' => $search,
+            'kondisi' => $kondisi,
         ]);
     }
 

@@ -17,8 +17,22 @@ class PeralatanKantorController extends Controller
     {
         $showAll = $request->boolean('show_all');
         $activeTim = $request->input('tim');
+        $search = trim((string) $request->input('search', ''));
+        $kondisi = $request->input('kondisi', '');
 
         $query = PeralatanKantor::query()->ofTim($activeTim);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_barang', 'like', "%{$search}%")
+                    ->orWhere('kode_aset', 'like', "%{$search}%")
+                    ->orWhere('pic', 'like', "%{$search}%")
+                    ->orWhere('lokasi_unit', 'like', "%{$search}%");
+            });
+        }
+        if ($kondisi && $kondisi !== 'all') {
+            $query->where('kondisi', $kondisi);
+        }
 
         $allItems = (clone $query)->orderBy('created_at', 'desc')->get();
 
@@ -117,6 +131,8 @@ class PeralatanKantorController extends Controller
             'activeTim' => $activeTim,
             'timKoordinators' => $timKoordinators,
             'showAll' => $showAll,
+            'search' => $search,
+            'kondisi' => $kondisi,
         ]);
     }
 

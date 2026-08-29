@@ -38,13 +38,29 @@ class ItTicketController extends Controller
             'selesai' => $allTickets->where('status', 'selesai')->count(),
         ];
 
-        if ($canViewAll) {
-            $tickets = ItTicket::with(['requester', 'assignee'])->latest()->paginate(10)->withQueryString();
-        } else {
-            $tickets = ItTicket::with('assignee')->where('requester_id', $user->id)->latest()->paginate(10)->withQueryString();
+        $statusFilter = $request->input('status', '');
+        $search = trim((string) $request->input('search', ''));
+
+        $ticketsQuery = ItTicket::with(['requester', 'assignee']);
+        if (!$canViewAll) {
+            $ticketsQuery->where('requester_id', $user->id);
+        }
+        if ($statusFilter !== '' && $statusFilter !== 'semua') {
+            $ticketsQuery->where('status', $statusFilter);
+        }
+        if ($search !== '') {
+            $ticketsQuery->where(function ($q) use ($search) {
+                $q->where('kode', 'like', "%{$search}%")
+                    ->orWhere('judul', 'like', "%{$search}%")
+                    ->orWhereHas('requester', function ($r) use ($search) {
+                        $r->where('name', 'like', "%{$search}%");
+                    });
+            });
         }
 
-        return view('admin.it-tickets.index', compact('tickets', 'itUsers', 'canManage', 'canDelete', 'canViewAll', 'stats'));
+        $tickets = $ticketsQuery->latest()->paginate(10)->withQueryString();
+
+        return view('admin.it-tickets.index', compact('tickets', 'itUsers', 'canManage', 'canDelete', 'canViewAll', 'stats', 'statusFilter', 'search'));
     }
 
     public function store(Request $request): RedirectResponse

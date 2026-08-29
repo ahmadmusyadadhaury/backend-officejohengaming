@@ -11,7 +11,22 @@ class SimCardController extends Controller
     public function index(Request $request)
     {
         $showAll = $request->boolean('show_all');
-        $allCards = SimCard::orderBy('created_at', 'desc')->get();
+        $search = trim((string) $request->input('search', ''));
+        $status = $request->input('status', '');
+
+        $query = SimCard::orderBy('created_at', 'desc');
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('nomor_sim_card', 'like', "%{$search}%")
+                    ->orWhere('pic', 'like', "%{$search}%");
+            });
+        }
+
+        $allCards = $query->get();
+
+        if ($status && $status !== 'all') {
+            $allCards = $allCards->filter(fn ($c) => $c->status_sim === $status)->values();
+        }
 
         $now = now();
 
@@ -34,7 +49,15 @@ class SimCardController extends Controller
             'hari_sim' => $c->hari_sim,
         ]);
 
-        $cards = SimCard::orderBy('created_at', 'desc')->paginate($showAll ? max($allCards->count(), 1) : 10)->withQueryString();
+        $perPage = $showAll ? max($allCards->count(), 1) : 10;
+        $page = max(\Illuminate\Pagination\Paginator::resolveCurrentPage('page'), 1);
+        $cards = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allCards->forPage($page, $perPage)->values(),
+            $allCards->count(),
+            $perPage,
+            $page,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(), 'query' => $request->query()]
+        );
 
         $cardsJson = $allCards->values()->map(function ($c) {
             return [
@@ -60,6 +83,8 @@ class SimCardController extends Controller
             'alerts' => $alerts,
             'alertJson' => $alertJson,
             'showAll' => $showAll,
+            'search' => $search,
+            'status' => $status,
         ]);
     }
 

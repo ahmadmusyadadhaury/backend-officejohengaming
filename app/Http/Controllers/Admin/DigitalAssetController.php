@@ -13,7 +13,21 @@ class DigitalAssetController extends Controller
     public function index(Request $request)
     {
         $showAll = $request->boolean('show_all');
+        $search = trim((string) $request->input('search', ''));
+        $status = $request->input('status', '');
+
         $allAssets = DigitalAsset::orderBy('created_at', 'desc')->get();
+
+        if ($search !== '') {
+            $lsearch = strtolower($search);
+            $allAssets = $allAssets->filter(fn ($a) =>
+                str_contains(strtolower($a->nama_aset ?? ''), $lsearch)
+                || str_contains(strtolower($a->pic ?? ''), $lsearch)
+            )->values();
+        }
+        if ($status && $status !== 'all') {
+            $allAssets = $allAssets->filter(fn ($a) => $a->status_aset === $status)->values();
+        }
 
         $stats = [
             'total' => $allAssets->count(),
@@ -32,9 +46,17 @@ class DigitalAssetController extends Controller
             'hari_aset' => $a->hari_aset,
         ]);
 
-        $assets = DigitalAsset::orderBy('created_at', 'desc')->paginate($showAll ? max($allAssets->count(), 1) : 10)->withQueryString();
+        $perPage = $showAll ? max($allAssets->count(), 1) : 10;
+        $page = max(\Illuminate\Pagination\Paginator::resolveCurrentPage('page'), 1);
+        $assets = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allAssets->forPage($page, $perPage)->values(),
+            $allAssets->count(),
+            $perPage,
+            $page,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(), 'query' => $request->query()]
+        );
 
-        $assetsJson = $assets->getCollection()->values()->map(function ($a) {
+        $assetsJson = $allAssets->values()->map(function ($a) {
             return [
                 'id' => $a->id,
                 'nama_aset' => $a->nama_aset,
@@ -58,6 +80,8 @@ class DigitalAssetController extends Controller
             'alertAssets' => $alertAssets,
             'alertJson' => $alertJson,
             'showAll' => $showAll,
+            'search' => $search,
+            'status' => $status,
         ]);
     }
 

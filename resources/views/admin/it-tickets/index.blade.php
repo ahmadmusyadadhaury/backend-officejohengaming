@@ -109,15 +109,18 @@ $countChip = fn ($key) => $key === 'semua' ? $tickets->count() : $tickets->where
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" id="searchInput" placeholder="Cari kode, judul, pengaju..." oninput="applyFilter()"
-                class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('it-tickets.index') }}">
+                    <input type="hidden" name="status" value="{{ $statusFilter }}">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari kode, judul, pengaju..." oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
         </div>
         <div class="flex items-center gap-2" style="margin-left:auto;">
             <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <span id="filter-label">Semua Status</span>
+                    <span id="filter-label">{{ $statusFilter && $statusFilter !== 'semua' ? ($statusLabels[$statusFilter] ?? $statusFilter) : 'Semua Status' }}</span>
                     <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
@@ -258,15 +261,18 @@ $countChip = fn ($key) => $key === 'semua' ? $tickets->count() : $tickets->where
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" id="searchInput" placeholder="Cari kode, judul..." oninput="applyFilter()"
-                class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('it-tickets.index') }}">
+                    <input type="hidden" name="status" value="{{ $statusFilter }}">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari kode, judul..." oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
         </div>
         <div class="flex items-center gap-2" style="margin-left:auto;">
             <div class="filter-dropdown-wrap" style="position:relative;">
                 <button type="button" onclick="toggleFilterMenu(event)" class="filter-btn"
                     style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                    <span id="filter-label">Semua Status</span>
+                    <span id="filter-label">{{ $statusFilter && $statusFilter !== 'semua' ? ($statusLabels[$statusFilter] ?? $statusFilter) : 'Semua Status' }}</span>
                     <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                     </svg>
@@ -612,39 +618,29 @@ $countChip = fn ($key) => $key === 'semua' ? $tickets->count() : $tickets->where
     }, 1000);
 
     // --- Filter ---
-    window.applyFilter = function () {
-        var search = (document.getElementById('searchInput').value || '').toLowerCase();
-        var labelEl = document.getElementById('filter-label');
-        var filterText = labelEl ? labelEl.textContent.trim().toLowerCase() : 'semua status';
-        var filterMap = { 'semua status': 'semua', 'menunggu': 'menunggu', 'diproses': 'diproses', 'dijeda': 'dijeda', 'dilanjutkan': 'dilanjutkan', 'selesai': 'selesai', 'ditolak': 'ditolak' };
-        var status = filterMap[filterText] || 'semua';
-        var rows = document.querySelectorAll('.ticket-row');
-        rows.forEach(function (row) {
-            var matchSearch = !search || (row.getAttribute('data-search') || '').indexOf(search) !== -1;
-            var matchStatus = status === 'semua' || row.getAttribute('data-status') === status;
-            row.style.display = (matchSearch && matchStatus) ? '' : 'none';
-        });
+    window.setFilter = function (status) {
+        var url = new URL(window.location.href);
+        if (status === 'semua' || status === '') url.searchParams.delete('status');
+        else url.searchParams.set('status', status);
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
     };
 
-    window.setFilter = function (status) {
-        var filterLabel = document.getElementById('filter-label');
-        var filterMenu = document.getElementById('filter-menu');
-        var statusLabels = @json($statusLabels);
-        if (filterLabel) {
-            filterLabel.textContent = status === 'semua' ? 'Semua Status' : (statusLabels[status] || status);
-        }
-        if (filterMenu) filterMenu.style.display = 'none';
-        applyFilter();
+    // Highlight active status stat card on load
+    (function () {
+        var active = '{{ $statusFilter }}';
         document.querySelectorAll('.stat-card-compact').forEach(function (card) {
             card.style.outline = 'none';
             card.style.outlineOffset = '0';
         });
-        var target = document.getElementById('stat-' + status);
-        if (target) {
-            target.style.outline = '2px solid var(--color-primary,#6366f1)';
-            target.style.outlineOffset = '-2px';
+        if (active && active !== 'semua') {
+            var target = document.getElementById('stat-' + active);
+            if (target) {
+                target.style.outline = '2px solid var(--color-primary,#6366f1)';
+                target.style.outlineOffset = '-2px';
+            }
         }
-    };
+    })();
 
     // --- Filter Dropdown ---
     window.toggleFilterMenu = function (e) {

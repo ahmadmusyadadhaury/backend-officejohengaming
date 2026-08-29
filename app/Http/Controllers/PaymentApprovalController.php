@@ -199,6 +199,26 @@ class PaymentApprovalController extends Controller
 
         $requests = $all->unique(fn ($i) => $i['jenis'].'_'.$i['id'])->sortByDesc('created_at')->values();
 
+        $search = trim((string) request()->get('search', ''));
+        $status = request()->get('status', 'all');
+
+        if ($status !== 'all') {
+            $requests = $requests->filter(fn ($r) => $r['status'] === $status)->values();
+        }
+
+        if ($search !== '') {
+            $needle = strtolower($search);
+            $requests = $requests->filter(function ($r) use ($needle) {
+                $text = strtolower(
+                    ($r['detail'] ?? '').' '.
+                    ($r['jenis_label'] ?? '').' '.
+                    ($r['pic'] ?? '').' '.
+                    ($r['approver_name'] ?? '')
+                );
+                return str_contains($text, $needle);
+            })->values();
+        }
+
         $page = request()->get('page', 1);
         $perPage = 10;
         $paged = new LengthAwarePaginator(
@@ -209,7 +229,7 @@ class PaymentApprovalController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('payment-approval.status', ['requests' => $paged]);
+        return view('payment-approval.status', ['requests' => $paged, 'search' => $search, 'status' => $status]);
     }
 
     public function tagihan()
@@ -248,6 +268,25 @@ class PaymentApprovalController extends Controller
 
         $tagihan = $all->sortByDesc('created_at')->values();
 
+        $jenisFilter = request()->get('jenis', 'all');
+        $search = trim((string) request()->get('search', ''));
+
+        if ($jenisFilter !== 'all') {
+            $tagihan = $tagihan->filter(fn ($r) => $r['jenis'] === $jenisFilter)->values();
+        }
+
+        if ($search !== '') {
+            $needle = strtolower($search);
+            $tagihan = $tagihan->filter(function ($r) use ($needle) {
+                $text = strtolower(
+                    ($r['detail'] ?? '').' '.
+                    ($r['jenis_label'] ?? '').' '.
+                    ($r['pic'] ?? '')
+                );
+                return str_contains($text, $needle);
+            })->values();
+        }
+
         $jabatanList = Vehicle::distinct()->pluck('jabatan')
             ->merge(DigitalAsset::distinct()->pluck('jabatan'))
             ->merge(SimCard::distinct()->pluck('jabatan'))
@@ -268,7 +307,7 @@ class PaymentApprovalController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('payment-approval.tagihan', ['tagihan' => $paged, 'jabatanList' => $jabatanList]);
+        return view('payment-approval.tagihan', ['tagihan' => $paged, 'jabatanList' => $jabatanList, 'jenis' => $jenisFilter, 'search' => $search]);
     }
 
     public function bayar($id, Request $request)
@@ -380,6 +419,26 @@ class PaymentApprovalController extends Controller
         $requests = $all->sortByDesc('created_at')->values();
         $isApprover = in_array(auth()->user()->role, self::APPROVER_ROLES);
 
+        $jenisFilter = request()->get('jenis', 'all');
+        $search = trim((string) request()->get('search', ''));
+
+        if ($jenisFilter !== 'all') {
+            $requests = $requests->filter(fn ($r) => $r['jenis'] === $jenisFilter)->values();
+        }
+
+        if ($search !== '') {
+            $needle = strtolower($search);
+            $requests = $requests->filter(function ($r) use ($needle) {
+                $text = strtolower(
+                    ($r['detail'] ?? '').' '.
+                    ($r['jenis_label'] ?? '').' '.
+                    ($r['requester_name'] ?? '').' '.
+                    ($r['pic'] ?? '')
+                );
+                return str_contains($text, $needle);
+            })->values();
+        }
+
         $page = request()->get('page', 1);
         $perPage = 10;
         $paged = new LengthAwarePaginator(
@@ -390,7 +449,7 @@ class PaymentApprovalController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('admin.payment-approvals.index', ['requests' => $paged, 'isApprover' => $isApprover]);
+        return view('admin.payment-approvals.index', ['requests' => $paged, 'isApprover' => $isApprover, 'jenis' => $jenisFilter, 'search' => $search]);
     }
 
     public function approve($id, Request $request)

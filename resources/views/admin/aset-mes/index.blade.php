@@ -112,15 +112,22 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-aset-putra" placeholder="Cari..." oninput="filterTable('putra')"
-                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('admin.aset-mes.index') }}">
+                    <input type="hidden" name="status_putra" value="{{ $statusPutra }}">
+                    <input type="hidden" name="show_all_putra" value="{{ $showAllPutra ? 1 : '' }}">
+                    <input type="hidden" name="search_putri" value="{{ $searchPutri }}">
+                    <input type="hidden" name="status_putri" value="{{ $statusPutri }}">
+                    <input type="hidden" name="show_all_putri" value="{{ $showAllPutri ? 1 : '' }}">
+                    <input type="text" name="search_putra" value="{{ $searchPutra }}" placeholder="Cari..." oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
                 <a href="{{ route('admin.export', ['type' => 'aset-mes', 'filter' => 'putra']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                     <button type="button" onclick="toggleStatusMenu(event, 'putra')" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                        <span id="status-label-putra">Semua Status</span>
+                        <span id="status-label-putra">{{ $statusPutra === '1' ? 'Aktif' : ($statusPutra === '0' ? 'Nonaktif' : 'Semua Status') }}</span>
                         <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -238,15 +245,22 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-aset-putri" placeholder="Cari..." oninput="filterTable('putri')"
-                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('admin.aset-mes.index') }}">
+                    <input type="hidden" name="status_putri" value="{{ $statusPutri }}">
+                    <input type="hidden" name="show_all_putri" value="{{ $showAllPutri ? 1 : '' }}">
+                    <input type="hidden" name="search_putra" value="{{ $searchPutra }}">
+                    <input type="hidden" name="status_putra" value="{{ $statusPutra }}">
+                    <input type="hidden" name="show_all_putra" value="{{ $showAllPutra ? 1 : '' }}">
+                    <input type="text" name="search_putri" value="{{ $searchPutri }}" placeholder="Cari..." oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
                 <a href="{{ route('admin.export', ['type' => 'aset-mes', 'filter' => 'putri']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
                 <div class="filter-dropdown-wrap" style="position:relative;">
                     <button type="button" onclick="toggleStatusMenu(event, 'putri')" class="filter-btn" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);outline:none;white-space:nowrap;">
-                        <span id="status-label-putri">Semua Status</span>
+                        <span id="status-label-putri">{{ $statusPutri === '1' ? 'Aktif' : ($statusPutri === '0' ? 'Nonaktif' : 'Semua Status') }}</span>
                         <svg class="w-3.5 h-3.5" style="color:var(--text-muted);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -486,8 +500,6 @@ function closeAlertPopup() {
     document.getElementById('alert-overlay').style.display = 'none';
 }
 
-let currentStatus = { putra: 'all', putri: 'all' };
-
 function toggleStatusMenu(e, kategori) {
     e.stopPropagation();
     const menu = document.getElementById('status-menu-' + kategori);
@@ -496,20 +508,12 @@ function toggleStatusMenu(e, kategori) {
 }
 
 function setStatusFilter(value, kategori) {
-    currentStatus[kategori] = value;
-    document.getElementById('status-label-' + kategori).textContent = document.querySelector(`#status-menu-${kategori} button[data-value="${value}"]`).textContent;
-    document.getElementById('status-menu-' + kategori).style.display = 'none';
-    filterTable(kategori);
-}
-
-function filterTable(kategori) {
-    const q = (document.getElementById('search-aset-' + kategori)?.value || '').toLowerCase();
-    document.querySelectorAll('#aset-tbody-' + kategori + ' tr').forEach(row => {
-        if (!row.hasAttribute('data-status')) { row.style.display = ''; return; }
-        const matchStatus = currentStatus[kategori] === 'all' || row.dataset.status === currentStatus[kategori];
-        const matchSearch = !q || row.textContent.toLowerCase().includes(q);
-        row.style.display = matchStatus && matchSearch ? '' : 'none';
-    });
+    const params = new URLSearchParams(window.location.search);
+    params.delete('page_putra');
+    params.delete('page_putri');
+    if (value === 'all') params.delete('status_' + kategori);
+    else params.set('status_' + kategori, value);
+    window.location.search = params.toString();
 }
 
 document.addEventListener('click', function(e) {

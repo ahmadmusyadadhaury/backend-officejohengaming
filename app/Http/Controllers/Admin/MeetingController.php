@@ -22,12 +22,27 @@ class MeetingController extends Controller
             ->update(['is_read' => true, 'read_at' => now()]);
 
         $meetingMonth = $request->get('meeting_month', now()->format('Y-m'));
+        $search = trim((string) $request->input('search', ''));
+        $status = $request->input('status', '');
 
         $query = Meeting::with(['requester', 'team', 'teams', 'room', 'assets', 'mom.creator']);
 
         $startDate = Carbon::parse($meetingMonth.'-01')->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
         $query->whereBetween('meeting_date', [$startDate, $endDate]);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhereHas('requester', function ($qq) use ($search) {
+                        $qq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
 
         $meetings = $query->latest()->paginate(10)->withQueryString();
 
@@ -78,7 +93,7 @@ class MeetingController extends Controller
 
         $rooms = Room::orderBy('name')->get();
 
-        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'meetingMonth', 'rooms'));
+        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'meetingMonth', 'rooms', 'search', 'status'));
     }
 
     public function show(Meeting $meeting)

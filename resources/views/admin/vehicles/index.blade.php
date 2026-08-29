@@ -144,9 +144,13 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" id="search-vehicle" placeholder="Cari plat nomor atau nama kendaraan" oninput="filterVehicles()"
-                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                <form method="GET" action="{{ route('admin.vehicles.index') }}">
+                    <input type="hidden" name="status" value="{{ $statusFilter }}">
+                    <input type="hidden" name="show_all" value="{{ $showAll ? 1 : '' }}">
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari plat nomor atau nama kendaraan" oninput="this.form.submit()"
+                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
+                </form>
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
                 <a href="{{ route('admin.export', ['type' => 'vehicles', 'filter' => 'all']) }}" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Export</a>
@@ -950,8 +954,6 @@ function showModal() { openModal('vehicle-modal'); }
 document.getElementById('vehicle-modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal('vehicle-modal'); });
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeDetail(); closeModal('vehicle-modal'); } });
 
-let currentFilter = '{{ $statusFilter }}';
-
 function toggleFilterMenu(e) {
     e.stopPropagation();
     const menu = document.getElementById('filter-menu');
@@ -960,11 +962,11 @@ function toggleFilterMenu(e) {
 }
 
 function setFilter(value) {
-    currentFilter = value;
-    const label = document.querySelector(`.filter-menu button[data-value="${value}"]`).textContent;
-    document.getElementById('filter-label').textContent = label;
-    document.getElementById('filter-menu').style.display = 'none';
-    filterVehicles();
+    const url = new URL(window.location.href);
+    if (value === 'all') url.searchParams.delete('status');
+    else url.searchParams.set('status', value);
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
 }
 
 document.addEventListener('click', function(e) {
@@ -973,21 +975,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-function filterVehicles() {
-    const search = (document.getElementById('search-vehicle')?.value || '').toLowerCase();
-    const rows = document.querySelectorAll('#vehicles-tbody tr:not(#empty-row)');
-    rows.forEach(row => {
-        const rowStatus = row.dataset.status;
-        const text = row.textContent.toLowerCase();
-        const matchStatus = currentFilter === 'all' || rowStatus === currentFilter;
-        const matchSearch = !search || text.includes(search);
-        row.style.display = matchStatus && matchSearch ? '' : 'none';
-    });
-}
-
-const urlParams = new URLSearchParams(window.location.search);
-const statusParam = urlParams.get('status');
-if (statusParam) { currentFilter = statusParam; filterVehicles(); }
 
 document.getElementById('f-foto')?.addEventListener('change', function() {
     var label = document.getElementById('foto-label');

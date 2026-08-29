@@ -8,18 +8,34 @@ use Illuminate\Http\Request;
 
 class AsetMesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $assetsPutra = AsetMes::with('penanggungJawab')
-            ->where('penanggung_jawab', auth()->id())
-            ->where('kategori', 'putra')
+        $searchPutra = trim((string) $request->input('search_putra', ''));
+        $searchPutri = trim((string) $request->input('search_putri', ''));
+
+        $baseQuery = AsetMes::with('penanggungJawab')
+            ->where('penanggung_jawab', auth()->id());
+
+        $applySearch = function ($q, $search) {
+            if ($search !== '') {
+                $q->where(function ($qq) use ($search) {
+                    $qq->where('nama_aset', 'like', "%{$search}%")
+                        ->orWhere('pic', 'like', "%{$search}%");
+                });
+            }
+        };
+
+        $queryPutra = (clone $baseQuery)->where('kategori', 'putra');
+        $queryPutri = (clone $baseQuery)->where('kategori', 'putri');
+        $applySearch($queryPutra, $searchPutra);
+        $applySearch($queryPutri, $searchPutri);
+
+        $assetsPutra = (clone $queryPutra)
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'page_putra')
             ->withQueryString();
 
-        $assetsPutri = AsetMes::with('penanggungJawab')
-            ->where('penanggung_jawab', auth()->id())
-            ->where('kategori', 'putri')
+        $assetsPutri = (clone $queryPutri)
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'page_putri')
             ->withQueryString();
@@ -40,6 +56,8 @@ class AsetMesController extends Controller
             'assetsPutri' => $assetsPutri,
             'assetsJson' => $assetsJson,
             'penanggungJawabMes' => AsetMes::PENANGGUNG_JAWAB_MES,
+            'searchPutra' => $searchPutra,
+            'searchPutri' => $searchPutri,
         ]);
     }
 

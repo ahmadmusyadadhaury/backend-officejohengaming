@@ -28,6 +28,31 @@ class VehicleController extends Controller
 
         $peralatanKendaraan = $this->peralatanKendaraan();
 
+        $search = trim((string) $request->get('search', ''));
+
+        if ($search !== '') {
+            $needle = strtolower($search);
+            $filtered = $filtered->filter(function ($v) use ($needle) {
+                $text = strtolower(
+                    ($v->nama_kendaraan ?? '').' '.
+                    ($v->plat_nomor ?? '').' '.
+                    ($v->merk_tipe ?? '').' '.
+                    ($v->nomor_rangka ?? '').' '.
+                    ($v->pic ?? '')
+                );
+                return str_contains($text, $needle);
+            })->values();
+
+            $peralatanKendaraan = $peralatanKendaraan->filter(function ($p) use ($needle) {
+                $text = strtolower(
+                    ($p->nama_kendaraan ?? '').' '.
+                    ($p->merk_tipe ?? '').' '.
+                    ($p->plat_nomor ?? '')
+                );
+                return str_contains($text, $needle);
+            })->values();
+        }
+
         $stats = [
             'total' => $vehicles->count() + $peralatanKendaraan->count(),
             'pajak_aktif' => $vehicles->filter(fn ($v) => $v->status_pajak === 'aktif')->count(),
@@ -100,6 +125,7 @@ class VehicleController extends Controller
             'alertJson' => $alertJson,
             'peralatanCount' => $peralatanKendaraan->count(),
             'showAll' => $showAll,
+            'search' => $search,
         ]);
     }
 

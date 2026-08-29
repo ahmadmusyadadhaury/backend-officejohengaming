@@ -11,7 +11,22 @@ class SosialMediaController extends Controller
     public function index(Request $request)
     {
         $showAll = $request->boolean('show_all');
-        $allItems = SosialMedia::orderBy('created_at', 'desc')->get();
+        $search = trim((string) $request->input('search', ''));
+        $status = $request->input('status', '');
+
+        $baseQuery = SosialMedia::query();
+        if ($search !== '') {
+            $baseQuery->where(function ($q) use ($search) {
+                $q->where('username', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    ->orWhere('platform', 'like', "%{$search}%");
+            });
+        }
+        if ($status && $status !== 'all') {
+            $baseQuery->where('status', $status);
+        }
+
+        $allItems = (clone $baseQuery)->orderBy('created_at', 'desc')->get();
 
         $stats = [
             'total' => $allItems->count(),
@@ -30,7 +45,7 @@ class SosialMediaController extends Controller
             'status' => $i->status,
         ]);
 
-        $items = SosialMedia::orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
+        $items = (clone $baseQuery)->orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
         $itemsJson = $allItems->values()->map(function ($i) {
             return [
@@ -46,6 +61,8 @@ class SosialMediaController extends Controller
             ];
         });
 
+        $platforms = SosialMedia::query()->whereNotNull('platform')->where('platform', '!=', '')->distinct()->orderBy('platform')->pluck('platform');
+
         return view('admin.sosial-media.index', [
             'items' => $items,
             'itemsJson' => $itemsJson,
@@ -53,6 +70,9 @@ class SosialMediaController extends Controller
             'alertItems' => $alertItems,
             'alertJson' => $alertJson,
             'showAll' => $showAll,
+            'search' => $search,
+            'status' => $status,
+            'platforms' => $platforms,
         ]);
     }
 

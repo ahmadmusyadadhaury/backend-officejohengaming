@@ -12,18 +12,42 @@ class AsetMesController extends Controller
     {
         $showAllPutra = $request->boolean('show_all_putra');
         $showAllPutri = $request->boolean('show_all_putri');
+        $searchPutra = trim((string) $request->input('search_putra', ''));
+        $searchPutri = trim((string) $request->input('search_putri', ''));
+        $statusPutra = $request->input('status_putra', '');
+        $statusPutri = $request->input('status_putri', '');
 
-        $countPutra = AsetMes::where('kategori', 'putra')->count();
-        $countPutri = AsetMes::where('kategori', 'putri')->count();
+        $applyFilters = function ($q, $search, $status) {
+            if ($status === '1') {
+                $q->where('is_active', true);
+            } elseif ($status === '0') {
+                $q->where('is_active', false);
+            }
+            if ($search !== '') {
+                $q->where(function ($qq) use ($search) {
+                    $qq->where('nama_aset', 'like', "%{$search}%")
+                        ->orWhere('pic', 'like', "%{$search}%")
+                        ->orWhereHas('penanggungJawab', function ($j) use ($search) {
+                            $j->where('name', 'like', "%{$search}%");
+                        });
+                });
+            }
+        };
 
-        $assetsPutra = AsetMes::with('penanggungJawab')
-            ->where('kategori', 'putra')
+        $queryPutra = AsetMes::with('penanggungJawab')->where('kategori', 'putra');
+        $queryPutri = AsetMes::with('penanggungJawab')->where('kategori', 'putri');
+        $applyFilters($queryPutra, $searchPutra, $statusPutra);
+        $applyFilters($queryPutri, $searchPutri, $statusPutri);
+
+        $countPutra = (clone $queryPutra)->count();
+        $countPutri = (clone $queryPutri)->count();
+
+        $assetsPutra = (clone $queryPutra)
             ->orderBy('created_at', 'desc')
             ->paginate($showAllPutra ? max($countPutra, 1) : 10, ['*'], 'page_putra')
             ->withQueryString();
 
-        $assetsPutri = AsetMes::with('penanggungJawab')
-            ->where('kategori', 'putri')
+        $assetsPutri = (clone $queryPutri)
             ->orderBy('created_at', 'desc')
             ->paginate($showAllPutri ? max($countPutri, 1) : 10, ['*'], 'page_putri')
             ->withQueryString();
@@ -73,6 +97,10 @@ class AsetMesController extends Controller
             'penanggungJawabMes' => AsetMes::PENANGGUNG_JAWAB_MES,
             'showAllPutra' => $showAllPutra,
             'showAllPutri' => $showAllPutri,
+            'searchPutra' => $searchPutra,
+            'searchPutri' => $searchPutri,
+            'statusPutra' => $statusPutra,
+            'statusPutri' => $statusPutri,
         ]);
     }
 
