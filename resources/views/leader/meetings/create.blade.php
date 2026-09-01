@@ -33,14 +33,16 @@
                     </div>
                     <div>
                         <label class="gaming-label">Ruangan <span style="color:#f87171;">*</span></label>
-                        <select name="room_id" required class="gaming-input gaming-select">
+                        <select name="room_id" id="room-select" required class="gaming-input gaming-select" onchange="toggleOtherRoom()">
                             <option value="">Pilih Ruangan</option>
                             @foreach($rooms as $room)
                                 <option value="{{ $room->id }}" {{ $room->is_weekly_only ? 'disabled' : '' }} {{ old('room_id') == $room->id ? 'selected' : '' }}>
                                     {{ $room->name }} ({{ $room->capacity }} orang)@if($room->is_weekly_only) — Khusus Weekly Meeting @endif
                                 </option>
                             @endforeach
+                            <option value="other" {{ old('room_id') === 'other' ? 'selected' : '' }}>Other (isi manual)</option>
                         </select>
+                        <input type="text" name="room_name" id="room-name-input" value="{{ old('room_name') }}" placeholder="Ketik nama ruangan..." class="gaming-input" style="display:none;margin-top:8px;">
                     </div>
                     <div>
                         <label class="gaming-label">Tanggal Meeting <span style="color:#f87171;">*</span></label>
@@ -159,6 +161,18 @@
 @push('scripts')
 <script>
     const teamsData = @json($teams);
+
+    function toggleOtherRoom() {
+        const select = document.getElementById('room-select');
+        const input = document.getElementById('room-name-input');
+        if (!select || !input) return;
+        const isOther = select.value === 'other';
+        input.style.display = isOther ? 'block' : 'none';
+        input.required = isOther;
+        if (!isOther) input.value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', toggleOtherRoom);
 
     function addTeamRow() {
         const container = document.getElementById('extra-teams');

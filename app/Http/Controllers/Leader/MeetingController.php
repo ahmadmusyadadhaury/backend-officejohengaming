@@ -129,7 +129,8 @@ class MeetingController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'room_id' => 'required|exists:rooms,id',
+            'room_id' => 'required',
+            'room_name' => 'required_if:room_id,other|nullable|string|max:255',
             'meeting_date' => 'required|date|after_or_equal:today',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
@@ -152,7 +153,11 @@ class MeetingController extends Controller
             return back()->withErrors(['main_team_id' => 'Tim utama wajib dipilih karena kamu belum memiliki tim sendiri.'])->withInput();
         }
 
-        $room = Room::findOrFail($request->room_id);
+        $room = $request->room_id === 'other'
+            ? $this->resolveOtherRoom($request->room_name)
+            : Room::findOrFail($request->room_id);
+
+        $roomId = $room->id;
 
         if ($room->is_weekly_only) {
             return back()->withErrors(['room_id' => 'Ruangan ini khusus Weekly Meeting dan tidak bisa dipesan untuk meeting biasa.'])->withInput();
@@ -177,7 +182,7 @@ class MeetingController extends Controller
         }
 
         // Cek apakah ruangan sudah dibooking orang lain di waktu yang sama
-        $conflict = Meeting::where('room_id', $request->room_id)
+        $conflict = Meeting::where('room_id', $roomId)
             ->where('meeting_date', $request->meeting_date)
             ->where('requested_by', '!=', auth()->id())
             ->whereIn('status', ['approved', 'confirmed', 'in_progress'])
@@ -219,7 +224,7 @@ class MeetingController extends Controller
 
         $meeting = Meeting::create([
             'title' => $request->title,
-            'room_id' => $request->room_id,
+            'room_id' => $roomId,
             'requested_by' => auth()->id(),
             'team_id' => $teamId,
             'why' => $request->why,
@@ -285,6 +290,27 @@ class MeetingController extends Controller
         );
 
         return redirect()->route('koordinator.meetings.index')->with('success', 'Request meeting berhasil dikirim ke Admin HR.');
+    }
+
+    protected function resolveOtherRoom(?string $name): Room
+    {
+        $name = trim((string) $name);
+
+        $existing = Room::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($name)])->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        return Room::create([
+            'name' => $name,
+            'capacity' => 1,
+            'location' => '',
+            'facilities' => [],
+            'description' => 'Ruangan di-input manual saat request meeting.',
+            'is_active' => true,
+            'is_weekly_only' => false,
+            'team_id' => null,
+        ]);
     }
 
     public function show(Meeting $meeting)

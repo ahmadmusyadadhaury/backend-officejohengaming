@@ -274,14 +274,16 @@
                         </div>
                         <div>
                             <label for="modal-room" class="gaming-label">Ruangan <span style="color:#f87171;">*</span></label>
-                            <select id="modal-room" name="room_id" required class="gaming-input gaming-select">
+                            <select id="modal-room" name="room_id" required class="gaming-input gaming-select" onchange="toggleOtherRoomModal()">
                                 <option value="">Pilih Ruangan</option>
                                 @foreach($rooms as $room)
                                     <option value="{{ $room->id }}" {{ $room->is_weekly_only ? 'disabled' : '' }} {{ old('room_id') == $room->id ? 'selected' : '' }}>
                                         {{ $room->name }} ({{ $room->capacity }} orang)@if($room->is_weekly_only) — Khusus Weekly Meeting @endif
                                     </option>
                                 @endforeach
+                                <option value="other" {{ old('room_id') === 'other' ? 'selected' : '' }}>Other (isi manual)</option>
                             </select>
+                            <input type="text" name="room_name" id="modal-room-name" value="{{ old('room_name') }}" placeholder="Ketik nama ruangan..." class="gaming-input" style="display:none;margin-top:8px;">
                         </div>
                     </div>
                 </div>
@@ -618,6 +620,17 @@ const teamsData = @json($teams);
 
 function openRequestModal() {
     openModal('request-modal');
+    toggleOtherRoomModal();
+}
+
+function toggleOtherRoomModal() {
+    const select = document.getElementById('modal-room');
+    const input = document.getElementById('modal-room-name');
+    if (!select || !input) return;
+    const isOther = select.value === 'other';
+    input.style.display = isOther ? 'block' : 'none';
+    input.required = isOther;
+    if (!isOther) input.value = '';
 }
 
 function closeRequestModal() {
