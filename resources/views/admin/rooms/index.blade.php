@@ -153,7 +153,25 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $rooms->links() }}</div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if(!$roomShowAll)
+                    Menampilkan {{ $rooms->firstItem() }}-{{ $rooms->lastItem() }} dari {{ $rooms->total() }} ruangan
+                @else
+                    Menampilkan semua {{ $rooms->total() }} ruangan
+                @endif
+            </span>
+            @if(!$roomShowAll)
+                <a href="{{ route('admin.rooms.index') }}?show_all=1" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+            @else
+                <a href="{{ route('admin.rooms.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+            @endif
+            <div style="margin-left:auto;">
+                @if(!$roomShowAll && $rooms->hasPages())
+                    {{ $rooms->links() }}
+                @endif
+            </div>
+        </div>
     </div>
     </div>
 

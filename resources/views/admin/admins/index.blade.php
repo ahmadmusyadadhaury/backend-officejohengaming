@@ -136,7 +136,25 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $admins->links() }}</div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if(!$showAll)
+                    Menampilkan {{ $admins->firstItem() }}-{{ $admins->lastItem() }} dari {{ $admins->total() }} akun
+                @else
+                    Menampilkan semua {{ $admins->total() }} akun
+                @endif
+            </span>
+            @if(!$showAll)
+                <a href="#" onclick="event.preventDefault(); window.location = paginationUrl(1);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+            @else
+                <a href="#" onclick="event.preventDefault(); window.location = paginationUrl(0);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+            @endif
+            <div style="margin-left:auto;">
+                @if(!$showAll && $admins->hasPages())
+                    {{ $admins->links() }}
+                @endif
+            </div>
+        </div>
     </div>
     </div>
 
@@ -213,7 +231,25 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $koordinators->links() }}</div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if(!$showAll)
+                    Menampilkan {{ $koordinators->firstItem() }}-{{ $koordinators->lastItem() }} dari {{ $koordinators->total() }} koordinator
+                @else
+                    Menampilkan semua {{ $koordinators->total() }} koordinator
+                @endif
+            </span>
+            @if(!$showAll)
+                <a href="#" onclick="event.preventDefault(); window.location = paginationUrl(1);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+            @else
+                <a href="#" onclick="event.preventDefault(); window.location = paginationUrl(0);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+            @endif
+            <div style="margin-left:auto;">
+                @if(!$showAll && $koordinators->hasPages())
+                    {{ $koordinators->links() }}
+                @endif
+            </div>
+        </div>
     </div>
     </div>
 
@@ -302,7 +338,25 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $karyawans->links() }}</div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if(!$showAll)
+                    Menampilkan {{ $karyawans->firstItem() }}-{{ $karyawans->lastItem() }} dari {{ $karyawans->total() }} karyawan
+                @else
+                    Menampilkan semua {{ $karyawans->total() }} karyawan
+                @endif
+            </span>
+            @if(!$showAll)
+                <a href="#" onclick="event.preventDefault(); window.location = paginationUrl(1);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+            @else
+                <a href="#" onclick="event.preventDefault(); window.location = paginationUrl(0);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+            @endif
+            <div style="margin-left:auto;">
+                @if(!$showAll && $karyawans->hasPages())
+                    {{ $karyawans->links() }}
+                @endif
+            </div>
+        </div>
     </div>
     </div>
 </div>
@@ -730,6 +784,22 @@ function showKoordinatorDetail(data) {
     ]);
 }
 
+function currentTab() {
+    var tab = 'admin';
+    ['admin', 'koordinator', 'karyawan'].forEach(function(t) {
+        var el = document.getElementById('tab-' + t);
+        if (el && el.style.display !== 'none') tab = t;
+    });
+    return tab;
+}
+
+function paginationUrl(showAll) {
+    var params = new URLSearchParams(window.location.search);
+    if (showAll) { params.set('show_all', '1'); } else { params.delete('show_all'); }
+    params.set('tab', currentTab());
+    return window.location.pathname + '?' + params.toString();
+}
+
 function switchTab(tab) {
     document.getElementById('tab-admin').style.display = tab === 'admin' ? 'block' : 'none';
     document.getElementById('tab-koordinator').style.display = tab === 'koordinator' ? 'block' : 'none';
@@ -738,6 +808,11 @@ function switchTab(tab) {
     var idx = { admin: 0, koordinator: 1, karyawan: 2 }[tab];
     document.querySelectorAll('.pill-btn')[idx].classList.add('active');
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    var t = new URLSearchParams(window.location.search).get('tab');
+    if (t && ['admin', 'koordinator', 'karyawan'].includes(t)) switchTab(t);
+});
 
 function openEditKaryawanModal(data) {
     document.getElementById('edit-karyawan-form').action = '/admin/admins/karyawan/' + data.id;

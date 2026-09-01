@@ -131,7 +131,25 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">{{ $teams->links() }}</div>
+        <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                @if(!$showAll)
+                    Menampilkan {{ $teams->firstItem() }}-{{ $teams->lastItem() }} dari {{ $teams->total() }} tim
+                @else
+                    Menampilkan semua {{ $teams->total() }} tim
+                @endif
+            </span>
+            @if(!$showAll)
+                <a href="#" onclick="event.preventDefault(); window.location = teamPaginationUrl(1);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+            @else
+                <a href="#" onclick="event.preventDefault(); window.location = teamPaginationUrl(0);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+            @endif
+            <div style="margin-left:auto;">
+                @if(!$showAll && $teams->hasPages())
+                    {{ $teams->links() }}
+                @endif
+            </div>
+        </div>
     </div>
     </div>
 
@@ -215,9 +233,25 @@
                         @endforelse
                     </tbody>
                 </table>
-                @if(method_exists($compositions, 'links') && $compositions->hasPages())
-                <div class="px-5 py-3" style="border-top:1px solid var(--border-color);">
-                    {{ $compositions->links() }}
+                @if(method_exists($compositions, 'links'))
+                <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+                    <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                        @if(!$showAll)
+                            Menampilkan {{ $compositions->firstItem() }}-{{ $compositions->lastItem() }} dari {{ $compositions->total() }} komposisi
+                        @else
+                            Menampilkan semua {{ $compositions->total() }} komposisi
+                        @endif
+                    </span>
+                    @if(!$showAll)
+                        <a href="#" onclick="event.preventDefault(); window.location = teamPaginationUrl(1);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">Selengkapnya &rarr;</a>
+                    @else
+                        <a href="#" onclick="event.preventDefault(); window.location = teamPaginationUrl(0);" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
+                    @endif
+                    <div style="margin-left:auto;">
+                        @if(!$showAll && $compositions->hasPages())
+                            {{ $compositions->links() }}
+                        @endif
+                    </div>
                 </div>
                 @endif
             </div>
@@ -609,6 +643,22 @@ if (memberSel) {
     });
 }
 
+function teamCurrentTab() {
+    var tab = 'teams';
+    ['teams', 'komposisi'].forEach(function(t) {
+        var el = document.getElementById('tab-' + t);
+        if (el && el.style.display !== 'none') tab = t;
+    });
+    return tab;
+}
+
+function teamPaginationUrl(showAll) {
+    var params = new URLSearchParams(window.location.search);
+    if (showAll) { params.set('show_all', '1'); } else { params.delete('show_all'); }
+    params.set('tab', teamCurrentTab());
+    return window.location.pathname + '?' + params.toString();
+}
+
 function switchTab(tab) {
     document.getElementById('tab-teams').style.display = tab === 'teams' ? '' : 'none';
     document.getElementById('tab-komposisi').style.display = tab === 'komposisi' ? '' : 'none';
@@ -619,6 +669,11 @@ function switchTab(tab) {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    var t = new URLSearchParams(window.location.search).get('tab');
+    if (t && ['teams', 'komposisi'].includes(t)) switchTab(t);
+});
 
 function showCompDetail(comp) {
     document.getElementById('comp-detail-body').innerHTML = '<div class="p-4"><table class="w-full text-sm"><tr><td style="color:var(--text-muted);padding:6px 0;">Posisi</td><td style="padding:6px 0;color:var(--text-primary);font-weight:600;">' + comp.label + '</td></tr><tr><td style="color:var(--text-muted);padding:6px 0;">Jumlah Maksimal</td><td style="padding:6px 0;"><span class="badge badge-cyan">' + comp.max_count + '</span></td></tr></table></div>';

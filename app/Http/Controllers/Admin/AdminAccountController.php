@@ -12,6 +12,8 @@ class AdminAccountController extends Controller
 {
     public function index(Request $request)
     {
+        $showAll = $request->boolean('show_all');
+
         // Fetch admin accounts (admin, head_of_store, gm, hr, ceo, admin_ga, assistant_manager)
         $adminQuery = User::whereIn('role', ['admin', 'head_of_store', 'gm', 'hr', 'ceo', 'admin_ga', 'assistant_manager']);
 
@@ -31,7 +33,8 @@ class AdminAccountController extends Controller
             }
         }
 
-        $admins = $adminQuery->orderBy('name')->paginate(10)->withQueryString();
+        $adminTotal = (clone $adminQuery)->count();
+        $admins = $adminQuery->orderBy('name')->paginate($showAll ? max($adminTotal, 1) : 10)->withQueryString();
 
         // Fetch koordinator accounts
         $koordinatorQuery = User::with('team')->where('role', 'koordinator');
@@ -55,7 +58,8 @@ class AdminAccountController extends Controller
             }
         }
 
-        $koordinators = $koordinatorQuery->orderBy('name')->paginate(15, ['*'], 'koordinator_page')->withQueryString();
+        $koordinatorTotal = (clone $koordinatorQuery)->count();
+        $koordinators = $koordinatorQuery->orderBy('name')->paginate($showAll ? max($koordinatorTotal, 1) : 15, ['*'], 'koordinator_page')->withQueryString();
 
         // Fetch karyawan accounts (user role) with team
         $karyawanQuery = User::with('team')->where('role', 'user');
@@ -79,10 +83,11 @@ class AdminAccountController extends Controller
             }
         }
 
-        $karyawans = $karyawanQuery->orderBy('name')->paginate(15, ['*'], 'karyawan_page')->withQueryString();
+        $karyawanTotal = (clone $karyawanQuery)->count();
+        $karyawans = $karyawanQuery->orderBy('name')->paginate($showAll ? max($karyawanTotal, 1) : 15, ['*'], 'karyawan_page')->withQueryString();
         $teams = Team::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.admins.index', compact('admins', 'koordinators', 'karyawans', 'teams'));
+        return view('admin.admins.index', compact('admins', 'koordinators', 'karyawans', 'teams', 'showAll'));
     }
 
     public function create()

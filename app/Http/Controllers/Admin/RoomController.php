@@ -28,7 +28,10 @@ class RoomController extends Controller
             }
         }
 
-        $rooms = $query->orderBy('name')->paginate(10)->withQueryString();
+        $roomShowAll = $request->boolean('show_all');
+
+        $roomsTotal = (clone $query)->count();
+        $rooms = $query->orderBy('name')->paginate($roomShowAll ? max($roomsTotal, 1) : 10)->withQueryString();
         $teams = Team::where('is_active', true)->orderBy('name')->get();
 
         $assetQuery = Asset::query();
@@ -44,7 +47,7 @@ class RoomController extends Controller
         }
         $assets = $assetQuery->orderBy('name')->paginate(10)->withQueryString();
 
-        return view('admin.rooms.index', compact('rooms', 'teams', 'assets'));
+        return view('admin.rooms.index', compact('rooms', 'teams', 'assets', 'roomShowAll'));
     }
 
     public function create()

@@ -26,7 +26,10 @@ class TeamController extends Controller
             }
         }
 
-        $teams = $query->orderBy('name')->paginate(10)->withQueryString();
+        $showAll = $request->boolean('show_all');
+
+        $teamsTotal = (clone $query)->count();
+        $teams = $query->orderBy('name')->paginate($showAll ? max($teamsTotal, 1) : 10)->withQueryString();
 
         $allTeams = Team::where('is_active', true)->orderBy('name')->pluck('name', 'id');
 
@@ -35,7 +38,7 @@ class TeamController extends Controller
             ->orderBy('name')
             ->get();
 
-        $availableUsersJson = $availableUsers->map(fn($u) => [
+        $availableUsersJson = $availableUsers->map(fn ($u) => [
             'id' => $u->id,
             'name' => $u->name,
             'username' => $u->username,
@@ -44,9 +47,10 @@ class TeamController extends Controller
         ])->values();
 
         $allCompositions = TeamComposition::orderBy('sort_order')->get();
-        $compositions = TeamComposition::orderBy('sort_order')->paginate(10)->withQueryString();
+        $compositionTotal = (clone TeamComposition::query())->orderBy('sort_order')->count();
+        $compositions = TeamComposition::orderBy('sort_order')->paginate($showAll ? max($compositionTotal, 1) : 10)->withQueryString();
 
-        return view('admin.teams.index', compact('teams', 'allTeams', 'availableUsers', 'availableUsersJson', 'allCompositions', 'compositions'));
+        return view('admin.teams.index', compact('teams', 'allTeams', 'availableUsers', 'availableUsersJson', 'allCompositions', 'compositions', 'showAll'));
     }
 
     public function show(Team $team)
@@ -70,7 +74,7 @@ class TeamController extends Controller
                     'is_active' => $team->is_active,
                     'leader' => $team->leader ? ['id' => $team->leader->id, 'name' => $team->leader->name] : null,
                 ],
-                'members' => $members->getCollection()->map(fn($m) => [
+                'members' => $members->getCollection()->map(fn ($m) => [
                     'id' => $m->id,
                     'name' => $m->name,
                     'username' => $m->username,
@@ -79,7 +83,7 @@ class TeamController extends Controller
                     'initial' => strtoupper(substr($m->name, 0, 1)),
                     'avatar_url' => $m->avatar_url,
                 ]),
-                'available_users' => $availableUsers->map(fn($u) => [
+                'available_users' => $availableUsers->map(fn ($u) => [
                     'id' => $u->id,
                     'name' => $u->name,
                     'username' => $u->username,
