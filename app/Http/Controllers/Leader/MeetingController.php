@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\MeetingQueueService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class MeetingController extends Controller
 {
@@ -138,11 +139,18 @@ class MeetingController extends Controller
             'file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
             'extra_teams' => 'nullable|array',
             'extra_teams.*' => 'exists:teams,id',
-            'main_team_id' => 'required_if:team_id,null|nullable|exists:teams,id',
+            'main_team_id' => [
+                Rule::requiredIf(! auth()->user()->team_id),
+                'nullable', 'exists:teams,id',
+            ],
         ]);
 
-        // Tentukan team_id: koordinator pakai team sendiri, head_of_store/gm pilih dari form
+        // Tentukan team_id: koordinator pakai team sendiri, head_of_store/gm/hr/assistant_manager/ceo pilih dari form
         $teamId = auth()->user()->team_id ?? $request->main_team_id;
+
+        if (! $teamId) {
+            return back()->withErrors(['main_team_id' => 'Tim utama wajib dipilih karena kamu belum memiliki tim sendiri.'])->withInput();
+        }
 
         $room = Room::findOrFail($request->room_id);
 

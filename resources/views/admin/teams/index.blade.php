@@ -622,11 +622,11 @@ function switchTab(tab) {
 
 function showCompDetail(comp) {
     document.getElementById('comp-detail-body').innerHTML = '<div class="p-4"><table class="w-full text-sm"><tr><td style="color:var(--text-muted);padding:6px 0;">Posisi</td><td style="padding:6px 0;color:var(--text-primary);font-weight:600;">' + comp.label + '</td></tr><tr><td style="color:var(--text-muted);padding:6px 0;">Jumlah Maksimal</td><td style="padding:6px 0;"><span class="badge badge-cyan">' + comp.max_count + '</span></td></tr></table></div>';
-    document.getElementById('comp-detail-modal').classList.add('active');
+    document.getElementById('comp-detail-modal').classList.add('is-open');
     document.body.classList.add('modal-open');
 }
 function closeCompDetailModal() {
-    document.getElementById('comp-detail-modal').classList.remove('active');
+    document.getElementById('comp-detail-modal').classList.remove('is-open');
     document.body.classList.remove('modal-open');
 }
 
@@ -634,11 +634,11 @@ function openCompEditModal(comp) {
     document.getElementById('comp-edit-form').action = '{{ route("admin.team-compositions.update", "REPLACE_ID") }}'.replace('REPLACE_ID', comp.id);
     document.getElementById('comp-edit-label').value = comp.label;
     document.getElementById('comp-edit-max-count').value = comp.max_count;
-    document.getElementById('comp-edit-modal').classList.add('active');
+    document.getElementById('comp-edit-modal').classList.add('is-open');
     document.body.classList.add('modal-open');
 }
 function closeCompEditModal() {
-    document.getElementById('comp-edit-modal').classList.remove('active');
+    document.getElementById('comp-edit-modal').classList.remove('is-open');
     document.body.classList.remove('modal-open');
 }
 </script>

@@ -57,8 +57,8 @@
                 </div>
             </div>
 
-            {{-- Tim Utama: hanya untuk head_of_store, gm, hr, ceo --}}
-            @if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'ceo']))
+            {{-- Tim Utama: hanya untuk head_of_store, gm, hr, assistant_manager, ceo --}}
+            @if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'assistant_manager', 'ceo']))
             <div class="pt-4" style="border-top:1px solid var(--border-color);">
                 <p class="font-gaming font-semibold text-sm mb-3" style="color:var(--text-primary);letter-spacing:0.05em;">TIM UTAMA</p>
                 <label class="gaming-label">Pilih Tim Utama <span style="color:#f87171;">*</span></label>

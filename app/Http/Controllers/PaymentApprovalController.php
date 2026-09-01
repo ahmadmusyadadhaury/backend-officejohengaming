@@ -470,7 +470,8 @@ class PaymentApprovalController extends Controller
             return response()->json(['error' => 'Anda tidak bisa menyetujui pengajuan Anda sendiri.'], 403);
         }
         $period = $record->period ?? 'bulanan';
-        $offsetMonths = $period === 'tahunan' ? 12 : 1;
+        // IPL Ruko: tagihan berikutnya dibuat untuk tahun depan (bukan bulan depan)
+        $offsetMonths = $jenis === 'ipl_ruko' || $period === 'tahunan' ? 12 : 1;
 
         $record->update([
             'status' => 'lunas',
@@ -515,7 +516,11 @@ class PaymentApprovalController extends Controller
                     $newData['periode'] = $nextDate->locale('id')->translatedFormat('F Y');
                 }
 
-                $class::create($newData);
+                // Cegah duplikat: jika tagihan periode berikutnya sudah ada, lewati
+                $exists = $class::where('periode', $newData['periode'] ?? $record->periode)->exists();
+                if (! $exists) {
+                    $class::create($newData);
+                }
             }
         }
 
@@ -597,7 +602,7 @@ class PaymentApprovalController extends Controller
 
                 if ($jenis !== 'pajak_kendaraan') {
                     $period = $record->period ?? 'bulanan';
-                    $offsetMonths = $period === 'tahunan' ? 12 : 1;
+                    $offsetMonths = $jenis === 'ipl_ruko' || $period === 'tahunan' ? 12 : 1;
 
                     $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
                     $nextDate = $record->{$dateField}?->copy()->addMonths($offsetMonths);
@@ -621,7 +626,11 @@ class PaymentApprovalController extends Controller
                             $newData['periode'] = $nextDate->locale('id')->translatedFormat('F Y');
                         }
 
-                        $class::create($newData);
+                        // Cegah duplikat: jika tagihan periode berikutnya sudah ada, lewati
+                        $exists = $class::where('periode', $newData['periode'] ?? $record->periode)->exists();
+                        if (! $exists) {
+                            $class::create($newData);
+                        }
                     }
                 }
 

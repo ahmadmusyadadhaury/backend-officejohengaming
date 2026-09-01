@@ -307,6 +307,12 @@
             @endif
             <div style="margin-left:auto;">
                 @if(method_exists($items, 'links') && $items->hasPages())
+                    @if(method_exists($items->links(), 'links'))
+                        {{ $items->links() }}
+                    @endif
+                    <span id="pagination-text"></span>
+                    <span id="pagination-controls"></span>
+                @else
                     {{ $items->links() }}
                 @endif
             </div>
@@ -1171,6 +1177,7 @@ function closeAlertPopup() {
 }
 const scanUrl = '{{ route("admin.peralatan-kantor.scan") }}';
 const showAll = @json($showAll);
+const currentRole = '{{ auth()->user()->role }}';
 let currentStep = 1;
 const totalSteps = 6;
 let currentDetailId = null;

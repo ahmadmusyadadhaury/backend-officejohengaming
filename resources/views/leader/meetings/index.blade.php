@@ -290,7 +290,7 @@
                 <div>
                     <p class="mt-section">TIM</p>
                     <div class="space-y-3">
-                        @if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'ceo']))
+                        @if(in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'assistant_manager', 'ceo']))
                         <div>
                             <label for="modal-main-team" class="gaming-label">Tim Utama <span style="color:#f87171;">*</span></label>
                             <select id="modal-main-team" name="main_team_id" required class="gaming-input gaming-select">
