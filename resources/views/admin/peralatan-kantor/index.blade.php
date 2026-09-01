@@ -306,13 +306,7 @@
                 <a href="{{ route('admin.peralatan-kantor.index') }}" style="font-size:0.75rem;color:var(--color-accent);font-weight:500;text-decoration:none;white-space:nowrap;">&larr; Kembali ke Ringkasan</a>
             @endif
             <div style="margin-left:auto;">
-                @if(method_exists($items, 'links') && $items->hasPages())
-                    @if(method_exists($items->links(), 'links'))
-                        {{ $items->links() }}
-                    @endif
-                    <span id="pagination-text"></span>
-                    <span id="pagination-controls"></span>
-                @else
+                @if(!$showAll && $items->hasPages())
                     {{ $items->links() }}
                 @endif
             </div>
