@@ -215,6 +215,7 @@ class PaymentApprovalController extends Controller
                     ($r['pic'] ?? '').' '.
                     ($r['approver_name'] ?? '')
                 );
+
                 return str_contains($text, $needle);
             })->values();
         }
@@ -283,6 +284,7 @@ class PaymentApprovalController extends Controller
                     ($r['jenis_label'] ?? '').' '.
                     ($r['pic'] ?? '')
                 );
+
                 return str_contains($text, $needle);
             })->values();
         }
@@ -435,6 +437,7 @@ class PaymentApprovalController extends Controller
                     ($r['requester_name'] ?? '').' '.
                     ($r['pic'] ?? '')
                 );
+
                 return str_contains($text, $needle);
             })->values();
         }
@@ -509,7 +512,12 @@ class PaymentApprovalController extends Controller
 
                 $newData['period'] = $period;
                 $newData[$dateField] = $nextDate;
-                $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+                // IPL Ruko: tagihan berikutnya disimpan sebagai 'menunggu' (terjadwal). Baru tampil di
+                // Tagihan & Persetujuan saat H-7 mendekat (di-flip oleh payments:sync-status),
+                // bukan langsung tampil saat approval.
+                $newData['status'] = $jenis === 'ipl_ruko'
+                    ? 'menunggu'
+                    : ($nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending');
 
                 if ($jenis !== 'internet') {
                     $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
@@ -619,7 +627,12 @@ class PaymentApprovalController extends Controller
 
                         $newData['period'] = $period;
                         $newData[$dateField] = $nextDate;
-                        $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+                        // IPL Ruko: tagihan berikutnya disimpan sebagai 'menunggu' (terjadwal). Baru tampil di
+                        // Tagihan & Persetujuan saat H-7 mendekat (di-flip oleh payments:sync-status),
+                        // bukan langsung tampil saat approval.
+                        $newData['status'] = $jenis === 'ipl_ruko'
+                            ? 'menunggu'
+                            : ($nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending');
 
                         if ($jenis !== 'internet') {
                             $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();

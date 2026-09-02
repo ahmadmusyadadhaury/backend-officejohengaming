@@ -86,7 +86,7 @@ class PaymentApprovalApiController extends Controller
         }
 
         $period = $record->period ?? 'bulanan';
-        $offsetMonths = $period === 'tahunan' ? 12 : 1;
+        $offsetMonths = $jenis === 'ipl_ruko' || $period === 'tahunan' ? 12 : 1;
 
         $record->update([
             'status' => 'lunas',
@@ -106,7 +106,9 @@ class PaymentApprovalApiController extends Controller
 
         $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
         $newData[$dateField] = $record->{$dateField}->copy()->addMonths($offsetMonths);
-        $newData['status'] = $newData[$dateField]->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+        $newData['status'] = $jenis === 'ipl_ruko'
+            ? 'menunggu'
+            : ($newData[$dateField]->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending');
         if ($jenis !== 'internet') {
             $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
         }
