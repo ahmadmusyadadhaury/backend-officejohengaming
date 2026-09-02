@@ -59,7 +59,7 @@ class DigitalAssetApiController extends Controller
 
         $berakhir = Carbon::parse($asset->berakhir);
         if (! ($data['is_active'] && $berakhir->gt(now()->addDays(7)))) {
-            $jatuhTempo = now()->addDays(30);
+            $jatuhTempo = $berakhir;
             PembayaranAsetDigital::create([
                 'digital_asset_id' => $asset->id,
                 'periode' => $asset->nama_aset,

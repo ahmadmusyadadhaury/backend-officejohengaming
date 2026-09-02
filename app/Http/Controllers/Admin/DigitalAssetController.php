@@ -108,7 +108,7 @@ class DigitalAssetController extends Controller
             return redirect()->route('admin.digital-assets.index')->with('success', 'Aset digital berhasil ditambahkan.');
         }
 
-        $jatuhTempo = now()->addDays(30);
+        $jatuhTempo = $berakhir;
         PembayaranAsetDigital::create([
             'digital_asset_id' => $asset->id,
             'periode' => $asset->nama_aset,

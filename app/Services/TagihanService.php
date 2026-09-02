@@ -82,6 +82,7 @@ class TagihanService
             ->whereNotIn('status', ['lunas', 'rejected']);
 
         if ($jenis === 'aset_digital') {
+            $query->where($dateField, '<=', Carbon::today()->addDays(7));
             if (! in_array(auth()->user()->role, User::FULL_ACCESS_ROLES)) {
                 $userName = auth()->user()->name;
                 $query->where(function ($q) use ($userName) {
