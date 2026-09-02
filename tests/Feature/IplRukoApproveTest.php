@@ -30,7 +30,7 @@ class IplRukoApproveTest extends TestCase
         ]));
     }
 
-    public function test_approve_ipl_menyimpan_tagihan_berikutnya_sebagai_menunggu_bukan_pending(): void
+    public function test_approve_ipl_tidak_auto_create_tagihan_tahun_berikutnya(): void
     {
         $lunasDate = Carbon::create(2026, 9, 22);
         $original = PembayaranIplRuko::create([
@@ -48,16 +48,7 @@ class IplRukoApproveTest extends TestCase
         (new PaymentApprovalController)->approve($original->id, $request);
 
         $this->assertSame('lunas', $original->fresh()->status);
-
-        $this->assertSame(2, PembayaranIplRuko::count());
-        $next = PembayaranIplRuko::where('id', '!=', $original->id)->first();
-        $this->assertNotNull($next);
-
-        $this->assertSame('menunggu', $next->status);
-        $this->assertSame($lunasDate->copy()->addMonths(12)->toDateString(), $next->jatuh_tempo->toDateString());
-        $this->assertSame($lunasDate->copy()->addMonths(12)->locale('id')->translatedFormat('F Y'), $next->periode);
-        $this->assertSame((float) 1500000, (float) $next->nominal);
-        $this->assertNull($next->requested_by);
+        $this->assertSame(1, PembayaranIplRuko::count());
     }
 
     public function test_tagihan_tahun_berikutnya_tidak_muncul_di_tagihan_atau_persetujuan(): void

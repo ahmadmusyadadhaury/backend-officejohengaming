@@ -495,7 +495,8 @@ class PaymentApprovalController extends Controller
             }
         }
 
-        if (! in_array($jenis, ['aset_digital', 'pajak_kendaraan'])) {
+        // IPL Ruko: tidak auto-create tagihan periode berikutnya (tahun depan dikelola manual)
+        if (! in_array($jenis, ['aset_digital', 'pajak_kendaraan', 'ipl_ruko'])) {
             // Auto-create tagihan baru hanya jika tanggal baru masih di masa depan
             $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
             $nextDate = $record->{$dateField}->copy()->addMonths($offsetMonths);
@@ -512,12 +513,7 @@ class PaymentApprovalController extends Controller
 
                 $newData['period'] = $period;
                 $newData[$dateField] = $nextDate;
-                // IPL Ruko: tagihan berikutnya disimpan sebagai 'menunggu' (terjadwal). Baru tampil di
-                // Tagihan & Persetujuan saat H-7 mendekat (di-flip oleh payments:sync-status),
-                // bukan langsung tampil saat approval.
-                $newData['status'] = $jenis === 'ipl_ruko'
-                    ? 'menunggu'
-                    : ($nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending');
+                $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
 
                 if ($jenis !== 'internet') {
                     $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
@@ -608,7 +604,8 @@ class PaymentApprovalController extends Controller
                     }
                 }
 
-                if ($jenis !== 'pajak_kendaraan') {
+                // IPL Ruko: tidak auto-create tagihan periode berikutnya (tahun depan dikelola manual)
+                if ($jenis !== 'pajak_kendaraan' && $jenis !== 'ipl_ruko') {
                     $period = $record->period ?? 'bulanan';
                     $offsetMonths = $jenis === 'ipl_ruko' || $period === 'tahunan' ? 12 : 1;
 
@@ -627,12 +624,7 @@ class PaymentApprovalController extends Controller
 
                         $newData['period'] = $period;
                         $newData[$dateField] = $nextDate;
-                        // IPL Ruko: tagihan berikutnya disimpan sebagai 'menunggu' (terjadwal). Baru tampil di
-                        // Tagihan & Persetujuan saat H-7 mendekat (di-flip oleh payments:sync-status),
-                        // bukan langsung tampil saat approval.
-                        $newData['status'] = $jenis === 'ipl_ruko'
-                            ? 'menunggu'
-                            : ($nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending');
+                        $newData['status'] = $nextDate->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
 
                         if ($jenis !== 'internet') {
                             $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();

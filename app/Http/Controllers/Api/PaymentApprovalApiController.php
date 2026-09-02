@@ -86,13 +86,27 @@ class PaymentApprovalApiController extends Controller
         }
 
         $period = $record->period ?? 'bulanan';
-        $offsetMonths = $jenis === 'ipl_ruko' || $period === 'tahunan' ? 12 : 1;
+        $offsetMonths = $period === 'tahunan' ? 12 : 1;
 
         $record->update([
             'status' => 'lunas',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
+
+        // IPL Ruko: tidak auto-create tagihan periode berikutnya (tahun depan dikelola manual)
+        if ($jenis === 'ipl_ruko') {
+            if ($record->requested_by) {
+                $detail = $jenis === 'internet' ? $record->nama_internet : $record->periode;
+                $message = "Pembayaran {$this->jenisLabel($jenis)} ({$detail}) telah disetujui oleh ".auth()->user()->name.'.';
+                Notification::send($record->requested_by, 'activity', 'Pembayaran Disetujui', $message, route('payment-approval.status'));
+                Cache::forget('tagihan_check_'.$record->requested_by);
+            }
+
+            Cache::forget('approval_check_'.auth()->id());
+
+            return response()->json(['success' => true]);
+        }
 
         $fillable = $record->getFillable();
         $newData = [];
@@ -106,9 +120,7 @@ class PaymentApprovalApiController extends Controller
 
         $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
         $newData[$dateField] = $record->{$dateField}->copy()->addMonths($offsetMonths);
-        $newData['status'] = $jenis === 'ipl_ruko'
-            ? 'menunggu'
-            : ($newData[$dateField]->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending');
+        $newData['status'] = $newData[$dateField]->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
         if ($jenis !== 'internet') {
             $newData['tanggal_tagihan'] = $record->tanggal_tagihan?->copy()->addMonths($offsetMonths) ?? now();
         }
