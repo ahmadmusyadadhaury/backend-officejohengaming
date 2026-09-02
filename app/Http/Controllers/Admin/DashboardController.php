@@ -316,6 +316,7 @@ class DashboardController extends Controller
                 ->sum('biaya')
             + PembayaranAsetDigital::whereNull('requested_by')
                 ->whereNotIn('status', ['lunas', 'rejected'])
+                ->where('jatuh_tempo', '<=', $today->copy()->addDays(7))
                 ->sum('nominal')
             + PembayaranIplRuko::whereNull('requested_by')
                 ->whereNotIn('status', ['lunas', 'rejected'])
