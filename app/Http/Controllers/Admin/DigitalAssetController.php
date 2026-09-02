@@ -7,6 +7,8 @@ use App\Models\DigitalAsset;
 use App\Models\PembayaranAsetDigital;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class DigitalAssetController extends Controller
 {
@@ -20,8 +22,7 @@ class DigitalAssetController extends Controller
 
         if ($search !== '') {
             $lsearch = strtolower($search);
-            $allAssets = $allAssets->filter(fn ($a) =>
-                str_contains(strtolower($a->nama_aset ?? ''), $lsearch)
+            $allAssets = $allAssets->filter(fn ($a) => str_contains(strtolower($a->nama_aset ?? ''), $lsearch)
                 || str_contains(strtolower($a->pic ?? ''), $lsearch)
             )->values();
         }
@@ -47,13 +48,13 @@ class DigitalAssetController extends Controller
         ]);
 
         $perPage = $showAll ? max($allAssets->count(), 1) : 10;
-        $page = max(\Illuminate\Pagination\Paginator::resolveCurrentPage('page'), 1);
-        $assets = new \Illuminate\Pagination\LengthAwarePaginator(
+        $page = max(Paginator::resolveCurrentPage('page'), 1);
+        $assets = new LengthAwarePaginator(
             $allAssets->forPage($page, $perPage)->values(),
             $allAssets->count(),
             $perPage,
             $page,
-            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(), 'query' => $request->query()]
+            ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
         );
 
         $assetsJson = $allAssets->values()->map(function ($a) {
@@ -101,6 +102,11 @@ class DigitalAssetController extends Controller
         $data['is_active'] = Carbon::parse($data['berakhir'])->gte(now()->startOfDay());
 
         $asset = DigitalAsset::create($data);
+
+        $berakhir = Carbon::parse($asset->berakhir);
+        if ($data['is_active'] && $berakhir->gt(now()->addDays(7))) {
+            return redirect()->route('admin.digital-assets.index')->with('success', 'Aset digital berhasil ditambahkan.');
+        }
 
         $jatuhTempo = now()->addDays(30);
         PembayaranAsetDigital::create([
