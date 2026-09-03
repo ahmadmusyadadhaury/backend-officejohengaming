@@ -26,21 +26,45 @@ class SyncPaymentStatus extends Command
 
         // Internet
         foreach (WifiPayment::whereNotIn('status', ['lunas', 'rejected'])->cursor() as $item) {
-            $newStatus = Carbon::parse($item->masa_tenggang)->lte($threshold) ? 'jatuh_tempo' : 'pending';
-            if ($item->status !== $newStatus) {
-                $item->update(['status' => $newStatus]);
-                $this->line("  [Internet] #{$item->id} {$item->nama_internet}: {$item->status} → {$newStatus}");
-                $updated++;
+            $masaTenggang = Carbon::parse($item->masa_tenggang);
+
+            if ($item->status === 'menunggu') {
+                // Transition dari menunggu ke pending/jatuh_tempo jika sudah mendekati jatuh tempo
+                if ($masaTenggang->lte($threshold)) {
+                    $newStatus = $masaTenggang->lte($today) ? 'jatuh_tempo' : 'pending';
+                    $item->update(['status' => $newStatus]);
+                    $this->line("  [Internet] #{$item->id} {$item->nama_internet}: {$item->status} → {$newStatus}");
+                    $updated++;
+                }
+            } else {
+                $newStatus = $masaTenggang->lte($threshold) ? 'jatuh_tempo' : 'pending';
+                if ($item->status !== $newStatus) {
+                    $item->update(['status' => $newStatus]);
+                    $this->line("  [Internet] #{$item->id} {$item->nama_internet}: {$item->status} → {$newStatus}");
+                    $updated++;
+                }
             }
         }
 
         // Aset Digital
         foreach (PembayaranAsetDigital::whereNotIn('status', ['lunas', 'rejected'])->cursor() as $item) {
-            $newStatus = Carbon::parse($item->jatuh_tempo)->lte($threshold) ? 'jatuh_tempo' : 'pending';
-            if ($item->status !== $newStatus) {
-                $item->update(['status' => $newStatus]);
-                $this->line("  [Aset Digital] #{$item->id} {$item->periode}: {$item->status} → {$newStatus}");
-                $updated++;
+            $jatuhTempo = Carbon::parse($item->jatuh_tempo);
+
+            if ($item->status === 'menunggu') {
+                // Transition dari menunggu ke pending/jatuh_tempo jika sudah mendekati jatuh tempo
+                if ($jatuhTempo->lte($threshold)) {
+                    $newStatus = $jatuhTempo->lte($today) ? 'jatuh_tempo' : 'pending';
+                    $item->update(['status' => $newStatus]);
+                    $this->line("  [Aset Digital] #{$item->id} {$item->periode}: {$item->status} → {$newStatus}");
+                    $updated++;
+                }
+            } else {
+                $newStatus = $jatuhTempo->lte($threshold) ? 'jatuh_tempo' : 'pending';
+                if ($item->status !== $newStatus) {
+                    $item->update(['status' => $newStatus]);
+                    $this->line("  [Aset Digital] #{$item->id} {$item->periode}: {$item->status} → {$newStatus}");
+                    $updated++;
+                }
             }
         }
 

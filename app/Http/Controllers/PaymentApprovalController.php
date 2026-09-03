@@ -262,6 +262,7 @@ class PaymentApprovalController extends Controller
                     'nominal' => (int) ($r->biaya ?? $r->nominal),
                     'status' => $jenis === 'ipl_ruko' ? $r->status_ipl : ($jenis === 'aset_digital' ? $r->status_digital ?? $r->status : $r->status),
                     'pic' => $jenis === 'pajak_kendaraan' ? ($r->vehicle?->pic ?? '-') : $r->pic,
+                    'tanggal_tagihan' => $jenis === 'internet' ? $r->masa_tenggang?->format('d/m/Y') : ($jenis === 'pajak_kendaraan' ? $r->created_at?->format('d/m/Y') : $r->tanggal_tagihan?->format('d/m/Y')),
                     'tanggal_bayar' => $r->tanggal_bayar?->format('d/m/Y'),
                 ]);
             $all = $all->merge($records);
@@ -385,7 +386,7 @@ class PaymentApprovalController extends Controller
             'pajak_kendaraan' => VehiclePajakRequest::class,
         ] as $jenis => $class) {
             $records = $class::with('requester', 'approver')
-                ->when($jenis === 'pajak_kendaraan', fn ($q) => $q->with('vehicle'))
+                ->when($jenis === 'pajak_kendaraan', fn ($q) => $q->with('vehicle')->whereNotNull('requested_by'))
                 ->where('status', 'pending')
                 ->orderBy('created_at', 'desc')
                 ->get()
@@ -576,7 +577,11 @@ class PaymentApprovalController extends Controller
         $types = $jenisFilter && isset($typeMap[$jenisFilter]) ? [$jenisFilter => $typeMap[$jenisFilter]] : $typeMap;
 
         foreach ($types as $jenis => $class) {
-            $records = $class::where('status', 'pending')->get();
+            $query = $class::where('status', 'pending');
+            if ($jenis === 'pajak_kendaraan') {
+                $query->whereNotNull('requested_by');
+            }
+            $records = $query->get();
 
             foreach ($records as $record) {
                 if ($record->requested_by === auth()->id()) {
@@ -851,7 +856,7 @@ class PaymentApprovalController extends Controller
             'pajak_kendaraan' => VehiclePajakRequest::class,
         ] as $jenis => $class) {
             $records = $class::with('requester')
-                ->when($jenis === 'pajak_kendaraan', fn ($q) => $q->with('vehicle'))
+                ->when($jenis === 'pajak_kendaraan', fn ($q) => $q->with('vehicle')->whereNotNull('requested_by'))
                 ->where('status', 'pending')
                 ->orderBy('created_at', 'desc')
                 ->get()

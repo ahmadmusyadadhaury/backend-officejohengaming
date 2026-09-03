@@ -40,15 +40,6 @@
     <span class="truncate">Tagihan</span>
     <span class="sidebar-badge tagihan-badge" style="{{ $totalTagihan > 0 ? '' : 'display:none;' }}background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:999px;min-width:18px;text-align:center;line-height:1.4;">{{ $totalTagihan }}</span>
 </a>
-@if(auth()->user()->role === 'admin')
-<a href="{{ route('payment-approval.create') }}"
-    class="sidebar-item {{ request()->routeIs('payment-approval.create') ? 'active' : '' }}">
-    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-    </svg>
-    <span class="truncate">Ajukan Pembayaran</span>
-</a>
-@endif
 <a href="{{ route('payment-approval.status') }}"
     class="sidebar-item {{ request()->routeIs('payment-approval.status') ? 'active' : '' }}">
     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +47,6 @@
     </svg>
     <span class="truncate">Status Pengajuan</span>
 </a>
-
 <p class="sidebar-section-label">Akun</p>
 <a href="{{ route('profile.edit') }}"
     class="sidebar-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}">

@@ -58,11 +58,12 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table class="gaming-table" style="width:100%;min-width:700px;">
+            <table class="gaming-table" style="width:100%;min-width:810px;">
                 <colgroup>
                     <col style="width:50px">
                     <col style="width:95px">
                     <col>
+                    <col style="width:110px">
                     <col style="width:120px">
                     <col style="width:110px">
                     <col style="width:95px">
@@ -73,6 +74,7 @@
                         <th style="width:50px">No</th>
                         <th style="width:95px">Jenis</th>
                         <th>Detail</th>
+                        <th style="width:110px">Tgl Tagihan</th>
                         <th style="width:120px">PIC</th>
                         <th style="width:110px">Nominal</th>
                         <th style="width:95px">Status</th>
@@ -85,6 +87,7 @@
                         <td style="color:var(--text-muted);">{{ $i + 1 }}</td>
                         <td><span class="text-xs font-semibold" style="color:var(--text-secondary);">{{ $r['jenis_label'] }}</span></td>
                         <td style="color:var(--text-primary);font-weight:500;">{{ $r['detail'] }}</td>
+                        <td style="color:var(--text-secondary);font-size:13px;">{{ $r['tanggal_tagihan'] ?? '-' }}</td>
                         <td style="color:var(--text-secondary);font-size:13px;">{{ $r['pic'] ?? '-' }}</td>
                         <td style="color:var(--text-primary);">Rp {{ number_format($r['nominal'], 0, ',', '.') }}</td>
                         <td>

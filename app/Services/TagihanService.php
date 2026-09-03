@@ -121,8 +121,12 @@ class TagihanService
     public static function approvalCount(): int
     {
         $total = 0;
-        foreach (self::JENIS_MODELS as $class) {
-            $total += $class::where('status', 'pending')->count();
+        foreach (self::JENIS_MODELS as $jenis => $class) {
+            $query = $class::where('status', 'pending');
+            if ($jenis === 'pajak_kendaraan') {
+                $query->whereNotNull('requested_by');
+            }
+            $total += $query->count();
         }
 
         return $total;
