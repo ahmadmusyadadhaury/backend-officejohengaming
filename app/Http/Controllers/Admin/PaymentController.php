@@ -613,7 +613,7 @@ class PaymentController extends Controller
             $data = $request->validate([
                 'periode' => 'required|string|max:255',
                 'tanggal_tagihan' => 'required|date',
-                'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
+                'jatuh_tempo' => 'required|date',
                 'nominal' => 'required|numeric|min:0',
                 'tanggal_bayar' => 'nullable|date',
                 'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -725,7 +725,7 @@ class PaymentController extends Controller
             $data = $request->validate([
                 'periode' => 'required|string|max:255',
                 'tanggal_tagihan' => 'required|date',
-                'jatuh_tempo' => 'required|date|after_or_equal:tanggal_tagihan',
+                'jatuh_tempo' => 'required|date',
                 'nominal' => 'required|numeric|min:0',
                 'tanggal_bayar' => 'nullable|date',
                 'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
