@@ -620,7 +620,9 @@
                             <th class="hidden md:table-cell">Mulai</th>
                             <th class="hidden md:table-cell">Berakhir</th>
                             @endif
+                            @if($jenis !== 'aset_digital')
                             <th class="hidden md:table-cell">Tagihan</th>
+                            @endif
                             <th>Jatuh Tempo</th>
                             @if(in_array($jenis, ['aset_digital', 'ipl_ruko']))
                             <th style="color:var(--text-muted);font-size:0.65rem;">Hari</th>
@@ -761,7 +763,9 @@
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->mulai?->format('d/m/Y') ?? '-' }}</td>
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->berakhir?->format('d/m/Y') ?? '-' }}</td>
                         @endif
+                        @if($jenis !== 'aset_digital')
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->tanggal_tagihan?->format('d/m/Y') }}</td>
+                        @endif
                         <td style="color:var(--text-muted);">{{ $item->jatuh_tempo?->format('d/m/Y') }}</td>
                         @if($jenis === 'aset_digital')
                         <td style="color:var(--text-muted);font-size:0.7rem;">{{ $item->hari_digital }}</td>
@@ -802,7 +806,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ $jenis === 'internet' ? 11 : ($jenis === 'aset_digital' ? 15 : ($jenis === 'ipl_ruko' ? 10 : 8)) }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data {{ $jenisLabels[$jenis] }}.</td>
+                        <td colspan="{{ $jenis === 'internet' ? 11 : ($jenis === 'aset_digital' ? 14 : ($jenis === 'ipl_ruko' ? 10 : 8)) }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data {{ $jenisLabels[$jenis] }}.</td>
                     </tr>
                     @endforelse
                 </tbody>

@@ -496,6 +496,7 @@
                     <input type="checkbox" name="is_active" id="edit-koordinator-is-active" value="1" style="width:14px;height:14px;accent-color:var(--color-accent);cursor:pointer;">
                     <label for="edit-koordinator-is-active" style="font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">Akun Aktif</label>
                 </div>
+                <input type="hidden" name="role" value="koordinator">
             </div>
             <div class="modal-modern-footer gap-2">
                 <button type="submit" class="btn btn-primary">Simpan</button>

@@ -83,7 +83,7 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('admin.users.index')->with('success', 'Akun berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Akun berhasil diperbarui.');
     }
 
     public function destroy(User $user)
