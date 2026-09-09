@@ -36,6 +36,7 @@ class PeralatanKantor extends Model
         'atasan',
         'jabatan_atasan',
         'kondisi',
+        'barcode_ditempel',
     ];
 
     protected function casts(): array
@@ -49,6 +50,7 @@ class PeralatanKantor extends Model
             'estimasi_waktu_barang' => 'integer',
             'pengurangan_harga_per_hari' => 'decimal:2',
             'harga_per_hari_ini' => 'decimal:2',
+            'barcode_ditempel' => 'boolean',
         ];
     }
 

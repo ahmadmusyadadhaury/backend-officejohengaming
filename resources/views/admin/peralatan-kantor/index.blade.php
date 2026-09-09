@@ -235,7 +235,7 @@
                         $penguranganHariIni = $penyusutanPerHari * $waktuPakai;
                         $nilaiSekarang = max($i->nilai - $penguranganHariIni, 0);
                     @endphp
-                    <tr data-kondisi="{{ $i->kondisi }}">
+                    <tr data-kondisi="{{ $i->kondisi }}"@if($i->barcode_ditempel) style="background:rgba(16,185,129,0.08);"@endif>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ ($items->currentPage() - 1) * $items->perPage() + $loop->iteration }}</td>
                         <td style="color:var(--text-primary);font-weight:500;white-space:nowrap;font-size:0.75rem;">{{ $i->nama_barang }}</td>
                         <td>@if($i->tim)<span class="badge" style="background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.25);">{{ $i->tim }}</span>@else<span style="color:var(--text-muted);font-size:0.75rem;">-</span>@endif</td>
@@ -260,7 +260,12 @@
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->atasan }}</td>
                         <td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">{{ $i->jabatan_atasan }}</td>
                         <td style="color:var(--color-accent);font-weight:500;font-family:monospace;font-size:0.7rem;white-space:nowrap;">{{ $i->kode_aset }}</td>
-                        <td style="color:var(--text-muted);font-family:monospace;font-size:0.7rem;white-space:nowrap;">{{ $i->barcode }}</td>
+                        <td style="color:{{ $i->barcode_ditempel ? '#34d399' : 'var(--text-muted)' }};font-family:monospace;font-size:0.7rem;white-space:nowrap;">
+                            {{ $i->barcode }}
+                            @if($i->barcode_ditempel)
+                            <span class="badge" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;">✓ Sudah Ditempel</span>
+                            @endif
+                        </td>
                         <td><span class="badge {{ $kondisiBadge }}">{{ $kondisiLabel }}</span></td>
                         <td>
                             <div class="flex items-center gap-1">
@@ -274,6 +279,7 @@
                                         <button type="button" onclick="showDetail({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
                                         @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
                                         <button type="button" onclick="openEditModal({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
+                                        <button type="button" onclick="toggleBarcodeDitempel({{ $i->id }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:{{ $i->barcode_ditempel ? '#ef4444' : '#34d399' }};border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">{{ $i->barcode_ditempel ? 'Batalkan Tanda Barcode' : 'Tandai Sudah Ditempel' }}</button>
                                         <form method="POST" action="{{ route('admin.peralatan-kantor.destroy', $i) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
@@ -291,6 +297,9 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+        <div class="px-5 pt-2" style="font-size:0.72rem;color:#34d399;">
+            <span>● Baris hijau = barcode sudah ditempel pada barang.</span>
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
             <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
@@ -475,7 +484,6 @@
                 @csrf
                 <input type="hidden" name="_method" id="form-method" value="POST">
                 <input type="hidden" name="id" id="form-id" value="">
-                <input type="hidden" name="kondisi" id="f-kondisi" value="baik">
 
                 {{-- Step 1 --}}
                 <div class="step-content" id="step-1">
@@ -505,6 +513,10 @@
                                 </div>
                                 <p class="text-xs mt-1" style="color:var(--text-muted);">Format: JPG, PNG, WebP. Maks 2MB.</p>
                             </div>
+                        </div>
+                        <div>
+                            <label class="gaming-label">Kondisi <span style="color:#f87171;">*</span></label>
+                            <input type="text" name="kondisi" id="f-kondisi" required placeholder="contoh: baik, perlu servis, rusak, atau kondisi lain" class="gaming-input">
                         </div>
                         <div>
                             <label class="gaming-label">Detail <span style="color:#f87171;">*</span></label>
@@ -700,6 +712,10 @@
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
                                     <span style="color:var(--text-muted);font-size:0.75rem;">Detail</span>
                                     <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-detail">-</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-color);">
+                                    <span style="color:var(--text-muted);font-size:0.75rem;">Kondisi</span>
+                                    <span style="color:var(--text-primary);font-size:0.8rem;font-weight:600;text-align:right;margin-left:8px;" id="pv-kondisi">-</span>
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
                                     <span style="color:var(--text-muted);font-size:0.75rem;">Keterangan</span>
@@ -1510,6 +1526,21 @@ function toggleDropdown(btn, id) {
     menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
 }
 
+function toggleBarcodeDitempel(id) {
+    fetch('{{ url('admin/peralatan-kantor') }}/' + id + '/barcode-ditempel', {
+        method: 'PATCH',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+            'Accept': 'application/json',
+        },
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) location.reload();
+    })
+    .catch(() => alert('Gagal mengubah tanda barcode.'));
+}
+
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.dropdown-wrap')) {
         document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
@@ -1600,6 +1631,7 @@ function updatePreview() {
         'pv-nama_barang': 'f-nama_barang',
         'pv-jumlah': 'f-jumlah',
         'pv-detail': 'f-detail',
+        'pv-kondisi': 'f-kondisi',
         'pv-keterangan': 'f-keterangan',
         'pv-lokasi_unit': 'f-lokasi_unit',
         'pv-ruangan': 'f-ruangan',

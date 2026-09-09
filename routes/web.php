@@ -91,6 +91,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('peralatan-kantor/template', [PeralatanKantorController::class, 'downloadTemplate'])->name('peralatan-kantor.template');
     Route::post('peralatan-kantor/scan', [PeralatanKantorController::class, 'scan'])->name('peralatan-kantor.scan');
     Route::post('peralatan-kantor/reset', [PeralatanKantorController::class, 'resetData'])->name('peralatan-kantor.reset');
+    Route::patch('peralatan-kantor/{peralatan_kantor}/barcode-ditempel', [PeralatanKantorController::class, 'toggleBarcodeDitempel'])->name('peralatan-kantor.barcode-ditempel');
     Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-mes', AsetMesController::class)->except(['create', 'show', 'edit'])->parameters(['aset-mes' => 'asetMes']);

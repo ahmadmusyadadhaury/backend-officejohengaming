@@ -346,6 +346,7 @@ class ExportController extends Controller
             'Jabatan Atasan' => $p->jabatan_atasan,
             'Kode Asset' => $p->kode_aset,
             'Barcode' => $p->barcode,
+            'Barcode Ditempel' => $p->barcode_ditempel ? 'Sudah' : 'Belum',
         ]);
 
         $totals = [
@@ -354,7 +355,16 @@ class ExportController extends Controller
         ];
 
         return Excel::download(
-            new DataExport(collect($data), array_keys($data->first() ?? []), 'Data Peralatan Kantor', 'Peralatan Kantor', [], $totals),
+            new DataExport(
+                collect($data),
+                array_keys($data->first() ?? []),
+                'Data Peralatan Kantor',
+                'Peralatan Kantor',
+                [],
+                $totals,
+                'Barang dengan "Barcode Ditempel" = Sudah berarti barcode sudah ditempel pada barang.',
+                [['column' => 'Barcode Ditempel', 'value' => 'Sudah', 'fill' => 'D1FAE5']]
+            ),
             'Data_Peralatan_Kantor.xlsx'
         );
     }

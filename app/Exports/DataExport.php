@@ -13,7 +13,9 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Operator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class DataExport implements FromCollection, WithCustomStartCell, WithEvents, WithHeadings, WithStyles, WithTitle
@@ -30,7 +32,11 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
 
     protected array $totals;
 
-    public function __construct(Collection $data, array $headings, string $title, string $sheetTitle = 'Data', array $hyperlinkColumns = [], array $totals = [])
+    protected string $footnote;
+
+    protected array $highlightCells;
+
+    public function __construct(Collection $data, array $headings, string $title, string $sheetTitle = 'Data', array $hyperlinkColumns = [], array $totals = [], string $footnote = '', array $highlightCells = [])
     {
         $this->data = $data;
         $this->headings = $headings;
@@ -38,6 +44,8 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
         $this->sheetTitle = $sheetTitle;
         $this->hyperlinkColumns = $hyperlinkColumns;
         $this->totals = $totals;
+        $this->footnote = $footnote;
+        $this->highlightCells = $highlightCells;
     }
 
     public function collection(): Collection
@@ -119,6 +127,30 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
                     }
                 }
 
+                if (! empty($this->highlightCells)) {
+                    $headings = $this->headings();
+                    foreach ($this->highlightCells as $cell) {
+                        $colIndex = array_search($cell['column'], $headings);
+                        if ($colIndex === false) {
+                            continue;
+                        }
+                        $colLetter = Coordinate::stringFromColumnIndex($colIndex + 1);
+                        $range = "{$colLetter}4:{$colLetter}{$sheet->getHighestRow()}";
+
+                        $conditional = new Conditional;
+                        $conditional->setConditionType(Conditional::CONDITION_CELLIS);
+                        $conditional->setOperatorType(Operator::OPERATOR_EQUAL);
+                        $conditional->addCondition('"'.$cell['value'].'"');
+                        $conditional->getStyle()->getFill()
+                            ->setFillType(Fill::FILL_SOLID)
+                            ->getStartColor()->setARGB('FF'.($cell['fill'] ?? 'D1FAE5'));
+
+                        $existing = $sheet->getConditionalStyles($range);
+                        $existing[] = $conditional;
+                        $sheet->setConditionalStyles($range, $existing);
+                    }
+                }
+
                 if (! empty($this->totals)) {
                     $lastDataRow = $sheet->getHighestRow();
                     $totalRow = $lastDataRow + 2;
@@ -156,6 +188,15 @@ class DataExport implements FromCollection, WithCustomStartCell, WithEvents, Wit
                     $highestCol = $sheet->getHighestColumn();
                     $sheet->getStyle("A{$totalRow}:{$highestCol}{$totalRow}")->getBorders()->getAllBorders()
                         ->setBorderStyle(Border::BORDER_THIN);
+                }
+
+                if ($this->footnote !== '') {
+                    $noteRow = $sheet->getHighestRow() + 2;
+                    $highestCol = $sheet->getHighestColumn();
+                    $sheet->mergeCells("A{$noteRow}:{$highestCol}{$noteRow}");
+                    $sheet->setCellValue("A{$noteRow}", $this->footnote);
+                    $sheet->getStyle("A{$noteRow}")->getFont()->setItalic(true)->setSize(10);
+                    $sheet->getStyle("A{$noteRow}")->getFont()->getColor()->setRGB('34D399');
                 }
             },
         ];

@@ -102,6 +102,7 @@ class PeralatanKantorController extends Controller
                 'atasan' => $i->atasan,
                 'jabatan_atasan' => $i->jabatan_atasan,
                 'kondisi' => $i->kondisi,
+                'barcode_ditempel' => (bool) $i->barcode_ditempel,
             ];
         });
 
@@ -162,12 +163,14 @@ class PeralatanKantorController extends Controller
             'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'atasan' => 'required|string|max:255',
             'jabatan_atasan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
-            'kondisi' => 'required|string|in:baik,perlu_servis,rusak',
+            'kondisi' => 'required|string|max:255',
+            'barcode_ditempel' => 'boolean',
         ]);
 
         $masaBarang = max($data['estimasi_waktu_barang'], 1);
         $waktuPakai = max((int) $data['waktu_pakai_per_hari'], 1);
         $data['waktu_pakai_per_hari'] = $waktuPakai;
+        $data['barcode_ditempel'] = $request->boolean('barcode_ditempel');
         $data['pengurangan_harga_per_hari'] = ($data['nilai'] / $masaBarang) * $waktuPakai;
         $data['harga_per_hari_ini'] = max($data['nilai'] - $data['pengurangan_harga_per_hari'], 0);
 
@@ -212,12 +215,14 @@ class PeralatanKantorController extends Controller
             'jabatan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
             'atasan' => 'required|string|max:255',
             'jabatan_atasan' => 'required|in:Chief Executive Officer (CEO),General Manager (GM),Head of Store,Admin Master,HR,Koordinator,Karyawan',
-            'kondisi' => 'required|string|in:baik,perlu_servis,rusak',
+            'kondisi' => 'required|string|max:255',
+            'barcode_ditempel' => 'boolean',
         ]);
 
         $masaBarang = max($data['estimasi_waktu_barang'], 1);
         $waktuPakai = max((int) $data['waktu_pakai_per_hari'], 1);
         $data['waktu_pakai_per_hari'] = $waktuPakai;
+        $data['barcode_ditempel'] = $request->boolean('barcode_ditempel');
         $data['pengurangan_harga_per_hari'] = ($data['nilai'] / $masaBarang) * $waktuPakai;
         $data['harga_per_hari_ini'] = max($data['nilai'] - $data['pengurangan_harga_per_hari'], 0);
 
@@ -247,6 +252,17 @@ class PeralatanKantorController extends Controller
         $peralatanKantor->delete();
 
         return redirect()->route('admin.peralatan-kantor.index')->with('success', 'Peralatan kantor berhasil dihapus.');
+    }
+
+    public function toggleBarcodeDitempel(PeralatanKantor $peralatanKantor)
+    {
+        $peralatanKantor->barcode_ditempel = ! $peralatanKantor->barcode_ditempel;
+        $peralatanKantor->save();
+
+        return response()->json([
+            'success' => true,
+            'barcode_ditempel' => (bool) $peralatanKantor->barcode_ditempel,
+        ]);
     }
 
     public function resetData()
