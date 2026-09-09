@@ -267,7 +267,11 @@
                         <td style="color:{{ $i->barcode_ditempel ? '#34d399' : 'var(--text-muted)' }};font-family:monospace;font-size:0.7rem;white-space:nowrap;">
                             {{ $i->barcode }}
                             @if($i->barcode_ditempel)
-                            <span class="badge" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;">✓ Sudah Ditempel</span>
+                                @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
+                                <span class="badge" onclick="toggleBarcodeDitempel({{ $i->id }})" title="Klik untuk membatalkan tanda" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;cursor:pointer;user-select:none;">✓ Sudah Ditempel</span>
+                                @else
+                                <span class="badge" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;">✓ Sudah Ditempel</span>
+                                @endif
                             @endif
                         </td>
                         <td><span class="badge {{ $kondisiBadge }}">{{ $kondisiLabel }}</span></td>
@@ -1193,8 +1197,12 @@ function rowHtml(i, idx) {
     const timBadge = i.tim
         ? '<span class="badge" style="background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.25);">' + i.tim + '</span>'
         : '<span style="color:var(--text-muted);font-size:0.75rem;">-</span>';
-    const barcodeCell = '<td style="color:' + (i.barcode_ditempel ? '#34d399' : 'var(--text-muted)') + ';font-family:monospace;font-size:0.7rem;white-space:nowrap;">' + (i.barcode || '') +
-        (i.barcode_ditempel ? '<span class="badge" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;">✓ Sudah Ditempel</span>' : '') + '</td>';
+    const barcodeBadge = i.barcode_ditempel
+        ? (canEditRow
+            ? '<span class="badge" onclick="toggleBarcodeDitempel(' + i.id + ')" title="Klik untuk membatalkan tanda" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;cursor:pointer;user-select:none;">✓ Sudah Ditempel</span>'
+            : '<span class="badge" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;">✓ Sudah Ditempel</span>')
+        : '';
+    const barcodeCell = '<td style="color:' + (i.barcode_ditempel ? '#34d399' : 'var(--text-muted)') + ';font-family:monospace;font-size:0.7rem;white-space:nowrap;">' + (i.barcode || '') + barcodeBadge + '</td>';
     const hargaSekarang = parseFloat(i.harga_per_hari_ini) || 0;
     let aksi = '<td><div class="flex items-center gap-1">' +
         '<button type="button" onclick="showDetail(' + i.id + ')" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">' +
@@ -1670,15 +1678,16 @@ function toggleBarcodeDitempel(id) {
     fetch('{{ url('admin/peralatan-kantor') }}/' + id + '/barcode-ditempel', {
         method: 'PATCH',
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+            'X-CSRF-TOKEN': csrfToken,
             'Accept': 'application/json',
         },
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) location.reload();
+        if (data && data.success) location.reload();
+        else alert('Gagal mengubah tanda barcode.' + (data && data.message ? ' ' + data.message : ''));
     })
-    .catch(() => alert('Gagal mengubah tanda barcode.'));
+    .catch(err => alert('Gagal mengubah tanda barcode. Periksa koneksi atau muat ulang halaman. (' + err + ')'));
 }
 
 document.addEventListener('click', function(e) {
