@@ -9,7 +9,7 @@
 <div class="pt-2 space-y-4 animate-fade-in">
 
     {{-- Stat Cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 md:gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-3">
         <div class="stat-card-compact">
             <div class="stat-icon-box" style="background:rgba(124,58,237,0.15);box-shadow:0 0 14px rgba(124,58,237,0.2);">
                 <svg style="color:#a78bfa;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,17 +44,6 @@
             </div>
         </div>
         <div class="stat-card-compact">
-            <div class="stat-icon-box" style="background:rgba(245,158,11,0.15);box-shadow:0 0 14px rgba(245,158,11,0.2);">
-                <svg style="color:#f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="stat-num" style="color:#f59e0b;">{{ $stats['segera_habis'] }}</div>
-                <div class="stat-label-text" style="font-size:0.7rem;">Segera Habis</div>
-            </div>
-        </div>
-        <div class="stat-card-compact">
             <div class="stat-icon-box" style="background:rgba(239,68,68,0.15);box-shadow:0 0 14px rgba(239,68,68,0.2);">
                 <svg style="color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -78,7 +67,6 @@
         });
         $matiCount = isset($alertGroups['mati']) ? $alertGroups['mati']->count() : 0;
         $jatuhTempoCount = isset($alertGroups['jatuh_tempo']) ? $alertGroups['jatuh_tempo']->count() : 0;
-        $segeraCount = isset($alertGroups['segera_habis']) ? $alertGroups['segera_habis']->count() : 0;
     @endphp
     @if($alerts->isNotEmpty())
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -107,20 +95,6 @@
                     <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $jatuhTempoCount }} SIM Card akan berakhir dalam 4-7 hari.</div>
                 </div>
                 <button type="button" onclick="showAlertPopup('jatuh_tempo')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(249,115,22,0.12);color:#f97316;border:1px solid rgba(249,115,22,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
-            </div>
-        </div>
-        @endif
-        @if($segeraCount > 0)
-        <div style="flex:1;min-width:260px;">
-            <div class="flex items-start gap-3 px-5 py-3.5 rounded-2xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
-                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#f59e0b;" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold" style="color:#f59e0b;">{{ $segeraCount }} Segera Habis</div>
-                    <div class="text-xs mt-1" style="color:var(--text-secondary);">{{ $segeraCount }} SIM Card akan berakhir dalam 1-3 hari.</div>
-                </div>
-                <button type="button" onclick="showAlertPopup('warning')" style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);cursor:pointer;white-space:nowrap;">Lihat Detail</button>
             </div>
         </div>
         @endif
