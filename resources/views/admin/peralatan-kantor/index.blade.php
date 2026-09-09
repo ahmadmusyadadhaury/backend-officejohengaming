@@ -1196,7 +1196,7 @@ function rowHtml(i, idx) {
     const barcodeCell = '<td style="color:' + (i.barcode_ditempel ? '#34d399' : 'var(--text-muted)') + ';font-family:monospace;font-size:0.7rem;white-space:nowrap;">' + (i.barcode || '') +
         (i.barcode_ditempel ? '<span class="badge" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;">✓ Sudah Ditempel</span>' : '') + '</td>';
     const hargaSekarang = parseFloat(i.harga_per_hari_ini) || 0;
-    let aksi = '<div class="flex items-center gap-1">' +
+    let aksi = '<td><div class="flex items-center gap-1">' +
         '<button type="button" onclick="showDetail(' + i.id + ')" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">' +
         '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Lihat Detail</button>' +
         '<div class="dropdown-wrap" style="position:relative;">' +
