@@ -16,6 +16,8 @@ class SimCard extends Model
         'status_paket_kuota',
         'status_kartu',
         'keperluan',
+        'menggunakan_wa',
+        'status_wa',
     ];
 
     protected function casts(): array
@@ -25,6 +27,7 @@ class SimCard extends Model
             'masa_tenggang' => 'date',
             'status_paket_kuota' => 'boolean',
             'status_kartu' => 'boolean',
+            'menggunakan_wa' => 'boolean',
         ];
     }
 

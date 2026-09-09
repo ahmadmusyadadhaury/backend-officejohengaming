@@ -275,6 +275,15 @@ class ExportController extends Controller
             'Masa Tenggang' => $s->masa_tenggang?->format('d/m/Y'),
             'Status Paket Kuota' => $s->status_paket_kuota ? 'Aktif' : 'Nonaktif',
             'Status Kartu' => $s->status_kartu ? 'Aktif' : 'Nonaktif',
+            'Menggunakan WA' => $s->menggunakan_wa ? 'Ya' : 'Tidak',
+            'Status WA' => $s->menggunakan_wa && $s->status_wa
+                ? match ($s->status_wa) {
+                    'aktif' => 'Aktif',
+                    'banned_sementara' => 'Terbanned Sementara',
+                    'banned_selamanya' => 'Terbanned Selamanya',
+                    default => $s->status_wa,
+                }
+                : '-',
             'Keperluan' => $s->keperluan ?? '-',
         ]);
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SimCard;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class SimCardController extends Controller
 {
@@ -50,13 +52,13 @@ class SimCardController extends Controller
         ]);
 
         $perPage = $showAll ? max($allCards->count(), 1) : 10;
-        $page = max(\Illuminate\Pagination\Paginator::resolveCurrentPage('page'), 1);
-        $cards = new \Illuminate\Pagination\LengthAwarePaginator(
+        $page = max(Paginator::resolveCurrentPage('page'), 1);
+        $cards = new LengthAwarePaginator(
             $allCards->forPage($page, $perPage)->values(),
             $allCards->count(),
             $perPage,
             $page,
-            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(), 'query' => $request->query()]
+            ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
         );
 
         $cardsJson = $allCards->values()->map(function ($c) {
@@ -73,6 +75,8 @@ class SimCardController extends Controller
                 'status_sim' => $c->status_sim,
                 'hari_sim' => $c->hari_sim,
                 'keperluan' => $c->keperluan,
+                'menggunakan_wa' => $c->menggunakan_wa,
+                'status_wa' => $c->status_wa,
             ];
         });
 
@@ -99,9 +103,16 @@ class SimCardController extends Controller
             'masa_tenggang' => 'required|date',
             'status_kartu' => 'boolean',
             'keperluan' => 'nullable|string',
+            'menggunakan_wa' => 'boolean',
+            'status_wa' => 'required_if:menggunakan_wa,1|nullable|in:aktif,banned_sementara,banned_selamanya',
         ]);
 
         $data['status_kartu'] = $request->boolean('status_kartu');
+        $data['menggunakan_wa'] = $request->boolean('menggunakan_wa');
+
+        if (! $data['menggunakan_wa']) {
+            $data['status_wa'] = null;
+        }
 
         SimCard::create($data);
 
@@ -119,9 +130,16 @@ class SimCardController extends Controller
             'masa_tenggang' => 'required|date',
             'status_kartu' => 'boolean',
             'keperluan' => 'nullable|string',
+            'menggunakan_wa' => 'boolean',
+            'status_wa' => 'required_if:menggunakan_wa,1|nullable|in:aktif,banned_sementara,banned_selamanya',
         ]);
 
         $data['status_kartu'] = $request->boolean('status_kartu');
+        $data['menggunakan_wa'] = $request->boolean('menggunakan_wa');
+
+        if (! $data['menggunakan_wa']) {
+            $data['status_wa'] = null;
+        }
 
         $simCard->update($data);
 

@@ -421,6 +421,7 @@ class PaymentApprovalController extends Controller
 
         $requests = $all->sortByDesc('created_at')->values();
         $isApprover = in_array(auth()->user()->role, self::APPROVER_ROLES);
+        $showRowActions = $isApprover && auth()->user()->role !== 'gm';
 
         $jenisFilter = request()->get('jenis', 'all');
         $search = trim((string) request()->get('search', ''));
@@ -453,7 +454,7 @@ class PaymentApprovalController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('admin.payment-approvals.index', ['requests' => $paged, 'isApprover' => $isApprover, 'jenis' => $jenisFilter, 'search' => $search]);
+        return view('admin.payment-approvals.index', ['requests' => $paged, 'isApprover' => $isApprover, 'showRowActions' => $showRowActions, 'jenis' => $jenisFilter, 'search' => $search]);
     }
 
     public function approve($id, Request $request)
@@ -470,7 +471,7 @@ class PaymentApprovalController extends Controller
             return response()->json(['error' => 'Request sudah diproses.'], 422);
         }
 
-        if ($record->requested_by === auth()->id()) {
+        if ($record->requested_by === auth()->id() && ! auth()->user()->hasFullAccess()) {
             return response()->json(['error' => 'Anda tidak bisa menyetujui pengajuan Anda sendiri.'], 403);
         }
         $period = $record->period ?? 'bulanan';
@@ -500,9 +501,9 @@ class PaymentApprovalController extends Controller
         if (! in_array($jenis, ['aset_digital', 'pajak_kendaraan', 'ipl_ruko'])) {
             // Auto-create tagihan baru hanya jika tanggal baru masih di masa depan
             $dateField = $jenis === 'internet' ? 'masa_tenggang' : 'jatuh_tempo';
-            $nextDate = $record->{$dateField}->copy()->addMonths($offsetMonths);
+            $nextDate = $record->{$dateField}?->copy()->addMonths($offsetMonths);
 
-            if ($nextDate->isFuture()) {
+            if ($nextDate && $nextDate->isFuture()) {
                 $fillable = $record->getFillable();
                 $newData = [];
                 foreach ($fillable as $col) {
@@ -522,7 +523,9 @@ class PaymentApprovalController extends Controller
                 }
 
                 // Cegah duplikat: jika tagihan periode berikutnya sudah ada, lewati
-                $exists = $class::where('periode', $newData['periode'] ?? $record->periode)->exists();
+                $exists = $jenis === 'internet'
+                    ? $class::where('nama_internet', $record->nama_internet)->where('masa_tenggang', $nextDate->toDateString())->exists()
+                    : $class::where('periode', $newData['periode'])->exists();
                 if (! $exists) {
                     $class::create($newData);
                 }
@@ -584,7 +587,7 @@ class PaymentApprovalController extends Controller
             $records = $query->get();
 
             foreach ($records as $record) {
-                if ($record->requested_by === auth()->id()) {
+                if ($record->requested_by === auth()->id() && ! auth()->user()->hasFullAccess()) {
                     $skipped++;
 
                     continue;
@@ -637,7 +640,9 @@ class PaymentApprovalController extends Controller
                         }
 
                         // Cegah duplikat: jika tagihan periode berikutnya sudah ada, lewati
-                        $exists = $class::where('periode', $newData['periode'] ?? $record->periode)->exists();
+                        $exists = $jenis === 'internet'
+                            ? $class::where('nama_internet', $record->nama_internet)->where('masa_tenggang', $nextDate->toDateString())->exists()
+                            : $class::where('periode', $newData['periode'])->exists();
                         if (! $exists) {
                             $class::create($newData);
                         }
@@ -695,7 +700,7 @@ class PaymentApprovalController extends Controller
             return response()->json(['error' => 'Request sudah diproses.'], 422);
         }
 
-        if ($record->requested_by === auth()->id()) {
+        if ($record->requested_by === auth()->id() && ! auth()->user()->hasFullAccess()) {
             return response()->json(['error' => 'Anda tidak bisa menolak pengajuan Anda sendiri.'], 403);
         }
 

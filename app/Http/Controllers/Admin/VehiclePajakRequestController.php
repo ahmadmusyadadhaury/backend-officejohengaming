@@ -80,7 +80,7 @@ class VehiclePajakRequestController extends Controller
             return response()->json(['error' => 'Request sudah diproses.'], 422);
         }
 
-        if ($pajakRequest->requested_by === auth()->id()) {
+        if ($pajakRequest->requested_by === auth()->id() && ! auth()->user()->hasFullAccess()) {
             return response()->json(['error' => 'Anda tidak dapat menyetujui pengajuan sendiri.'], 422);
         }
 
@@ -120,7 +120,7 @@ class VehiclePajakRequestController extends Controller
             return response()->json(['error' => 'Request sudah diproses.'], 422);
         }
 
-        if ($pajakRequest->requested_by === auth()->id()) {
+        if ($pajakRequest->requested_by === auth()->id() && ! auth()->user()->hasFullAccess()) {
             return response()->json(['error' => 'Anda tidak dapat menolak pengajuan sendiri.'], 422);
         }
 

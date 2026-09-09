@@ -187,6 +187,8 @@
                         <th class="hidden lg:table-cell">Masa Tenggang</th>
                         <th style="color:var(--text-muted);font-size:0.65rem;">Hari</th>
                         <th>Status</th>
+                        <th>Pakai WA</th>
+                        <th>Status WA</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -219,6 +221,34 @@
                         <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $c->masa_tenggang?->format('d M Y') }}</td>
                         <td style="color:var(--text-muted);font-size:0.7rem;">{{ $c->hari_sim }}</td>
                         <td><span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span></td>
+                        @php
+                            $waClass = match($c->status_wa) {
+                                'aktif' => 'badge-green',
+                                'banned_sementara' => 'badge-yellow',
+                                'banned_selamanya' => 'badge-red',
+                                default => 'badge-gray',
+                            };
+                            $waLabel = match($c->status_wa) {
+                                'aktif' => 'Aktif',
+                                'banned_sementara' => 'Terbanned Sementara',
+                                'banned_selamanya' => 'Terbanned Selamanya',
+                                default => '—',
+                            };
+                        @endphp
+                        <td class="hidden md:table-cell">
+                            @if($c->menggunakan_wa)
+                            <span class="badge badge-green">Ya</span>
+                            @else
+                            <span class="badge badge-gray">Tidak</span>
+                            @endif
+                        </td>
+                        <td class="hidden md:table-cell">
+                            @if($c->menggunakan_wa && $c->status_wa)
+                            <span class="badge {{ $waClass }}">{{ $waLabel }}</span>
+                            @else
+                            <span class="text-xs" style="color:var(--text-muted);">—</span>
+                            @endif
+                        </td>
                                                 <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $c->id }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -243,7 +273,7 @@
                     </tr>
                     @empty
                     <tr id="empty-row">
-                        <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data SIM Card.</td>
+                        <td colspan="12" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data SIM Card.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -358,6 +388,13 @@
                         </select>
                     </div>
                     <div class="field-group">
+                        <label class="gaming-label">Status Kartu <span class="field-req">*</span></label>
+                        <select name="status_kartu" id="f-status_kartu" required class="gaming-input gaming-select">
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak Aktif</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
                         <label class="gaming-label">Masa Aktif <span class="field-req">*</span></label>
                         <input type="date" name="masa_aktif" id="f-masa_aktif" required class="gaming-input">
                     </div>
@@ -365,11 +402,20 @@
                         <label class="gaming-label">Masa Tenggang <span class="field-req">*</span></label>
                         <input type="date" name="masa_tenggang" id="f-masa_tenggang" required class="gaming-input">
                     </div>
-                    <div class="field-group" style="grid-column:1/-1;">
-                        <label class="gaming-label">Status Kartu <span class="field-req">*</span></label>
-                        <select name="status_kartu" id="f-status_kartu" required class="gaming-input">
-                            <option value="1">Aktif</option>
-                            <option value="0">Tidak Aktif</option>
+                    <div class="field-group">
+                        <label class="gaming-label">Menggunakan WA? <span class="field-req">*</span></label>
+                        <select name="menggunakan_wa" id="f-menggunakan_wa" required class="gaming-input gaming-select" onchange="toggleStatusWa(this.value)">
+                            <option value="0">Tidak</option>
+                            <option value="1">Ya</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="gaming-label">Status WA</label>
+                        <select name="status_wa" id="f-status_wa" class="gaming-input gaming-select">
+                            <option value="">— Pilih Status WA —</option>
+                            <option value="aktif">Aktif</option>
+                            <option value="banned_sementara">Terbanned Sementara</option>
+                            <option value="banned_selamanya">Terbanned Selamanya</option>
                         </select>
                     </div>
                     <div class="field-group" style="grid-column:1/-1;">
@@ -518,7 +564,25 @@ function openCreateModal() {
         }
     });
     document.getElementById('f-status_kartu').value = '1';
+    document.getElementById('f-menggunakan_wa').value = '0';
+    document.getElementById('f-status_wa').value = '';
+    toggleStatusWa('0');
     showModal();
+}
+
+function toggleStatusWa(value) {
+    const el = document.getElementById('f-status_wa');
+    const usingWa = value === '1';
+    el.disabled = !usingWa;
+    if (!usingWa) el.value = '';
+}
+
+function waStatusLabel(status) {
+    return {
+        'aktif': 'Aktif',
+        'banned_sementara': 'Terbanned Sementara',
+        'banned_selamanya': 'Terbanned Selamanya',
+    }[status] || status;
 }
 
 function showDetail(id) {
@@ -543,6 +607,8 @@ function showDetail(id) {
         { label: 'Masa Tenggang', value: c.masa_tenggang },
         { label: 'Hari', value: c.hari_sim },
         { label: 'Keperluan', value: c.keperluan || '-' },
+        { label: 'Menggunakan WA', value: c.menggunakan_wa ? 'Ya' : 'Tidak' },
+        { label: 'Status WA', value: (c.menggunakan_wa && c.status_wa) ? waStatusLabel(c.status_wa) : '-' },
     ];
 
     const detailBody = document.getElementById('detail-body');
@@ -603,6 +669,9 @@ function openEditModal(id) {
     document.getElementById('f-masa_tenggang').value = c.masa_tenggang ? c.masa_tenggang.split('/').reverse().join('-') : '';
     document.getElementById('f-status_kartu').value = c.status_kartu ? '1' : '0';
     document.getElementById('f-keperluan').value = c.keperluan;
+    document.getElementById('f-menggunakan_wa').value = c.menggunakan_wa ? '1' : '0';
+    document.getElementById('f-status_wa').value = c.status_wa || '';
+    toggleStatusWa(c.menggunakan_wa ? '1' : '0');
 
     showModal();
 }
