@@ -16,6 +16,7 @@
                 ['label' => 'Kondisi Baik', 'count' => $stats['kondisi_baik'], 'color' => '#34d399', 'bg' => 'rgba(16,185,129,0.12)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['label' => 'Perlu Servis', 'count' => $stats['perlu_servis'], 'color' => '#fbbf24', 'bg' => 'rgba(245,158,11,0.12)', 'icon' => 'M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['label' => 'Rusak', 'count' => $stats['rusak'], 'color' => '#ef4444', 'bg' => 'rgba(239,68,68,0.12)', 'icon' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['label' => 'Kondisi Lainnya', 'count' => $stats['kondisi_lainnya'], 'color' => '#93c5fd', 'bg' => 'rgba(96,165,250,0.12)', 'icon' => 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4'],
             ];
         @endphp
         @foreach($countCards as $card)
@@ -126,11 +127,9 @@
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <form method="GET" action="{{ route('admin.peralatan-kantor.index') }}">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama barang, kode aset, atau PIC" oninput="this.form.submit()"
-                        class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
-                        style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
-                </form>
+                <input type="text" name="search" id="search-input" value="{{ request('search') }}" placeholder="Cari nama barang, kode aset, barcode, atau PIC..." autocomplete="off" oninput="applyItemSearch()" onkeydown="if(event.key==='Enter')event.preventDefault()"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs"
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-primary);outline:none;">
             </div>
             <div class="flex items-center gap-2" style="margin-left:auto;">
                 <button type="button" onclick="openImportModal()" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">
@@ -160,6 +159,11 @@
                     <button type="button" data-value="baik" onclick="setFilter('baik')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Kondisi Baik</button>
                     <button type="button" data-value="perlu_servis" onclick="setFilter('perlu_servis')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Perlu Servis</button>
                     <button type="button" data-value="rusak" onclick="setFilter('rusak')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Rusak</button>
+                    @foreach($kondisiOptions as $opt)
+                        @if(!in_array($opt, ['baik','perlu_servis','rusak']))
+                        <button type="button" data-value="{{ $opt }}" onclick="setFilter('{{ $opt }}')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;{{ $kondisi === $opt ? 'color:#93c5fd;font-weight:700;' : 'color:var(--text-primary);font-weight:400;' }}border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">{{ ucwords(str_replace('_', ' ', $opt)) }}</button>
+                        @endif
+                    @endforeach
                 </div>
                 </div>
                 <div class="filter-dropdown-wrap" style="position:relative;">
@@ -227,7 +231,7 @@
                             'baik'        => 'Baik',
                             'perlu_servis' => 'Perlu Servis',
                             'rusak'       => 'Rusak',
-                            default       => '-',
+                            default       => $i->kondisi ? ucwords(str_replace('_', ' ', $i->kondisi)) : '-',
                         };
                         $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
                         $penyusutanPerHari = $i->nilai / $masaBarang;
@@ -302,6 +306,7 @@
             <span>● Baris hijau = barcode sudah ditempel pada barang.</span>
         </div>
         <div class="px-5 py-2.5 flex flex-wrap items-center gap-3" style="border-top:1px solid var(--border-color);">
+            <div id="table-footer-inner" style="display:contents;">
             <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
                 @if(!$showAll)
                     Menampilkan {{ $items->firstItem() }}-{{ $items->lastItem() }} dari {{ $items->total() }} item
@@ -318,6 +323,7 @@
                 @if(!$showAll && $items->hasPages())
                     {{ $items->links() }}
                 @endif
+            </div>
             </div>
         </div>
     </div>
@@ -516,7 +522,20 @@
                         </div>
                         <div>
                             <label class="gaming-label">Kondisi <span style="color:#f87171;">*</span></label>
-                            <input type="text" name="kondisi" id="f-kondisi" required placeholder="contoh: baik, perlu servis, rusak, atau kondisi lain" class="gaming-input">
+                            <select id="f-kondisi" required onchange="kondisiSelectChanged()" class="gaming-input">
+                                <option value="">-- Pilih Kondisi --</option>
+                                <option value="baik">Baik</option>
+                                <option value="perlu_servis">Perlu Servis</option>
+                                <option value="rusak">Rusak</option>
+                                @foreach($kondisiOptions as $opt)
+                                    @if(!in_array($opt, ['baik','perlu_servis','rusak']))
+                                    <option value="{{ $opt }}">{{ ucwords(str_replace('_', ' ', $opt)) }}</option>
+                                    @endif
+                                @endforeach
+                                <option value="__custom__">Lainnya (tulis manual)...</option>
+                            </select>
+                            <input type="text" id="f-kondisi-custom" placeholder="Tulis kondisi lain (contoh: Dalam Perbaikan)" class="gaming-input" style="display:none;margin-top:8px;" oninput="syncKondisi()">
+                            <input type="hidden" name="kondisi" id="f-kondisi-hidden" value="baik">
                         </div>
                         <div>
                             <label class="gaming-label">Detail <span style="color:#f87171;">*</span></label>
@@ -1144,6 +1163,110 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 const alertData = @json($alertJson);
 
+const csrfToken = '{{ csrf_token() }}';
+const itemBaseUrl = '{{ url('admin/peralatan-kantor') }}';
+const userRole = '{{ auth()->user()->role }}';
+const canEditRow = userRole !== 'gm' && userRole !== 'ceo';
+const originalTbodyHtml = document.getElementById('item-tbody') ? document.getElementById('item-tbody').innerHTML : '';
+const originalFooterHtml = document.getElementById('table-footer-inner') ? document.getElementById('table-footer-inner').innerHTML : '';
+
+function kondisiBadgeInfo(k) {
+    if (k === 'baik') return '<span class="badge badge-green">Baik</span>';
+    if (k === 'perlu_servis') return '<span class="badge badge-yellow">Perlu Servis</span>';
+    if (k === 'rusak') return '<span class="badge badge-red">Rusak</span>';
+    return '<span class="badge badge-gray">' + (k ? String(k).replace(/_/g, ' ') : '-') + '</span>';
+}
+
+function itemSearchText(i) {
+    if (i.__search === undefined) {
+        i.__search = [i.nama_barang, i.kode_aset, i.barcode, i.pic, i.jabatan, i.atasan, i.jabatan_atasan, i.lokasi_unit, i.ruangan, i.tim, i.detail, i.keterangan, i.sub_kategori, i.milik, i.kondisi]
+            .map(s => (s == null ? '' : String(s))).join(' ').toLowerCase();
+    }
+    return i.__search;
+}
+
+function rowHtml(i, idx) {
+    const fmtRp = v => 'Rp' + Number(v || 0).toLocaleString('id-ID');
+    const fmtRp2 = v => Number(v || 0).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtTgl = v => v ? String(v).split('-').reverse().join('/') : '-';
+    const green = i.barcode_ditempel ? ' style="background:rgba(16,185,129,0.08);"' : '';
+    const timBadge = i.tim
+        ? '<span class="badge" style="background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.25);">' + i.tim + '</span>'
+        : '<span style="color:var(--text-muted);font-size:0.75rem;">-</span>';
+    const barcodeCell = '<td style="color:' + (i.barcode_ditempel ? '#34d399' : 'var(--text-muted)') + ';font-family:monospace;font-size:0.7rem;white-space:nowrap;">' + (i.barcode || '') +
+        (i.barcode_ditempel ? '<span class="badge" style="display:block;margin-top:2px;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.6rem;">✓ Sudah Ditempel</span>' : '') + '</td>';
+    const hargaSekarang = parseFloat(i.harga_per_hari_ini) || 0;
+    let aksi = '<div class="flex items-center gap-1">' +
+        '<button type="button" onclick="showDetail(' + i.id + ')" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">' +
+        '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Lihat Detail</button>' +
+        '<div class="dropdown-wrap" style="position:relative;">' +
+        '<button type="button" onclick="toggleDropdown(this, ' + i.id + ')" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>' +
+        '<div id="dropdown-' + i.id + '" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:150px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">' +
+        '<button type="button" onclick="showDetail(' + i.id + ')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background=\'var(--bg-surface-2)\'" onmouseout="this.style.background=\'none\'">Detail</button>';
+    if (canEditRow) {
+        aksi += '<button type="button" onclick="openEditModal(' + i.id + ')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background=\'var(--bg-surface-2)\'" onmouseout="this.style.background=\'none\'">Edit</button>' +
+            '<button type="button" onclick="toggleBarcodeDitempel(' + i.id + ')" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:' + (i.barcode_ditempel ? '#ef4444' : '#34d399') + ';border-radius:6px;cursor:pointer;" onmouseover="this.style.background=\'var(--bg-surface-2)\'" onmouseout="this.style.background=\'none\'">' + (i.barcode_ditempel ? 'Batalkan Tanda Barcode' : 'Tandai Sudah Ditempel') + '</button>' +
+            '<form method="POST" action="' + itemBaseUrl + '/' + i.id + '" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus peralatan ini?" style="margin:0;">' +
+            '<input type="hidden" name="_token" value="' + csrfToken + '"><input type="hidden" name="_method" value="DELETE">' +
+            '<button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background=\'var(--bg-surface-2)\'" onmouseout="this.style.background=\'none\'">Hapus</button></form>';
+    }
+    aksi += '</div></div></div></td>';
+
+    return '<tr id="row-' + i.id + '" data-kondisi="' + (i.kondisi || '') + '"' + green + '>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + idx + '</td>' +
+        '<td style="color:var(--text-primary);font-weight:500;white-space:nowrap;font-size:0.75rem;">' + (i.nama_barang || '') + '</td>' +
+        '<td>' + timBadge + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.jumlah || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.detail || '-') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.keterangan || '-') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.lokasi_unit || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.ruangan || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.pengadaan_tahun || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + fmtTgl(i.tanggal_pembelian) + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.kategori_nilai || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.kategori_ukuran || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.sub_kategori || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.milik || '') + '</td>' +
+        '<td style="color:var(--text-primary);font-weight:500;white-space:nowrap;font-size:0.75rem;">' + fmtRp(i.nilai) + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.waktu_pakai_per_hari || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.estimasi_waktu_barang || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + fmtRp2(i.pengurangan_harga_per_hari) + '</td>' +
+        '<td style="color:' + (hargaSekarang > 0 ? 'var(--text-primary)' : '#ef4444') + ';font-weight:500;white-space:nowrap;font-size:0.75rem;">' + fmtRp(i.harga_per_hari_ini) + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.pic || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.jabatan || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.atasan || '') + '</td>' +
+        '<td style="color:var(--text-muted);white-space:nowrap;font-size:0.75rem;">' + (i.jabatan_atasan || '') + '</td>' +
+        '<td style="color:var(--color-accent);font-weight:500;font-family:monospace;font-size:0.7rem;white-space:nowrap;">' + (i.kode_aset || '') + '</td>' +
+        barcodeCell +
+        '<td>' + kondisiBadgeInfo(i.kondisi) + '</td>' +
+        aksi +
+        '</tr>';
+}
+
+function applyItemSearch() {
+    const input = document.getElementById('search-input');
+    const tbody = document.getElementById('item-tbody');
+    const footer = document.getElementById('table-footer-inner');
+    if (!input || !tbody || !footer || !originalFooterHtml) return;
+
+    const q = (input.value || '').trim();
+
+    if (q === '') {
+        tbody.innerHTML = originalTbodyHtml;
+        footer.innerHTML = originalFooterHtml;
+        return;
+    }
+
+    const results = itemsData.filter(i => itemSearchText(i).includes(q.toLowerCase()));
+
+    if (results.length === 0) {
+        tbody.innerHTML = '<tr id="empty-row"><td colspan="27" style="text-align:center;padding:2rem;color:var(--text-muted);">Tidak ada hasil untuk "' + q + '".</td></tr>';
+    } else {
+        tbody.innerHTML = results.map(function (i, idx) { return rowHtml(i, idx + 1); }).join('');
+    }
+    footer.innerHTML = '<span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">Menampilkan ' + results.length + ' item untuk pencarian "' + q + '"</span>';
+}
+
 function showAlertPopup(type) {
     const title = document.getElementById('alert-popup-title');
     const body = document.getElementById('alert-popup-body');
@@ -1219,7 +1342,15 @@ function openCreateModal() {
     document.getElementById('f-milik').value = 'Milik Perusahaan';
     document.getElementById('f-kategori_nilai').value = 'Rendah';
     document.getElementById('f-kategori_ukuran').value = 'Kecil';
-    document.getElementById('f-kondisi').value = 'baik';
+    const kSel = document.getElementById('f-kondisi');
+    if (kSel) {
+        kSel.value = 'baik';
+        const kCustom = document.getElementById('f-kondisi-custom');
+        kCustom.value = '';
+        kCustom.style.display = 'none';
+        kCustom.required = false;
+        syncKondisi();
+    }
     document.getElementById('f-foto-preview').classList.add('hidden');
     document.getElementById('f-foto').value = '';
     hitungPenyusutan();
@@ -1357,8 +1488,17 @@ function renderBarcode(containerId, code, encodeUrl) {
     }
 }
 
-function showDetail(id) {
-    const i = itemsData.find(x => x.id === id);
+async function showDetail(id) {
+    let i = itemsData.find(x => x.id === id);
+    try {
+        const res = await fetch(itemBaseUrl + '/' + id + '/json', { headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+            const fresh = await res.json();
+            const idx = itemsData.findIndex(x => x.id === id);
+            if (idx >= 0) itemsData[idx] = fresh; else itemsData.push(fresh);
+            i = fresh;
+        }
+    } catch (e) {}
     if (!i) return;
     currentDetailId = id;
 
@@ -1369,7 +1509,7 @@ function showDetail(id) {
         perlu_servis: { label: 'Perlu Servis', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
         rusak: { label: 'Rusak', bg: '#fef2f2', text: '#dc2626', border: '#fecaca' },
     };
-    const k = kondisiMap[i.kondisi] || kondisiMap.baik;
+    const k = kondisiMap[i.kondisi] || { label: i.kondisi || 'Kondisi', bg: 'var(--bg-surface-2)', text: 'var(--text-muted)', border: 'var(--border-color)' };
     const badgeEl = document.getElementById('detail-badge');
     badgeEl.textContent = k.label;
     badgeEl.style.background = k.bg;
@@ -1585,7 +1725,23 @@ function openEditModal(id) {
     document.getElementById('f-jabatan').value = i.jabatan;
     document.getElementById('f-atasan').value = i.atasan;
     document.getElementById('f-jabatan_atasan').value = i.jabatan_atasan;
-    document.getElementById('f-kondisi').value = i.kondisi;
+    const kSel = document.getElementById('f-kondisi');
+    if (kSel) {
+        const kCustom = document.getElementById('f-kondisi-custom');
+        const optionExists = [...kSel.options].some(o => o.value === i.kondisi);
+        if (optionExists) {
+            kSel.value = i.kondisi;
+            kCustom.value = '';
+            kCustom.style.display = 'none';
+            kCustom.required = false;
+        } else {
+            kSel.value = '__custom__';
+            kCustom.value = i.kondisi || '';
+            kCustom.style.display = '';
+            kCustom.required = true;
+        }
+        syncKondisi();
+    }
 
     const fotoPreview = document.getElementById('f-foto-preview');
     const fotoImg = document.getElementById('f-foto-preview-img');
@@ -1631,7 +1787,6 @@ function updatePreview() {
         'pv-nama_barang': 'f-nama_barang',
         'pv-jumlah': 'f-jumlah',
         'pv-detail': 'f-detail',
-        'pv-kondisi': 'f-kondisi',
         'pv-keterangan': 'f-keterangan',
         'pv-lokasi_unit': 'f-lokasi_unit',
         'pv-ruangan': 'f-ruangan',
@@ -1655,6 +1810,14 @@ function updatePreview() {
         if (el && inputEl) {
             el.textContent = inputEl.value || '-';
         }
+    }
+    const kondisiSel = document.getElementById('f-kondisi');
+    const pvKondisi = document.getElementById('pv-kondisi');
+    if (kondisiSel && pvKondisi) {
+        let kondisiVal = kondisiSel.value === '__custom__'
+            ? document.getElementById('f-kondisi-custom').value
+            : kondisiSel.value;
+        pvKondisi.textContent = kondisiVal || '-';
     }
     const nilai = parseFloat(document.getElementById('f-nilai').value) || 0;
     const masaBarang = parseInt(document.getElementById('f-estimasi_waktu_barang').value) || 1;
@@ -1719,7 +1882,29 @@ function hitungPenyusutan() {
     document.getElementById('nilai-sekarang-display').textContent = 'Rp' + Math.round(nilaiSekarang).toLocaleString('id-ID');
 }
 
+function kondisiSelectChanged() {
+    const s = document.getElementById('f-kondisi');
+    const t = document.getElementById('f-kondisi-custom');
+    const isCustom = s.value === '__custom__';
+    t.style.display = isCustom ? '' : 'none';
+    t.required = isCustom;
+    if (!isCustom) t.value = '';
+    syncKondisi();
+}
+
+function syncKondisi() {
+    const s = document.getElementById('f-kondisi');
+    const h = document.getElementById('f-kondisi-hidden');
+    if (!s || !h) return;
+    if (s.value === '__custom__') {
+        h.value = document.getElementById('f-kondisi-custom').value.trim();
+    } else {
+        h.value = s.value;
+    }
+}
+
 function submitForm() {
+    syncKondisi();
     for (let s = 1; s < totalSteps; s++) {
         if (!validateStep(s)) {
             const firstInvalid = document.querySelector('#step-' + s + ' [required]');

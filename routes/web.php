@@ -92,6 +92,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('peralatan-kantor/scan', [PeralatanKantorController::class, 'scan'])->name('peralatan-kantor.scan');
     Route::post('peralatan-kantor/reset', [PeralatanKantorController::class, 'resetData'])->name('peralatan-kantor.reset');
     Route::patch('peralatan-kantor/{peralatan_kantor}/barcode-ditempel', [PeralatanKantorController::class, 'toggleBarcodeDitempel'])->name('peralatan-kantor.barcode-ditempel');
+    Route::get('peralatan-kantor/{peralatan_kantor}/json', [PeralatanKantorController::class, 'showJson'])->name('peralatan-kantor.show-json');
     Route::resource('sosial-media', SosialMediaController::class)->except(['create', 'show', 'edit']);
     Route::resource('ruko', AsetRukoController::class)->except(['create', 'show', 'edit']);
     Route::resource('aset-mes', AsetMesController::class)->except(['create', 'show', 'edit'])->parameters(['aset-mes' => 'asetMes']);

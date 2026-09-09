@@ -41,6 +41,11 @@ class PeralatanKantorController extends Controller
             'kondisi_baik' => $allItems->where('kondisi', 'baik')->count(),
             'perlu_servis' => $allItems->where('kondisi', 'perlu_servis')->count(),
             'rusak' => $allItems->where('kondisi', 'rusak')->count(),
+            'kondisi_lainnya' => $allItems
+                ->whereNotIn('kondisi', ['baik', 'perlu_servis', 'rusak'])
+                ->whereNotNull('kondisi')
+                ->where('kondisi', '!=', '')
+                ->count(),
             'total_nilai' => $allItems->sum('nilai'),
             'total_harga_sekarang' => $allItems->sum(function ($i) {
                 $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
@@ -50,6 +55,13 @@ class PeralatanKantorController extends Controller
                 return max($i->nilai - $pengurangan, 0);
             }),
         ];
+
+        $kondisiOptions = $allItems
+            ->pluck('kondisi')
+            ->filter(fn ($v) => $v !== null && $v !== '')
+            ->unique()
+            ->sort()
+            ->values();
 
         $alertItems = $allItems->whereIn('kondisi', ['perlu_servis', 'rusak'])->values();
 
@@ -63,48 +75,7 @@ class PeralatanKantorController extends Controller
 
         $items = (clone $query)->orderBy('created_at', 'desc')->paginate($showAll ? max($allItems->count(), 1) : 10)->withQueryString();
 
-        $itemsJson = $allItems->values()->map(function ($i) {
-            $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
-            $penyusutanPerHari = $i->nilai / $masaBarang;
-            $waktuPakai = max((int) $i->waktu_pakai_per_hari, 1);
-            $penguranganHariIni = $penyusutanPerHari * $waktuPakai;
-            $nilaiSekarang = max($i->nilai - $penguranganHariIni, 0);
-            $hariTerpakai = $i->tanggal_pembelian ? max(abs(now()->diffInDays($i->tanggal_pembelian)), 0) : 0;
-
-            return [
-                'id' => $i->id,
-                'kode_aset' => $i->kode_aset,
-                'barcode' => $i->barcode,
-                'foto' => $i->foto ? route('files.show', $i->foto) : null,
-                'nama_barang' => $i->nama_barang,
-                'jumlah' => $i->jumlah,
-                'detail' => $i->detail,
-                'sub_kategori' => $i->sub_kategori,
-                'tim' => $i->tim,
-                'keterangan' => $i->keterangan,
-                'lokasi_unit' => $i->lokasi_unit,
-                'ruangan' => $i->ruangan,
-                'milik' => $i->milik,
-                'pengadaan_tahun' => $i->pengadaan_tahun,
-                'tanggal_pembelian' => $i->tanggal_pembelian?->format('Y-m-d'),
-                'kategori_nilai' => $i->kategori_nilai,
-                'kategori_ukuran' => $i->kategori_ukuran,
-                'nilai' => (int) $i->nilai,
-                'waktu_pakai_per_hari' => $waktuPakai,
-                'estimasi_waktu_barang' => $i->estimasi_waktu_barang,
-                'pengurangan_harga_per_hari' => round($penguranganHariIni, 2),
-                'harga_per_hari_ini' => round($nilaiSekarang, 2),
-                'hari_terpakai' => $hariTerpakai,
-                'penyusutan_per_hari' => round($penguranganHariIni, 2),
-                'nilai_sekarang' => round($nilaiSekarang, 2),
-                'pic' => $i->pic,
-                'jabatan' => $i->jabatan,
-                'atasan' => $i->atasan,
-                'jabatan_atasan' => $i->jabatan_atasan,
-                'kondisi' => $i->kondisi,
-                'barcode_ditempel' => (bool) $i->barcode_ditempel,
-            ];
-        });
+        $itemsJson = $allItems->values()->map(fn ($i) => $this->serializeItem($i));
 
         $allTim = Team::where('is_active', true)
             ->whereNotNull('name')
@@ -131,6 +102,7 @@ class PeralatanKantorController extends Controller
             'allTim' => $allTim,
             'activeTim' => $activeTim,
             'timKoordinators' => $timKoordinators,
+            'kondisiOptions' => $kondisiOptions,
             'showAll' => $showAll,
             'search' => $search,
             'kondisi' => $kondisi,
@@ -292,45 +264,56 @@ class PeralatanKantorController extends Controller
             return response()->json(['message' => 'Data aset tidak ditemukan.'], 404);
         }
 
-        $masaBarang = max($item->estimasi_waktu_barang ?: 360, 1);
-        $penyusutanPerHari = $item->nilai / $masaBarang;
-        $waktuPakai = max((int) $item->waktu_pakai_per_hari, 1);
-        $penguranganHariIni = $penyusutanPerHari * $waktuPakai;
-        $nilaiSekarang = max($item->nilai - $penguranganHariIni, 0);
-        $hariTerpakai = $item->tanggal_pembelian ? max(abs(now()->diffInDays($item->tanggal_pembelian)), 0) : 0;
+        return response()->json($this->serializeItem($item));
+    }
 
-        return response()->json([
-            'id' => $item->id,
-            'kode_aset' => $item->kode_aset,
-            'barcode' => $item->barcode,
-            'foto' => $item->foto ? route('files.show', $item->foto) : null,
-            'nama_barang' => $item->nama_barang,
-            'jumlah' => $item->jumlah,
-            'detail' => $item->detail,
-            'sub_kategori' => $item->sub_kategori,
-            'tim' => $item->tim,
-            'keterangan' => $item->keterangan,
-            'lokasi_unit' => $item->lokasi_unit,
-            'ruangan' => $item->ruangan,
-            'milik' => $item->milik,
-            'pengadaan_tahun' => $item->pengadaan_tahun,
-            'tanggal_pembelian' => $item->tanggal_pembelian?->format('Y-m-d'),
-            'kategori_nilai' => $item->kategori_nilai,
-            'kategori_ukuran' => $item->kategori_ukuran,
-            'nilai' => (int) $item->nilai,
+    public function showJson(PeralatanKantor $peralatanKantor)
+    {
+        return response()->json($this->serializeItem($peralatanKantor));
+    }
+
+    protected function serializeItem(PeralatanKantor $i): array
+    {
+        $masaBarang = max($i->estimasi_waktu_barang ?: 360, 1);
+        $penyusutanPerHari = $i->nilai / $masaBarang;
+        $waktuPakai = max((int) $i->waktu_pakai_per_hari, 1);
+        $penguranganHariIni = $penyusutanPerHari * $waktuPakai;
+        $nilaiSekarang = max($i->nilai - $penguranganHariIni, 0);
+        $hariTerpakai = $i->tanggal_pembelian ? max(abs(now()->diffInDays($i->tanggal_pembelian)), 0) : 0;
+
+        return [
+            'id' => $i->id,
+            'kode_aset' => $i->kode_aset,
+            'barcode' => $i->barcode,
+            'foto' => $i->foto ? route('files.show', $i->foto) : null,
+            'nama_barang' => $i->nama_barang,
+            'jumlah' => $i->jumlah,
+            'detail' => $i->detail,
+            'sub_kategori' => $i->sub_kategori,
+            'tim' => $i->tim,
+            'keterangan' => $i->keterangan,
+            'lokasi_unit' => $i->lokasi_unit,
+            'ruangan' => $i->ruangan,
+            'milik' => $i->milik,
+            'pengadaan_tahun' => $i->pengadaan_tahun,
+            'tanggal_pembelian' => $i->tanggal_pembelian?->format('Y-m-d'),
+            'kategori_nilai' => $i->kategori_nilai,
+            'kategori_ukuran' => $i->kategori_ukuran,
+            'nilai' => (int) $i->nilai,
             'waktu_pakai_per_hari' => $waktuPakai,
-            'estimasi_waktu_barang' => $item->estimasi_waktu_barang,
+            'estimasi_waktu_barang' => $i->estimasi_waktu_barang,
             'pengurangan_harga_per_hari' => round($penguranganHariIni, 2),
-            'harga_per_hari_ini' => round($nilaiSekarang, 0),
+            'harga_per_hari_ini' => round($nilaiSekarang, 2),
             'hari_terpakai' => $hariTerpakai,
             'penyusutan_per_hari' => round($penguranganHariIni, 2),
-            'nilai_sekarang' => round($nilaiSekarang, 0),
-            'pic' => $item->pic,
-            'jabatan' => $item->jabatan,
-            'atasan' => $item->atasan,
-            'jabatan_atasan' => $item->jabatan_atasan,
-            'kondisi' => $item->kondisi,
-        ]);
+            'nilai_sekarang' => round($nilaiSekarang, 2),
+            'pic' => $i->pic,
+            'jabatan' => $i->jabatan,
+            'atasan' => $i->atasan,
+            'jabatan_atasan' => $i->jabatan_atasan,
+            'kondisi' => $i->kondisi,
+            'barcode_ditempel' => (bool) $i->barcode_ditempel,
+        ];
     }
 
     public function downloadTemplate()
