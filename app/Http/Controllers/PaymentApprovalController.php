@@ -421,7 +421,7 @@ class PaymentApprovalController extends Controller
 
         $requests = $all->sortByDesc('created_at')->values();
         $isApprover = in_array(auth()->user()->role, self::APPROVER_ROLES);
-        $showRowActions = $isApprover && auth()->user()->role !== 'gm';
+        $showRowActions = $isApprover && ! in_array(auth()->user()->role, ['gm', 'ceo']);
 
         $jenisFilter = request()->get('jenis', 'all');
         $search = trim((string) request()->get('search', ''));

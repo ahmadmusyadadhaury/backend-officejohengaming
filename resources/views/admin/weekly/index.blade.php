@@ -8,7 +8,7 @@
 <div class="pt-2 space-y-4 animate-fade-in">
     @php $days = [1=>'Senin',2=>'Selasa',3=>'Rabu',4=>'Kamis',5=>'Jumat',6=>'Sabtu',7=>'Minggu']; @endphp
     <div class="flex justify-end">
-        @if(auth()->user()->role !== 'gm')
+        @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
         <a href="{{ route('admin.weekly-meetings.create') }}" class="btn btn-primary btn-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

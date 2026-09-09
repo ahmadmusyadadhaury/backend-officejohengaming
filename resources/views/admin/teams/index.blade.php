@@ -21,7 +21,7 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Tim</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Organisir tim dan departemen perusahaan</div>
             </div>
-@if(auth()->user()->role !== 'gm')
+@if(!in_array(auth()->user()->role, ['gm', 'ceo']))
             <div class="flex items-center gap-2">
                 <button type="button" onclick="openAddMemberModal()" class="btn btn-secondary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -507,7 +507,7 @@ function closeAddMemberModal() {
     closeModal('add-member-modal');
 }
 
-var isGm = {{ auth()->user()->role === 'gm' ? 'true' : 'false' }};
+var isGm = {{ in_array(auth()->user()->role, ['gm', 'ceo']) ? 'true' : 'false' }};
 
 function showDetail(teamId) {
     document.getElementById('detail-title').textContent = 'Detail Tim';

@@ -225,7 +225,7 @@
 
     {{-- Pajak Approval Alert --}}
     @php
-        $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin']);
+        $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'ceo', 'hr', 'admin']);
     @endphp
     @if($isApprover && ($pendingPajakApprovalsCount ?? 0) > 0)
     <div class="dashboard-section">
@@ -375,7 +375,7 @@
             'delay' => 3500,
         ];
     }
-    $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'hr', 'admin']);
+    $isApprover = in_array(auth()->user()->role, ['head_of_store', 'gm', 'ceo', 'hr', 'admin']);
     if ($isApprover && ($pendingPajakApprovalsCount ?? 0) > 0) {
         $dismissibleAlerts[] = [
             'id' => 'pajak',

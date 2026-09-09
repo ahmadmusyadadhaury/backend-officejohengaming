@@ -522,7 +522,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                @if(auth()->user()->role !== 'gm')
+                @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                 <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -832,7 +832,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                @if(auth()->user()->role !== 'gm')
+                @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                 <button type="button" onclick="openInternetUsageModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -1202,7 +1202,7 @@
                 <div class="text-xs font-medium" style="color:var(--text-muted);">{{ $latestPayment && $latestPayment->nominal ? 'Rp '.number_format($latestPayment->nominal, 0) : '' }}</div>
                 <div class="text-xs" style="color:var(--text-muted);">{{ $latestPayment ? $latestPayment->payment_date->format('d M Y') : '-' }} · {{ $latestPayment?->creator?->name ?? '-' }}</div>
             </div>
-            @if(auth()->user()->role !== 'gm')
+            @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
             <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-xs flex-shrink-0" style="font-size:11px;padding:4px 10px;">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Top Up
@@ -1274,7 +1274,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Export
                 </a>
-                @if(auth()->user()->role !== 'gm')
+                @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                 <button type="button" onclick="openTopupModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -1379,7 +1379,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Export
                 </a>
-                @if(auth()->user()->role !== 'gm')
+                @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                 <button type="button" onclick="openTokenModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

@@ -19,7 +19,7 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Akun Koordinator</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Kelola akun koordinator divisi dengan akses TERBATAS (menu Meeting saja).</div>
             </div>
-@if(auth()->user()->role !== 'gm')
+@if(!in_array(auth()->user()->role, ['gm', 'ceo']))
             <div class="flex gap-2">
             <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,7 +138,7 @@
                 <div style="font-weight:600;font-size:0.8rem;color:var(--text-primary);">Kelola Karyawan</div>
                 <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-weight:400;">Akun karyawan biasa dengan akses terbatas.</div>
             </div>
-@if(auth()->user()->role !== 'gm')
+@if(!in_array(auth()->user()->role, ['gm', 'ceo']))
             <div class="flex gap-2 flex-wrap">
             <button type="button" onclick="openCreateKaryawanModal()" class="btn btn-primary btn-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
