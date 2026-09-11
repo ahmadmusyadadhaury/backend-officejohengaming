@@ -522,14 +522,12 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                @if(!in_array(auth()->user()->role, ['gm', 'ceo']))
                 <button type="button" onclick="openCreateModal()" class="btn btn-primary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     Tambah Tagihan
                 </button>
-                @endif
                 @if($jenis === 'ipl_ruko')
                 <button type="button" onclick="openBulkIplModal()" class="btn btn-secondary btn-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -615,11 +613,6 @@
                             <th class="hidden md:table-cell">Biaya</th>
                         @else
                             <th>{{ $jenis === 'aset_digital' ? 'Nama Aset' : 'Periode' }}</th>
-                            @if($jenis === 'aset_digital')
-                            <th class="hidden md:table-cell">Email</th>
-                            <th class="hidden md:table-cell">Mulai</th>
-                            <th class="hidden md:table-cell">Berakhir</th>
-                            @endif
                             @if($jenis !== 'aset_digital')
                             <th class="hidden md:table-cell">Tagihan</th>
                             @endif
@@ -630,12 +623,12 @@
                             <th>Nominal</th>
                             @if($jenis === 'aset_digital')
                             <th>PIC</th>
-                            <th class="hidden lg:table-cell">Jabatan</th>
-                            <th class="hidden md:table-cell">Keterangan</th>
                             @endif
                         @endif
                         <th>Status</th>
+                            @if($jenis !== 'aset_digital')
                             <th class="hidden md:table-cell">Tgl Bayar</th>
+                            @endif
                             <th>Aksi</th>
                     </tr>
                 </thead>
@@ -758,11 +751,6 @@
                         <td class="hidden md:table-cell" style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->biaya, 0, ',', '.') }}</td>
                         @else
                         <td style="color:var(--text-primary);font-weight:500;">{{ $item->periode }}</td>
-                        @if($jenis === 'aset_digital')
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->email ?? '-' }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->mulai?->format('d/m/Y') ?? '-' }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->berakhir?->format('d/m/Y') ?? '-' }}</td>
-                        @endif
                         @if($jenis !== 'aset_digital')
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ $item->tanggal_tagihan?->format('d/m/Y') }}</td>
                         @endif
@@ -774,13 +762,13 @@
                         @endif
                         <td style="color:var(--text-primary);font-weight:600;">Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
                         @if($jenis === 'aset_digital')
-                        <td style="color:var(--text-muted);">{{ $item->digitalAsset?->pic ?? '-' }}</td>
-                        <td class="hidden lg:table-cell" style="color:var(--text-muted);">{{ $item->digitalAsset?->jabatan ?? '-' }}</td>
-                        <td class="hidden md:table-cell" style="color:var(--text-muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $item->digitalAsset?->keperluan ?? '-' }}">{{ $item->digitalAsset?->keperluan ?? '-' }}</td>
+                        <td style="color:var(--text-muted);">{{ $item->pic ?? $item->digitalAsset?->pic ?? '-' }}</td>
                         @endif
                         @endif
                         <td><span class="badge {{ $badgeClass }}">{{ $badgeLabel }}</span></td>
+                        @if($jenis !== 'aset_digital')
                         <td class="hidden md:table-cell" style="color:var(--text-muted);">{{ ($item->tanggal_bayar) ? $item->tanggal_bayar->format('d/m/Y') : '-' }}</td>
+                        @endif
                         <td>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="showDetail({{ $itemId }})" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px;padding:3px 6px;font-size:0.7rem;">
@@ -791,14 +779,12 @@
                                     <button type="button" onclick="toggleDropdown(this, {{ $itemId }})" class="btn btn-secondary btn-sm" style="padding:3px 6px;font-size:0.7rem;line-height:1;">⋮</button>
                                     <div id="dropdown-{{ $itemId }}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;z-index:99999;min-width:130px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:10px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.15);margin-top:4px;">
                                         <button type="button" onclick="showDetail({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Detail</button>
-                                        @if(auth()->user()->role !== 'gm' && auth()->user()->role !== 'ceo')
                                         <button type="button" onclick="openEditModal({{ $itemId }})" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text-primary);border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Edit</button>
                                         <form method="POST" action="{{ route('admin.pembayaran.destroy', $itemId) }}" onsubmit="confirmSubmit(event, this)" data-confirm="Hapus data ini?" style="margin:0;">
                                             @csrf @method('DELETE')
                                             <input type="hidden" name="jenis" value="{{ $jenis }}">
                                             <button type="submit" style="display:block;width:100%;text-align:left;padding:7px 12px;border:none;background:none;font-size:13px;color:#ef4444;border-radius:6px;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='none'">Hapus</button>
                                         </form>
-                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -806,7 +792,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ $jenis === 'internet' ? 11 : ($jenis === 'aset_digital' ? 14 : ($jenis === 'ipl_ruko' ? 10 : 8)) }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data {{ $jenisLabels[$jenis] }}.</td>
+                        <td colspan="{{ $jenis === 'internet' ? 11 : ($jenis === 'aset_digital' ? 8 : ($jenis === 'ipl_ruko' ? 10 : 8)) }}" style="text-align:center;padding:2rem;color:var(--text-muted);">Belum ada data {{ $jenisLabels[$jenis] }}.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -2252,7 +2238,7 @@ function closeAlertPopup() {
 }
 
 function openCreateModal() {
-    document.getElementById('modal-title').textContent = 'Tambah Tagihan';
+    document.getElementById('modal-title').textContent = 'Tambah {{ $jenisLabels[$jenis] }}';
     document.getElementById('form-method').value = 'POST';
     document.getElementById('form-id').value = '';
     document.getElementById('payment-form').action = '{{ route('admin.pembayaran.store') }}';
@@ -2488,7 +2474,7 @@ function openEditModal(id) {
     const i = paymentData.find(x => x.id === id);
     if (!i) return;
 
-    document.getElementById('modal-title').textContent = 'Edit Tagihan';
+    document.getElementById('modal-title').textContent = 'Edit {{ $jenisLabels[$jenis] }}';
     document.getElementById('form-method').value = 'PUT';
     document.getElementById('form-id').value = i.id;
     document.getElementById('payment-form').action = '{{ url('admin/pembayaran') }}/' + i.id;
@@ -2506,8 +2492,8 @@ function openEditModal(id) {
     document.getElementById('f-tanggal_tagihan').value = i.tanggal_tagihan;
     document.getElementById('f-jatuh_tempo').value = i.jatuh_tempo;
     document.getElementById('f-nominal').value = i.nominal;
-    document.getElementById('f-pic').value = i.pic;
-    document.getElementById('f-jabatan').value = i.jabatan;
+    document.getElementById('f-pic').value = (i.pic && i.pic !== '-') ? i.pic : '';
+    document.getElementById('f-jabatan').value = i.jabatan || '';
     if (document.getElementById('f-digital_asset_id')) {
         document.getElementById('f-digital_asset_id').value = i.digital_asset_id || '';
     }

@@ -16,7 +16,6 @@
                 ['label' => 'Kondisi Baik', 'count' => $stats['kondisi_baik'], 'color' => '#34d399', 'bg' => 'rgba(16,185,129,0.12)', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['label' => 'Perlu Servis', 'count' => $stats['perlu_servis'], 'color' => '#fbbf24', 'bg' => 'rgba(245,158,11,0.12)', 'icon' => 'M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['label' => 'Rusak', 'count' => $stats['rusak'], 'color' => '#ef4444', 'bg' => 'rgba(239,68,68,0.12)', 'icon' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'],
-                ['label' => 'Kondisi Lainnya', 'count' => $stats['kondisi_lainnya'], 'color' => '#93c5fd', 'bg' => 'rgba(96,165,250,0.12)', 'icon' => 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4'],
             ];
         @endphp
         @foreach($countCards as $card)
