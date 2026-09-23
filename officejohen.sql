@@ -2025,7 +2025,7 @@ CREATE TABLE `weekly_meetings` (
 
 LOCK TABLES `weekly_meetings` WRITE;
 /*!40000 ALTER TABLE `weekly_meetings` DISABLE KEYS */;
-INSERT INTO `weekly_meetings` VALUES (1,1,'Weekly Meeting',1,'13:00:00','15:00:00',1,1,'2026-07-15 08:40:17','2026-07-15 08:40:17');
+INSERT INTO `weekly_meetings` VALUES (1,1,'Weekly Meeting',2,'13:00:00','15:00:00',1,1,'2026-07-15 08:40:17','2026-07-15 08:40:17');
 /*!40000 ALTER TABLE `weekly_meetings` ENABLE KEYS */;
 UNLOCK TABLES;
 

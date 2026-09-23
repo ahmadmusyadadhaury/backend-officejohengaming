@@ -230,29 +230,28 @@ class PaymentController extends Controller
                 }
             }
         } elseif ($jenis === 'aset_digital') {
-            $expiringAssets = DigitalAsset::where(function ($q) {
-                $q->where('berakhir', '<=', now()->addDays(7))
-                    ->orWhere('is_active', false);
-            })->get();
+            $assetIdsWithTagihan = PembayaranAsetDigital::whereNotNull('digital_asset_id')
+                ->pluck('digital_asset_id')
+                ->all();
+
+            $expiringAssets = DigitalAsset::whereNotIn('id', $assetIdsWithTagihan)
+                ->where(function ($q) {
+                    $q->where('berakhir', '<=', now()->addDays(7))
+                        ->orWhere('is_active', false);
+                })->get();
 
             foreach ($expiringAssets as $asset) {
-                $hasUnpaid = PembayaranAsetDigital::where('digital_asset_id', $asset->id)
-                    ->where('periode', 'like', '%(Perpanjangan)%')
-                    ->whereNotIn('status', ['lunas', 'rejected'])
-                    ->exists();
-                if (! $hasUnpaid) {
-                    $jatuhTempo = now()->addDays(30);
-                    PembayaranAsetDigital::create([
-                        'digital_asset_id' => $asset->id,
-                        'periode' => $asset->nama_aset.' (Perpanjangan)',
-                        'tanggal_tagihan' => now(),
-                        'jatuh_tempo' => $jatuhTempo,
-                        'nominal' => $asset->biaya,
-                        'pic' => $asset->pic,
-                        'jabatan' => $asset->jabatan,
-                        'status' => $this->resolvePaymentStatus($jatuhTempo),
-                    ]);
-                }
+                $jatuhTempo = $asset->berakhir ?? now()->addDays(7);
+                PembayaranAsetDigital::create([
+                    'digital_asset_id' => $asset->id,
+                    'periode' => $asset->nama_aset,
+                    'tanggal_tagihan' => now(),
+                    'jatuh_tempo' => $jatuhTempo,
+                    'nominal' => $asset->biaya,
+                    'pic' => $asset->pic,
+                    'jabatan' => $asset->jabatan,
+                    'status' => $this->resolvePaymentStatus($jatuhTempo),
+                ]);
             }
 
             $items = PembayaranAsetDigital::with('digitalAsset')->orderBy('created_at', 'desc')->get();

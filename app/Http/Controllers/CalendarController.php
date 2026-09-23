@@ -76,7 +76,7 @@ class CalendarController extends Controller
                     ? substr($m->actual_end_time, 0, 5)
                     : substr($m->end_time, 0, 5);
 
-                $title = $m->requester->name.' — '.$m->title;
+                $title = $m->requester->name.' ΓÇö '.$m->title;
                 if ($m->status === 'completed' && $m->actual_end_time) {
                     $title .= ' (Selesai '.substr($m->actual_end_time, 0, 5).')';
                 }
@@ -106,70 +106,145 @@ class CalendarController extends Controller
                 ];
             });
 
-        // Generate weekly meeting events untuk 8 minggu ke depan
+        // Generate weekly meeting events mengikuti rentang tampilan (start/end dari FullCalendar)
         $weeklyMeetings = WeeklyMeeting::with('room')->where('is_active', true)->get();
         $weeklyEvents = collect();
         $now = Carbon::now();
+        $renderedKeys = collect();
+
+        // 1) Sesi yang SUDAH tersimpan ditampilkan apa adanya (hari aslinya, mis. Senin)
+        //    sehingga riwayat minggu/bulan sebelumnya yang sudah di-generate TETAP tampil
+        //    di kalender sesuai tanggal aktualnya (bukan digenerate ulang di hari baru).
+        $storedSessions = WeeklyMeetingSession::with(['weeklyMeeting.room'])->get();
+        foreach ($storedSessions as $session) {
+            if (! $session->weeklyMeeting || ! $session->weeklyMeeting->room) {
+                continue;
+            }
+            $wm = $session->weeklyMeeting;
+            $dateStr = $session->session_date->format('Y-m-d');
+            $startTime = substr($session->start_time, 0, 5);
+            $endTime = substr($session->end_time, 0, 5);
+
+            $color = '#0891b2';
+            $rtLabel = 'ðŸ” '.$wm->title;
+
+            if ($session->status === 'completed') {
+                $color = '#6b7280';
+                $rtLabel = 'ðŸ” '.$wm->title.' (Selesai)';
+            } else {
+                $startDt = Carbon::parse($dateStr.' '.$session->start_time);
+                $endDt = Carbon::parse($dateStr.' '.$session->end_time);
+                if ($now->gte($startDt) && $now->lte($endDt)) {
+                    $color = '#0e7490';
+                    $rtLabel = 'ðŸ” '.$wm->title.' â€” Sedang Berlangsung';
+                }
+            }
+
+            if ($session->actual_end_time) {
+                $endTime = substr($session->actual_end_time, 0, 5);
+            }
+
+            $weeklyEvents->push([
+                'id' => 'weekly-'.$wm->id.'-'.$session->session_date->format('Ymd'),
+                'title' => $rtLabel,
+                'start' => $dateStr.'T'.$startTime,
+                'end' => $dateStr.'T'.$endTime,
+                'color' => $color,
+                'extendedProps' => [
+                    'room' => $wm->room->name,
+                    'team' => 'Semua Tim',
+                    'status' => $session->status ?? 'weekly',
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                    'actual_end_time' => $session->actual_end_time ? substr($session->actual_end_time, 0, 5) : null,
+                    'queue_label' => null,
+                    'rt_label' => $rtLabel,
+                    'rt_dot' => $color,
+                    'meeting_id' => null,
+                    'weekly_id' => 'weekly-'.$wm->id.'-'.$session->session_date->format('Ymd'),
+                ],
+            ]);
+            $renderedKeys->push($wm->id.'-'.$session->session_date->format('Ymd'));
+        }
+
+        // 2) Event berulang untuk rentang yang sedang dilihat (start/end dari FullCalendar),
+        //    mengikuti aturan transisi hari: sebelum day_of_week_changed_on event dirender
+        //    di hari lama (day_of_week_old, mis. Senin); mulai tanggal itu di hari baru
+        //    (day_of_week, mis. Selasa). Dengan begitu riwayat minggu/bulan sebelumnya
+        //    yang jatuh di Senin TETAP tampil, dan ke depan jadi Selasa.
+        $rangeStart = $request->filled('start')
+            ? Carbon::parse($request->input('start'))
+            : now()->startOfWeek(Carbon::MONDAY);
+        $rangeEnd = $request->filled('end')
+            ? Carbon::parse($request->input('end'))
+            : now()->addWeeks(8);
 
         foreach ($weeklyMeetings as $wm) {
-            $startDate = now()->startOfWeek(Carbon::MONDAY);
-            $endDate = now()->addWeeks(8);
-            $current = $startDate->copy();
+            $current = $rangeStart->copy();
 
-            while ($current->lte($endDate)) {
-                if ($current->isoWeekday() === (int) $wm->day_of_week) {
+            while ($current->lte($rangeEnd)) {
+                $hasTransition = $wm->day_of_week_changed_on !== null && $wm->day_of_week_old !== null;
+                $effectiveDay = ($hasTransition && $current->lt(Carbon::parse($wm->day_of_week_changed_on)))
+                    ? (int) $wm->day_of_week_old
+                    : (int) $wm->day_of_week;
+
+                if ($current->isoWeekday() === $effectiveDay) {
                     $dateStr = $current->format('Y-m-d');
-                    $startTime = substr($wm->start_time, 0, 5);
-                    $endTime = substr($wm->end_time, 0, 5);
+                    $key = $wm->id.'-'.$current->format('Ymd');
 
-                    // Cek session yang sudah ada untuk status real-time
-                    $session = WeeklyMeetingSession::where('weekly_meeting_id', $wm->id)
-                        ->where('session_date', $dateStr)
-                        ->first();
+                    if (! $renderedKeys->contains($key)) {
+                        $startTime = substr($wm->start_time, 0, 5);
+                        $endTime = substr($wm->end_time, 0, 5);
 
-                    $rtLabel = '🔁 '.$wm->title;
-                    $color = '#0891b2';
+                        $session = WeeklyMeetingSession::where('weekly_meeting_id', $wm->id)
+                            ->where('session_date', $dateStr)
+                            ->first();
 
-                    if ($session) {
-                        $startDt = Carbon::parse($dateStr.' '.$session->start_time);
-                        $endDt = Carbon::parse($dateStr.' '.$session->end_time);
+                        $color = '#0891b2';
+                        $rtLabel = 'ðŸ” '.$wm->title;
 
-                        if ($session->status === 'completed') {
-                            $color = '#6b7280';
-                            $rtLabel = '🔁 '.$wm->title.' (Selesai)';
-                        } elseif ($now->gte($startDt) && $now->lte($endDt)) {
-                            $color = '#0e7490';
-                            $rtLabel = '🔁 '.$wm->title.' — Sedang Berlangsung';
+                        if ($session) {
+                            if ($session->status === 'completed') {
+                                $color = '#6b7280';
+                                $rtLabel = 'ðŸ” '.$wm->title.' (Selesai)';
+                            } else {
+                                $startDt = Carbon::parse($dateStr.' '.$session->start_time);
+                                $endDt = Carbon::parse($dateStr.' '.$session->end_time);
+                                if ($now->gte($startDt) && $now->lte($endDt)) {
+                                    $color = '#0e7490';
+                                    $rtLabel = 'ðŸ” '.$wm->title.' â€” Sedang Berlangsung';
+                                }
+                            }
+                            if ($session->actual_end_time) {
+                                $endTime = substr($session->actual_end_time, 0, 5);
+                            }
                         }
 
-                        $endTime = substr($session->end_time, 0, 5);
+                        $weeklyEvents->push([
+                            'id' => 'weekly-'.$wm->id.'-'.$current->format('Ymd'),
+                            'title' => $rtLabel,
+                            'start' => $dateStr.'T'.$startTime,
+                            'end' => $dateStr.'T'.$endTime,
+                            'color' => $color,
+                            'extendedProps' => [
+                                'room' => $wm->room->name,
+                                'team' => 'Semua Tim',
+                                'status' => $session?->status ?? 'weekly',
+                                'start_time' => $startTime,
+                                'end_time' => $endTime,
+                                'actual_end_time' => $session?->actual_end_time ? substr($session->actual_end_time, 0, 5) : null,
+                                'queue_label' => null,
+                                'rt_label' => $rtLabel,
+                                'rt_dot' => $color,
+                                'meeting_id' => null,
+                                'weekly_id' => 'weekly-'.$wm->id.'-'.$current->format('Ymd'),
+                            ],
+                        ]);
                     }
-
-                    $weeklyEvents->push([
-                        'id' => 'weekly-'.$wm->id.'-'.$current->format('Ymd'),
-                        'title' => $rtLabel,
-                        'start' => $dateStr.'T'.$startTime,
-                        'end' => $dateStr.'T'.$endTime,
-                        'color' => $color,
-                        'extendedProps' => [
-                            'room' => $wm->room->name,
-                            'team' => 'Semua Tim',
-                            'status' => $session ? $session->status : 'weekly',
-                            'start_time' => $startTime,
-                            'end_time' => $endTime,
-                            'actual_end_time' => $session?->actual_end_time ? substr($session->actual_end_time, 0, 5) : null,
-                            'queue_label' => null,
-                            'rt_label' => $session ? ($session->status === 'completed' ? 'Selesai' : ($now->gte(Carbon::parse($dateStr.' '.$session->start_time)) ? 'Sedang Berlangsung' : 'Akan Dimulai')) : 'Meeting Mingguan',
-                            'rt_dot' => $color,
-                            'meeting_id' => null,
-                            'weekly_id' => 'weekly-'.$wm->id.'-'.$current->format('Ymd'),
-                        ],
-                    ]);
                 }
                 $current->addDay();
             }
         }
-
         return response()->json($meetings->merge($weeklyEvents)->values());
     }
 }

@@ -104,6 +104,11 @@ class DigitalAssetApiController extends Controller
             if (isset($data['biaya'])) {
                 $sync['nominal'] = $data['biaya'];
             }
+            if (isset($data['berakhir']) && ! in_array($digitalAsset->pembayaran->status, ['lunas', 'rejected'])) {
+                $jatuhTempo = Carbon::parse($data['berakhir']);
+                $sync['jatuh_tempo'] = $jatuhTempo->toDateString();
+                $sync['status'] = $jatuhTempo->lte(now()->addDays(7)) ? 'jatuh_tempo' : 'pending';
+            }
             if ($sync) {
                 $digitalAsset->pembayaran->update($sync);
             }

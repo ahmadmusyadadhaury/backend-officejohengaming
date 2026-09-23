@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Console\Commands\SyncDigitalAssetPayments;
 use App\Http\Controllers\Admin\DigitalAssetController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Api\DigitalAssetApiController;
 use App\Models\DigitalAsset;
 use App\Models\PembayaranAsetDigital;
@@ -152,6 +153,93 @@ class DigitalAssetTagihanTest extends TestCase
 
         $this->assertCount(1, $rows);
         $this->assertSame($due->id, $rows->first()->id);
+    }
+
+    public function test_pembayaran_index_membuat_tagihan_dari_tanggal_berakhir(): void
+    {
+        $asset = DigitalAsset::create([
+            'nama_aset' => 'Canva Pro',
+            'email' => 'canva@example.com',
+            'mulai' => now()->toDateString(),
+            'berakhir' => now()->addDays(5)->toDateString(),
+            'biaya' => 80000,
+            'pic' => 'Admin',
+            'jabatan' => 'Admin Master',
+            'keperluan' => null,
+            'is_active' => true,
+        ]);
+
+        $request = Request::create('/admin/pembayaran', 'GET', ['jenis' => 'aset_digital']);
+        (new PaymentController)->index($request);
+
+        $payment = PembayaranAsetDigital::where('digital_asset_id', $asset->id)->first();
+
+        $this->assertNotNull($payment);
+        $this->assertSame($asset->berakhir->toDateString(), $payment->jatuh_tempo->toDateString());
+        $this->assertSame($asset->nama_aset, $payment->periode);
+        $this->assertNotSame(now()->addDays(30)->toDateString(), $payment->jatuh_tempo->toDateString());
+    }
+
+    public function test_pembayaran_index_tidak_membuat_tagihan_berulang_per_aset(): void
+    {
+        $asset = DigitalAsset::create([
+            'nama_aset' => 'Microsoft 365',
+            'email' => 'm365@example.com',
+            'mulai' => now()->toDateString(),
+            'berakhir' => now()->addDays(3)->toDateString(),
+            'biaya' => 100000,
+            'pic' => 'Admin',
+            'jabatan' => 'Admin Master',
+            'keperluan' => null,
+            'is_active' => true,
+        ]);
+        PembayaranAsetDigital::create([
+            'digital_asset_id' => $asset->id,
+            'periode' => $asset->nama_aset,
+            'tanggal_tagihan' => now()->toDateString(),
+            'jatuh_tempo' => $asset->berakhir->toDateString(),
+            'nominal' => $asset->biaya,
+            'status' => 'lunas',
+            'tanggal_bayar' => now()->toDateString(),
+        ]);
+
+        $request = Request::create('/admin/pembayaran', 'GET', ['jenis' => 'aset_digital']);
+        (new PaymentController)->index($request);
+
+        $this->assertSame(1, PembayaranAsetDigital::count());
+        $this->assertNull(PembayaranAsetDigital::where('periode', 'like', '%(Perpanjangan)%')->first());
+    }
+
+    public function test_web_update_mengikuti_tanggal_berakhir_untuk_tagihan_belum_lunas(): void
+    {
+        $asset = DigitalAsset::create([
+            'nama_aset' => 'Zoom',
+            'email' => 'zoom@example.com',
+            'mulai' => now()->subMonths(2)->toDateString(),
+            'berakhir' => now()->addDays(5)->toDateString(),
+            'biaya' => 200000,
+            'pic' => 'Admin',
+            'jabatan' => 'Admin Master',
+            'keperluan' => null,
+            'is_active' => true,
+        ]);
+        PembayaranAsetDigital::create([
+            'digital_asset_id' => $asset->id,
+            'periode' => $asset->nama_aset,
+            'tanggal_tagihan' => now()->toDateString(),
+            'jatuh_tempo' => $asset->berakhir->toDateString(),
+            'nominal' => $asset->biaya,
+            'status' => 'jatuh_tempo',
+            'tanggal_bayar' => null,
+        ]);
+
+        $baru = now()->addDays(10)->toDateString();
+        $request = Request::create(route('admin.digital-assets.update', $asset), 'PUT', ['berakhir' => $baru]);
+        (new DigitalAssetController)->update($request, $asset);
+
+        $payment = PembayaranAsetDigital::where('digital_asset_id', $asset->id)->first();
+        $this->assertSame($baru, $payment->jatuh_tempo->toDateString());
+        $this->assertSame('pending', $payment->status);
     }
 
     protected function buildSchema(): void

@@ -17,8 +17,14 @@ class WeeklyMeetingService
 
         $weeklyMeetings = WeeklyMeeting::with('room')
             ->where('is_active', true)
-            ->where('day_of_week', $dayOfWeek)
-            ->get();
+            ->get()
+            ->filter(function ($wm) use ($dayOfWeek, $today) {
+                $hasTransition = $wm->day_of_week_changed_on !== null && $wm->day_of_week_old !== null;
+                $effectiveDay = ($hasTransition && $today->lt(Carbon::parse($wm->day_of_week_changed_on)))
+                    ? (int) $wm->day_of_week_old
+                    : (int) $wm->day_of_week;
+                return $effectiveDay === $dayOfWeek;
+            });
 
         foreach ($weeklyMeetings as $wm) {
             // Buat sesi jika belum ada untuk hari ini
