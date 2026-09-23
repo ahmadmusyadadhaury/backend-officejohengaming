@@ -108,29 +108,29 @@
         </div>
 
         <div class="table-responsive">
-            <table class="gaming-table" id="meetings-table" style="width:100%;min-width:750px;">
+<table class="gaming-table" id="meetings-table" style="width:100%;">
                 <colgroup>
-                    <col style="width:44px">
+                    <col style="width:40px">
                     <col>
-                    <col class="hidden sm:table-cell" style="width:160px">
-                    <col class="hidden lg:table-cell" style="width:120px">
-                    <col style="width:115px">
-                    <col class="hidden sm:table-cell" style="width:95px">
-                    <col style="width:85px">
-                    <col class="hidden md:table-cell" style="width:85px">
-                    <col style="width:80px">
+                    <col class="hidden sm:table-cell" style="width:130px">
+                    <col class="hidden lg:table-cell" style="width:100px">
+                    <col style="width:100px">
+                    <col class="hidden sm:table-cell" style="width:85px">
+                    <col style="width:75px">
+                    <col class="hidden md:table-cell" style="width:75px">
+                    <col style="width:64px">
                 </colgroup>
                 <thead>
                     <tr>
-                        <th style="width:44px">No</th>
+                        <th style="width:40px">No</th>
                         <th>Judul</th>
-                        <th class="hidden sm:table-cell" style="width:160px">Pemohon</th>
-                        <th class="hidden lg:table-cell" style="width:120px">Tim</th>
-                        <th style="width:115px">Tanggal</th>
-                        <th class="hidden sm:table-cell" style="width:95px">Waktu</th>
-                        <th style="width:85px">Status</th>
-                        <th class="hidden md:table-cell" style="width:85px">Antrian</th>
-                        <th style="width:80px">Aksi</th>
+                        <th class="hidden sm:table-cell" style="width:130px">Pemohon</th>
+                        <th class="hidden lg:table-cell" style="width:100px">Tim</th>
+                        <th style="width:100px">Tanggal</th>
+                        <th class="hidden sm:table-cell" style="width:85px">Waktu</th>
+                        <th style="width:75px">Status</th>
+                        <th class="hidden md:table-cell" style="width:75px">Antrian</th>
+                        <th style="width:64px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="meetings-tbody">
@@ -159,7 +159,7 @@
                     <tr data-status="{{ $meeting->status }}" class="meeting-row">
                         <td style="color:var(--text-muted);font-size:0.8rem;">{{ $loop->iteration }}</td>
                         <td>
-                            <span class="font-medium" style="color:var(--text-primary);font-size:0.8rem;">{{ $meeting->title }}</span>
+                            <span class="font-medium meeting-title" style="color:var(--text-primary);font-size:0.8rem;">{{ $meeting->title }}</span>
                         </td>
                         <td class="meeting-pemohon hidden sm:table-cell">
                             <div class="flex items-center gap-1.5">
@@ -185,12 +185,11 @@
                         </td>
                         <td>
                             <div class="flex items-center gap-1" style="white-space:nowrap;">
-                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5" style="padding:4px 8px;font-size:0.7rem;">
+                                <button type="button" onclick="showDetail({{ $meeting->id }})" class="btn btn-secondary btn-sm inline-flex items-center" style="padding:4px 8px;font-size:0.7rem;" title="Lihat Detail">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.457-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                     </svg>
-                                    Lihat Detail
                                 </button>
                                 <div class="relative dropdown-actions">
                                     <button type="button" onclick="toggleActionMenu(event, {{ $meeting->id }})" style="padding:6px 10px;line-height:1;font-size:0.8rem;font-weight:700;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-surface);color:var(--text-primary);cursor:pointer;" title="Aksi">
@@ -726,6 +725,9 @@ document.getElementById('delete-confirm-modal')?.addEventListener('click', funct
 
 .gaming-table tbody td { padding: 0.75rem 1.125rem; vertical-align: middle; }
 .gaming-table thead th { padding: 0.625rem 1.125rem; font-size:0.65rem; letter-spacing:0.03em; }
+.page-admin.page-admin-meetings .gaming-table tbody td { padding: 0.55rem 0.6rem; }
+.page-admin.page-admin-meetings .gaming-table thead th { padding: 0.5rem 0.6rem; }
+.page-admin.page-admin-meetings .meeting-title { white-space: normal; overflow-wrap: anywhere; }
 .meeting-row + .meeting-row > td { padding-top: 0; }
 .page-admin.page-admin-meetings .btn-primary {
     background: #6d5ef9;
