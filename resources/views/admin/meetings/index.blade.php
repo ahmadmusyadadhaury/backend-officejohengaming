@@ -212,14 +212,12 @@
                                             </svg>
                                             Edit
                                         </button>
-                                        @if(in_array($meeting->status, ['cancelled','rejected']))
                                         <button type="button" onclick="confirmDeleteMeeting({{ $meeting->id }})" class="w-full text-left px-2.5 py-1.5 text-xs rounded-md transition flex items-center gap-2" style="color:#f87171;background:none;border:none;cursor:pointer;" onmouseover="this.style.background='var(--bg-surface-2)'" onmouseout="this.style.background='transparent'">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>
                                             Hapus
                                         </button>
-                                        @endif
                                         @endif
                                     </div>
                                 </div>
@@ -356,6 +354,26 @@
                 </div>
 
                 <div>
+                    <label class="gaming-label text-xs">Tim Utama <span style="color:#f87171;">*</span></label>
+                    <select id="edit-main-team" name="main_team_id" required class="gaming-input gaming-select mt-1">
+                        <option value="">Pilih Tim Utama</option>
+                        @foreach($teams as $t)
+                            <option value="{{ $t->id }}">{{ $t->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="gaming-label text-xs">Tim Tambahan</label>
+                    <select id="edit-extra-teams" name="extra_teams[]" multiple class="gaming-input gaming-select mt-1" style="min-height:96px;">
+                        @foreach($teams as $t)
+                            <option value="{{ $t->id }}">{{ $t->name }}</option>
+                        @endforeach
+                    </select>
+                    <p style="color:var(--text-muted);font-size:0.7rem;margin-top:4px;">Tahan Ctrl (Windows) atau Cmd (Mac) untuk memilih lebih dari satu. Kosongkan bila tidak ada tim tambahan.</p>
+                </div>
+
+                <div>
                     <label class="gaming-label text-xs">Ruangan <span style="color:#f87171;">*</span></label>
                     <select id="edit-room" name="room_id" required class="gaming-input gaming-select mt-1">
                         <option value="">Pilih Ruangan</option>
@@ -407,7 +425,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
             </div>
-            <p style="color:var(--text-secondary);margin-bottom:24px;">Apakah kamu yakin ingin menghapus meeting ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <p id="delete-target" class="font-medium" style="color:var(--text-primary);margin-bottom:6px;"></p>
+            <p style="color:var(--text-secondary);margin-bottom:16px;">Anda yakin ingin menghapus meeting ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div id="delete-warning" style="display:none;text-align:left;margin-bottom:24px;border:1px solid rgba(245,158,11,0.35);background:rgba(245,158,11,0.1);border-radius:10px;padding:12px 14px;">
+                <div class="flex items-center gap-2 mb-2" style="color:#fbbf24;font-size:0.8rem;font-weight:700;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Data berikut juga akan terhapus permanen:
+                </div>
+                <ul id="delete-warning-list" style="color:var(--text-secondary);font-size:0.75rem;line-height:1.7;padding-left:18px;list-style:disc;"></ul>
+            </div>
             <form id="delete-form" method="POST">
                 @csrf
                 @method('DELETE')
@@ -683,6 +711,12 @@ function showEditModal(id) {
     document.getElementById('edit-date').value = m.meeting_date_raw || '';
     document.getElementById('edit-start-time').value = m.start_time || '';
     document.getElementById('edit-end-time').value = m.end_time || '';
+    document.getElementById('edit-main-team').value = m.team?.id || '';
+
+    const extra = Array.isArray(m.extra_team_ids) ? m.extra_team_ids.map(Number) : [];
+    document.querySelectorAll('#edit-extra-teams option').forEach(o => {
+        o.selected = extra.includes(Number(o.value));
+    });
 
     document.getElementById('edit-form').action = '/admin/meetings/' + m.id;
     openModal('edit-modal');
@@ -698,7 +732,22 @@ document.getElementById('edit-modal')?.addEventListener('click', function(e) {
 
 // ─── Delete Modal ───
 function confirmDeleteMeeting(id) {
+    const m = meetingsData.find(i => i.id === id);
     document.getElementById('delete-form').action = '/admin/meetings/' + id;
+
+    const target = document.getElementById('delete-target');
+    if (m) {
+        const sm = statusMap[m.status] || { label: m.status, cls: 'badge-gray' };
+        target.textContent = m.title;
+        target.insertAdjacentHTML('beforeend',
+            ' <span class="badge ' + sm.cls + '" style="font-size:0.65rem;">' + sm.label + '</span>');
+    }
+
+    const items = ['Undangan yang sudah terkirim ke peserta', 'Data peserta &amp; reminder meeting'];
+    if (m && m.mom) items.unshift('MOM (Ringkasan &amp; Hasil Rapat)');
+    document.getElementById('delete-warning-list').innerHTML = items.map(t => '<li>' + t + '</li>').join('');
+    document.getElementById('delete-warning').style.display = 'block';
+
     openModal('delete-confirm-modal');
 }
 

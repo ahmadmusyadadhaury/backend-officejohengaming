@@ -7,6 +7,7 @@ use App\Models\Meeting;
 use App\Models\MeetingInvitation;
 use App\Models\Notification;
 use App\Models\Room;
+use App\Models\Team;
 use App\Models\User;
 use App\Services\MeetingQueueService;
 use Carbon\Carbon;
@@ -67,6 +68,7 @@ class MeetingController extends Controller
             'file_path' => $m->file_path,
             'file_url' => $m->file_path ? route('files.show', $m->file_path) : null,
             'teams' => $m->teams->map(fn ($t) => $t->name),
+            'extra_team_ids' => $m->teams->pluck('id'),
             'assets' => $m->assets->map(fn ($a) => [
                 'name' => $a->name,
                 'quantity' => $a->pivot->quantity,
@@ -92,8 +94,9 @@ class MeetingController extends Controller
         $ditolakMeeting = Meeting::where('status', 'rejected')->count();
 
         $rooms = Room::orderBy('name')->get();
+        $teams = Team::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'meetingMonth', 'rooms', 'search', 'status'));
+        return view('admin.meetings.index', compact('meetings', 'meetingsJson', 'totalMeeting', 'menungguMeeting', 'disetujuiMeeting', 'ditolakMeeting', 'meetingMonth', 'rooms', 'teams', 'search', 'status'));
     }
 
     public function show(Meeting $meeting)
@@ -168,6 +171,9 @@ class MeetingController extends Controller
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
             'room_id' => 'required|exists:rooms,id',
+            'main_team_id' => 'required|exists:teams,id',
+            'extra_teams' => 'nullable|array',
+            'extra_teams.*' => 'exists:teams,id',
         ]);
 
         $room = Room::find($request->room_id);
@@ -179,20 +185,113 @@ class MeetingController extends Controller
             return back()->withErrors(['room_id' => 'Smoking Area tidak dapat digunakan pada jam istirahat (12.00 - 13.00 WIB).'])->withInput();
         }
 
-        $meeting->update($validated);
+        $extraTeams = collect($request->input('extra_teams', []) ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->reject(fn ($id) => $id === (int) $validated['main_team_id'])
+            ->values()
+            ->all();
 
-        return redirect()->route('admin.meetings.index')
-            ->with('success', 'Meeting berhasil diperbarui.');
+        // Tim tidak berubah? tidak perlu sentuh undangan
+        $teamChanged = (int) $meeting->team_id !== (int) $validated['main_team_id']
+            || $meeting->teams()->pluck('teams.id')->map(fn ($id) => (int) $id)->sort()->values()->all()
+                !== collect($extraTeams)->sort()->values()->all();
+
+        $meeting->update([
+            'title' => $validated['title'],
+            'meeting_date' => $validated['meeting_date'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+            'room_id' => $validated['room_id'],
+            'team_id' => $validated['main_team_id'],
+        ]);
+
+        $meeting->teams()->sync($extraTeams);
+        $meeting->load('teams');
+
+        $message = 'Meeting berhasil diperbarui.';
+
+        if ($teamChanged) {
+            $message = $this->syncInvitations($meeting);
+        }
+
+        return redirect()->route('admin.meetings.index')->with('success', $message);
+    }
+
+    /**
+     * Samakan undangan peserta dengan tim terbaru.
+     * Menghapus undangan ke peserta yang bukan anggota tim baru,
+     * lalu mengundang anggota tim baru yang belum punya undangan.
+     */
+    private function syncInvitations(Meeting $meeting): string
+    {
+        $memberIds = User::whereIn('team_id', $meeting->allTeamIds())->pluck('id');
+
+        $removedCount = MeetingInvitation::where('meeting_id', $meeting->id)
+            ->whereNotIn('user_id', $memberIds)
+            ->delete();
+
+        $existingIds = MeetingInvitation::where('meeting_id', $meeting->id)->pluck('user_id');
+        $newIds = $memberIds->diff($existingIds)->values();
+
+        foreach ($newIds as $userId) {
+            MeetingInvitation::firstOrCreate(
+                ['meeting_id' => $meeting->id, 'user_id' => $userId],
+                ['is_read' => false]
+            );
+        }
+
+        $notifyIds = $newIds->reject(fn ($id) => $id === $meeting->requested_by)->all();
+        if (! empty($notifyIds)) {
+            Notification::sendToMany($notifyIds, 'meeting',
+                'Undangan Meeting Baru 📅',
+                'Kamu diundang ke meeting: '.$meeting->title.' pada '.$meeting->meeting_date->format('d M Y'),
+                route('invitation.index')
+            );
+        }
+
+        $parts = ['Tim diperbarui.'];
+        if ($newIds->isNotEmpty()) {
+            $parts[] = $newIds->count().' peserta baru diundang.';
+        }
+        if ($removedCount > 0) {
+            $parts[] = $removedCount.' undangan lama dibatalkan.';
+        }
+
+        return implode(' ', $parts);
     }
 
     public function destroy(Meeting $meeting)
     {
-        abort_if(! in_array($meeting->status, ['cancelled', 'rejected']), 403,
-            'Hanya meeting dengan status Cancelled atau Rejected yang bisa dihapus.');
+        $title = $meeting->title;
+        $roomId = $meeting->room_id;
+        $meetingDate = $meeting->meeting_date;
 
         $meeting->delete();
 
+        $this->compactQueue($roomId, $meetingDate);
+
         return redirect()->route('admin.meetings.index')
-            ->with('success', 'Meeting berhasil dihapus.');
+            ->with('success', 'Meeting "'.$title.'" berhasil dihapus beserta data terkaitnya.');
+    }
+
+    /**
+     * Rapatkan nomor antrian di ruangan + tanggal yang sama setelah ada meeting dihapus.
+     * Hanya menomori ulang queue_position, tidak menggeser start_time / end_time.
+     */
+    private function compactQueue($roomId, $meetingDate): void
+    {
+        $queue = Meeting::where('room_id', $roomId)
+            ->where('meeting_date', $meetingDate)
+            ->whereIn('status', ['approved', 'confirmed'])
+            ->whereNotNull('queue_position')
+            ->orderBy('queue_position')
+            ->get();
+
+        $position = 0;
+        foreach ($queue as $m) {
+            $m->update(['queue_position' => $position]);
+            $position++;
+        }
     }
 }
